@@ -1,6 +1,6 @@
-## Week 1 agenda
+## Week 2 agenda
 
-This is the agenda of week 1.
+This is the agenda of week 2.
 In the 'Points of action' part you will also find the topics we will cover in the meeting. 
 
 ---
