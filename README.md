@@ -15,7 +15,7 @@ Add your own name (do not add the names for others!) to the section below.
 | ![](https://secure.gravatar.com/avatar/b1deaa5bdd4de16ca5f88bc54c89e9bc?s=800&d=identicon&size=50) | Razvan Nistor | R.I.Nistor@student.tudelft.nl |
 | ![](https://secure.gravatar.com/avatar/0408829ba64f29bb1f00e5934d5b6968?s=800&d=identicon&size=50) | Yongcheng Huang | Y.Huang-51@student.tudelft.nl |
 | ![](https://secure.gravatar.com/avatar/d05ffb7f3e511625b5c8bbf90f857b00?s=800&d=identicon&size=50) | Faizel Mangroe | F.Mangroe@student.tudelft.nl |
-| ![](https://eu.ui-avatars.com/api/?name=OOPP&length=4&size=50&color=DDD&background=777&font-size=0.325) | Your Name Here | Y.NameHere@student.tudelft.nl |
+| ![](https://secure.gravatar.com/avatar/325ee4730af88cf34054be3ab5aec337?s=192&d=identicon&size=50) | Rithik Appachi Senthilkumar | R.AppachiSenthilkumar@student.tudelft.nl |
 
 <!-- Instructions (remove once assignment has been completed -->
 <!-- - Add (only!) your own name to the table above (use Markdown formatting) -->
