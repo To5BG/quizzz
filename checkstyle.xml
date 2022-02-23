@@ -17,9 +17,6 @@
         <module name="MethodName"/>
         <module name="MethodTypeParameterName"/>
         <module name="InterfaceTypeParameterName"/>
-        <module name="LineLength">
-            <property name="max" value="120"/>
-        </module>
         <module name="NeedBraces">
             <property name="allowSingleLineStatement" value="true"/>
             <property name="tokens" value="LITERAL_IF, LITERAL_WHILE, LITERAL_DO, LITERAL_FOR"/>
@@ -30,5 +27,8 @@
         <module name="AnnotationLocation">
             <property name="allowSamelineSingleParameterlessAnnotation" value="false"/>
         </module>
+    </module>
+    <module name="LineLength">
+        <property name="max" value="120"/>
     </module>
 </module>
