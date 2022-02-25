@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -17,8 +16,7 @@ public class ActivityControllerTest {
     private ActivityController sut;
 
     @BeforeEach
-    public
-    void setup() {
+    public void setup() {
         repo = new TestActivityRepository();
         sut = new ActivityController(repo);
     }
