@@ -35,6 +35,7 @@ public class ActivityController {
         return ResponseEntity.ok(repo.findById(id).get());
     }
 
+
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Activity> add(@RequestBody Activity activity) {
 
