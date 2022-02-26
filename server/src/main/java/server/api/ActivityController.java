@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import commons.Activity;
 import server.database.ActivityRepository;
 
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+
 @RestController
 @RequestMapping("/api/activities")
 public class ActivityController {
@@ -91,7 +93,7 @@ public class ActivityController {
      * @return the response with the id of the deleted activity or empty response if there was no activity with the id
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> removeActivityById(@PathVariable("id") long id) {
+    public ResponseEntity<HttpStatus> removeActivityById(@PathVariable("id") long id) {
         //Get the activity with the id or null if it does not exist
         if(invalidId(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -102,7 +104,7 @@ public class ActivityController {
             long activityId = activity.id;
             repo.delete(activity);
 
-            return ResponseEntity.ok("Activity removed!");
+            return ResponseEntity.ok(NO_CONTENT);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }

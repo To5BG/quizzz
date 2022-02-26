@@ -32,15 +32,14 @@ public class ActivityControllerTest {
     @Test
     public void getAllActivitiesTest() {
         sut.addActivity(getActivity("a1"));
-        var actual = ResponseEntity.ok(repo.findAll());
+        var actual = ResponseEntity.ok(sut.getAllActivities());
         assertTrue(List.of(getActivity("a1")).equals(actual.getBody()));
     }
     @Test
     public void getOneActivity() {
         Activity activity = getActivity("a1");
         sut.addActivity(activity);
-        var actual = ResponseEntity.ok(repo.getById(0L));
-        assertEquals(activity, actual.getBody());
+        assertEquals(sut.getActivityById(0L).getBody(), activity);
     }
     @Test
     public void getInvalidActivity() {
@@ -54,16 +53,32 @@ public class ActivityControllerTest {
         Activity activity = getActivity("a1");
         Activity other = getActivity("a2");
         sut.addActivity(activity);
-        var actual = ResponseEntity.ok(repo.update(0L, other));
+        var actual = ResponseEntity.ok(sut.updateActivityById(0L, other)).getBody();
         assertEquals(other, actual.getBody());
+    }
+    @Test
+    public void updateInvalidIdActivityTest() {
+        Activity activity = getActivity("a1");
+        Activity other = getActivity("a2");
+        sut.addActivity(activity);
+        var actual = ResponseEntity.ok(sut.updateActivityById(42L, other)).getBody();
+        assertEquals(BAD_REQUEST, actual.getStatusCode());
+    }
+    @Test
+    public void updateInvalidUpdateActivityTest() {
+        Activity activity = getActivity("a1");
+        Activity other = getActivity("");
+        sut.addActivity(activity);
+        var actual = ResponseEntity.ok(sut.updateActivityById(0L, other)).getBody();
+        assertEquals(BAD_REQUEST, actual.getStatusCode());
     }
 
     @Test
     public void deleteActivityTest(){
         Activity activity = getActivity("a1");
         sut.addActivity(activity);
-        var actual = ResponseEntity.ok(repo.deleteByIdHelper(0L));
-        assertEquals("Activity removed!", actual.getBody());
+        var actual = ResponseEntity.ok(sut.removeActivityById(0L)).getBody();
+        assertEquals(NO_CONTENT, actual.getBody());
     }
     @Test
     public void deleteInvalidActivityTest(){
