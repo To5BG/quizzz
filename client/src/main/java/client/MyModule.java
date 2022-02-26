@@ -19,16 +19,16 @@ import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
 
-import client.scenes.AddQuoteCtrl;
+import client.scenes.MultiplayerCtrl;
 import client.scenes.MainCtrl;
-import client.scenes.QuoteOverviewCtrl;
+import client.scenes.SplashCtrl;
 
 public class MyModule implements Module {
 
     @Override
     public void configure(Binder binder) {
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
-        binder.bind(AddQuoteCtrl.class).in(Scopes.SINGLETON);
-        binder.bind(QuoteOverviewCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(MultiplayerCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(SplashCtrl.class).in(Scopes.SINGLETON);
     }
 }

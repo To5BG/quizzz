@@ -20,38 +20,87 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MainCtrl {
 
     private Stage primaryStage;
 
-    private QuoteOverviewCtrl overviewCtrl;
-    private Scene overview;
+    private SplashCtrl splashCtrl;
+    private Scene splashScreen;
 
-    private AddQuoteCtrl addCtrl;
-    private Scene add;
+    private MultiplayerCtrl multiplayerCtrl;
+    private Scene multiPlayerScreen;
 
-    public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add) {
+    /**
+     * Starter method for the main controller to establish connections between scenes and store their controllers
+     *
+     * @param primaryStage store base stage of the application
+     * @param splash       Controller and Scene pair for the splash screen of the application
+     * @param multi        Controller and Scene pair for the multiplayer screen of the application
+     */
+    public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
+                           Pair<MultiplayerCtrl, Parent> multi) {
         this.primaryStage = primaryStage;
-        this.overviewCtrl = overview.getKey();
-        this.overview = new Scene(overview.getValue());
 
-        this.addCtrl = add.getKey();
-        this.add = new Scene(add.getValue());
+        this.splashCtrl = splash.getKey();
+        this.splashScreen = new Scene(splash.getValue());
 
-        showOverview();
+        this.multiplayerCtrl = multi.getKey();
+        this.multiPlayerScreen = new Scene(multi.getValue());
+
+        showSplash();
         primaryStage.show();
     }
 
-    public void showOverview() {
-        primaryStage.setTitle("Quotes: Overview");
-        primaryStage.setScene(overview);
-        overviewCtrl.refresh();
+    /**
+     * Sets the current screen to the splash screen.
+     */
+    public void showSplash() {
+        primaryStage.setTitle("Main menu");
+        primaryStage.setScene(splashScreen);
     }
 
-    public void showAdd() {
-        primaryStage.setTitle("Quotes: Adding Quote");
-        primaryStage.setScene(add);
-        add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
+    /**
+     * Sets the current screen to the multiplayer screen and adds the player to the game session DB. Contains a
+     * scheduled task to refresh the multiplayer player board.
+     * @param sessionId Id of session to be joined
+     * @param playerId Id of player that is about to join
+     */
+    public void enterMultiplayerGame(long sessionId, long playerId) {
+        primaryStage.setTitle("Multiplayer game");
+        primaryStage.setScene(multiPlayerScreen);
+        multiPlayerScreen.setOnKeyPressed(e -> multiplayerCtrl.keyPressed(e));
+        multiplayerCtrl.setSessionId(sessionId);
+        multiplayerCtrl.setPlayerId(playerId);
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    multiplayerCtrl.refresh();
+                } catch (Exception e) {
+                    cancel();
+                }
+            }
+
+            @Override
+            public boolean cancel() {
+                return super.cancel();
+            }
+        }, 0, 1000);
+    }
+
+    /**
+     * Sets the current screen to the singleplayer screen.
+     */
+    public void showSingleplayer() {
+    }
+
+    /**
+     * Sets the current room to the leaderboard screen.
+     */
+    public void showLeaderboard() {
     }
 }
