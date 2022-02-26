@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import commons.Activity;
 import server.database.ActivityRepository;
 
-import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/api/activities")
@@ -104,7 +103,7 @@ public class ActivityController {
             long activityId = activity.id;
             repo.delete(activity);
 
-            return ResponseEntity.ok(NO_CONTENT);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }

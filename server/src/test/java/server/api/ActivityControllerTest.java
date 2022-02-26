@@ -78,7 +78,7 @@ public class ActivityControllerTest {
         Activity activity = getActivity("a1");
         sut.addActivity(activity);
         var actual = ResponseEntity.ok(sut.removeActivityById(0L)).getBody();
-        assertEquals(NO_CONTENT, actual.getBody());
+        assertEquals(NO_CONTENT, actual.getStatusCode());
     }
     @Test
     public void deleteInvalidActivityTest(){

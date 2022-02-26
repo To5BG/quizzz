@@ -119,7 +119,13 @@ public class TestActivityRepository implements ActivityRepository {
     @Override
     public <S extends Activity> S save(S entity) {
         call("save");
-        activities.add(entity);
+        int pos = findPos(entity.id);
+        if(pos == -1) {
+            entity.id = (long) activities.size();
+            activities.add(entity);
+        } else {
+            activities.set(pos, entity);
+        }
         return entity;
     }
 
@@ -148,7 +154,12 @@ public class TestActivityRepository implements ActivityRepository {
     @Override
     public void deleteById(Long id) {
         call("deleteById");
-        activities.remove(id);
+
+        int position = findPos(id);
+        if(position != -1){
+            activities.remove(position);
+        }
+
     }
 
     @Override
@@ -206,4 +217,15 @@ public class TestActivityRepository implements ActivityRepository {
         return null;
     }
 
+    public  <S extends Activity> int findPos(long id) {
+        int position = -1;
+        if (existsById(id)) {
+            for (Activity a : activities) {
+                if (a.id == id) {
+                    return position = activities.indexOf(a);
+                }
+            }
+        }
+        return -1;
+    }
 }
