@@ -48,6 +48,7 @@ public class MultiplayerCtrl implements Initializable {
     public MultiplayerCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
+        // Set to defaults
         this.sessionId = 0L;
         this.playerId = 0L;
     }
@@ -57,13 +58,22 @@ public class MultiplayerCtrl implements Initializable {
         userName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
     }
 
+    /**
+     * Reverts the player to the splash screen and remove his from the current game session.
+     */
     public void back() {
         server.removePlayer(sessionId, playerId);
-        //var session = server.getSession(sessionId);
-        //if (session.players.isEmpty()) server.removeSession(sessionId);
+        var session = server.getSession(sessionId);
+        if (session.players.size() == 0) server.removeSession(sessionId);
+        sessionId = playerId = 0;
         mainCtrl.showSplash();
     }
 
+    /**
+     * Switch method that maps keyboard key presses to functions.
+     *
+     * @param e KeyEvent to be switched
+     */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
             case ESCAPE:
@@ -72,16 +82,29 @@ public class MultiplayerCtrl implements Initializable {
         }
     }
 
+    /**
+     * Refreshes the multiplayer player board for the current session.
+     */
     public void refresh() {
         var players = server.getPlayers(sessionId);
         data = FXCollections.observableList(players);
         currentPlayers.setItems(data);
     }
 
+    /**
+     * Setter for sessionId.
+     *
+     * @param sessionId
+     */
     public void setSessionId(long sessionId) {
         this.sessionId = sessionId;
     }
 
+    /**
+     * Setter for playerId.
+     *
+     * @param playerId
+     */
     public void setPlayerId(long playerId) {
         this.playerId = playerId;
     }

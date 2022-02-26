@@ -19,6 +19,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -32,6 +33,13 @@ public class MainCtrl {
     private MultiplayerCtrl multiplayerCtrl;
     private Scene multiPlayerScreen;
 
+    /**
+     * Starter method for the main controller to establish connections between scenes and store their controllers
+     *
+     * @param primaryStage store base stage of the application
+     * @param splash       Controller and Scene pair for the splash screen of the application
+     * @param multi        Controller and Scene pair for the multiplayer screen of the application
+     */
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
                            Pair<MultiplayerCtrl, Parent> multi) {
         this.primaryStage = primaryStage;
@@ -46,11 +54,20 @@ public class MainCtrl {
         primaryStage.show();
     }
 
+    /**
+     * Sets the current screen to the splash screen.
+     */
     public void showSplash() {
         primaryStage.setTitle("Main menu");
         primaryStage.setScene(splashScreen);
     }
 
+    /**
+     * Sets the current screen to the multiplayer screen and adds the player to the game session DB. Contains a
+     * scheduled task to refresh the multiplayer player board.
+     * @param sessionId Id of session to be joined
+     * @param playerId Id of player that is about to join
+     */
     public void enterMultiplayerGame(Long sessionId, long playerId) {
         primaryStage.setTitle("Multiplayer game");
         primaryStage.setScene(multiPlayerScreen);
@@ -75,9 +92,15 @@ public class MainCtrl {
         }, 0, 1000);
     }
 
+    /**
+     * Sets the current screen to the singleplayer screen.
+     */
     public void showSingleplayer() {
     }
 
+    /**
+     * Sets the current room to the leaderboard screen.
+     */
     public void showLeaderboard() {
     }
 }

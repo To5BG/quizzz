@@ -43,6 +43,12 @@ public class ServerUtils {
     }
     */
 
+    /**
+     * Retrieve all players from a session in the DB.
+     *
+     * @param sessionId the id of the session
+     * @return List of all players from a session
+     */
     public List<Player> getPlayers(Long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + sessionId + "/players")
@@ -52,6 +58,13 @@ public class ServerUtils {
                 });
     }
 
+    /**
+     * Adds a player to a game session.
+     *
+     * @param sessionId id of the session to add the player to
+     * @param player    Player object to be added
+     * @return The player that has been added
+     */
     public Player addPlayer(long sessionId, Player player) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + sessionId + "/players")
@@ -60,6 +73,13 @@ public class ServerUtils {
                 .post(Entity.entity(player, APPLICATION_JSON), Player.class);
     }
 
+    /**
+     * Removes a player from a game session.
+     *
+     * @param sessionId id of the session to remove the player from
+     * @param playerId  id of player to be removed
+     * @return The player that has been removed
+     */
     public Player removePlayer(long sessionId, long playerId) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
@@ -68,6 +88,12 @@ public class ServerUtils {
                 .delete(Player.class);
     }
 
+    /**
+     * Retrieves a game session from the DB.
+     *
+     * @param sessionId id of the session to retrieve
+     * @return Game session with the given id
+     */
     public GameSession getSession(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + sessionId)
@@ -77,6 +103,11 @@ public class ServerUtils {
                 });
     }
 
+    /**
+     * Retrieves all game sessions from the DB that are still active.
+     *
+     * @return All active game sessions
+     */
     public List<GameSession> getSessions() {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions")
@@ -86,6 +117,12 @@ public class ServerUtils {
                 });
     }
 
+    /**
+     * Adds a session to the DB.
+     *
+     * @param session GameSession object to be added
+     * @return The session that has been added
+     */
     public GameSession addSession(GameSession session) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions")
@@ -94,6 +131,12 @@ public class ServerUtils {
                 .put(Entity.entity(session, APPLICATION_JSON), GameSession.class);
     }
 
+    /**
+     * Removes a session from the DB.
+     *
+     * @param sessionId Id of session to be removed
+     * @return The session that has been removed
+     */
     public GameSession removeSession(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + sessionId)

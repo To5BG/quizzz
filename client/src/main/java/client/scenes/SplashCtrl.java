@@ -15,8 +15,7 @@
  */
 package client.scenes;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.ArrayList;
 
 import com.google.inject.Inject;
 
@@ -24,13 +23,15 @@ import client.utils.ServerUtils;
 import commons.GameSession;
 import commons.Player;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 
-public class SplashCtrl implements Initializable {
+public class SplashCtrl {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
+
+    @FXML
+    private TextField usernameField;
 
     @Inject
     public SplashCtrl(ServerUtils server, MainCtrl mainCtrl) {
@@ -38,22 +39,23 @@ public class SplashCtrl implements Initializable {
         this.mainCtrl = mainCtrl;
     }
 
-    @FXML
-    private TextField usernameField;
-
+    /*
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        /*
         colFirstName.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().person.firstName));
         colLastName.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().person.lastName));
         colQuote.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().quote));
-         */
     }
+    */
 
+    /**
+     * Initialize setup for main controller's showMultiplayer() method. Creates a new session if no free session is
+     * available and adds the player to the session.
+     */
     public void showMultiplayer() {
         var sessions = server.getSessions();
         var sessionToJoin = (sessions.isEmpty())
-                ? server.addSession(new GameSession()) : sessions.get(0);
+                ? server.addSession(new GameSession(new ArrayList<>())) : sessions.get(0);
 
         var newUserName = usernameField.getText();
 
@@ -65,10 +67,16 @@ public class SplashCtrl implements Initializable {
         mainCtrl.enterMultiplayerGame(sessionToJoin.id, playerId);
     }
 
+    /**
+     * Initialize setup for main controller's showSingleplayer() method.
+     */
     public void showSingleplayer() {
         mainCtrl.showSingleplayer();
     }
 
+    /**
+     * Initialize setup for main controller's showLeaderboard() method.
+     */
     public void showLeaderboard() {
         mainCtrl.showLeaderboard();
     }
