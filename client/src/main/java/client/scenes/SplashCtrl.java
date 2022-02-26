@@ -21,51 +21,47 @@ import java.util.ResourceBundle;
 import com.google.inject.Inject;
 
 import client.utils.ServerUtils;
-import commons.Quote;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import commons.GameSession;
+import commons.Player;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 
-public class QuoteOverviewCtrl implements Initializable {
+public class SplashCtrl implements Initializable {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
 
-    private ObservableList<Quote> data;
-
-    @FXML
-    private TableView<Quote> table;
-    @FXML
-    private TableColumn<Quote, String> colFirstName;
-    @FXML
-    private TableColumn<Quote, String> colLastName;
-    @FXML
-    private TableColumn<Quote, String> colQuote;
-
     @Inject
-    public QuoteOverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
+    public SplashCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
 
+    @FXML
+    private TextField usernameField;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        /*
         colFirstName.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().person.firstName));
         colLastName.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().person.lastName));
         colQuote.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().quote));
+         */
     }
 
-    public void addQuote() {
-        mainCtrl.showAdd();
+    public void showMultiplayer() {
+        server.addSession(new GameSession());
+        server.addPlayer(1L, new Player(usernameField.getText()));
+        mainCtrl.enterGame();
     }
 
-    public void refresh() {
-        var quotes = server.getQuotes();
-        data = FXCollections.observableList(quotes);
-        table.setItems(data);
+    public void showSingleplayer() {
+        mainCtrl.showSingleplayer();
     }
+
+    public void showLeaderboard() {
+        mainCtrl.showLeaderboard();
+    }
+
 }
