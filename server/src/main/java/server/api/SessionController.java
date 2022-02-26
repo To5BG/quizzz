@@ -83,13 +83,13 @@ public class SessionController {
      * @return ResponseEntity that contains the removed session
      */
     @DeleteMapping({"/{id}"})
-    public ResponseEntity<Long> removeSession(@PathVariable("id") long id) {
+    public ResponseEntity<GameSession> removeSession(@PathVariable("id") long id) {
 
         GameSession session = repo.findById(id).orElse(null);
         if (session != null) {
             long sessionId = session.id;
             repo.delete(session);
-            return ResponseEntity.ok(sessionId);
+            return ResponseEntity.ok(session);
         }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

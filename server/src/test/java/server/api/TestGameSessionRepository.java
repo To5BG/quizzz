@@ -142,8 +142,7 @@ public class TestGameSessionRepository implements SessionRepository {
 
     @Override
     public Optional<GameSession> findById(Long id) {
-        // TODO Auto-generated method stub
-        return null;
+        return find(id);
     }
 
     @Override
@@ -165,8 +164,7 @@ public class TestGameSessionRepository implements SessionRepository {
 
     @Override
     public void delete(GameSession entity) {
-        // TODO Auto-generated method stub
-
+        //TODO delete from repo
     }
 
     @Override
