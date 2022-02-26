@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.SessionRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -15,8 +16,10 @@ import java.util.Random;
 public class SessionController {
 
     private final SessionRepository repo;
+    private final Random random;
 
     public SessionController(Random random, SessionRepository repo) {
+        this.random = random;
         this.repo = repo;
     }
 
@@ -28,6 +31,32 @@ public class SessionController {
     @GetMapping(path = {"", "/"})
     public List<GameSession> getAllSessions() {
         return repo.findAll();
+    }
+
+    /**
+     * Retrieves an available game session from the DB.
+     *
+     * @return Randomly-chosen availabe game session
+     */
+    @GetMapping({"/join"})
+    public ResponseEntity<GameSession> getAvailableSession() {
+        var sessions = repo.findAll();
+        var sessionToJoin = (sessions.isEmpty())
+                ? addSession(new GameSession(new ArrayList<>())).getBody() : sessions.get(0);
+        return ResponseEntity.ok(sessionToJoin);
+    }
+
+    /**
+     * Retrieves a session by the given id
+     *
+     * @param id id of session
+     * @return ResponseEntity that contains the retrieved session
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<GameSession> getSessionById(@PathVariable("id") long id) {
+
+        if (isInvalid(id)) return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(repo.findById(id).get());
     }
 
     /**
@@ -55,6 +84,7 @@ public class SessionController {
      */
     @DeleteMapping({"/{id}"})
     public ResponseEntity<Long> removeSession(@PathVariable("id") long id) {
+
         GameSession session = repo.findById(id).orElse(null);
         if (session != null) {
             long sessionId = session.id;
@@ -65,18 +95,6 @@ public class SessionController {
     }
 
     /**
-     * Retrieves a session by the given id
-     *
-     * @param id id of session
-     * @return ResponseEntity that contains the retrieved session
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<GameSession> getSessionById(@PathVariable("id") long id) {
-        if (isInvalid(id)) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(repo.findById(id).get());
-    }
-
-    /**
      * Retrieves all players from a game session
      *
      * @param id id of session
@@ -84,6 +102,7 @@ public class SessionController {
      */
     @GetMapping("/{id}/players")
     public ResponseEntity<List<Player>> getPlayers(@PathVariable("id") long id) {
+
         if (isInvalid(id)) return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(repo.findById(id).get().players);
     }
@@ -97,10 +116,9 @@ public class SessionController {
      */
     @PostMapping("/{id}/players")
     public ResponseEntity<Player> addPlayer(@PathVariable("id") long id, @RequestBody Player player) {
-        if (isInvalid(id)) return ResponseEntity.badRequest().build();
 
-        GameSession session = repo.findById(id).orElse(null);
-        if (session == null) return ResponseEntity.badRequest().build();
+        if (isInvalid(id)) return ResponseEntity.badRequest().build();
+        GameSession session = repo.findById(id).get();
 
         session.addPlayer(player);
         repo.save(session);
@@ -119,8 +137,8 @@ public class SessionController {
                                                @PathVariable("playerId") long playerId) {
 
         if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
-        GameSession session = repo.findById(sessionId).orElse(null);
-        if (session == null) return ResponseEntity.badRequest().build();
+        GameSession session = repo.findById(sessionId).get();
+
         Player player = session.players.stream().filter(p -> p.id == playerId).findFirst().orElse(null);
         if (player == null) return ResponseEntity.badRequest().build();
 

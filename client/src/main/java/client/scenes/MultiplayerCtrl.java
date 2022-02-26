@@ -59,13 +59,13 @@ public class MultiplayerCtrl implements Initializable {
     }
 
     /**
-     * Reverts the player to the splash screen and remove his from the current game session.
+     * Reverts the player to the splash screen and remove him from the current game session.
      */
     public void back() {
         server.removePlayer(sessionId, playerId);
         var session = server.getSession(sessionId);
         if (session.players.size() == 0) server.removeSession(sessionId);
-        sessionId = playerId = 0;
+        sessionId = playerId = 0L;
         mainCtrl.showSplash();
     }
 

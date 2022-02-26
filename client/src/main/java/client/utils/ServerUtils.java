@@ -105,6 +105,20 @@ public class ServerUtils {
     }
 
     /**
+     * Retrieves an available game session from the DB.
+     *
+     * @return Randomly-chosen available game session
+     */
+    public GameSession getAvailableSession() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/join")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<GameSession>() {
+                });
+    }
+
+    /**
      * Retrieves all game sessions from the DB that are still active.
      *
      * @return All active game sessions

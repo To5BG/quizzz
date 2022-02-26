@@ -15,10 +15,7 @@
  */
 package client.scenes;
 
-import java.util.ArrayList;
-
 import com.google.inject.Inject;
-
 import client.utils.ServerUtils;
 import commons.GameSession;
 import commons.Player;
@@ -53,11 +50,8 @@ public class SplashCtrl {
      * available and adds the player to the session.
      */
     public void showMultiplayer() {
-        var sessions = server.getSessions();
-        var sessionToJoin = (sessions.isEmpty())
-                ? server.addSession(new GameSession(new ArrayList<>())) : sessions.get(0);
-
-        var newUserName = usernameField.getText();
+        GameSession sessionToJoin = server.getAvailableSession();
+        String newUserName = usernameField.getText();
 
         server.addPlayer(sessionToJoin.id, new Player(newUserName));
         var playerId = server
