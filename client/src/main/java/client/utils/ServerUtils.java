@@ -21,6 +21,7 @@ import java.util.List;
 
 import commons.GameSession;
 import commons.Player;
+import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -78,14 +79,14 @@ public class ServerUtils {
      *
      * @param sessionId id of the session to remove the player from
      * @param playerId  id of player to be removed
-     * @return The player that has been removed
+     * @return The response from player removal
      */
-    public Player removePlayer(long sessionId, long playerId) {
+    public Response removePlayer(long sessionId, long playerId) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .delete(Player.class);
+                .delete();
     }
 
     /**
@@ -135,13 +136,13 @@ public class ServerUtils {
      * Removes a session from the DB.
      *
      * @param sessionId Id of session to be removed
-     * @return The session that has been removed
+     * @return The response from session removal
      */
-    public GameSession removeSession(long sessionId) {
+    public Response removeSession(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + sessionId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .delete(GameSession.class);
+                .delete();
     }
 }

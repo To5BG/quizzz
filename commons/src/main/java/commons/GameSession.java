@@ -5,7 +5,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
@@ -20,8 +19,9 @@ public class GameSession {
     @OneToMany(cascade = CascadeType.ALL)
     public List<Player> players;
 
-    public GameSession() {
-        this.players = new ArrayList<>();
+    @SuppressWarnings("unused")
+    private GameSession() {
+        // for object mapper
     }
 
     public GameSession(List<Player> players) {

@@ -18,6 +18,7 @@ package server.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpStatus.OK;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import commons.GameSession;
@@ -41,7 +42,7 @@ public class SessionControllerTest {
 
     @Test
     public void cannotAddNullPerson() {
-        var actual = sut.addSession(new GameSession());
+        var actual = sut.addSession(new GameSession(new ArrayList<>()));
         assertEquals(OK, actual.getStatusCode());
     }
 
@@ -58,7 +59,7 @@ public class SessionControllerTest {
 
     @Test
     public void databaseIsUsed() {
-        sut.addSession(new GameSession());
+        sut.addSession(new GameSession(new ArrayList<>()));
         repo.calledMethods.contains("save");
     }
 
