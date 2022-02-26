@@ -78,6 +78,11 @@ public class MultiplayerCtrl implements Initializable {
         currentPlayers.setItems(data);
     }
 
-    public void setSessionId(long sessionId) {this.sessionId = sessionId;}
-    public void setPlayerId(long playerId) {this.playerId = playerId;}
+    public void setSessionId(long sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public void setPlayerId(long playerId) {
+        this.playerId = playerId;
+    }
 }

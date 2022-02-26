@@ -19,6 +19,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainCtrl {
 
@@ -55,7 +57,22 @@ public class MainCtrl {
         multiPlayerScreen.setOnKeyPressed(e -> multiplayerCtrl.keyPressed(e));
         multiplayerCtrl.setSessionId(sessionId);
         multiplayerCtrl.setPlayerId(playerId);
-        multiplayerCtrl.refresh();
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    multiplayerCtrl.refresh();
+                } catch (Exception e) {
+                    cancel();
+                }
+            }
+
+            @Override
+            public boolean cancel() {
+                return super.cancel();
+            }
+        }, 0, 1000);
     }
 
     public void showSingleplayer() {
