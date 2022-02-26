@@ -36,7 +36,7 @@ public class SessionController {
     /**
      * Retrieves an available game session from the DB.
      *
-     * @return Randomly-chosen availabe game session
+     * @return Available game session
      */
     @GetMapping({"/join"})
     public ResponseEntity<GameSession> getAvailableSession() {

@@ -68,7 +68,7 @@ public class MainCtrl {
      * @param sessionId Id of session to be joined
      * @param playerId Id of player that is about to join
      */
-    public void enterMultiplayerGame(Long sessionId, long playerId) {
+    public void enterMultiplayerGame(long sessionId, long playerId) {
         primaryStage.setTitle("Multiplayer game");
         primaryStage.setScene(multiPlayerScreen);
         multiPlayerScreen.setOnKeyPressed(e -> multiplayerCtrl.keyPressed(e));

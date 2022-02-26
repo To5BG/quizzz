@@ -107,7 +107,7 @@ public class ServerUtils {
     /**
      * Retrieves an available game session from the DB.
      *
-     * @return Randomly-chosen available game session
+     * @return Available game session
      */
     public GameSession getAvailableSession() {
         return ClientBuilder.newClient(new ClientConfig())

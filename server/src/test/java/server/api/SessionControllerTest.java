@@ -100,7 +100,7 @@ public class SessionControllerTest {
     @Test
     public void addSessionTest() {
         var savedSession = sut.addSession(new GameSession(new ArrayList<>())).getBody();
-        repo.calledMethods.contains("save");
+        assertTrue(repo.calledMethods.contains("save"));
         assertEquals(savedSession, repo.findAll().get(0));
     }
 
