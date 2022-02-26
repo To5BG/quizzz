@@ -6,8 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.*;
 
 public class ActivityControllerTest {
 
@@ -28,10 +30,46 @@ public class ActivityControllerTest {
     }
 
     @Test
-    public void getOneActivity() {
+    public void getAllActivitiesTest() {
         sut.addActivity(getActivity("a1"));
-        var actual = ResponseEntity.ok(repo.getById((long) 0));
-        assertEquals("a1", actual.getBody().title);
+        var actual = ResponseEntity.ok(repo.findAll());
+        assertTrue(List.of(getActivity("a1")).equals(actual.getBody()));
+    }
+    @Test
+    public void getOneActivity() {
+        Activity activity = getActivity("a1");
+        sut.addActivity(activity);
+        var actual = ResponseEntity.ok(repo.getById(0L));
+        assertEquals(activity, actual.getBody());
+    }
+    @Test
+    public void getInvalidActivity() {
+        //sut.addActivity(getActivity("a1"));
+        var actual = sut.getActivityById(0L);
+        assertEquals(actual.getStatusCode(), BAD_REQUEST);
+    }
+
+    @Test
+    public void updateActivityTest() {
+        Activity activity = getActivity("a1");
+        Activity other = getActivity("a2");
+        sut.addActivity(activity);
+        var actual = ResponseEntity.ok(repo.update(0L, other));
+        assertEquals(other, actual.getBody());
+    }
+
+    @Test
+    public void deleteActivityTest(){
+        Activity activity = getActivity("a1");
+        sut.addActivity(activity);
+        var actual = ResponseEntity.ok(repo.deleteByIdHelper(0L));
+        assertEquals("Activity removed!", actual.getBody());
+    }
+    @Test
+    public void deleteInvalidActivityTest(){
+        sut.addActivity(getActivity("a1"));
+        var actual = sut.removeActivityById(2L);
+        assertEquals(actual.getStatusCode(), NOT_FOUND);
     }
 
     @Test

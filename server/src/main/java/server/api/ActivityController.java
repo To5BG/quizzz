@@ -91,17 +91,20 @@ public class ActivityController {
      * @return the response with the id of the deleted activity or empty response if there was no activity with the id
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Long> removeActivityById(@PathVariable("id") long id) {
+    public ResponseEntity<String> removeActivityById(@PathVariable("id") long id) {
         //Get the activity with the id or null if it does not exist
-        Activity activity = repo.findById(id).orElse(null);
+        if(invalidId(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        Activity activity = repo.findById(id).get();
         if (activity != null) {
             //Get the id and delete the activity
             long activityId = activity.id;
             repo.delete(activity);
 
-            return ResponseEntity.ok(activityId);
+            return ResponseEntity.ok("Activity removed!");
         }
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     /**

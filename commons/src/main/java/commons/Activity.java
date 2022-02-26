@@ -34,7 +34,7 @@ public class Activity {
      * @param title - String representing the name of the activity
      * @param consumption - String representing the consumption in Wh of the activity
      * @param imagePath - String representing the path to the image of the activity
-     * @param source  - String representing the source of the activity from which it was taken
+     * @param source  - String representing the source URL where the consumption information was taken from
      */
     public Activity(String title, String consumption,String imagePath, String source) {
         this.title = title;
@@ -64,7 +64,7 @@ public class Activity {
 
     /**
      * ToString method
-     * @return String comtaining the activity in a readable format
+     * @return String containing the activity in a readable format
      */
     @Override
     public String toString() {

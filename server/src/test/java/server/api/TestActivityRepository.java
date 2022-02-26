@@ -124,6 +124,14 @@ public class TestActivityRepository implements ActivityRepository {
         return entity;
     }
 
+    public <S extends Activity> S update(Long id, S entity) {
+        if(existsById(id)) {
+            activities.set(Math.toIntExact(id),entity);
+            return (S) getById(id);
+        }
+        return null;
+    }
+
     @Override
     public Optional<Activity> findById(Long id) {
         // TODO Auto-generated method stub
@@ -141,10 +149,15 @@ public class TestActivityRepository implements ActivityRepository {
         return activities.size();
     }
 
+
+    public String deleteByIdHelper(Long id) {
+        deleteById(id);
+        return "Activity removed!";
+    }
     @Override
     public void deleteById(Long id) {
-        // TODO Auto-generated method stub
-
+        call("deleteById");
+        activities.remove(id);
     }
 
     @Override
