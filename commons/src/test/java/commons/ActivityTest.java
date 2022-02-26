@@ -35,13 +35,11 @@ class ActivityTest {
         var actual = new Activity("t", "1", "root", "google.com").toString();
         assertTrue(actual.contains(Activity.class.getSimpleName()));
 
-        assertTrue(actual.contains("[\r\n" +
-                "  consumption=1\r\n" +
-                "  id=0\r\n" +
-                "  imagePath=root\r\n" +
-                "  source=google.com\r\n" +
-                "  title=t\r\n" +
-                "]"));
+        assertTrue(actual.contains("consumption=1"));
+        assertTrue(actual.contains("id=0"));
+        assertTrue(actual.contains("imagePath=root"));
+        assertTrue(actual.contains("source=google.com"));
+        assertTrue(actual.contains("title=t"));
     }
 
 
