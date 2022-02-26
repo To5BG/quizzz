@@ -16,21 +16,26 @@
 package client.scenes;
 
 import com.google.inject.Inject;
-
 import client.utils.ServerUtils;
 import commons.Player;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyEvent;
-import java.util.ArrayList;
 
-public class MultiplayerCtrl {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class MultiplayerCtrl implements Initializable {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
+    private long sessionId;
+    private long playerId;
 
     private ObservableList<Player> data;
 
@@ -43,9 +48,19 @@ public class MultiplayerCtrl {
     public MultiplayerCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
+        this.sessionId = 0L;
+        this.playerId = 0L;
+    }
+
+    @Override
+    public void initialize(URL loc, ResourceBundle res) {
+        userName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
     }
 
     public void back() {
+        server.removePlayer(sessionId, playerId);
+        //var session = server.getSession(sessionId);
+        //if (session.players.isEmpty()) server.removeSession(sessionId);
         mainCtrl.showSplash();
     }
 
@@ -58,8 +73,11 @@ public class MultiplayerCtrl {
     }
 
     public void refresh() {
-        var players = server.getPlayers(1L);
-        data = FXCollections.observableList(new ArrayList<>(players));
+        var players = server.getPlayers(sessionId);
+        data = FXCollections.observableList(players);
         currentPlayers.setItems(data);
     }
+
+    public void setSessionId(long sessionId) {this.sessionId = sessionId;}
+    public void setPlayerId(long playerId) {this.playerId = playerId;}
 }

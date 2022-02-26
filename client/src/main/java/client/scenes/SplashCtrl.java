@@ -51,9 +51,18 @@ public class SplashCtrl implements Initializable {
     }
 
     public void showMultiplayer() {
-        server.addSession(new GameSession());
-        server.addPlayer(1L, new Player(usernameField.getText()));
-        mainCtrl.enterGame();
+        var sessions = server.getSessions();
+        var sessionToJoin = (sessions.isEmpty())
+                ? server.addSession(new GameSession()) : sessions.get(0);
+
+        var newUserName = usernameField.getText();
+
+        server.addPlayer(sessionToJoin.id, new Player(newUserName));
+        var playerId = server
+                .getPlayers(sessionToJoin.id)
+                .stream().filter(p -> p.username.equals(newUserName))
+                .findFirst().get().id;
+        mainCtrl.enterMultiplayerGame(sessionToJoin.id, playerId);
     }
 
     public void showSingleplayer() {

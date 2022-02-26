@@ -49,10 +49,12 @@ public class MainCtrl {
         primaryStage.setScene(splashScreen);
     }
 
-    public void enterGame() {
+    public void enterMultiplayerGame(Long sessionId, long playerId) {
         primaryStage.setTitle("Multiplayer game");
         primaryStage.setScene(multiPlayerScreen);
         multiPlayerScreen.setOnKeyPressed(e -> multiplayerCtrl.keyPressed(e));
+        multiplayerCtrl.setSessionId(sessionId);
+        multiplayerCtrl.setPlayerId(playerId);
         multiplayerCtrl.refresh();
     }
 

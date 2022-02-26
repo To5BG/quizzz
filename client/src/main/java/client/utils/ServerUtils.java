@@ -54,10 +54,36 @@ public class ServerUtils {
 
     public Player addPlayer(long sessionId, Player player) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions" + sessionId + "/players")
+                .target(SERVER).path("api/sessions/" + sessionId + "/players")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(player, APPLICATION_JSON), Player.class);
+    }
+
+    public Player removePlayer(long sessionId, long playerId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(Player.class);
+    }
+
+    public GameSession getSession(long sessionId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<GameSession>() {
+                });
+    }
+
+    public List<GameSession> getSessions() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<GameSession>>() {
+                });
     }
 
     public GameSession addSession(GameSession session) {
@@ -66,5 +92,13 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .put(Entity.entity(session, APPLICATION_JSON), GameSession.class);
+    }
+
+    public GameSession removeSession(long sessionId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(GameSession.class);
     }
 }
