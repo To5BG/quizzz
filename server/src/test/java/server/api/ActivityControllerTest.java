@@ -23,20 +23,20 @@ public class ActivityControllerTest {
 
     @Test
     public void cannotAddNullActivity() {
-        var actual = sut.add(getActivity(null));
+        var actual = sut.addActivity(getActivity(null));
         assertEquals(BAD_REQUEST, actual.getStatusCode());
     }
 
     @Test
     public void getOneActivity() {
-        sut.add(getActivity("a1"));
+        sut.addActivity(getActivity("a1"));
         var actual = ResponseEntity.ok(repo.getById((long) 0));
         assertEquals("a1", actual.getBody().title);
     }
 
     @Test
     public void databaseIsUsed() {
-        sut.add(getActivity("a1"));
+        sut.addActivity(getActivity("a1"));
         repo.calledMethods.contains("save");
     }
 
