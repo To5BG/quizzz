@@ -16,57 +16,50 @@
 package server.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
 
 import java.util.Random;
 
+import commons.GameSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import commons.Person;
-import commons.Quote;
-
-public class QuoteControllerTest {
+public class SessionControllerTest {
 
     public int nextInt;
     private MyRandom random;
-    private TestQuoteRepository repo;
+    private TestGameSessionRepository repo;
 
-    private QuoteController sut;
+    private SessionController sut;
 
     @BeforeEach
     public void setup() {
         random = new MyRandom();
-        repo = new TestQuoteRepository();
-        sut = new QuoteController(random, repo);
+        repo = new TestGameSessionRepository();
+        sut = new SessionController(random, repo);
     }
 
     @Test
     public void cannotAddNullPerson() {
-        var actual = sut.add(getQuote(null));
-        assertEquals(BAD_REQUEST, actual.getStatusCode());
+        var actual = sut.addSession(new GameSession());
+        assertEquals(OK, actual.getStatusCode());
     }
 
+    /*
     @Test
     public void randomSelection() {
-        sut.add(getQuote("q1"));
-        sut.add(getQuote("q2"));
+        sut.addSession(new GameSession());
+        sut.addSession(new GameSession());
         nextInt = 1;
-        var actual = sut.getRandom();
 
         assertTrue(random.wasCalled);
-        assertEquals("q2", actual.getBody().quote);
     }
+    */
 
     @Test
     public void databaseIsUsed() {
-        sut.add(getQuote("q1"));
+        sut.addSession(new GameSession());
         repo.calledMethods.contains("save");
-    }
-
-    private static Quote getQuote(String q) {
-        return new Quote(new Person(q, q), q);
     }
 
     @SuppressWarnings("serial")

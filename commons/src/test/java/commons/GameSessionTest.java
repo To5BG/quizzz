@@ -21,38 +21,40 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-public class QuoteTest {
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-	private static final Person SOME_PERSON = new Person("a", "b");
+public class GameSessionTest {
+
+	private static final Player SOME_PLAYER = new Player("test");
 
 	@Test
 	public void checkConstructor() {
-		var q = new Quote(SOME_PERSON, "q");
-		assertEquals(SOME_PERSON, q.person);
-		assertEquals("q", q.quote);
+		var s = new GameSession(Stream.of(SOME_PLAYER).collect(Collectors.toList()));
+		assertEquals(SOME_PLAYER, s.players.get(0));
 	}
 
 	@Test
 	public void equalsHashCode() {
-		var a = new Quote(new Person("a", "b"), "c");
-		var b = new Quote(new Person("a", "b"), "c");
+		var a = new GameSession(Stream.of(new Player("blah")).collect(Collectors.toList()));
+		var b = new GameSession(Stream.of(new Player("blah")).collect(Collectors.toList()));
 		assertEquals(a, b);
 		assertEquals(a.hashCode(), b.hashCode());
 	}
 
 	@Test
 	public void notEqualsHashCode() {
-		var a = new Quote(new Person("a", "b"), "c");
-		var b = new Quote(new Person("a", "b"), "d");
+		var a = new GameSession(Stream.of(new Player("blah")).collect(Collectors.toList()));
+		var b = new GameSession(Stream.of(new Player("blahh")).collect(Collectors.toList()));
 		assertNotEquals(a, b);
 		assertNotEquals(a.hashCode(), b.hashCode());
 	}
 
 	@Test
 	public void hasToString() {
-		var actual = new Quote(new Person("a", "b"), "c").toString();
-		assertTrue(actual.contains(Quote.class.getSimpleName()));
-		assertTrue(actual.contains("\n"));
-		assertTrue(actual.contains("person"));
+		var str = new GameSession(Stream.of(new Player("blah")).collect(Collectors.toList())).toString();
+		assertTrue(str.contains(GameSession.class.getSimpleName()));
+		assertTrue(str.contains("\n"));
+		assertTrue(str.contains("player"));
 	}
 }
