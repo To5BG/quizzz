@@ -161,9 +161,9 @@ public class ServerUtils {
                 .delete();
     }
 
-    public Question fetchOneQuestion() {
+    public Question fetchOneQuestion(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/questions")
+                .target(SERVER).path("api/questions/" + sessionId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<Question>() {

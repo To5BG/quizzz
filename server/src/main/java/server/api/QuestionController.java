@@ -1,27 +1,29 @@
 package server.api;
 
+import commons.GameSession;
 import commons.Question;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import server.database.SessionRepository;
 
 @RestController
 @RequestMapping("api/questions")
 public class QuestionController {
     public int questionCounter = 0;
+    private final SessionController sessions;
 
-    @GetMapping(path = {"", "/"})
-    public ResponseEntity<Question> getOneQuestion() {
-        Question q = new Question(
-            "Question #" + questionCounter++,
-            "N/A",
-            Question.QuestionType.MULTIPLE_CHOICE
-        );
-        for (int i = 0; i < 3; ++i) {
-            q.addAnswerOption(String.format("Option #%d", i));
+    public QuestionController(SessionController sessions) {
+        this.sessions = sessions;
+    }
+
+    @GetMapping(path = "/{sessionId}")
+    public ResponseEntity<Question> getOneQuestion(@PathVariable("sessionId") long sessionId) {
+        ResponseEntity<GameSession> session = sessions.getSessionById(sessionId);
+        if (session.getStatusCode() == HttpStatus.BAD_REQUEST) {
+            return ResponseEntity.badRequest().build();
         }
-        System.out.println(q);
-        return ResponseEntity.ok(q);
+
+        return ResponseEntity.ok(session.getBody().currentQuestion);
     }
 }

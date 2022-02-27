@@ -72,6 +72,7 @@ public class SessionController {
         for (Player p : session.players) {
             if (isNullOrEmpty(p.username)) return ResponseEntity.badRequest().build();
         }
+        session.updateQuestion();
         GameSession saved = repo.save(session);
         return ResponseEntity.ok(saved);
     }

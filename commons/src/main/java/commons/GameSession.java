@@ -19,6 +19,11 @@ public class GameSession {
     @OneToMany(cascade = CascadeType.ALL)
     public List<Player> players;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    public Question currentQuestion;
+
+    public transient int questionCounter = 0;
+
     @SuppressWarnings("unused")
     private GameSession() {
         // for object mapper
@@ -34,6 +39,18 @@ public class GameSession {
 
     public void removePlayer(Player player) {
         players.remove(player);
+    }
+
+    public void updateQuestion() {
+        Question q = new Question(
+                "Question #" + questionCounter++,
+                "N/A",
+                Question.QuestionType.MULTIPLE_CHOICE
+        );
+        for (int i = 0; i < 3; ++i) {
+            q.addAnswerOption(String.format("Option #%d", i));
+        }
+        this.currentQuestion = q;
     }
 
     @Override

@@ -54,6 +54,7 @@ public class GameCtrl {
         switch (q.type) {
             case MULTIPLE_CHOICE:
                 renderMultipleChoice(q);
+                break;
             default:
                 throw new UnsupportedOperationException("Currently only multiple choice questions can be rendered");
         }
@@ -62,7 +63,7 @@ public class GameCtrl {
     public void submitAnswer() {
         /* RadioButton rb = new RadioButton("Answer option #1");
         answerArea.getChildren().add(rb); */
-        Question q = this.api.fetchOneQuestion();
+        Question q = this.api.fetchOneQuestion(this.sessionId);
         renderAnswerFields(q);
     }
 }
