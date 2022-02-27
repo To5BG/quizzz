@@ -1,5 +1,7 @@
 package server.api;
 
+import commons.Answer;
+import commons.Evaluation;
 import commons.GameSession;
 import commons.Question;
 import org.springframework.http.HttpStatus;
@@ -25,5 +27,23 @@ public class QuestionController {
         }
 
         return ResponseEntity.ok(session.getBody().currentQuestion);
+    }
+
+    @PostMapping(path = "/{sessionId}")
+    public ResponseEntity<Evaluation> submitAnswer(@PathVariable("sessionId") long sessionId, @RequestBody Answer answer) {
+        ResponseEntity<GameSession> session = sessions.getSessionById(sessionId);
+        if (session.getStatusCode() == HttpStatus.BAD_REQUEST) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        GameSession s = session.getBody();
+        Evaluation eval = new Evaluation((answer.answers.equals(s.expectedAnswers)) ? 1 : 0,
+                s.currentQuestion.type, s.expectedAnswers);
+
+        s.playerAnswered();
+
+        sessions.updateSession(s);
+
+        return ResponseEntity.ok(eval);
     }
 }

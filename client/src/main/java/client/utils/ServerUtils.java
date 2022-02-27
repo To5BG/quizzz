@@ -19,9 +19,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.util.List;
 
-import commons.GameSession;
-import commons.Player;
-import commons.Question;
+import commons.*;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -168,5 +166,13 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<Question>() {
                 });
+    }
+
+    public Evaluation submitAnswer(long sessionId, Answer answer) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/questions/" + sessionId)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(answer, APPLICATION_JSON), Evaluation.class);
     }
 }

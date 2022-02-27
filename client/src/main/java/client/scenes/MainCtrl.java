@@ -107,6 +107,7 @@ public class MainCtrl {
         primaryStage.setScene(gameScreen);
         gameCtrl.setSessionId(sessionId);
         gameCtrl.setPlayerId(playerId);
+        gameCtrl.loadQuestion();
     }
 
     /**

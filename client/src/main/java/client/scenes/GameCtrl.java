@@ -2,9 +2,13 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Answer;
+import commons.Evaluation;
 import commons.Question;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.StackPane;
 
 import java.util.ArrayList;
@@ -15,12 +19,17 @@ public class GameCtrl {
     @FXML
     private StackPane answerArea;
 
+    @FXML
+    private Label questionPrompt;
+
     private ServerUtils api;
     private MainCtrl main;
 
     private List<RadioButton> multiChoiceAnswers;
     private long sessionId;
     private long playerId;
+    private Question currentQuestion;
+    private int points = 0;
 
     @Inject
     public GameCtrl(ServerUtils api, MainCtrl main) {
@@ -37,7 +46,7 @@ public class GameCtrl {
         this.playerId = playerId;
     }
 
-    private void renderMultipleChoice(Question q) {
+    private void renderMultipleChoiceQuestion(Question q) {
         double yPosition = 0.0;
         multiChoiceAnswers.clear();
         answerArea.getChildren().clear();
@@ -50,20 +59,58 @@ public class GameCtrl {
         }
     }
 
-    public void renderAnswerFields(Question q) {
+    private void renderMultipleChoiceAnswers(List<Integer> correctIndices) {
+        for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
+            if (correctIndices.contains(i)) {
+                multiChoiceAnswers.get(i).setStyle("-fx-background-color: green");
+            }
+        }
+    }
+
+    private void renderGeneralInformation(Question q) {
+        this.questionPrompt.setText(q.prompt);
+    }
+
+    private void renderAnswerFields(Question q) {
         switch (q.type) {
             case MULTIPLE_CHOICE:
-                renderMultipleChoice(q);
+                renderMultipleChoiceQuestion(q);
                 break;
             default:
                 throw new UnsupportedOperationException("Currently only multiple choice questions can be rendered");
         }
     }
 
+    public void loadQuestion() {
+        Question q = this.api.fetchOneQuestion(this.sessionId);
+        this.currentQuestion = q;
+        renderGeneralInformation(q);
+        renderAnswerFields(q);
+    }
+
+    private void renderCorrectAnswer(Evaluation eval) {
+        switch (eval.type) {
+            case MULTIPLE_CHOICE:
+                renderMultipleChoiceAnswers(eval.correctAnswers);
+                break;
+            default:
+                throw new UnsupportedOperationException("Currently only multiple choice answers can be rendered");
+        }
+    }
+
     public void submitAnswer() {
         /* RadioButton rb = new RadioButton("Answer option #1");
         answerArea.getChildren().add(rb); */
-        Question q = this.api.fetchOneQuestion(this.sessionId);
-        renderAnswerFields(q);
+        Answer ans = new Answer(currentQuestion.type);
+        for (int i = 0 ; i < multiChoiceAnswers.size(); ++i) {
+            if (multiChoiceAnswers.get(i).isSelected()) {
+                ans.addAnswer(i);
+            }
+        }
+
+        Evaluation eval = api.submitAnswer(sessionId, ans);
+        points += eval.points;
+        renderCorrectAnswer(eval);
     }
+
 }
