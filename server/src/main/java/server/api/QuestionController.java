@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.SessionRepository;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/questions")
 public class QuestionController {
@@ -38,7 +40,7 @@ public class QuestionController {
 
         GameSession s = session.getBody();
         Evaluation eval = new Evaluation((answer.answers.equals(s.expectedAnswers)) ? 1 : 0,
-                s.currentQuestion.type, s.expectedAnswers);
+                s.currentQuestion.type, List.copyOf(s.expectedAnswers));
 
         s.playerAnswered();
 

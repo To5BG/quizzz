@@ -9,7 +9,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.StackPane;
 
 import java.util.ArrayList;
@@ -26,6 +25,9 @@ public class GameCtrl {
 
     @FXML
     private Label questionPrompt;
+
+    @FXML
+    private Label pointsLabel;
 
     private ServerUtils api;
     private MainCtrl main;
@@ -109,10 +111,15 @@ public class GameCtrl {
         api.removeSession(sessionId);
         this.questionPrompt.setText("[Question]");
         this.answerArea.getChildren().clear();
+        this.pointsLabel.setText("Points: 0");
         this.multiChoiceAnswers.clear();
         this.points = 0;
         this.currentQuestion = null;
         main.showSplash();
+    }
+
+    public void renderPoints() {
+        pointsLabel.setText(String.format("Points: %d", this.points));
     }
 
     public void submitAnswer() {
@@ -127,6 +134,7 @@ public class GameCtrl {
 
         Evaluation eval = api.submitAnswer(sessionId, ans);
         points += eval.points;
+        renderPoints();
         renderCorrectAnswer(eval);
 
         // TODO disable button while waiting
