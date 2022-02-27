@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import commons.Answer;
 import commons.Evaluation;
 import commons.Question;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -13,8 +14,12 @@ import javafx.scene.layout.StackPane;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GameCtrl {
+
+    private final int GAME_ROUNDS = 5;
 
     @FXML
     private StackPane answerArea;
@@ -30,6 +35,7 @@ public class GameCtrl {
     private long playerId;
     private Question currentQuestion;
     private int points = 0;
+    private int rounds = 0;
 
     @Inject
     public GameCtrl(ServerUtils api, MainCtrl main) {
@@ -69,6 +75,7 @@ public class GameCtrl {
 
     private void renderGeneralInformation(Question q) {
         this.questionPrompt.setText(q.prompt);
+        // TODO load image
     }
 
     private void renderAnswerFields(Question q) {
@@ -98,6 +105,16 @@ public class GameCtrl {
         }
     }
 
+    public void gameCleanup() {
+        api.removeSession(sessionId);
+        this.questionPrompt.setText("[Question]");
+        this.answerArea.getChildren().clear();
+        this.multiChoiceAnswers.clear();
+        this.points = 0;
+        this.currentQuestion = null;
+        main.showSplash();
+    }
+
     public void submitAnswer() {
         /* RadioButton rb = new RadioButton("Answer option #1");
         answerArea.getChildren().add(rb); */
@@ -111,6 +128,20 @@ public class GameCtrl {
         Evaluation eval = api.submitAnswer(sessionId, ans);
         points += eval.points;
         renderCorrectAnswer(eval);
-    }
 
+        // TODO disable button while waiting
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    if (++rounds == GAME_ROUNDS) {
+                        // TODO display leaderboard things here
+                        gameCleanup();
+                    } else {
+                        loadQuestion();
+                    }
+                });
+            }
+        }, 5000);
+    }
 }
