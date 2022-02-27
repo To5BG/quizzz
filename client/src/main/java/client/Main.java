@@ -22,9 +22,9 @@ import java.net.URISyntaxException;
 
 import com.google.inject.Injector;
 
-import client.scenes.AddQuoteCtrl;
+import client.scenes.MultiplayerCtrl;
 import client.scenes.MainCtrl;
-import client.scenes.QuoteOverviewCtrl;
+import client.scenes.SplashCtrl;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -40,10 +40,12 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
 
-        var overview = FXML.load(QuoteOverviewCtrl.class, "client", "scenes", "QuoteOverview.fxml");
-        var add = FXML.load(AddQuoteCtrl.class, "client", "scenes", "AddQuote.fxml");
+        var splash = FXML.load
+                (SplashCtrl.class, "client", "scenes", "SplashScreen.fxml");
+        var multiplayer = FXML.load
+                (MultiplayerCtrl.class, "client", "scenes", "MultiplayerSession.fxml");
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, overview, add);
+        mainCtrl.initialize(primaryStage, splash, multiplayer);
     }
 }

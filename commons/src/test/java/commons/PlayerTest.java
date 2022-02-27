@@ -21,36 +21,35 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-public class PersonTest {
+public class PlayerTest {
 
 	@Test
 	public void checkConstructor() {
-		var p = new Person("f", "l");
-		assertEquals("f", p.firstName);
-		assertEquals("l", p.lastName);
+		var p = new Player("test");
+		assertEquals("test", p.username);
 	}
 
 	@Test
 	public void equalsHashCode() {
-		var a = new Person("a", "b");
-		var b = new Person("a", "b");
-		assertEquals(a, b);
-		assertEquals(a.hashCode(), b.hashCode());
+		var p = new Player("test");
+		var p2 = new Player("test");
+		assertEquals(p2, p2);
+		assertEquals(p.hashCode(), p2.hashCode());
 	}
 
 	@Test
 	public void notEqualsHashCode() {
-		var a = new Person("a", "b");
-		var b = new Person("a", "c");
-		assertNotEquals(a, b);
-		assertNotEquals(a.hashCode(), b.hashCode());
+		var p = new Player("test");
+		var p2 = new Player("test2");
+		assertNotEquals(p, p2);
+		assertNotEquals(p.hashCode(), p2.hashCode());
 	}
 
 	@Test
 	public void hasToString() {
-		var actual = new Person("a", "b").toString();
-		assertTrue(actual.contains(Person.class.getSimpleName()));
-		assertTrue(actual.contains("\n"));
-		assertTrue(actual.contains("firstName"));
+		var str = new Player("test").toString();
+		assertTrue(str.contains(Player.class.getSimpleName()));
+		assertTrue(str.contains("\n"));
+		assertTrue(str.contains("username"));
 	}
 }
