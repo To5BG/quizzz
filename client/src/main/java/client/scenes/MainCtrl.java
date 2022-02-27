@@ -33,6 +33,9 @@ public class MainCtrl {
     private MultiplayerCtrl multiplayerCtrl;
     private Scene multiPlayerScreen;
 
+    private GameCtrl gameCtrl;
+    private Scene gameScreen;
+
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
      *
@@ -41,7 +44,8 @@ public class MainCtrl {
      * @param multi        Controller and Scene pair for the multiplayer screen of the application
      */
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
-                           Pair<MultiplayerCtrl, Parent> multi) {
+                           Pair<MultiplayerCtrl, Parent> multi,
+                           Pair<GameCtrl, Parent> game) {
         this.primaryStage = primaryStage;
 
         this.splashCtrl = splash.getKey();
@@ -49,6 +53,9 @@ public class MainCtrl {
 
         this.multiplayerCtrl = multi.getKey();
         this.multiPlayerScreen = new Scene(multi.getValue());
+
+        this.gameCtrl = game.getKey();
+        this.gameScreen = new Scene(game.getValue());
 
         showSplash();
         primaryStage.show();
@@ -93,9 +100,11 @@ public class MainCtrl {
     }
 
     /**
-     * Sets the current screen to the singleplayer screen.
+     * Sets the current screen to the single player screen.
      */
-    public void showSingleplayer() {
+    public void showSinglePlayer() {
+        primaryStage.setTitle("Singe player game");
+        primaryStage.setScene(gameScreen);
     }
 
     /**

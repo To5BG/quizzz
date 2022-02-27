@@ -62,10 +62,10 @@ public class SplashCtrl {
     }
 
     /**
-     * Initialize setup for main controller's showSingleplayer() method.
+     * Initialize setup for main controller's showSinglePlayer() method.
      */
-    public void showSingleplayer() {
-        mainCtrl.showSingleplayer();
+    public void showSinglePlayer() {
+        mainCtrl.showSinglePlayer();
     }
 
     /**
