@@ -22,6 +22,8 @@ import commons.Player;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
+import java.util.List;
+
 public class SplashCtrl {
 
     private final ServerUtils server;
@@ -65,7 +67,15 @@ public class SplashCtrl {
      * Initialize setup for main controller's showSinglePlayer() method.
      */
     public void showSinglePlayer() {
-        mainCtrl.showSinglePlayer();
+        String newUserName = usernameField.getText();
+        GameSession newSession = new GameSession(List.of(new Player(newUserName)));
+        newSession = server.addSession(newSession);
+        var playerId = server
+                .getPlayers(newSession.id)
+                .stream().filter(p -> p.username.equals(newUserName))
+                .findFirst().get().id;
+
+        mainCtrl.showSinglePlayer(newSession.id, playerId);
     }
 
     /**

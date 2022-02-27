@@ -19,6 +19,8 @@ public class GameCtrl {
     private MainCtrl main;
 
     private List<RadioButton> multiChoiceAnswers;
+    private long sessionId;
+    private long playerId;
 
     @Inject
     public GameCtrl(ServerUtils api, MainCtrl main) {
@@ -27,14 +29,22 @@ public class GameCtrl {
         this.multiChoiceAnswers = new ArrayList<RadioButton>();
     }
 
+    public void setSessionId(long sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public void setPlayerId(long playerId) {
+        this.playerId = playerId;
+    }
+
     private void renderMultipleChoice(Question q) {
-        double ypos = 0.0;
+        double yPosition = 0.0;
         multiChoiceAnswers.clear();
         answerArea.getChildren().clear();
         for (String opt : q.answerOptions) {
             RadioButton choice = new RadioButton(opt);
-            choice.setTranslateY(ypos);
-            ypos += 30;
+            choice.setTranslateY(yPosition);
+            yPosition += 30;
             multiChoiceAnswers.add(choice);
             answerArea.getChildren().add(choice);
         }

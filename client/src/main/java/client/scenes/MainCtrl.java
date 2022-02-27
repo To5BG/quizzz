@@ -102,9 +102,11 @@ public class MainCtrl {
     /**
      * Sets the current screen to the single player screen.
      */
-    public void showSinglePlayer() {
+    public void showSinglePlayer(long sessionId, long playerId) {
         primaryStage.setTitle("Singe player game");
         primaryStage.setScene(gameScreen);
+        gameCtrl.setSessionId(sessionId);
+        gameCtrl.setPlayerId(playerId);
     }
 
     /**
