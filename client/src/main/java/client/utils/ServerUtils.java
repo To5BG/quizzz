@@ -21,6 +21,7 @@ import java.util.List;
 
 import commons.GameSession;
 import commons.Player;
+import commons.Question;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -158,5 +159,14 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .delete();
+    }
+
+    public Question fetchOneQuestion() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/questions")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Question>() {
+                });
     }
 }

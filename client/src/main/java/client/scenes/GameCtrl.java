@@ -1,16 +1,58 @@
 package client.scenes;
 
+import client.utils.ServerUtils;
+import com.google.inject.Inject;
+import commons.Question;
 import javafx.fxml.FXML;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.StackPane;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameCtrl {
 
     @FXML
     private StackPane answerArea;
 
+    private ServerUtils api;
+    private MainCtrl main;
+
+    private List<RadioButton> multiChoiceAnswers;
+
+    @Inject
+    public GameCtrl(ServerUtils api, MainCtrl main) {
+        this.api = api;
+        this.main = main;
+        this.multiChoiceAnswers = new ArrayList<RadioButton>();
+    }
+
+    private void renderMultipleChoice(Question q) {
+        double ypos = 0.0;
+        multiChoiceAnswers.clear();
+        answerArea.getChildren().clear();
+        for (String opt : q.answerOptions) {
+            RadioButton choice = new RadioButton(opt);
+            choice.setTranslateY(ypos);
+            ypos += 30;
+            multiChoiceAnswers.add(choice);
+            answerArea.getChildren().add(choice);
+        }
+    }
+
+    public void renderAnswerFields(Question q) {
+        switch (q.type) {
+            case MULTIPLE_CHOICE:
+                renderMultipleChoice(q);
+            default:
+                throw new UnsupportedOperationException("Currently only multiple choice questions can be rendered");
+        }
+    }
+
     public void submitAnswer() {
-        RadioButton rb = new RadioButton("Answer option #1");
-        answerArea.getChildren().add(rb);
+        /* RadioButton rb = new RadioButton("Answer option #1");
+        answerArea.getChildren().add(rb); */
+        Question q = this.api.fetchOneQuestion();
+        renderAnswerFields(q);
     }
 }
