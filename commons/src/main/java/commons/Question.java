@@ -44,7 +44,10 @@ public class Question {
     }
 
     public void addAnswerOption(String answerOption) {
-        if (this.type != QuestionType.MULTIPLE_CHOICE) throw new UnsupportedOperationException("Answer options are only allowed for multiple choice type questions");
+        if (this.type != QuestionType.MULTIPLE_CHOICE) {
+            throw new UnsupportedOperationException(
+                    "Answer options are only allowed for multiple choice type questions");
+        }
         this.answerOptions.add(answerOption);
     }
 

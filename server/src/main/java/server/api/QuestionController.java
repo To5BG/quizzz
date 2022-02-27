@@ -7,14 +7,12 @@ import commons.Question;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import server.database.SessionRepository;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("api/questions")
 public class QuestionController {
-    public int questionCounter = 0;
     private final SessionController sessions;
 
     public QuestionController(SessionController sessions) {
@@ -32,7 +30,8 @@ public class QuestionController {
     }
 
     @PostMapping(path = "/{sessionId}")
-    public ResponseEntity<Evaluation> submitAnswer(@PathVariable("sessionId") long sessionId, @RequestBody Answer answer) {
+    public ResponseEntity<Evaluation> submitAnswer(@PathVariable("sessionId") long sessionId,
+                                                   @RequestBody Answer answer) {
         ResponseEntity<GameSession> session = sessions.getSessionById(sessionId);
         if (session.getStatusCode() == HttpStatus.BAD_REQUEST) {
             return ResponseEntity.badRequest().build();
