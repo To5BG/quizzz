@@ -48,6 +48,10 @@ public class Main extends Application {
         var waitingArea = FXML.load(
                 WaitingAreaCtrl.class, "client", "scenes", "WaitingAreaScreen.fxml");
 
+        primaryStage.setOnHidden(e -> {
+            waitingArea.getKey().shutdown();
+            multiplayer.getKey().shutdown();
+        });
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         mainCtrl.initialize(primaryStage, splash, multiplayer, waitingArea);
     }

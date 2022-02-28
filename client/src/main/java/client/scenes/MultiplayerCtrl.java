@@ -58,6 +58,10 @@ public class MultiplayerCtrl implements Initializable {
         userName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
     }
 
+    public void shutdown() {
+        if (sessionId != 0) server.removePlayer(sessionId, playerId);
+    }
+
     /**
      * Reverts the player to the splash screen and remove him from the current game session.
      */
