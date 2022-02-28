@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -59,6 +60,7 @@ public class MainCtrl {
 
         showSplash();
         primaryStage.show();
+
     }
 
     /**
@@ -72,10 +74,11 @@ public class MainCtrl {
     /**
      * Sets the current screen to the multiplayer screen and adds the player to the game session DB. Contains a
      * scheduled task to refresh the multiplayer player board.
+     *
      * @param sessionId Id of session to be joined
-     * @param playerId Id of player that is about to join
+     * @param playerId  Id of player that is about to join
      */
-    public void enterMultiplayerGame(long sessionId, long playerId) {
+    public void showMultiplayer(long sessionId, long playerId) {
         primaryStage.setTitle("Multiplayer game");
         primaryStage.setScene(multiPlayerScreen);
         multiPlayerScreen.setOnKeyPressed(e -> multiplayerCtrl.keyPressed(e));
@@ -86,7 +89,7 @@ public class MainCtrl {
             @Override
             public void run() {
                 try {
-                    multiplayerCtrl.refresh();
+                    if (!multiplayerCtrl.refresh()) cancel();
                 } catch (Exception e) {
                     cancel();
                 }

@@ -89,10 +89,11 @@ public class MultiplayerCtrl implements Initializable {
     /**
      * Refreshes the multiplayer player board for the current session.
      */
-    public void refresh() {
+    public boolean refresh() {
         var players = server.getPlayers(sessionId);
         data = FXCollections.observableList(players);
         currentPlayers.setItems(data);
+        return true;
     }
 
     /**
