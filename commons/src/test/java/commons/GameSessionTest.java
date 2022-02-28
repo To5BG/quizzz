@@ -26,35 +26,40 @@ import java.util.stream.Stream;
 
 public class GameSessionTest {
 
-	private static final Player SOME_PLAYER = new Player("test");
+    private static final Player SOME_PLAYER = new Player("test");
 
-	@Test
-	public void checkConstructor() {
-		var s = new GameSession(Stream.of(SOME_PLAYER).collect(Collectors.toList()));
-		assertEquals(SOME_PLAYER, s.players.get(0));
-	}
+    @Test
+    public void checkConstructor() {
+        var s = new GameSession("multiplayer", Stream.of(SOME_PLAYER).collect(Collectors.toList()));
+        assertEquals(SOME_PLAYER, s.players.get(0));
+    }
 
-	@Test
-	public void equalsHashCode() {
-		var a = new GameSession(Stream.of(new Player("blah")).collect(Collectors.toList()));
-		var b = new GameSession(Stream.of(new Player("blah")).collect(Collectors.toList()));
-		assertEquals(a, b);
-		assertEquals(a.hashCode(), b.hashCode());
-	}
+    @Test
+    public void equalsHashCode() {
+        var a = new GameSession("multiplayer", Stream.of(new Player("blah"))
+                .collect(Collectors.toList()));
+        var b = new GameSession("multiplayer", Stream.of(new Player("blah"))
+                .collect(Collectors.toList()));
+        assertEquals(a, b);
+        assertEquals(a.hashCode(), b.hashCode());
+    }
 
-	@Test
-	public void notEqualsHashCode() {
-		var a = new GameSession(Stream.of(new Player("blah")).collect(Collectors.toList()));
-		var b = new GameSession(Stream.of(new Player("blahh")).collect(Collectors.toList()));
-		assertNotEquals(a, b);
-		assertNotEquals(a.hashCode(), b.hashCode());
-	}
+    @Test
+    public void notEqualsHashCode() {
+        var a = new GameSession("multiplayer", Stream.of(new Player("blah"))
+                .collect(Collectors.toList()));
+        var b = new GameSession("multiplayer", Stream.of(new Player("blahh"))
+                .collect(Collectors.toList()));
+        assertNotEquals(a, b);
+        assertNotEquals(a.hashCode(), b.hashCode());
+    }
 
-	@Test
-	public void hasToString() {
-		var str = new GameSession(Stream.of(new Player("blah")).collect(Collectors.toList())).toString();
-		assertTrue(str.contains(GameSession.class.getSimpleName()));
-		assertTrue(str.contains("\n"));
-		assertTrue(str.contains("player"));
-	}
+    @Test
+    public void hasToString() {
+        var str = new GameSession("multiplayer", Stream.of(new Player("blah"))
+                .collect(Collectors.toList())).toString();
+        assertTrue(str.contains(GameSession.class.getSimpleName()));
+        assertTrue(str.contains("\n"));
+        assertTrue(str.contains("player"));
+    }
 }
