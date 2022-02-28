@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
@@ -18,6 +19,10 @@ public class GameSession {
 
     @OneToMany(cascade = CascadeType.ALL)
     public List<Player> players;
+
+    public String sessionType;
+    public String sessionStatus;
+    public int playersReady;
 
     @SuppressWarnings("unused")
     private GameSession() {
@@ -40,8 +45,22 @@ public class GameSession {
         players.add(player);
     }
 
+    public void setPlayerReady() {
+        if (playersReady >= players.size()) return;
+        playersReady++;
+    }
+
+    public void unsetPlayerReady() {
+        if (playersReady <= 0) return;
+        playersReady--;
+    }
+
     public void removePlayer(Player player) {
         players.remove(player);
+    }
+
+    public void updateStatus(String sessionStatus) {
+        this.sessionStatus = sessionStatus;
     }
 
     @Override

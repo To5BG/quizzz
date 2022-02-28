@@ -21,7 +21,6 @@ import java.util.List;
 
 import commons.GameSession;
 import commons.Player;
-import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -81,12 +80,12 @@ public class ServerUtils {
      * @param playerId  id of player to be removed
      * @return The response from player removal
      */
-    public Response removePlayer(long sessionId, long playerId) {
+    public Player removePlayer(long sessionId, long playerId) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .delete();
+                .delete(Player.class);
     }
 
     /**
@@ -143,7 +142,7 @@ public class ServerUtils {
                 .target(SERVER).path("api/sessions")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .put(Entity.entity(session, APPLICATION_JSON), GameSession.class);
+                .post(Entity.entity(session, APPLICATION_JSON), GameSession.class);
     }
 
     /**
@@ -152,11 +151,39 @@ public class ServerUtils {
      * @param sessionId Id of session to be removed
      * @return The response from session removal
      */
-    public Response removeSession(long sessionId) {
+    public GameSession removeSession(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + sessionId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .delete();
+                .delete(GameSession.class);
+    }
+
+    /**
+     * Updates a session status
+     * @param session Session to update
+     * @param status new status to be set
+     * @return The updated session
+     */
+    public GameSession updateStatus(GameSession session, String status) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + session.id + "/status")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(status, APPLICATION_JSON), GameSession.class);
+    }
+    /**
+     * Sets and unsets a player as being ready for a multiplayer game
+     *
+     * @param sessionId
+     * @param isReady   True iff a player must be set as ready
+     * @return New count of players that are ready
+     */
+    public Integer toggleReady(long sessionId, boolean isReady) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId + "/" + ((isReady) ? "" : "not") + "ready")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Integer>() {});
     }
 }
