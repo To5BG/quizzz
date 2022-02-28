@@ -8,6 +8,7 @@ import commons.Question;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.StackPane;
 
@@ -19,6 +20,7 @@ import java.util.TimerTask;
 public class GameCtrl {
 
     private final int GAME_ROUNDS = 5;
+    private final int GAME_ROUND_TIME = 10;
 
     @FXML
     private StackPane answerArea;
@@ -29,6 +31,9 @@ public class GameCtrl {
     @FXML
     private Label pointsLabel;
 
+    @FXML
+    private ProgressBar timeProgress;
+
     private ServerUtils api;
     private MainCtrl main;
 
@@ -38,6 +43,7 @@ public class GameCtrl {
     private Question currentQuestion;
     private int points = 0;
     private int rounds = 0;
+    private int secondsRemaining = GAME_ROUND_TIME;
 
     @Inject
     public GameCtrl(ServerUtils api, MainCtrl main) {
@@ -95,6 +101,18 @@ public class GameCtrl {
         this.currentQuestion = q;
         renderGeneralInformation(q);
         renderAnswerFields(q);
+        timeProgress.setProgress(1);
+        secondsRemaining = GAME_ROUND_TIME;
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> timeProgress.setProgress((double)secondsRemaining/GAME_ROUND_TIME));
+                if (--secondsRemaining == 0) {
+                    Platform.runLater(() -> submitAnswer());
+                    this.cancel();
+                }
+            }
+        }, 0, 1000);
     }
 
     private void renderCorrectAnswer(Evaluation eval) {
