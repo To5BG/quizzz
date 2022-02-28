@@ -2,12 +2,14 @@ package server.api;
 
 import commons.GameSession;
 import commons.Player;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.SessionRepository;
 
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Random;
 
@@ -18,9 +20,29 @@ public class SessionController {
     private final SessionRepository repo;
     private final Random random;
 
-    public SessionController(Random random, SessionRepository repo) {
+    public SessionController(Random random, SessionRepository repo, boolean updateDatabase) {
         this.random = random;
         this.repo = repo;
+        if (updateDatabase) resetSessions(true);
+    }
+
+    /**
+     * Resets game sessions from previous server runs. Deletes all sessions besides the waiting area
+     * and removes all player connections along with them
+     * @param removePlayers True iff the players' table should also be removed
+     */
+    public void resetSessions(boolean removePlayers) {
+        try (Connection conn = DriverManager.getConnection("jdbc:h2:file:./quizzzz", "sa", "")) {
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate("DELETE FROM GAME_SESSION_PLAYERS");
+            stmt.executeUpdate("DELETE FROM GAME_SESSION WHERE SESSION_TYPE <> 'waiting_area'");
+            if (removePlayers) {
+                stmt.executeUpdate("DELETE FROM PLAYER");
+                stmt.executeUpdate("ALTER SEQUENCE HIBERNATE_SEQUENCE RESTART WITH 2");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
