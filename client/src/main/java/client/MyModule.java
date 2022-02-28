@@ -22,6 +22,7 @@ import com.google.inject.Scopes;
 import client.scenes.MultiplayerCtrl;
 import client.scenes.MainCtrl;
 import client.scenes.SplashCtrl;
+import client.scenes.WaitingAreaCtrl;
 
 public class MyModule implements Module {
 
@@ -30,5 +31,6 @@ public class MyModule implements Module {
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
         binder.bind(MultiplayerCtrl.class).in(Scopes.SINGLETON);
         binder.bind(SplashCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(WaitingAreaCtrl.class).in(Scopes.SINGLETON);
     }
 }

@@ -50,7 +50,7 @@ public class ServerUtils {
      * @param sessionId the id of the session
      * @return List of all players from a session
      */
-    public List<Player> getPlayers(Long sessionId) {
+    public List<Player> getPlayers(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + sessionId + "/players")
                 .request(APPLICATION_JSON)

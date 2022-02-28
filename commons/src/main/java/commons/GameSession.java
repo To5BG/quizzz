@@ -24,8 +24,16 @@ public class GameSession {
         // for object mapper
     }
 
-    public GameSession(List<Player> players) {
+    public GameSession(String sessionType) {
+        this(sessionType, new ArrayList<Player>());
+    }
+
+    public GameSession(String sessionType, List<Player> players) {
         this.players = players;
+        this.sessionType = sessionType;
+        this.playersReady = 0;
+        this.sessionStatus = "started";
+        if (sessionType.equals("waiting_area")) this.sessionStatus = "waiting_area";
     }
 
     public void addPlayer(Player player) {
