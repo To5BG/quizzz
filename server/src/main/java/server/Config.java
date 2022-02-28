@@ -29,7 +29,8 @@ public class Config {
     }
 
     @Bean
-    public boolean updateDB() {
-        return true;
+    public String updatePlayerDB() {
+        return "all";
     }
+
 }

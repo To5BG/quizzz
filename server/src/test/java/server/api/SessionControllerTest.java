@@ -38,7 +38,7 @@ public class SessionControllerTest {
     public void setup() {
         random = new MyRandom();
         repo = new TestGameSessionRepository();
-        sut = new SessionController(random, repo, false);
+        sut = new SessionController(random, repo, "test");
     }
 
     @Test
@@ -50,14 +50,13 @@ public class SessionControllerTest {
     @Test
     public void getAllSessionsTest() {
         var sessions = sut.getAllSessions();
-        // only waiting area
+        assertTrue(sessions.size() == 0);
+
+        sut.addSession(new GameSession("multiplayer"));
         assertTrue(sessions.size() == 1);
 
         sut.addSession(new GameSession("multiplayer"));
         assertTrue(sessions.size() == 2);
-
-        sut.addSession(new GameSession("multiplayer"));
-        assertTrue(sessions.size() == 3);
 
         assertEquals(0, sessions.get(0).id);
         assertEquals(1, sessions.get(1).id);
@@ -89,14 +88,14 @@ public class SessionControllerTest {
         assertNotEquals(ResponseEntity.badRequest().build(), sut.getSessionById(1L));
 
         //make sure that when getting a session it does not alter the session
-        assertEquals(sut.getSessionById(1L).getBody(), firstSession);
+        assertEquals(sut.getSessionById(0L).getBody(), firstSession);
     }
 
     @Test
     public void addSessionTest() {
         var savedSession = sut.addSession(new GameSession("multiplayer")).getBody();
         assertTrue(repo.calledMethods.contains("save"));
-        assertEquals(savedSession, repo.findAll().get(1));
+        assertEquals(savedSession, repo.findAll().get(0));
     }
 
     @Test

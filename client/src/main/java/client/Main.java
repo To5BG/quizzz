@@ -49,8 +49,11 @@ public class Main extends Application {
                 WaitingAreaCtrl.class, "client", "scenes", "WaitingAreaScreen.fxml");
 
         primaryStage.setOnHidden(e -> {
-            waitingArea.getKey().shutdown();
-            multiplayer.getKey().shutdown();
+            try {
+                waitingArea.getKey().shutdown();
+            } catch (Exception exit) {
+                multiplayer.getKey().shutdown();
+            }
         });
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         mainCtrl.initialize(primaryStage, splash, multiplayer, waitingArea);

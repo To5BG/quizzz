@@ -117,6 +117,7 @@ public class WaitingAreaCtrl implements Initializable {
 
     /**
      * Refreshes the multiplayer player board for the current session.
+     * @return True iff the refresh should continue
      */
     public boolean refresh() {
         GameSession waitingArea = server.getSession(WAITING_AREA_ID);
@@ -127,11 +128,12 @@ public class WaitingAreaCtrl implements Initializable {
 
             server.toggleReady(WAITING_AREA_ID, false);
             GameSession sessionToJoin = server.getAvailableSession();
-            System.out.println(sessionToJoin);
             if (sessionToJoin == null) sessionToJoin = server.addSession(new GameSession("multiplayer"));
 
+            readyButton.setText("Ready");
+            readyButton.setVisible(false);
+
             server.addPlayer(sessionToJoin.id, server.removePlayer(WAITING_AREA_ID, playerId));
-            System.out.println(server.getPlayers(WAITING_AREA_ID).size());
             if (server.getPlayers(WAITING_AREA_ID).size() == 0) {
                 sessionToJoin = server.updateStatus(sessionToJoin, "ongoing");
                 server.updateStatus(waitingArea, "waiting_area");
@@ -147,8 +149,6 @@ public class WaitingAreaCtrl implements Initializable {
         playerText.setText("Ready: " + playersReady + "/" + playersCount);
         if (playersReady == playersCount && playersCount >= 2) {
             server.updateStatus(waitingArea, "transferring");
-            readyButton.setText("Ready");
-            readyButton.setVisible(false);
         }
         return true;
     }

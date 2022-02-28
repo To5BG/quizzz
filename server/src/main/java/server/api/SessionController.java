@@ -20,38 +20,26 @@ public class SessionController {
     private final SessionRepository repo;
     private final Random random;
 
-    public SessionController(Random random, SessionRepository repo, boolean updateDatabase) {
+    public SessionController(Random random, SessionRepository repo, String controllerConfig) {
         this.random = random;
         this.repo = repo;
-        addWaitingArea();
-        if (updateDatabase) resetSessions(true);
-    }
-
-    /**
-     * Adds a waiting area (called when application is started)
-     */
-    public void addWaitingArea() {
-        if (repo.existsById(1L)) {
-            GameSession waitingArea = repo.findById(1L).get();
-            waitingArea.playersReady = 0;
-            repo.save(waitingArea);
-        } else repo.save(new GameSession("waiting_area"));
+        if (!controllerConfig.equals("test")) resetDatabase(controllerConfig.equals("all"));
     }
 
     /**
      * Resets game sessions from previous server runs. Deletes all sessions besides the waiting area
      * and removes all player connections along with them
-     * @param removePlayers True iff the players' table should also be removed
+     *
+     * @param resetPlayers True iff the players' table should also be removed
      */
-    public void resetSessions(boolean removePlayers) {
+    public void resetDatabase(boolean resetPlayers) {
         try (Connection conn = DriverManager.getConnection("jdbc:h2:file:./quizzzz", "sa", "")) {
             Statement stmt = conn.createStatement();
             stmt.executeUpdate("DELETE FROM GAME_SESSION_PLAYERS");
-            stmt.executeUpdate("DELETE FROM GAME_SESSION WHERE SESSION_TYPE <> 'waiting_area'");
-            if (removePlayers) {
-                stmt.executeUpdate("DELETE FROM PLAYER");
-                stmt.executeUpdate("ALTER SEQUENCE HIBERNATE_SEQUENCE RESTART WITH 2");
-            }
+            stmt.executeUpdate("DELETE FROM GAME_SESSION");
+            stmt.executeUpdate("ALTER SEQUENCE HIBERNATE_SEQUENCE RESTART WITH 1");
+            repo.save(new GameSession("waiting_area"));
+            if (resetPlayers) stmt.executeUpdate("DELETE FROM PLAYER");
         } catch (SQLException e) {
             e.printStackTrace();
         }
