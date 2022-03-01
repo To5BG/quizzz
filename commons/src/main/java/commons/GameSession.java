@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
@@ -20,6 +21,15 @@ public class GameSession {
     @OneToMany(cascade = CascadeType.ALL)
     public List<Player> players;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    public Question currentQuestion;
+
+    @ElementCollection
+    public List<Integer> expectedAnswers;
+
+    public int questionCounter = 0;
+    public int answerCounter = 0;
+
     public String sessionType;
     public String sessionStatus;
     public int playersReady;
@@ -30,14 +40,15 @@ public class GameSession {
     }
 
     public GameSession(String sessionType) {
-        this(sessionType, new ArrayList<Player>());
+        this(sessionType, new ArrayList<Player>(), new ArrayList<Integer>());
     }
 
-    public GameSession(String sessionType, List<Player> players) {
+    public GameSession(String sessionType, List<Player> players, List<Integer> expectedAnswers) {
         this.players = players;
         this.sessionType = sessionType;
         this.playersReady = 0;
         this.sessionStatus = "started";
+        this.expectedAnswers = expectedAnswers;
         if (sessionType.equals("waiting_area")) this.sessionStatus = "waiting_area";
     }
 
@@ -61,6 +72,29 @@ public class GameSession {
 
     public void updateStatus(String sessionStatus) {
         this.sessionStatus = sessionStatus;
+    }
+
+    public void playerAnswered() {
+        if (++answerCounter == this.players.size()) {
+            updateQuestion();
+            answerCounter = 0;
+        }
+    }
+
+    public void updateQuestion() {
+        Question q = new Question(
+                "Question #" + questionCounter++,
+                "N/A",
+                Question.QuestionType.MULTIPLE_CHOICE
+        );
+        for (int i = 0; i < 3; ++i) {
+            q.addAnswerOption(String.format("Option #%d", i));
+        }
+        System.out.println("Question updated to:");
+        System.out.println(q);
+        this.currentQuestion = q;
+        this.expectedAnswers.clear();
+        this.expectedAnswers.add(new Random().nextInt(3));
     }
 
     @Override

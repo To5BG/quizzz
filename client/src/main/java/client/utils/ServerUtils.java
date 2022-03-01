@@ -186,4 +186,21 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<Integer>() {});
     }
+
+    public Question fetchOneQuestion(long sessionId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/questions/" + sessionId)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Question>() {
+                });
+    }
+
+    public Evaluation submitAnswer(long sessionId, Answer answer) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/questions/" + sessionId)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(answer, APPLICATION_JSON), Evaluation.class);
+    }
 }

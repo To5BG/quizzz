@@ -48,6 +48,19 @@ public class SessionControllerTest {
     }
 
     @Test
+    public void testUpdateSession() {
+        var actual = sut.addSession(new GameSession(new ArrayList<>()));
+        GameSession s = actual.getBody();
+
+        GameSession next = new GameSession(new ArrayList<>());
+        next.id = s.id;
+        next.answerCounter = 42;
+
+        sut.updateSession(next);
+        assertEquals(42, repo.GameSessions.get(0).answerCounter);
+    }
+
+    @Test
     public void getAllSessionsTest() {
         var sessions = sut.getAllSessions();
         assertTrue(sessions.size() == 0);
@@ -58,8 +71,8 @@ public class SessionControllerTest {
         sut.addSession(new GameSession("multiplayer"));
         assertTrue(sessions.size() == 2);
 
-        assertEquals(0, sessions.get(0).id);
-        assertEquals(1, sessions.get(1).id);
+        assertEquals(1, sessions.get(0).id);
+        assertEquals(2, sessions.get(1).id);
     }
 
     @Test
@@ -85,10 +98,10 @@ public class SessionControllerTest {
         assertEquals(ResponseEntity.badRequest().build(), sut.getSessionById(42L));
 
         //make sure that it gets a valid session successfully
-        assertNotEquals(ResponseEntity.badRequest().build(), sut.getSessionById(1L));
+        assertNotEquals(ResponseEntity.badRequest().build(), sut.getSessionById(2L));
 
         //make sure that when getting a session it does not alter the session
-        assertEquals(sut.getSessionById(0L).getBody(), firstSession);
+        assertEquals(sut.getSessionById(1L).getBody(), firstSession);
     }
 
     @Test

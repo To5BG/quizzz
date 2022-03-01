@@ -45,6 +45,11 @@ public class SessionController {
         }
     }
 
+    public void updateSession(GameSession session) {
+        if (isInvalid(session.id)) return;
+        this.repo.save(session);
+    }
+
     /**
      * Retrieve all sessions from the DB.
      *

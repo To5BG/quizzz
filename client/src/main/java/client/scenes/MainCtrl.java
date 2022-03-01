@@ -34,6 +34,9 @@ public class MainCtrl {
     private MultiplayerCtrl multiplayerCtrl;
     private Scene multiPlayerScreen;
 
+    private GameCtrl gameCtrl;
+    private Scene gameScreen;
+
     private WaitingAreaCtrl waitingAreaCtrl;
     private Scene waitingAreaScreen;
 
@@ -46,7 +49,8 @@ public class MainCtrl {
      */
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
                            Pair<MultiplayerCtrl, Parent> multi,
-                           Pair<WaitingAreaCtrl, Parent> wait) {
+                           Pair<WaitingAreaCtrl, Parent> wait,
+                           Pair<GameCtrl, Parent> game) {
         this.primaryStage = primaryStage;
 
         this.splashCtrl = splash.getKey();
@@ -57,6 +61,9 @@ public class MainCtrl {
 
         this.waitingAreaCtrl = wait.getKey();
         this.waitingAreaScreen = new Scene(wait.getValue());
+
+        this.gameCtrl = game.getKey();
+        this.gameScreen = new Scene(game.getValue());
 
         showSplash();
         primaryStage.show();
@@ -136,9 +143,14 @@ public class MainCtrl {
     }
 
     /**
-     * Sets the current screen to the singleplayer screen.
+     * Sets the current screen to the single player screen.
      */
-    public void showSingleplayer() {
+    public void showSinglePlayer(long sessionId, long playerId) {
+        primaryStage.setTitle("Singe player game");
+        primaryStage.setScene(gameScreen);
+        gameCtrl.setSessionId(sessionId);
+        gameCtrl.setPlayerId(playerId);
+        gameCtrl.loadQuestion();
     }
 
     /**
