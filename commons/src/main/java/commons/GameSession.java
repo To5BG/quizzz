@@ -27,12 +27,11 @@ public class GameSession {
     @ElementCollection
     public List<Integer> expectedAnswers;
 
-    public int questionCounter = 0;
-    public int answerCounter = 0;
+    public int playersReady;
+    public int questionCounter;
 
     public String sessionType;
     public String sessionStatus;
-    public int playersReady;
 
     @SuppressWarnings("unused")
     private GameSession() {
@@ -42,13 +41,16 @@ public class GameSession {
     public GameSession(String sessionType) {
         this(sessionType, new ArrayList<Player>(), new ArrayList<Integer>());
     }
-
+    public GameSession(String sessionType, List<Player> players) {
+        this(sessionType, players, new ArrayList<Integer>());
+    }
     public GameSession(String sessionType, List<Player> players, List<Integer> expectedAnswers) {
         this.players = players;
         this.sessionType = sessionType;
-        this.playersReady = 0;
-        this.sessionStatus = "started";
         this.expectedAnswers = expectedAnswers;
+        this.playersReady = 0;
+        this.questionCounter = 0;
+        this.sessionStatus = "started";
         if (sessionType.equals("waiting_area")) this.sessionStatus = "waiting_area";
     }
 
@@ -57,8 +59,15 @@ public class GameSession {
     }
 
     public void setPlayerReady() {
-        if (playersReady >= players.size()) return;
-        playersReady++;
+        if (sessionType.equals("waiting_area")) {
+            if (playersReady >= players.size()) return;
+            playersReady++;
+        }
+        else {
+            if (++playersReady != this.players.size()) return;
+            updateQuestion();
+            playersReady = 0;
+        }
     }
 
     public void unsetPlayerReady() {
@@ -72,13 +81,6 @@ public class GameSession {
 
     public void updateStatus(String sessionStatus) {
         this.sessionStatus = sessionStatus;
-    }
-
-    public void playerAnswered() {
-        if (++answerCounter == this.players.size()) {
-            updateQuestion();
-            answerCounter = 0;
-        }
     }
 
     public void updateQuestion() {

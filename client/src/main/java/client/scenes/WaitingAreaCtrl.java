@@ -80,9 +80,7 @@ public class WaitingAreaCtrl implements Initializable {
      * Reverts the player to the splash screen and remove him from the current game session.
      */
     public void back() {
-        if (readyButton.getText().equals("Not Ready")) server.toggleReady(WAITING_AREA_ID, false);
-        server.removePlayer(WAITING_AREA_ID, playerId);
-        setPlayerId(0L);
+        shutdown();
         readyButton.setText("Ready");
         mainCtrl.showSplash();
     }

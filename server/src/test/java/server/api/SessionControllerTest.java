@@ -49,15 +49,15 @@ public class SessionControllerTest {
 
     @Test
     public void testUpdateSession() {
-        var actual = sut.addSession(new GameSession(new ArrayList<>()));
+        var actual = sut.addSession(new GameSession("multiplayer"));
         GameSession s = actual.getBody();
 
-        GameSession next = new GameSession(new ArrayList<>());
+        GameSession next = new GameSession("multiplayer");
         next.id = s.id;
-        next.answerCounter = 42;
+        next.playersReady = 42;
 
         sut.updateSession(next);
-        assertEquals(42, repo.GameSessions.get(0).answerCounter);
+        assertEquals(42, repo.GameSessions.get(0).playersReady);
     }
 
     @Test

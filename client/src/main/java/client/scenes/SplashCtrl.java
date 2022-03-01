@@ -67,7 +67,7 @@ public class SplashCtrl {
      * Initialize setup for main controller's showMultiplayer() method. Creates a new session if no free session is
      * available and adds the player to the session.
      */
-    public void enterWaitingArea() {
+    public void showWaitingArea() {
         String newUserName = usernameField.getText();
 
         server.addPlayer(1L /*waiting area id*/, new Player(newUserName));
@@ -83,7 +83,8 @@ public class SplashCtrl {
      */
     public void showSinglePlayer() {
         String newUserName = usernameField.getText();
-        GameSession newSession = new GameSession(List.of(new Player(newUserName)));
+        GameSession newSession = new GameSession("multiplayer",
+                List.of(new Player(newUserName)));
         newSession = server.addSession(newSession);
         var playerId = server
                 .getPlayers(newSession.id)
