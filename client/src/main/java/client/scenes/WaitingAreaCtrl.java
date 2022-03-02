@@ -122,11 +122,14 @@ public class WaitingAreaCtrl implements Initializable {
         data = FXCollections.observableList(waitingArea.players);
         currentPlayers.setItems(data);
 
+        int playersReady = waitingArea.playersReady;
+        int playersCount = waitingArea.players.size();
+
         if (waitingArea.sessionStatus.equals("transferring")) {
 
             server.toggleReady(WAITING_AREA_ID, false);
             GameSession sessionToJoin = server.getAvailableSession();
-            if (sessionToJoin == null) sessionToJoin = server.addSession(new GameSession("multiplayer"));
+            if (sessionToJoin == null) return true;
 
             readyButton.setText("Ready");
             readyButton.setVisible(false);
@@ -139,15 +142,13 @@ public class WaitingAreaCtrl implements Initializable {
             mainCtrl.showMultiplayer(sessionToJoin.id, playerId);
             return false;
         }
-
-        int playersReady = waitingArea.playersReady;
-        int playersCount = waitingArea.players.size();
+        else if (playersReady == playersCount && playersReady >= 2){
+            server.addSession(new GameSession("multiplayer"));
+            server.updateStatus(waitingArea, "transferring");
+        }
 
         readyButton.setVisible(playersCount >= 2);
         playerText.setText("Ready: " + playersReady + "/" + playersCount);
-        if (playersReady == playersCount && playersCount >= 2) {
-            server.updateStatus(waitingArea, "transferring");
-        }
         return true;
     }
 

@@ -41,9 +41,11 @@ public class GameSession {
     public GameSession(String sessionType) {
         this(sessionType, new ArrayList<Player>(), new ArrayList<Integer>());
     }
+
     public GameSession(String sessionType, List<Player> players) {
         this(sessionType, players, new ArrayList<Integer>());
     }
+
     public GameSession(String sessionType, List<Player> players, List<Integer> expectedAnswers) {
         this.players = players;
         this.sessionType = sessionType;
@@ -54,16 +56,11 @@ public class GameSession {
         if (sessionType.equals("waiting_area")) this.sessionStatus = "waiting_area";
     }
 
-    public void addPlayer(Player player) {
-        players.add(player);
-    }
-
     public void setPlayerReady() {
         if (sessionType.equals("waiting_area")) {
             if (playersReady >= players.size()) return;
             playersReady++;
-        }
-        else {
+        } else {
             if (++playersReady != this.players.size()) return;
             updateQuestion();
             playersReady = 0;
@@ -75,8 +72,16 @@ public class GameSession {
         playersReady--;
     }
 
+    public void addPlayer(Player player) {
+        players.add(player);
+    }
+
     public void removePlayer(Player player) {
         players.remove(player);
+    }
+
+    public void setCurrentQuestion(Question question) {
+        this.currentQuestion = question;
     }
 
     public void updateStatus(String sessionStatus) {
