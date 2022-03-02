@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -36,6 +37,9 @@ public class MainCtrl {
     private GameCtrl gameCtrl;
     private Scene gameScreen;
 
+    private WaitingAreaCtrl waitingAreaCtrl;
+    private Scene waitingAreaScreen;
+
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
      *
@@ -45,6 +49,7 @@ public class MainCtrl {
      */
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
                            Pair<MultiplayerCtrl, Parent> multi,
+                           Pair<WaitingAreaCtrl, Parent> wait,
                            Pair<GameCtrl, Parent> game) {
         this.primaryStage = primaryStage;
 
@@ -54,11 +59,15 @@ public class MainCtrl {
         this.multiplayerCtrl = multi.getKey();
         this.multiPlayerScreen = new Scene(multi.getValue());
 
+        this.waitingAreaCtrl = wait.getKey();
+        this.waitingAreaScreen = new Scene(wait.getValue());
+
         this.gameCtrl = game.getKey();
         this.gameScreen = new Scene(game.getValue());
 
         showSplash();
         primaryStage.show();
+
     }
 
     /**
@@ -72,10 +81,11 @@ public class MainCtrl {
     /**
      * Sets the current screen to the multiplayer screen and adds the player to the game session DB. Contains a
      * scheduled task to refresh the multiplayer player board.
+     *
      * @param sessionId Id of session to be joined
-     * @param playerId Id of player that is about to join
+     * @param playerId  Id of player that is about to join
      */
-    public void enterMultiplayerGame(long sessionId, long playerId) {
+    public void showMultiplayer(long sessionId, long playerId) {
         primaryStage.setTitle("Multiplayer game");
         primaryStage.setScene(multiPlayerScreen);
         multiPlayerScreen.setOnKeyPressed(e -> multiplayerCtrl.keyPressed(e));
@@ -86,7 +96,7 @@ public class MainCtrl {
             @Override
             public void run() {
                 try {
-                    multiplayerCtrl.refresh();
+                    if (!multiplayerCtrl.refresh()) cancel();
                 } catch (Exception e) {
                     cancel();
                 }
@@ -96,7 +106,40 @@ public class MainCtrl {
             public boolean cancel() {
                 return super.cancel();
             }
-        }, 0, 1000);
+        }, 0, 500);
+    }
+
+    /**
+     * Sets the current screen to the waiting area and adds the player to it. Contains a
+     * scheduled task to refresh the waiting area player board.
+     *
+     * @param playerId Id of player that's about to join
+     */
+    public void showWaitingArea(long playerId) {
+        primaryStage.setTitle("Waiting area");
+        primaryStage.setScene(waitingAreaScreen);
+        waitingAreaScreen.setOnKeyPressed(e -> waitingAreaCtrl.keyPressed(e));
+        waitingAreaCtrl.setPlayerId(playerId);
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (!waitingAreaCtrl.refresh()) cancel();
+                        } catch (Exception e) {
+                            cancel();
+                        }
+                    }
+                });
+            }
+            @Override
+            public boolean cancel() {
+                return super.cancel();
+            }
+        }, 0, 500);
     }
 
     /**

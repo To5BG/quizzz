@@ -58,6 +58,10 @@ public class MultiplayerCtrl implements Initializable {
         userName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
     }
 
+    public void shutdown() {
+        if (sessionId != 0) server.removePlayer(sessionId, playerId);
+    }
+
     /**
      * Reverts the player to the splash screen and remove him from the current game session.
      */
@@ -85,10 +89,11 @@ public class MultiplayerCtrl implements Initializable {
     /**
      * Refreshes the multiplayer player board for the current session.
      */
-    public void refresh() {
+    public boolean refresh() {
         var players = server.getPlayers(sessionId);
         data = FXCollections.observableList(players);
         currentPlayers.setItems(data);
+        return true;
     }
 
     /**

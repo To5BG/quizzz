@@ -18,7 +18,6 @@ package server.api;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.OK;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import commons.GameSession;
@@ -39,26 +38,26 @@ public class SessionControllerTest {
     public void setup() {
         random = new MyRandom();
         repo = new TestGameSessionRepository();
-        sut = new SessionController(random, repo);
+        sut = new SessionController(random, repo, "test");
     }
 
     @Test
     public void createEmptySession() {
-        var actual = sut.addSession(new GameSession(new ArrayList<>()));
+        var actual = sut.addSession(new GameSession("multiplayer"));
         assertEquals(OK, actual.getStatusCode());
     }
 
     @Test
     public void testUpdateSession() {
-        var actual = sut.addSession(new GameSession(new ArrayList<>()));
+        var actual = sut.addSession(new GameSession("multiplayer"));
         GameSession s = actual.getBody();
 
-        GameSession next = new GameSession(new ArrayList<>());
+        GameSession next = new GameSession("multiplayer");
         next.id = s.id;
-        next.answerCounter = 42;
+        next.playersReady = 42;
 
         sut.updateSession(next);
-        assertEquals(42, repo.GameSessions.get(0).answerCounter);
+        assertEquals(42, repo.GameSessions.get(0).playersReady);
     }
 
     @Test
@@ -66,12 +65,10 @@ public class SessionControllerTest {
         var sessions = sut.getAllSessions();
         assertTrue(sessions.size() == 0);
 
-        sut.addSession(new GameSession(new ArrayList<>()));
+        sut.addSession(new GameSession("multiplayer"));
         assertTrue(sessions.size() == 1);
 
-        // Instead of defaulting the arraylist in a new constructor a new array is passed every time
-        // due to the comment below the default constructor that says "for object mapper"
-        sut.addSession(new GameSession(new ArrayList<>()));
+        sut.addSession(new GameSession("multiplayer"));
         assertTrue(sessions.size() == 2);
 
         assertEquals(1, sessions.get(0).id);
@@ -82,23 +79,20 @@ public class SessionControllerTest {
     public void getAvailableSessionTest() {
 
         var newSession = sut.getAvailableSession();
-        // make sure that not a new session is created, since one is already available
-        assertEquals(sut.getAvailableSession(), newSession);
+        // make sure fetch returns null if no sessions were added
+        assertEquals(sut.getAvailableSession().getBody(), null);
 
-        sut.addSession(new GameSession(new ArrayList<>()));
+        sut.addSession(new GameSession("multiplayer"));
         var availableSession = sut.getAvailableSession().getBody();
 
         // make sure that a game session is returned successfully
         assertTrue(availableSession.getClass() == GameSession.class);
-
-        // make sure that the returned available session is not different from the new session
-        assertEquals(availableSession, newSession.getBody());
     }
 
     @Test
     public void getSessionTest() {
-        GameSession firstSession = sut.addSession(new GameSession(new ArrayList<>())).getBody();
-        sut.addSession(new GameSession(new ArrayList<>()));
+        GameSession firstSession = sut.addSession(new GameSession("multiplayer")).getBody();
+        sut.addSession(new GameSession("multiplayer"));
 
         //try to get an invalid session
         assertEquals(ResponseEntity.badRequest().build(), sut.getSessionById(42L));
@@ -112,7 +106,7 @@ public class SessionControllerTest {
 
     @Test
     public void addSessionTest() {
-        var savedSession = sut.addSession(new GameSession(new ArrayList<>())).getBody();
+        var savedSession = sut.addSession(new GameSession("multiplayer")).getBody();
         assertTrue(repo.calledMethods.contains("save"));
         assertEquals(savedSession, repo.findAll().get(0));
     }
@@ -128,7 +122,7 @@ public class SessionControllerTest {
 
     @Test
     public void getPlayersTest() {
-        GameSession session = sut.addSession(new GameSession(new ArrayList<>())).getBody();
+        GameSession session = sut.addSession(new GameSession("multiplayer")).getBody();
         Player firstPlayer = sut.addPlayer(session.id, new Player("test")).getBody();
         sut.addPlayer(session.id, new Player("test2"));
         assertTrue(sut.getPlayers(session.id).getBody().size() == 2);
@@ -137,10 +131,10 @@ public class SessionControllerTest {
 
     @Test
     public void addPlayerTest() {
-        GameSession session = sut.addSession(new GameSession(new ArrayList<>())).getBody();
+        GameSession session = sut.addSession(new GameSession("multiplayer")).getBody();
         // player list is empty at first
         assertTrue(session.players.isEmpty());
-        Player player = sut.addPlayer(1, new Player("test")).getBody();
+        Player player = sut.addPlayer(session.id, new Player("test")).getBody();
 
         // player list modified after operation
         assertTrue(session.players.size() != 0);
@@ -151,7 +145,7 @@ public class SessionControllerTest {
 
     @Test
     public void removePlayerTest() {
-        GameSession session = sut.addSession(new GameSession(new ArrayList<>())).getBody();
+        GameSession session = sut.addSession(new GameSession("multiplayer")).getBody();
         Player firstPlayer = sut.addPlayer(session.id, new Player("test")).getBody();
         sut.addPlayer(session.id, new Player("test2"));
 

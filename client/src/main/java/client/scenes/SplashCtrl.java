@@ -51,7 +51,7 @@ public class SplashCtrl {
      * Initialize setup for main controller's showMultiplayer() method. Creates a new session if no free session is
      * available and adds the player to the session.
      */
-    public void showMultiplayer() {
+    public void enterMultiplayerGame() {
         GameSession sessionToJoin = server.getAvailableSession();
         String newUserName = usernameField.getText();
 
@@ -60,7 +60,22 @@ public class SplashCtrl {
                 .getPlayers(sessionToJoin.id)
                 .stream().filter(p -> p.username.equals(newUserName))
                 .findFirst().get().id;
-        mainCtrl.enterMultiplayerGame(sessionToJoin.id, playerId);
+        mainCtrl.showMultiplayer(sessionToJoin.id, playerId);
+    }
+
+    /**
+     * Initialize setup for main controller's showMultiplayer() method. Creates a new session if no free session is
+     * available and adds the player to the session.
+     */
+    public void showWaitingArea() {
+        String newUserName = usernameField.getText();
+
+        server.addPlayer(1L /*waiting area id*/, new Player(newUserName));
+        var playerId = server
+                .getPlayers(1L)
+                .stream().filter(p -> p.username.equals(newUserName))
+                .findFirst().get().id;
+        mainCtrl.showWaitingArea(playerId);
     }
 
     /**
@@ -68,7 +83,8 @@ public class SplashCtrl {
      */
     public void showSinglePlayer() {
         String newUserName = usernameField.getText();
-        GameSession newSession = new GameSession(List.of(new Player(newUserName)));
+        GameSession newSession = new GameSession("multiplayer",
+                List.of(new Player(newUserName)));
         newSession = server.addSession(newSession);
         var playerId = server
                 .getPlayers(newSession.id)
