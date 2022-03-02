@@ -27,4 +27,10 @@ public class Config {
     public Random getRandom() {
         return new Random();
     }
+
+    @Bean
+    public String updatePlayerDB() {
+        return "all";
+    }
+
 }

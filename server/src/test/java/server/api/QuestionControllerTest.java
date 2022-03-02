@@ -19,8 +19,9 @@ public class QuestionControllerTest {
     @BeforeEach
     public void setup() {
         repo = new TestGameSessionRepository();
-        session = new SessionController(new Random(), repo);
-        ResponseEntity<GameSession> cur = session.addSession(new GameSession(List.of(new Player("test"))));
+        session = new SessionController(new Random(), repo, "test");
+        ResponseEntity<GameSession> cur = session.addSession(new GameSession("multiplayer",
+                List.of(new Player("test"))));
         sut = new QuestionController(session);
     }
 
@@ -52,6 +53,7 @@ public class QuestionControllerTest {
     @Test
     public void submitAnswer() {
         GameSession s = session.getAllSessions().get(0);
+        System.out.println(s);
         List<Integer> expectedAnswers = List.copyOf(s.expectedAnswers);
 
         ResponseEntity<Evaluation> resp = sut.submitAnswer(s.id,
