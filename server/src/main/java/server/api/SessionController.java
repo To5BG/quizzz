@@ -36,10 +36,10 @@ public class SessionController {
         try (Connection conn = DriverManager.getConnection("jdbc:h2:file:./quizzzz", "sa", "")) {
             Statement stmt = conn.createStatement();
             stmt.executeUpdate("DELETE FROM QUESTION_ANSWER_OPTIONS");
-            stmt.executeUpdate("DELETE FROM QUESTION");
             stmt.executeUpdate("DELETE FROM GAME_SESSION_EXPECTED_ANSWERS");
             stmt.executeUpdate("DELETE FROM GAME_SESSION_PLAYERS");
             stmt.executeUpdate("DELETE FROM GAME_SESSION");
+            stmt.executeUpdate("DELETE FROM QUESTION");
             stmt.executeUpdate("ALTER SEQUENCE HIBERNATE_SEQUENCE RESTART WITH 1");
             repo.save(new GameSession("waiting_area"));
             if (resetPlayers) stmt.executeUpdate("DELETE FROM PLAYER");
@@ -120,7 +120,7 @@ public class SessionController {
         GameSession session = repo.findById(id).orElse(null);
         if (session != null) {
             repo.delete(session);
-            session.currentQuestion = null;
+
         }
         return ResponseEntity.ok(session);
     }
