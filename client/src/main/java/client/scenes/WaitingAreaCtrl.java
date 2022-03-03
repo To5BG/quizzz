@@ -41,8 +41,6 @@ public class WaitingAreaCtrl implements Initializable {
     private long playerId;
     private final long WAITING_AREA_ID = 1L;
 
-    private ObservableList<Player> data;
-
     @FXML
     private TableView<Player> currentPlayers;
     @FXML
@@ -115,11 +113,12 @@ public class WaitingAreaCtrl implements Initializable {
 
     /**
      * Refreshes the multiplayer player board for the current session.
+     *
      * @return True iff the refresh should continue
      */
     public boolean refresh() {
         GameSession waitingArea = server.getSession(WAITING_AREA_ID);
-        data = FXCollections.observableList(waitingArea.players);
+        ObservableList<Player> data = FXCollections.observableList(waitingArea.players);
         currentPlayers.setItems(data);
 
         int playersReady = waitingArea.playersReady;
@@ -141,12 +140,14 @@ public class WaitingAreaCtrl implements Initializable {
             }
             mainCtrl.showMultiplayer(sessionToJoin.id, playerId);
             return false;
-        }
-        else if (playersReady == playersCount && playersReady >= 2){
-            server.addSession(new GameSession("multiplayer"));
+        } else if (playersReady == playersCount && playersReady >= 2) {
+            toggleReady();
             server.updateStatus(waitingArea, "transferring");
+            var sessionToJoin = server.addSession(new GameSession("multiplayer"));
+            server.addPlayer(sessionToJoin.id, server.removePlayer(WAITING_AREA_ID, playerId));
+            mainCtrl.showMultiplayer(sessionToJoin.id, playerId);
+            return false;
         }
-
         readyButton.setVisible(playersCount >= 2);
         playerText.setText("Ready: " + playersReady + "/" + playersCount);
         return true;
@@ -155,7 +156,7 @@ public class WaitingAreaCtrl implements Initializable {
     /**
      * Setter for playerId.
      *
-     * @param playerId
+     * @param playerId New playerId
      */
     public void setPlayerId(long playerId) {
         this.playerId = playerId;
