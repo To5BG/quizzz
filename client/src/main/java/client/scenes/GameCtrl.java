@@ -23,6 +23,7 @@ public class GameCtrl {
     private final int GAME_ROUNDS = 5;
     private final int GAME_ROUND_TIME = 10;
     private final int TIMER_UPDATE_INTERVAL_MS = 50;
+    private final int GAME_ROUND_DELAY = 2;
 
     @FXML
     private StackPane answerArea;
@@ -45,6 +46,7 @@ public class GameCtrl {
     private Question currentQuestion;
     private int points = 0;
     private int rounds = 0;
+    private Thread timerThread;
 
     @Inject
     public GameCtrl(ServerUtils api, MainCtrl main) {
@@ -114,7 +116,7 @@ public class GameCtrl {
                     try {
                         Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        updateProgress(0, 1);
                         return null;
                     }
                 }
@@ -125,7 +127,8 @@ public class GameCtrl {
         };
 
         timeProgress.progressProperty().bind(roundTimer.progressProperty());
-        new Thread(roundTimer).start();
+        this.timerThread = new Thread(roundTimer);
+        this.timerThread.start();
     }
 
     private void renderCorrectAnswer(Evaluation eval) {
@@ -156,6 +159,8 @@ public class GameCtrl {
     public void submitAnswer() {
         /* RadioButton rb = new RadioButton("Answer option #1");
         answerArea.getChildren().add(rb); */
+        if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
+
         Answer ans = new Answer(currentQuestion.type);
         for (int i = 0 ; i < multiChoiceAnswers.size(); ++i) {
             if (multiChoiceAnswers.get(i).isSelected()) {
@@ -181,6 +186,6 @@ public class GameCtrl {
                     }
                 });
             }
-        }, 5000);
+        }, GAME_ROUND_DELAY * 1000);
     }
 }
