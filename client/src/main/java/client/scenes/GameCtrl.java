@@ -8,6 +8,7 @@ import commons.Question;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
@@ -36,6 +37,9 @@ public class GameCtrl {
 
     @FXML
     private ProgressBar timeProgress;
+
+    @FXML
+    private Button submitButton;
 
     private ServerUtils api;
     private MainCtrl main;
@@ -104,6 +108,7 @@ public class GameCtrl {
         this.currentQuestion = q;
         renderGeneralInformation(q);
         renderAnswerFields(q);
+        this.submitButton.setDisable(false);
 
         Task roundTimer = new Task() {
             @Override
@@ -149,6 +154,7 @@ public class GameCtrl {
         this.multiChoiceAnswers.clear();
         this.points = 0;
         this.currentQuestion = null;
+        this.submitButton.setDisable(true);
         main.showSplash();
     }
 
@@ -160,6 +166,7 @@ public class GameCtrl {
         /* RadioButton rb = new RadioButton("Answer option #1");
         answerArea.getChildren().add(rb); */
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
+        this.submitButton.setDisable(true);
 
         Answer ans = new Answer(currentQuestion.type);
         for (int i = 0 ; i < multiChoiceAnswers.size(); ++i) {
