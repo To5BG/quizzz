@@ -22,6 +22,7 @@ public class GameCtrl {
 
     private final int GAME_ROUNDS = 5;
     private final int GAME_ROUND_TIME = 10;
+    private final int TIMER_UPDATE_INTERVAL_MS = 50;
 
     @FXML
     private StackPane answerArea;
@@ -44,7 +45,6 @@ public class GameCtrl {
     private Question currentQuestion;
     private int points = 0;
     private int rounds = 0;
-    private int secondsRemaining = GAME_ROUND_TIME;
 
     @Inject
     public GameCtrl(ServerUtils api, MainCtrl main) {
@@ -102,25 +102,28 @@ public class GameCtrl {
         this.currentQuestion = q;
         renderGeneralInformation(q);
         renderAnswerFields(q);
-        secondsRemaining = GAME_ROUND_TIME;
 
         Task roundTimer = new Task() {
             @Override
             public Object call() {
-                while (secondsRemaining > 0) {
-                    updateProgress(secondsRemaining, GAME_ROUND_TIME);
-                    secondsRemaining--;
+                long refreshCounter = 0;
+                long gameRoundMs = GAME_ROUND_TIME * 1000;
+                while (refreshCounter * TIMER_UPDATE_INTERVAL_MS < gameRoundMs) {
+                    updateProgress(gameRoundMs - refreshCounter * TIMER_UPDATE_INTERVAL_MS, gameRoundMs);
+                    ++refreshCounter;
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                         return null;
                     }
                 }
+                updateProgress(0, 1);
                 Platform.runLater(() -> submitAnswer());
                 return null;
             }
         };
+
         timeProgress.progressProperty().bind(roundTimer.progressProperty());
         new Thread(roundTimer).start();
     }
