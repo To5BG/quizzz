@@ -6,7 +6,9 @@ import commons.Answer;
 import commons.Evaluation;
 import commons.Question;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
@@ -21,6 +23,8 @@ public class GameCtrl {
 
     private final int GAME_ROUNDS = 5;
     private final int GAME_ROUND_TIME = 10;
+    private final int TIMER_UPDATE_INTERVAL_MS = 50;
+    private final int GAME_ROUND_DELAY = 2;
 
     @FXML
     private StackPane answerArea;
@@ -34,6 +38,9 @@ public class GameCtrl {
     @FXML
     private ProgressBar timeProgress;
 
+    @FXML
+    private Button submitButton;
+
     private ServerUtils api;
     private MainCtrl main;
 
@@ -43,7 +50,7 @@ public class GameCtrl {
     private Question currentQuestion;
     private int points = 0;
     private int rounds = 0;
-    private int secondsRemaining = GAME_ROUND_TIME;
+    private Thread timerThread;
 
     @Inject
     public GameCtrl(ServerUtils api, MainCtrl main) {
@@ -101,18 +108,32 @@ public class GameCtrl {
         this.currentQuestion = q;
         renderGeneralInformation(q);
         renderAnswerFields(q);
-        timeProgress.setProgress(1);
-        secondsRemaining = GAME_ROUND_TIME;
-        new Timer().scheduleAtFixedRate(new TimerTask() {
+        this.submitButton.setDisable(false);
+
+        Task roundTimer = new Task() {
             @Override
-            public void run() {
-                Platform.runLater(() -> timeProgress.setProgress((double)secondsRemaining/GAME_ROUND_TIME));
-                if (--secondsRemaining == 0) {
-                    Platform.runLater(() -> submitAnswer());
-                    this.cancel();
+            public Object call() {
+                long refreshCounter = 0;
+                long gameRoundMs = GAME_ROUND_TIME * 1000;
+                while (refreshCounter * TIMER_UPDATE_INTERVAL_MS < gameRoundMs) {
+                    updateProgress(gameRoundMs - refreshCounter * TIMER_UPDATE_INTERVAL_MS, gameRoundMs);
+                    ++refreshCounter;
+                    try {
+                        Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
+                    } catch (InterruptedException e) {
+                        updateProgress(0, 1);
+                        return null;
+                    }
                 }
+                updateProgress(0, 1);
+                Platform.runLater(() -> submitAnswer());
+                return null;
             }
-        }, 0, 1000);
+        };
+
+        timeProgress.progressProperty().bind(roundTimer.progressProperty());
+        this.timerThread = new Thread(roundTimer);
+        this.timerThread.start();
     }
 
     private void renderCorrectAnswer(Evaluation eval) {
@@ -133,6 +154,7 @@ public class GameCtrl {
         this.multiChoiceAnswers.clear();
         this.points = 0;
         this.currentQuestion = null;
+        this.submitButton.setDisable(true);
         main.showSplash();
     }
 
@@ -143,6 +165,9 @@ public class GameCtrl {
     public void submitAnswer() {
         /* RadioButton rb = new RadioButton("Answer option #1");
         answerArea.getChildren().add(rb); */
+        if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
+        this.submitButton.setDisable(true);
+
         Answer ans = new Answer(currentQuestion.type);
         for (int i = 0 ; i < multiChoiceAnswers.size(); ++i) {
             if (multiChoiceAnswers.get(i).isSelected()) {
@@ -168,6 +193,6 @@ public class GameCtrl {
                     }
                 });
             }
-        }, 5000);
+        }, GAME_ROUND_DELAY * 1000);
     }
 }
