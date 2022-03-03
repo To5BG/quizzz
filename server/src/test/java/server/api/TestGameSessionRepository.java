@@ -179,7 +179,9 @@ public class TestGameSessionRepository implements SessionRepository {
 
     @Override
     public void delete(GameSession entity) {
-        //TODO delete from repo
+        calledMethods.add("delete");
+        call("delete");
+
     }
 
     @Override

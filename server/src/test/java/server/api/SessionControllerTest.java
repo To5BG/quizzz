@@ -113,11 +113,10 @@ public class SessionControllerTest {
 
     @Test
     public void deleteSessionTest() {
-        /*
-        var deletedSession = sut.removeSession(1).getBody();
-        repo.calledMethods.contains("delete");
-        assertTrue(repo.existsById(deletedSession.id));
-         */
+        sut.addSession(new GameSession("multiplayer"));
+        var deletedSession = sut.removeSession(1);
+        assertTrue(repo.calledMethods.contains("delete"));
+        assertTrue(repo.existsById(deletedSession.getBody().id));
     }
 
     @Test
