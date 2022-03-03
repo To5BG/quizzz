@@ -6,6 +6,7 @@ import commons.Answer;
 import commons.Evaluation;
 import commons.Question;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -101,18 +102,27 @@ public class GameCtrl {
         this.currentQuestion = q;
         renderGeneralInformation(q);
         renderAnswerFields(q);
-        timeProgress.setProgress(1);
         secondsRemaining = GAME_ROUND_TIME;
-        new Timer().scheduleAtFixedRate(new TimerTask() {
+
+        Task roundTimer = new Task() {
             @Override
-            public void run() {
-                Platform.runLater(() -> timeProgress.setProgress((double)secondsRemaining/GAME_ROUND_TIME));
-                if (--secondsRemaining == 0) {
-                    Platform.runLater(() -> submitAnswer());
-                    this.cancel();
+            public Object call() {
+                while (secondsRemaining > 0) {
+                    updateProgress(secondsRemaining, GAME_ROUND_TIME);
+                    secondsRemaining--;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
                 }
+                Platform.runLater(() -> submitAnswer());
+                return null;
             }
-        }, 0, 1000);
+        };
+        timeProgress.progressProperty().bind(roundTimer.progressProperty());
+        new Thread(roundTimer).start();
     }
 
     private void renderCorrectAnswer(Evaluation eval) {
