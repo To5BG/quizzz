@@ -41,7 +41,7 @@ public class GameCtrl {
     @FXML
     private Button submitButton;
 
-    private ServerUtils api;
+    private ServerUtils server;
     private MainCtrl main;
 
     private List<RadioButton> multiChoiceAnswers;
@@ -53,8 +53,8 @@ public class GameCtrl {
     private Thread timerThread;
 
     @Inject
-    public GameCtrl(ServerUtils api, MainCtrl main) {
-        this.api = api;
+    public GameCtrl(ServerUtils server, MainCtrl main) {
+        this.server = server;
         this.main = main;
         this.multiChoiceAnswers = new ArrayList<RadioButton>();
     }
@@ -104,7 +104,7 @@ public class GameCtrl {
     }
 
     public void loadQuestion() {
-        Question q = this.api.fetchOneQuestion(this.sessionId);
+        Question q = this.server.fetchOneQuestion(this.sessionId);
         this.currentQuestion = q;
         renderGeneralInformation(q);
         renderAnswerFields(q);
@@ -147,7 +147,7 @@ public class GameCtrl {
     }
 
     public void gameCleanup() {
-        api.removeSession(sessionId);
+        server.removeSession(sessionId);
         this.questionPrompt.setText("[Question]");
         this.answerArea.getChildren().clear();
         this.pointsLabel.setText("Points: 0");
@@ -175,7 +175,7 @@ public class GameCtrl {
             }
         }
 
-        Evaluation eval = api.submitAnswer(sessionId, ans);
+        Evaluation eval = server.submitAnswer(sessionId, ans);
         points += eval.points;
         renderPoints();
         renderCorrectAnswer(eval);
