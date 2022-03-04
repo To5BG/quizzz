@@ -2,12 +2,14 @@ package server.api;
 
 import commons.GameSession;
 import commons.Player;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.SessionRepository;
 
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Random;
 
@@ -18,9 +20,37 @@ public class SessionController {
     private final SessionRepository repo;
     private final Random random;
 
-    public SessionController(Random random, SessionRepository repo) {
+    public SessionController(Random random, SessionRepository repo, String controllerConfig) {
         this.random = random;
         this.repo = repo;
+        if (!controllerConfig.equals("test")) resetDatabase(controllerConfig.equals("all"));
+    }
+
+    /**
+     * Resets game sessions from previous server runs. Deletes all sessions besides the waiting area
+     * and removes all player connections along with them
+     *
+     * @param resetPlayers True iff the players' table should also be removed
+     */
+    public void resetDatabase(boolean resetPlayers) {
+        try (Connection conn = DriverManager.getConnection("jdbc:h2:file:./quizzzz", "sa", "")) {
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate("DELETE FROM QUESTION_ANSWER_OPTIONS");
+            stmt.executeUpdate("DELETE FROM QUESTION");
+            stmt.executeUpdate("DELETE FROM GAME_SESSION_EXPECTED_ANSWERS");
+            stmt.executeUpdate("DELETE FROM GAME_SESSION_PLAYERS");
+            stmt.executeUpdate("DELETE FROM GAME_SESSION");
+            stmt.executeUpdate("ALTER SEQUENCE HIBERNATE_SEQUENCE RESTART WITH 1");
+            repo.save(new GameSession("waiting_area"));
+            if (resetPlayers) stmt.executeUpdate("DELETE FROM PLAYER");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateSession(GameSession session) {
+        if (isInvalid(session.id)) return;
+        this.repo.save(session);
     }
 
     /**
@@ -34,16 +64,35 @@ public class SessionController {
     }
 
     /**
+     * Adds a session to the DB
+     *
+     * @param session Session to be added
+     * @return ResponseEntity that contains the added session
+     */
+    @PostMapping(path = {"", "/"})
+    public ResponseEntity<GameSession> addSession(@RequestBody GameSession session) {
+
+        if (session.players == null) return ResponseEntity.badRequest().build();
+        for (Player p : session.players) {
+            if (isNullOrEmpty(p.username)) return ResponseEntity.badRequest().build();
+        }
+        session.updateQuestion();
+        GameSession saved = repo.save(session);
+        return ResponseEntity.ok(saved);
+    }
+
+    /**
      * Retrieves an available game session from the DB.
      *
      * @return Available game session
      */
     @GetMapping({"/join"})
     public ResponseEntity<GameSession> getAvailableSession() {
-        var sessions = repo.findAll();
-        var sessionToJoin = (sessions.isEmpty())
-                ? addSession(new GameSession(new ArrayList<>())).getBody() : sessions.get(0);
-        return ResponseEntity.ok(sessionToJoin);
+        var session = repo.findAll().stream()
+                .filter(s -> s.sessionType.equals("multiplayer") && s.sessionStatus.equals("started"))
+                .findFirst();
+        if (session.isEmpty()) return ResponseEntity.ok(null);
+        else return ResponseEntity.ok(session.get());
     }
 
     /**
@@ -60,23 +109,6 @@ public class SessionController {
     }
 
     /**
-     * Adds a session to the DB
-     *
-     * @param session Session to be added
-     * @return ResponseEntity that contains the added session
-     */
-    @PutMapping(path = {"", "/"})
-    public ResponseEntity<GameSession> addSession(@RequestBody GameSession session) {
-
-        if (session.players == null) return ResponseEntity.badRequest().build();
-        for (Player p : session.players) {
-            if (isNullOrEmpty(p.username)) return ResponseEntity.badRequest().build();
-        }
-        GameSession saved = repo.save(session);
-        return ResponseEntity.ok(saved);
-    }
-
-    /**
      * Remove a session from the DB.
      *
      * @param id id of session to be removed
@@ -87,11 +119,50 @@ public class SessionController {
 
         GameSession session = repo.findById(id).orElse(null);
         if (session != null) {
-            long sessionId = session.id;
             repo.delete(session);
-            return ResponseEntity.ok(session);
+            session.currentQuestion = null;
         }
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.ok(session);
+    }
+
+    /**
+     * Sets an additional player as ready for a multiplayer game
+     *
+     * @param sessionId Id of session to update
+     * @return new count of ready players
+     */
+    @GetMapping("/{id}/ready")
+    public ResponseEntity<Integer> setPlayerReady(@PathVariable("id") long sessionId) {
+        if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
+        GameSession session = repo.findById(sessionId).get();
+        session.setPlayerReady();
+        repo.save(session);
+        return ResponseEntity.ok(session.playersReady);
+    }
+
+    /**
+     * Unsets a player as being ready for a multiplayer game
+     *
+     * @param sessionId Id of session to update
+     * @return new count of ready players
+     */
+    @GetMapping("/{id}/notready")
+    public ResponseEntity<Integer> unsetPlayerReady(@PathVariable("id") long sessionId) {
+        if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
+        GameSession session = repo.findById(sessionId).get();
+        session.unsetPlayerReady();
+        repo.save(session);
+        return ResponseEntity.ok(session.playersReady);
+    }
+
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<GameSession> updateStatus(@PathVariable("id") long sessionId, @RequestBody String status) {
+        if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
+        GameSession session = repo.findById(sessionId).get();
+        session.updateStatus(status);
+        repo.save(session);
+        return ResponseEntity.ok(session);
     }
 
     /**
