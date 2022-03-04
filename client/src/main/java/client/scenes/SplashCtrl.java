@@ -21,8 +21,10 @@ import commons.GameSession;
 import commons.Player;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 
 import java.util.List;
+import java.util.Optional;
 
 public class SplashCtrl {
 
@@ -31,6 +33,9 @@ public class SplashCtrl {
 
     @FXML
     private TextField usernameField;
+
+    @FXML
+    private Text usernameWarning;
 
     @Inject
     public SplashCtrl(ServerUtils server, MainCtrl mainCtrl) {
@@ -70,12 +75,25 @@ public class SplashCtrl {
     public void showWaitingArea() {
         String newUserName = usernameField.getText();
 
-        server.addPlayer(1L /*waiting area id*/, new Player(newUserName));
-        var playerId = server
+        Optional<Player> existingPlayer = server
                 .getPlayers(1L)
-                .stream().filter(p -> p.username.equals(newUserName))
-                .findFirst().get().id;
-        mainCtrl.showWaitingArea(playerId);
+                        .stream().filter(p -> p.username.equals(newUserName))
+                        .findFirst();
+
+        if(existingPlayer.isPresent()){
+            usernameWarning.setOpacity(1);
+            usernameField.clear();
+        }
+
+        else {
+            usernameWarning.setOpacity(0);
+            server.addPlayer(1L /*waiting area id*/, new Player(newUserName));
+            var playerId = server
+                    .getPlayers(1L)
+                    .stream().filter(p -> p.username.equals(newUserName))
+                    .findFirst().get().id;
+            mainCtrl.showWaitingArea(playerId);
+        }
     }
 
     /**
