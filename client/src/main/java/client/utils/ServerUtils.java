@@ -205,4 +205,33 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(answer, APPLICATION_JSON), Evaluation.class);
     }
+
+    /**
+     * get the points from the DB
+     *
+     * @return the points
+     */
+    public List<Point> getPoints() {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("api/point/") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Point>>() {
+                });
+    }
+
+
+    /**
+     * add a point to the DB
+     *
+     * @param point a combination of a player's point and his username
+     * @return a boolean value which represents whether the adding is successful or not
+     */
+    public Point addPoint(Point point) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("api/point") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(point, APPLICATION_JSON), Point.class);
+    }
 }

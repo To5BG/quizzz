@@ -40,17 +40,20 @@ public class MainCtrl {
     private WaitingAreaCtrl waitingAreaCtrl;
     private Scene waitingAreaScreen;
 
+    private LeaderBoardCtrl leaderBoardCtrl;
+    private Scene leaderBoardScreen;
+
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
-     *
-     * @param primaryStage store base stage of the application
+     *  @param primaryStage store base stage of the application
      * @param splash       Controller and Scene pair for the splash screen of the application
      * @param multi        Controller and Scene pair for the multiplayer screen of the application
+     * @param leaderboard
      */
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
                            Pair<MultiplayerCtrl, Parent> multi,
                            Pair<WaitingAreaCtrl, Parent> wait,
-                           Pair<GameCtrl, Parent> game) {
+                           Pair<GameCtrl, Parent> game, Pair<LeaderBoardCtrl, Parent> leaderboard) {
         this.primaryStage = primaryStage;
 
         this.splashCtrl = splash.getKey();
@@ -64,6 +67,9 @@ public class MainCtrl {
 
         this.gameCtrl = game.getKey();
         this.gameScreen = new Scene(game.getValue());
+
+        this.leaderBoardCtrl = leaderboard.getKey();
+        this.leaderBoardScreen = new Scene(leaderboard.getValue());
 
         showSplash();
         primaryStage.show();
@@ -157,5 +163,10 @@ public class MainCtrl {
      * Sets the current room to the leaderboard screen.
      */
     public void showLeaderboard() {
+        primaryStage.setTitle("LeaderBoard");
+        primaryStage.setScene(leaderBoardScreen);
+        leaderBoardCtrl.refresh();
+        leaderBoardScreen.setOnKeyPressed(e -> leaderBoardCtrl.keyPressed(e));
+
     }
 }

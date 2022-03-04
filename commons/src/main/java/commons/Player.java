@@ -45,4 +45,12 @@ public class Player {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
     }
+
+    /**
+     * return the username of a user
+     * @return the username of the user
+     */
+    public String getUsername() {
+        return username;
+    }
 }
