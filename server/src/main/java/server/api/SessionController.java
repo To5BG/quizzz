@@ -218,32 +218,7 @@ public class SessionController {
         return ResponseEntity.ok(player);
     }
 
-    @GetMapping("/{id}/answered")
-    public ResponseEntity<Integer> setPlayerAnswered(@PathVariable("id") long sessionId) {
-        if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
-        GameSession session = repo.findById(sessionId).get();
-        session.setPlayerAnswered();
-        repo.save(session);
-        return ResponseEntity.ok(session.playersAnswered);
-    }
-
-    @GetMapping("/{id}/max")
-    public ResponseEntity<Integer> setPlayerAnsweredMax(@PathVariable("id") long sessionId) {
-        if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
-        GameSession session = repo.findById(sessionId).get();
-        session.setPlayerAnsweredMax();
-        repo.save(session);
-        return ResponseEntity.ok(session.playersAnswered);
-    }
-
-    @GetMapping("/{id}/zero")
-    public ResponseEntity<Integer> setPlayerAnsweredZero(@PathVariable("id") long sessionId) {
-        if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
-        GameSession session = repo.findById(sessionId).get();
-        session.setPlayerAnsweredZero();
-        repo.save(session);
-        return ResponseEntity.ok(session.playersAnswered);
-    }
+//
 
     /**
      * Checks whether a string is empty or null.

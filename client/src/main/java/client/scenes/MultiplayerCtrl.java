@@ -29,7 +29,7 @@ import java.util.*;
 
 public class MultiplayerCtrl {
 
-    private final int GAME_ROUNDS = 5;
+    private final int GAME_ROUNDS = 20;
     private final int GAME_ROUND_TIME = 10;
     private final int TIMER_UPDATE_INTERVAL_MS = 50;
     private final int GAME_ROUND_DELAY = 2;
@@ -70,15 +70,6 @@ public class MultiplayerCtrl {
         this.playerId = 0L;
     }
 
-
-    public void getQuestion() {
-        if (refresh()) {
-            this.currentQuestion = server.fetchOneQuestion(sessionId);
-            rounds++;
-            loadQuestion();
-        }
-    }
-
     public void shutdown() {
         if (sessionId != 0) server.removePlayer(sessionId, playerId);
     }
@@ -110,10 +101,10 @@ public class MultiplayerCtrl {
     /**
      * Refreshes the multiplayer player board for the current session.
      */
-    public boolean refresh() {
-        GameSession session = server.getSession(sessionId);
-        return (session.playersAnswered == session.players.size());
-    }
+//    public boolean refresh() {
+//        GameSession session = server.getSession(sessionId);
+//        return (session.playersAnswered == session.players.size());
+//    }
 
     private void renderMultipleChoiceQuestion(Question q) {
         double yPosition = 0.0;
@@ -152,8 +143,8 @@ public class MultiplayerCtrl {
     }
 
     public void loadQuestion() {
-        setPlayerAnsweredZero();
-        Question q = this.currentQuestion;
+        Question q = this.server.fetchOneQuestion(this.sessionId);
+        this.currentQuestion = q;
         renderGeneralInformation(q);
         renderAnswerFields(q);
         this.submitButton.setDisable(false);
@@ -215,8 +206,6 @@ public class MultiplayerCtrl {
         answerArea.getChildren().add(rb); */
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
         this.submitButton.setDisable(true);
-        server.toggleAnswered(sessionId);
-
 
         Answer ans = new Answer(currentQuestion.type);
         for (int i = 0 ; i < multiChoiceAnswers.size(); ++i) {
@@ -227,7 +216,6 @@ public class MultiplayerCtrl {
 
         Evaluation eval = server.submitAnswer(sessionId, ans);
         points += eval.points;
-
         renderPoints();
         renderCorrectAnswer(eval);
 
@@ -236,7 +224,7 @@ public class MultiplayerCtrl {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    if (rounds == GAME_ROUNDS) {
+                    if (++rounds == GAME_ROUNDS) {
                         // TODO display leaderboard things here
                         gameCleanup();
                     } else {
@@ -263,14 +251,5 @@ public class MultiplayerCtrl {
      */
     public void setPlayerId(long playerId) {
         this.playerId = playerId;
-    }
-
-    public void setPlayerAnsweredMax() {
-        server.toggleAnsweredMax(sessionId);
-
-    }
-
-    public void setPlayerAnsweredZero() {
-        server.toggleAnsweredZero(sessionId);
     }
 }
