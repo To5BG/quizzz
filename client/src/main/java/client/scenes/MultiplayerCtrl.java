@@ -19,17 +19,12 @@ import com.google.inject.Inject;
 import client.utils.ServerUtils;
 import commons.*;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 
-import java.net.URL;
 import java.util.*;
 
 public class MultiplayerCtrl {
@@ -232,10 +227,6 @@ public class MultiplayerCtrl {
 
         Evaluation eval = server.submitAnswer(sessionId, ans);
         points += eval.points;
-
-        while(!refresh()) {
-
-        }
 
         renderPoints();
         renderCorrectAnswer(eval);
