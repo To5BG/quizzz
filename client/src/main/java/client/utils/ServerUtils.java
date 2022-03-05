@@ -205,4 +205,31 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(answer, APPLICATION_JSON), Evaluation.class);
     }
+
+    public Integer toggleAnsweredMax(long sessionId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId + "max")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Integer>() {
+                });
+    }
+
+    public Integer toggleAnsweredZero(long sessionId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId + "zero")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Integer>() {
+                });
+    }
+
+    public Integer toggleAnswered(long sessionId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId + "answered")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Integer>() {
+                });
+    }
 }

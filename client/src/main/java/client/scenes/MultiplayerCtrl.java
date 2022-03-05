@@ -17,45 +17,71 @@ package client.scenes;
 
 import com.google.inject.Inject;
 import client.utils.ServerUtils;
-import commons.Player;
+import commons.*;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.StackPane;
 
 import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.*;
 
-public class MultiplayerCtrl implements Initializable {
+public class MultiplayerCtrl {
+
+    private final int GAME_ROUNDS = 5;
+    private final int GAME_ROUND_TIME = 10;
+    private final int TIMER_UPDATE_INTERVAL_MS = 50;
+    private final int GAME_ROUND_DELAY = 2;
+
+    @FXML
+    private StackPane answerArea;
+
+    @FXML
+    private Label questionPrompt;
+
+    @FXML
+    private Label pointsLabel;
+
+    @FXML
+    private ProgressBar timeProgress;
+
+    @FXML
+    private Button submitButton;
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
     private long sessionId;
     private long playerId;
+    private List<RadioButton> multiChoiceAnswers;
+    private Question currentQuestion;
+    private int points = 0;
+    private int rounds = 0;
+    private Thread timerThread;
 
-    private ObservableList<Player> data;
-
-    @FXML
-    private TableView<Player> currentPlayers;
-    @FXML
-    private TableColumn<Player, String> userName;
 
     @Inject
     public MultiplayerCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
+        this.multiChoiceAnswers = new ArrayList<RadioButton>();
         // Set to defaults
         this.sessionId = 0L;
         this.playerId = 0L;
     }
 
-    @Override
-    public void initialize(URL loc, ResourceBundle res) {
-        userName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
+
+    public void getQuestion() {
+        if (refresh()) {
+            this.currentQuestion = server.fetchOneQuestion(sessionId);
+            rounds++;
+            loadQuestion();
+        }
     }
 
     public void shutdown() {
@@ -90,10 +116,144 @@ public class MultiplayerCtrl implements Initializable {
      * Refreshes the multiplayer player board for the current session.
      */
     public boolean refresh() {
-        var players = server.getPlayers(sessionId);
-        data = FXCollections.observableList(players);
-        currentPlayers.setItems(data);
-        return true;
+        GameSession session = server.getSession(sessionId);
+        return (session.playersAnswered == session.players.size());
+    }
+
+    private void renderMultipleChoiceQuestion(Question q) {
+        double yPosition = 0.0;
+        multiChoiceAnswers.clear();
+        answerArea.getChildren().clear();
+        for (String opt : q.answerOptions) {
+            RadioButton choice = new RadioButton(opt);
+            choice.setTranslateY(yPosition);
+            yPosition += 30;
+            multiChoiceAnswers.add(choice);
+            answerArea.getChildren().add(choice);
+        }
+    }
+
+    private void renderMultipleChoiceAnswers(List<Integer> correctIndices) {
+        for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
+            if (correctIndices.contains(i)) {
+                multiChoiceAnswers.get(i).setStyle("-fx-background-color: green");
+            }
+        }
+    }
+
+    private void renderGeneralInformation(Question q) {
+        this.questionPrompt.setText(q.prompt);
+        // TODO load image
+    }
+
+    private void renderAnswerFields(Question q) {
+        switch (q.type) {
+            case MULTIPLE_CHOICE:
+                renderMultipleChoiceQuestion(q);
+                break;
+            default:
+                throw new UnsupportedOperationException("Currently only multiple choice questions can be rendered");
+        }
+    }
+
+    public void loadQuestion() {
+        setPlayerAnsweredZero();
+        Question q = this.currentQuestion;
+        renderGeneralInformation(q);
+        renderAnswerFields(q);
+        this.submitButton.setDisable(false);
+
+        Task roundTimer = new Task() {
+            @Override
+            public Object call() {
+                long refreshCounter = 0;
+                long gameRoundMs = GAME_ROUND_TIME * 1000;
+                while (refreshCounter * TIMER_UPDATE_INTERVAL_MS < gameRoundMs) {
+                    updateProgress(gameRoundMs - refreshCounter * TIMER_UPDATE_INTERVAL_MS, gameRoundMs);
+                    ++refreshCounter;
+                    try {
+                        Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
+                    } catch (InterruptedException e) {
+                        updateProgress(0, 1);
+                        return null;
+                    }
+                }
+                updateProgress(0, 1);
+                Platform.runLater(() -> submitAnswer());
+                return null;
+            }
+        };
+
+        timeProgress.progressProperty().bind(roundTimer.progressProperty());
+        this.timerThread = new Thread(roundTimer);
+        this.timerThread.start();
+    }
+
+    private void renderCorrectAnswer(Evaluation eval) {
+        switch (eval.type) {
+            case MULTIPLE_CHOICE:
+                renderMultipleChoiceAnswers(eval.correctAnswers);
+                break;
+            default:
+                throw new UnsupportedOperationException("Currently only multiple choice answers can be rendered");
+        }
+    }
+
+    public void gameCleanup() {
+        server.removeSession(sessionId);
+        this.questionPrompt.setText("[Question]");
+        this.answerArea.getChildren().clear();
+        this.pointsLabel.setText("Points: 0");
+        this.multiChoiceAnswers.clear();
+        this.points = 0;
+        this.currentQuestion = null;
+        this.submitButton.setDisable(true);
+        mainCtrl.showSplash();
+    }
+
+    public void renderPoints() {
+        pointsLabel.setText(String.format("Points: %d", this.points));
+    }
+
+    public void submitAnswer() {
+        /* RadioButton rb = new RadioButton("Answer option #1");
+        answerArea.getChildren().add(rb); */
+        if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
+        this.submitButton.setDisable(true);
+        server.toggleAnswered(sessionId);
+
+
+        Answer ans = new Answer(currentQuestion.type);
+        for (int i = 0 ; i < multiChoiceAnswers.size(); ++i) {
+            if (multiChoiceAnswers.get(i).isSelected()) {
+                ans.addAnswer(i);
+            }
+        }
+
+        Evaluation eval = server.submitAnswer(sessionId, ans);
+        points += eval.points;
+
+        while(!refresh()) {
+
+        }
+
+        renderPoints();
+        renderCorrectAnswer(eval);
+
+        // TODO disable button while waiting
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    if (rounds == GAME_ROUNDS) {
+                        // TODO display leaderboard things here
+                        gameCleanup();
+                    } else {
+                        loadQuestion();
+                    }
+                });
+            }
+        }, GAME_ROUND_DELAY * 1000);
     }
 
     /**
@@ -112,5 +272,14 @@ public class MultiplayerCtrl implements Initializable {
      */
     public void setPlayerId(long playerId) {
         this.playerId = playerId;
+    }
+
+    public void setPlayerAnsweredMax() {
+        server.toggleAnsweredMax(sessionId);
+
+    }
+
+    public void setPlayerAnsweredZero() {
+        server.toggleAnsweredZero(sessionId);
     }
 }

@@ -29,6 +29,7 @@ public class GameSession {
 
     public int playersReady;
     public int questionCounter;
+    public int playersAnswered;
 
     public String sessionType;
     public String sessionStatus;
@@ -52,6 +53,7 @@ public class GameSession {
         this.expectedAnswers = expectedAnswers;
         this.playersReady = 0;
         this.questionCounter = 0;
+        this.playersAnswered = 0;
         this.sessionStatus = "started";
         if (sessionType.equals("waiting_area")) this.sessionStatus = "waiting_area";
     }
@@ -70,6 +72,18 @@ public class GameSession {
     public void unsetPlayerReady() {
         if (playersReady <= 0) return;
         playersReady--;
+    }
+
+    public void setPlayerAnswered() {
+        this.playersAnswered++;
+    }
+
+    public void setPlayerAnsweredMax() {
+        this.playersAnswered = players.size();
+    }
+
+    public void setPlayerAnsweredZero() {
+        this.playersAnswered = 0;
     }
 
     public void addPlayer(Player player) {

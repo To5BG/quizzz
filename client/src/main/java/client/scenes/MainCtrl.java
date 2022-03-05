@@ -91,12 +91,14 @@ public class MainCtrl {
         multiPlayerScreen.setOnKeyPressed(e -> multiplayerCtrl.keyPressed(e));
         multiplayerCtrl.setSessionId(sessionId);
         multiplayerCtrl.setPlayerId(playerId);
+        multiplayerCtrl.setPlayerAnsweredMax();
+        multiplayerCtrl.getQuestion();
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 try {
-                    if (!multiplayerCtrl.refresh()) cancel();
+                    if (multiplayerCtrl.refresh()) cancel();
                 } catch (Exception e) {
                     cancel();
                 }
