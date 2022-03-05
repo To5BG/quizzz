@@ -25,29 +25,29 @@ public class PlayerTest {
 
 	@Test
 	public void checkConstructor() {
-		var p = new Player("test");
+		var p = new Player("test",0);
 		assertEquals("test", p.username);
 	}
 
 	@Test
 	public void equalsHashCode() {
-		var p = new Player("test");
-		var p2 = new Player("test");
+		var p = new Player("test",0);
+		var p2 = new Player("test",0);
 		assertEquals(p2, p2);
 		assertEquals(p.hashCode(), p2.hashCode());
 	}
 
 	@Test
 	public void notEqualsHashCode() {
-		var p = new Player("test");
-		var p2 = new Player("test2");
+		var p = new Player("test",0);
+		var p2 = new Player("test2",0);
 		assertNotEquals(p, p2);
 		assertNotEquals(p.hashCode(), p2.hashCode());
 	}
 
 	@Test
 	public void hasToString() {
-		var str = new Player("test").toString();
+		var str = new Player("test",0).toString();
 		assertTrue(str.contains(Player.class.getSimpleName()));
 		assertTrue(str.contains("\n"));
 		assertTrue(str.contains("username"));
