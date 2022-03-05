@@ -3,6 +3,7 @@ package server.api;
 import java.util.List;
 import java.util.Random;
 
+import commons.Player;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,39 +12,37 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import commons.Point;
-import server.database.PointRepository;
+import server.database.PlayerRepository;
 
 @RestController
-@RequestMapping("/api/point")
+@RequestMapping("/api/leaderboard")
 public class LeaderboardController {
 
     private final Random random;
-    private final PointRepository por;
+    private final PlayerRepository por;
 
-    public LeaderboardController(Random random, PointRepository por) {
+    public LeaderboardController(Random random, PlayerRepository por) {
         this.random = random;
         this.por = por;
     }
 
     /**
-     * Deliver all Point data in the DB
-     *
-     * @return a list of all data about point
+     * Deliver all Player data in the DB
+     * @return a list of all data about past players
      */
     @GetMapping(path = {"", "/"})
-    public List<Point> getAll() {
+    public List<Player> getAllPlayers() {
         return por.findAll();
     }
 
     /**
-     * Query the point of a specific player with this id
+     * Query the point of a specific player with his id
      *
      * @param id the random id given to the player
      * @return the point data of this player
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Point> getById(@PathVariable("id") long id) {
+    public ResponseEntity<Player> getOneSpecificPlayer(@PathVariable("id") long id) {
         if (id < 0 || !por.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
@@ -52,18 +51,18 @@ public class LeaderboardController {
 
     /**
      * Upload the point of a player to the DB
-     *
-     * @param point the point of a player
+     * Rookie players are allowed to play the game now!
+     * @param player the owner of the point
      * @return return ok when succeeded, badRequest when fail
      */
     @PostMapping(path = {"", "/"})
-    public ResponseEntity<Point> add(@RequestBody Point point) {
+    public ResponseEntity<Player> addPlayerToTheRepository(@RequestBody Player player) {
 
-        if (point.player == null || isNullOrEmpty(point.player.username) || point.point == 0) {
+        if (player == null || isNullOrEmpty(player.username)) {
             return ResponseEntity.badRequest().build();
         }
 
-        Point saved = por.save(point);
+        Player saved = por.save(player);
         return ResponseEntity.ok(saved);
     }
 
@@ -83,7 +82,7 @@ public class LeaderboardController {
      * @return a random number
      */
     @GetMapping("rnd")
-    public ResponseEntity<Point> getRandom() {
+    public ResponseEntity<Player> getRandom() {
         var idx = random.nextInt((int) por.count());
         return ResponseEntity.ok(por.getById((long) idx));
     }

@@ -206,32 +206,22 @@ public class ServerUtils {
                 .post(Entity.entity(answer, APPLICATION_JSON), Evaluation.class);
     }
 
-    /**
-     * get the points from the DB
-     *
-     * @return the points
-     */
-    public List<Point> getPoints() {
+
+    public List<Player> getPlayers() {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/point/") //
+                .target(SERVER).path("api/leaderboard/") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Point>>() {
+                .get(new GenericType<List<Player>>() {
                 });
     }
 
 
-    /**
-     * add a point to the DB
-     *
-     * @param point a combination of a player's point and his username
-     * @return a boolean value which represents whether the adding is successful or not
-     */
-    public Point addPoint(Point point) {
+    public Player addPlayer(Player player) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/point") //
+                .target(SERVER).path("api/leaderboard") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .post(Entity.entity(point, APPLICATION_JSON), Point.class);
+                .post(Entity.entity(player, APPLICATION_JSON), Player.class);
     }
 }

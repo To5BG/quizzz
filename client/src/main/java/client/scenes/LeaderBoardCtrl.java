@@ -17,7 +17,7 @@ package client.scenes;
 
 import com.google.inject.Inject;
 import client.utils.ServerUtils;
-import commons.Point;
+import commons.Player;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -35,40 +35,50 @@ public class LeaderBoardCtrl implements Initializable {
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
 
-    private ObservableList<Point> data;
+    private ObservableList<Player> data;
 
     @FXML
-    private TableView<Point> allPoints;
+    private TableView<Player> allPlayers;
     @FXML
-    private TableColumn<Point, String> colName;
+    private TableColumn<Player, String> colName;
     @FXML
-    private TableColumn<Point, String> colPoint;
+    private TableColumn<Player, String> colPoint;
 
+    /**
+     * constructor of the leaderboard
+     *
+     * @param server   the server of the leaderboard
+     * @param mainCtrl the mainCtrl of the leaderboard
+     */
     @Inject
     public LeaderBoardCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
 
+    /**
+     * the method to initialize the leaderboard
+     *
+     * @param location  the location of the files
+     * @param resources the resources to be loaded when initializing
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        colName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().player.getUsername()));
+        colName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
         colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().point)));
     }
 
     /**
-     * copied from Alpi's work
-     * Reverts the player to the splash screen and remove him from the current game session.
+     * Created for be 'Back' button which makes the player back to the splash screen
      */
     public void back() {
         mainCtrl.showSplash();
     }
 
     /**
-     * copied from Alpi's work
-     * Switch method that maps keyboard key presses to functions.
+     * the method to listen to the pressed keys
      *
-     * @param e KeyEvent to be switched
+     * @param e an event which represents a pressed key
      */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
@@ -82,9 +92,9 @@ public class LeaderBoardCtrl implements Initializable {
      * refresh the screen to show the leaderboards
      */
     public void refresh() {
-        var points = server.getPoints();
-        data = FXCollections.observableList(points);
-        allPoints.setItems(data);
+        var players = server.getPlayers();
+        data = FXCollections.observableList(players);
+        allPlayers.setItems(data);
     }
 
 }

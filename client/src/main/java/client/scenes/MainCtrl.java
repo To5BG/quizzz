@@ -45,10 +45,11 @@ public class MainCtrl {
 
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
-     *  @param primaryStage store base stage of the application
+     *
+     * @param primaryStage store base stage of the application
      * @param splash       Controller and Scene pair for the splash screen of the application
      * @param multi        Controller and Scene pair for the multiplayer screen of the application
-     * @param leaderboard
+     * @param leaderboard  Controller and Scene pair for the leaderboard screen of the application
      */
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
                            Pair<MultiplayerCtrl, Parent> multi,
@@ -141,6 +142,7 @@ public class MainCtrl {
                     }
                 });
             }
+
             @Override
             public boolean cancel() {
                 return super.cancel();
@@ -160,7 +162,7 @@ public class MainCtrl {
     }
 
     /**
-     * Sets the current room to the leaderboard screen.
+     * Sets the current screen to the leaderboard screen.
      */
     public void showLeaderboard() {
         primaryStage.setTitle("LeaderBoard");
