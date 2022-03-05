@@ -35,7 +35,10 @@ public class SplashCtrl {
     private TextField usernameField;
 
     @FXML
-    private Text usernameWarning;
+    private Text duplUsername;
+
+    @FXML
+    private Text invalidUserName;
 
     @Inject
     public SplashCtrl(ServerUtils server, MainCtrl mainCtrl) {
@@ -69,26 +72,50 @@ public class SplashCtrl {
     }
 
     /**
+     * Check whether a given username is valid or not. Valid usernames are non-empty and contain only letters and/or
+     * numbers
+     * @param username - the username whose validity is to be determined
+     * @return true if username is valid, false otherwise
+     */
+    public boolean isUsernameValid(String username) {
+        if(username.isBlank()) return false;
+        for (int i = 0; i < username.length(); i++) {
+            if ((Character.isLetterOrDigit(username.charAt(i)) == false)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Initialize setup for main controller's showMultiplayer() method. Creates a new session if no free session is
      * available and adds the player to the session.
-     * In case a player enters a username already present in the current multiplayer session's waiting area, they are
-     * not added to the session, instead being prompted to change their username.
+     * In case a player enters a username already present in the current multiplayer session's waiting area, or an
+     * invalid/blank username, they are not added to the session, instead being prompted to change their username.
      */
     public void showWaitingArea() {
         String newUserName = usernameField.getText();
 
         Optional<Player> existingPlayer = server
                 .getPlayers(1L)
-                        .stream().filter(p -> p.username.equals(newUserName))
-                        .findFirst();
+                .stream().filter(p -> p.username.equals(newUserName))
+                .findFirst();
 
-        if(existingPlayer.isPresent()){
-            usernameWarning.setOpacity(1);
+        if(existingPlayer.isPresent()) {
+            invalidUserName.setOpacity(0);
+            duplUsername.setOpacity(1);
+            usernameField.clear();
+        }
+
+        else if(!isUsernameValid(newUserName)) {
+            duplUsername.setOpacity(0);
+            invalidUserName.setOpacity(1);
             usernameField.clear();
         }
 
         else {
-            usernameWarning.setOpacity(0);
+            duplUsername.setOpacity(0);
+            invalidUserName.setOpacity(0);
             server.addPlayer(1L /*waiting area id*/, new Player(newUserName));
             var playerId = server
                     .getPlayers(1L)
@@ -103,15 +130,24 @@ public class SplashCtrl {
      */
     public void showSinglePlayer() {
         String newUserName = usernameField.getText();
-        GameSession newSession = new GameSession("multiplayer",
-                List.of(new Player(newUserName)));
-        newSession = server.addSession(newSession);
-        var playerId = server
-                .getPlayers(newSession.id)
-                .stream().filter(p -> p.username.equals(newUserName))
-                .findFirst().get().id;
 
-        mainCtrl.showSinglePlayer(newSession.id, playerId);
+        if(!isUsernameValid(newUserName)) {
+            invalidUserName.setOpacity(1);
+            usernameField.clear();
+        }
+
+        else {
+            invalidUserName.setOpacity(0);
+            GameSession newSession = new GameSession("multiplayer",
+                    List.of(new Player(newUserName)));
+            newSession = server.addSession(newSession);
+            var playerId = server
+                    .getPlayers(newSession.id)
+                    .stream().filter(p -> p.username.equals(newUserName))
+                    .findFirst().get().id;
+
+            mainCtrl.showSinglePlayer(newSession.id, playerId);
+        }
     }
 
     /**
