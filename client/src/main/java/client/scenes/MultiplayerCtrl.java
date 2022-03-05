@@ -101,10 +101,7 @@ public class MultiplayerCtrl {
     /**
      * Refreshes the multiplayer player board for the current session.
      */
-//    public boolean refresh() {
-//        GameSession session = server.getSession(sessionId);
-//        return (session.playersAnswered == session.players.size());
-//    }
+
 
     private void renderMultipleChoiceQuestion(Question q) {
         double yPosition = 0.0;
