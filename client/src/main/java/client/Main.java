@@ -56,7 +56,12 @@ public class Main extends Application {
             try {
                 waitingArea.getKey().shutdown();
             } catch (Exception exit) {
-                multiplayer.getKey().shutdown();
+                try {
+                    multiplayer.getKey().shutdown();
+                }
+                catch (Exception exit2) {
+                    game.getKey().shutdown();
+                }
             }
         });
 

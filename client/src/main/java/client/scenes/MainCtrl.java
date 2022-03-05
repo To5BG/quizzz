@@ -148,6 +148,7 @@ public class MainCtrl {
     public void showSinglePlayer(long sessionId, long playerId) {
         primaryStage.setTitle("Singe player game");
         primaryStage.setScene(gameScreen);
+        gameScreen.setOnKeyPressed(e -> gameCtrl.keyPressed(e));
         gameCtrl.setSessionId(sessionId);
         gameCtrl.setPlayerId(playerId);
         gameCtrl.loadQuestion();

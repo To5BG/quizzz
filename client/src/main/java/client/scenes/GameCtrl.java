@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 
 import java.util.ArrayList;
@@ -103,6 +104,17 @@ public class GameCtrl {
         }
     }
 
+
+    private void renderCorrectAnswer(Evaluation eval) {
+        switch (eval.type) {
+            case MULTIPLE_CHOICE:
+                renderMultipleChoiceAnswers(eval.correctAnswers);
+                break;
+            default:
+                throw new UnsupportedOperationException("Currently only multiple choice answers can be rendered");
+        }
+    }
+
     public void loadQuestion() {
         Question q = this.server.fetchOneQuestion(this.sessionId);
         this.currentQuestion = q;
@@ -136,18 +148,15 @@ public class GameCtrl {
         this.timerThread.start();
     }
 
-    private void renderCorrectAnswer(Evaluation eval) {
-        switch (eval.type) {
-            case MULTIPLE_CHOICE:
-                renderMultipleChoiceAnswers(eval.correctAnswers);
-                break;
-            default:
-                throw new UnsupportedOperationException("Currently only multiple choice answers can be rendered");
-        }
+    public void shutdown() {
+        server.removePlayer(sessionId, playerId);
+        server.removeSession(sessionId);
+        setPlayerId(0);
+        setSessionId(0);
     }
 
-    public void gameCleanup() {
-        server.removeSession(sessionId);
+    public void back() {
+        shutdown();
         this.questionPrompt.setText("[Question]");
         this.answerArea.getChildren().clear();
         this.pointsLabel.setText("Points: 0");
@@ -156,6 +165,17 @@ public class GameCtrl {
         this.currentQuestion = null;
         this.submitButton.setDisable(true);
         main.showSplash();
+    }
+
+    /**
+     * Switch method that maps keyboard key presses to functions.
+     *
+     * @param e KeyEvent to be switched
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ESCAPE -> back();
+        }
     }
 
     public void renderPoints() {
@@ -169,7 +189,7 @@ public class GameCtrl {
         this.submitButton.setDisable(true);
 
         Answer ans = new Answer(currentQuestion.type);
-        for (int i = 0 ; i < multiChoiceAnswers.size(); ++i) {
+        for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
             if (multiChoiceAnswers.get(i).isSelected()) {
                 ans.addAnswer(i);
             }
@@ -187,7 +207,7 @@ public class GameCtrl {
                 Platform.runLater(() -> {
                     if (++rounds == GAME_ROUNDS) {
                         // TODO display leaderboard things here
-                        gameCleanup();
+                        back();
                     } else {
                         loadQuestion();
                     }
