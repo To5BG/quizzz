@@ -215,7 +215,7 @@ public class GameCtrl {
     /**
      * Disable button so the player can not interact with it
      * @param button - Button to be disabled
-     * @param disable - boolean value wheter the button should be disabled or enabled
+     * @param disable - boolean value whether the button should be disabled or enabled
      */
     public void disableButton(Button button, boolean disable) {
         button.setDisable(disable);
@@ -227,13 +227,11 @@ public class GameCtrl {
      */
     public void removeOneAnswer() {
         disableButton(removeOneButton, true);
-        Answer ans = new Answer(currentQuestion.type);
-        Evaluation eval = api.submitAnswer(sessionId, ans);
 
-        switch (eval.type) {
+        switch (currentQuestion.type) {
             case MULTIPLE_CHOICE:
                 List<Integer> incorrectAnswers = new ArrayList<>();
-                List<Integer> correctAnswers = eval.correctAnswers;
+                List<Integer> correctAnswers = api.getCorrectAnswers(sessionId);
                 for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
                     if (!correctAnswers.contains(i)) {
                         incorrectAnswers.add(i);

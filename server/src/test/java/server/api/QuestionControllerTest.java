@@ -65,4 +65,14 @@ public class QuestionControllerTest {
         assertEquals(expectedAnswers, eval.correctAnswers);
         assertEquals(Question.QuestionType.MULTIPLE_CHOICE, eval.type);
     }
+
+    @Test
+    public void testGetAnswers() {
+        GameSession s = session.getAllSessions().get(0);
+        ResponseEntity<List<Integer>> resp = sut.getCorrectAnswers(s.id);
+        assertEquals(HttpStatus.OK, resp.getStatusCode());
+        List<Integer> list = resp.getBody();
+        List<Integer> answers = session.getAllSessions().get(0).expectedAnswers;
+        assertEquals(answers, list);
+    }
 }
