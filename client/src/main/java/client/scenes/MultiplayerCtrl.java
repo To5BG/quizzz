@@ -183,7 +183,7 @@ public class MultiplayerCtrl {
     }
 
     public void gameCleanup() {
-        server.removeSession(sessionId);
+        if (server.getSession(sessionId).players.size() - 1 == 0) { server.removeSession(sessionId); }
         this.questionPrompt.setText("[Question]");
         this.answerArea.getChildren().clear();
         this.pointsLabel.setText("Points: 0");
@@ -203,6 +203,7 @@ public class MultiplayerCtrl {
         answerArea.getChildren().add(rb); */
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
         this.submitButton.setDisable(true);
+        server.getSession(sessionId).playersReady++;
 
         Answer ans = new Answer(currentQuestion.type);
         for (int i = 0 ; i < multiChoiceAnswers.size(); ++i) {
@@ -213,6 +214,10 @@ public class MultiplayerCtrl {
 
         Evaluation eval = server.submitAnswer(sessionId, ans);
         points += eval.points;
+
+        while(server.getSession(sessionId).playersReady != server.getSession(sessionId).players.size()){
+            System.out.println(server.getSession(sessionId).playersReady);
+        }
         renderPoints();
         renderCorrectAnswer(eval);
 
