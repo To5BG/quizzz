@@ -189,6 +189,12 @@ public class ServerUtils {
                 });
     }
 
+    /**
+     * Fetches a question from the server database
+     *
+     * @param sessionId Session to check
+     * @return Question object related to the session with the provided id
+     */
     public Question fetchOneQuestion(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/questions/" + sessionId)
@@ -198,6 +204,13 @@ public class ServerUtils {
                 });
     }
 
+    /**
+     * Submits an answer to the server database
+     *
+     * @param sessionId Session Id to send the answer to
+     * @param answer    Answer object to be sent
+     * @return Evaluation object to check the provided answers
+     */
     public Evaluation submitAnswer(long sessionId, Answer answer) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/questions/" + sessionId)

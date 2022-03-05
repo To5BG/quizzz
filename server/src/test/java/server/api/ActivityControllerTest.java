@@ -24,7 +24,7 @@ public class ActivityControllerTest {
     }
 
     @Test
-    public void cannotAddNullActivity() {
+    public void cannotAddNullActivityTest() {
         var actual = sut.addActivity(getActivity(null));
         assertEquals(BAD_REQUEST, actual.getStatusCode());
     }
@@ -35,14 +35,16 @@ public class ActivityControllerTest {
         var actual = ResponseEntity.ok(sut.getAllActivities());
         assertTrue(List.of(getActivity("a1")).equals(actual.getBody()));
     }
+
     @Test
-    public void getOneActivity() {
+    public void getOneActivityTest() {
         Activity activity = getActivity("a1");
         sut.addActivity(activity);
         assertEquals(sut.getActivityById(0L).getBody(), activity);
     }
+
     @Test
-    public void getInvalidActivity() {
+    public void getInvalidActivityTest() {
         //sut.addActivity(getActivity("a1"));
         var actual = sut.getActivityById(0L);
         assertEquals(actual.getStatusCode(), BAD_REQUEST);
@@ -56,6 +58,7 @@ public class ActivityControllerTest {
         var actual = ResponseEntity.ok(sut.updateActivityById(0L, other)).getBody();
         assertEquals(other, actual.getBody());
     }
+
     @Test
     public void updateInvalidIdActivityTest() {
         Activity activity = getActivity("a1");
@@ -64,6 +67,7 @@ public class ActivityControllerTest {
         var actual = ResponseEntity.ok(sut.updateActivityById(42L, other)).getBody();
         assertEquals(BAD_REQUEST, actual.getStatusCode());
     }
+
     @Test
     public void updateInvalidUpdateActivityTest() {
         Activity activity = getActivity("a1");
@@ -74,21 +78,22 @@ public class ActivityControllerTest {
     }
 
     @Test
-    public void deleteActivityTest(){
+    public void deleteActivityTest() {
         Activity activity = getActivity("a1");
         sut.addActivity(activity);
         var actual = ResponseEntity.ok(sut.removeActivityById(0L)).getBody();
         assertEquals(NO_CONTENT, actual.getStatusCode());
     }
+
     @Test
-    public void deleteInvalidActivityTest(){
+    public void deleteInvalidActivityTest() {
         sut.addActivity(getActivity("a1"));
         var actual = sut.removeActivityById(2L);
         assertEquals(actual.getStatusCode(), NOT_FOUND);
     }
 
     @Test
-    public void databaseIsUsed() {
+    public void databaseIsUsedTest() {
         sut.addActivity(getActivity("a1"));
         repo.calledMethods.contains("save");
     }

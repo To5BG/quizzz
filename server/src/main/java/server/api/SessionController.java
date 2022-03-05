@@ -48,6 +48,11 @@ public class SessionController {
         }
     }
 
+    /**
+     * Updates session in database. Called when changes to existing entries are made
+     *
+     * @param session Session to update
+     */
     public void updateSession(GameSession session) {
         if (isInvalid(session.id)) return;
         this.repo.save(session);
@@ -156,11 +161,18 @@ public class SessionController {
     }
 
 
+    /**
+     * Updates status of game session
+     *
+     * @param sessionId Id of session to update
+     * @param status    new status of game session
+     * @return The updated game session
+     */
     @PutMapping("/{id}/status")
     public ResponseEntity<GameSession> updateStatus(@PathVariable("id") long sessionId, @RequestBody String status) {
         if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = repo.findById(sessionId).get();
-        session.updateStatus(status);
+        session.setSessionStatus(status);
         repo.save(session);
         return ResponseEntity.ok(session);
     }

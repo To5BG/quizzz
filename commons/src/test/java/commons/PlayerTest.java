@@ -30,7 +30,7 @@ public class PlayerTest {
 	}
 
 	@Test
-	public void equalsHashCode() {
+	public void equalsHashCodeTest() {
 		var p = new Player("test");
 		var p2 = new Player("test");
 		assertEquals(p2, p2);
@@ -38,7 +38,7 @@ public class PlayerTest {
 	}
 
 	@Test
-	public void notEqualsHashCode() {
+	public void notEqualsHashCodeTest() {
 		var p = new Player("test");
 		var p2 = new Player("test2");
 		assertNotEquals(p, p2);
@@ -46,7 +46,7 @@ public class PlayerTest {
 	}
 
 	@Test
-	public void hasToString() {
+	public void hasToStringTest() {
 		var str = new Player("test").toString();
 		assertTrue(str.contains(Player.class.getSimpleName()));
 		assertTrue(str.contains("\n"));

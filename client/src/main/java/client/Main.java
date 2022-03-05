@@ -58,8 +58,7 @@ public class Main extends Application {
             } catch (Exception exit) {
                 try {
                     multiplayer.getKey().shutdown();
-                }
-                catch (Exception exit2) {
+                } catch (Exception exit2) {
                     game.getKey().shutdown();
                 }
             }

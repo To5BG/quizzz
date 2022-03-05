@@ -23,6 +23,10 @@ public class Answer {
         answers = new ArrayList<Integer>();
     }
 
+    /**
+     * Adds answer to the list of answers
+     * @param answer index of answer to be included
+     */
     public void addAnswer(int answer) {
         answers.add(answer);
     }

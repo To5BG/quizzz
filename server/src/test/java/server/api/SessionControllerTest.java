@@ -42,7 +42,7 @@ public class SessionControllerTest {
     }
 
     @Test
-    public void createEmptySession() {
+    public void testCreateEmptySession() {
         var actual = sut.addSession(new GameSession("multiplayer"));
         assertEquals(OK, actual.getStatusCode());
     }

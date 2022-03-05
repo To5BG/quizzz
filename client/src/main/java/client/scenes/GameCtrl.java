@@ -68,6 +68,34 @@ public class GameCtrl {
         this.playerId = playerId;
     }
 
+    /**
+     * Load general question information
+     * @param q
+     */
+    private void renderGeneralInformation(Question q) {
+        this.questionPrompt.setText(q.prompt);
+        // TODO load image
+    }
+
+    /**
+     * Switch method to render answer options for a given question
+     *
+     * @param q Question from which to take the possible answers
+     */
+    private void renderAnswerFields(Question q) {
+        switch (q.type) {
+            case MULTIPLE_CHOICE:
+                renderMultipleChoiceQuestion(q);
+                break;
+            default:
+                throw new UnsupportedOperationException("Currently only multiple choice questions can be rendered");
+        }
+    }
+
+    /**
+     * Render question of the multiple choice question variant
+     * @param q
+     */
     private void renderMultipleChoiceQuestion(Question q) {
         double yPosition = 0.0;
         multiChoiceAnswers.clear();
@@ -81,30 +109,11 @@ public class GameCtrl {
         }
     }
 
-    private void renderMultipleChoiceAnswers(List<Integer> correctIndices) {
-        for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
-            if (correctIndices.contains(i)) {
-                multiChoiceAnswers.get(i).setStyle("-fx-background-color: green");
-            }
-        }
-    }
-
-    private void renderGeneralInformation(Question q) {
-        this.questionPrompt.setText(q.prompt);
-        // TODO load image
-    }
-
-    private void renderAnswerFields(Question q) {
-        switch (q.type) {
-            case MULTIPLE_CHOICE:
-                renderMultipleChoiceQuestion(q);
-                break;
-            default:
-                throw new UnsupportedOperationException("Currently only multiple choice questions can be rendered");
-        }
-    }
-
-
+    /**
+     * Switch method to render correct answers based on the question type
+     *
+     * @param eval Evaluation containing the true answers
+     */
     private void renderCorrectAnswer(Evaluation eval) {
         switch (eval.type) {
             case MULTIPLE_CHOICE:
@@ -115,6 +124,21 @@ public class GameCtrl {
         }
     }
 
+    /**
+     * Render answers of the multiple choice question variant
+     * @param correctIndices Indexes of the correct answer(s)
+     */
+    private void renderMultipleChoiceAnswers(List<Integer> correctIndices) {
+        for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
+            if (correctIndices.contains(i)) {
+                multiChoiceAnswers.get(i).setStyle("-fx-background-color: green");
+            }
+        }
+    }
+
+    /**
+     * Loads a question and updates the timer bar
+     */
     public void loadQuestion() {
         Question q = this.server.fetchOneQuestion(this.sessionId);
         this.currentQuestion = q;
@@ -148,6 +172,9 @@ public class GameCtrl {
         this.timerThread.start();
     }
 
+    /**
+     * Removes player from session, along with the singleplayer session. Also called if controller is closed forcibly
+     */
     public void shutdown() {
         server.removePlayer(sessionId, playerId);
         server.removeSession(sessionId);
@@ -155,6 +182,9 @@ public class GameCtrl {
         setSessionId(0);
     }
 
+    /**
+     * Reverts the player to the splash screen and remove him from the current game session.
+     */
     public void back() {
         shutdown();
         this.questionPrompt.setText("[Question]");
@@ -178,10 +208,16 @@ public class GameCtrl {
         }
     }
 
+    /**
+     * Called when player points are rendered or updated
+     */
     public void renderPoints() {
         pointsLabel.setText(String.format("Points: %d", this.points));
     }
 
+    /**
+     * Submit an answer to the server
+     */
     public void submitAnswer() {
         /* RadioButton rb = new RadioButton("Answer option #1");
         answerArea.getChildren().add(rb); */

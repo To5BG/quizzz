@@ -58,8 +58,13 @@ public class MultiplayerCtrl implements Initializable {
         userName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
     }
 
+    /**
+     * Removes player from the current session and also the session itself if empty.
+     * Also called if controller is closed forcibly
+     */
     public void shutdown() {
         if (sessionId != 0) server.removePlayer(sessionId, playerId);
+        if (server.getPlayers(sessionId).size() == 0) server.removeSession(sessionId);
     }
 
     /**
@@ -67,8 +72,6 @@ public class MultiplayerCtrl implements Initializable {
      */
     public void back() {
         shutdown();
-        var session = server.getSession(sessionId);
-        if (session.players.size() == 0) server.removeSession(sessionId);
         sessionId = playerId = 0L;
         mainCtrl.showSplash();
     }

@@ -19,6 +19,12 @@ public class QuestionController {
         this.sessions = sessions;
     }
 
+    /**
+     * Getter for current question of game session
+     *
+     * @param sessionId Id of session to fetch
+     * @return Game session's question
+     */
     @GetMapping(path = "/{sessionId}")
     public ResponseEntity<Question> getOneQuestion(@PathVariable("sessionId") long sessionId) {
         ResponseEntity<GameSession> session = sessions.getSessionById(sessionId);
@@ -29,6 +35,13 @@ public class QuestionController {
         return ResponseEntity.ok(session.getBody().currentQuestion);
     }
 
+    /**
+     * Submit an answer to the game session
+     *
+     * @param sessionId Id of game session to submit answer to
+     * @param answer    Answer object of submission
+     * @return Evaluation of answer's correctness
+     */
     @PostMapping(path = "/{sessionId}")
     public ResponseEntity<Evaluation> submitAnswer(@PathVariable("sessionId") long sessionId,
                                                    @RequestBody Answer answer) {

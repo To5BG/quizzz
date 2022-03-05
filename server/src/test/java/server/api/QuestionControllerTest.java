@@ -43,7 +43,7 @@ public class QuestionControllerTest {
     }
 
     @Test
-    public void submitAnswerNoSession() {
+    public void submitAnswerNoSessionTest() {
         ResponseEntity<Evaluation> resp = sut.submitAnswer(42L,
                 new Answer(Question.QuestionType.MULTIPLE_CHOICE));
 
@@ -51,7 +51,7 @@ public class QuestionControllerTest {
     }
 
     @Test
-    public void submitAnswer() {
+    public void submitAnswerTest() {
         GameSession s = session.getAllSessions().get(0);
         System.out.println(s);
         List<Integer> expectedAnswers = List.copyOf(s.expectedAnswers);

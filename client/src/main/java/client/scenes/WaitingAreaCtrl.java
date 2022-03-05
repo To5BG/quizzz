@@ -66,7 +66,7 @@ public class WaitingAreaCtrl implements Initializable {
     }
 
     /**
-     * Called if controller is closed forcibly
+     * Removes player from session. Also called if controller is closed forcibly
      */
     public void shutdown() {
         if (readyButton.getText().equals("Not Ready")) server.toggleReady(WAITING_AREA_ID, false);

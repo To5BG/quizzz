@@ -56,6 +56,9 @@ public class GameSession {
         if (sessionType.equals("waiting_area")) this.sessionStatus = "waiting_area";
     }
 
+    /**
+     * Called when a new player has triggered a ready event
+     */
     public void setPlayerReady() {
         if (sessionType.equals("waiting_area")) {
             if (playersReady >= players.size()) return;
@@ -67,15 +70,28 @@ public class GameSession {
         }
     }
 
+    /**
+     * Called when a player has triggered a non-ready event
+     */
     public void unsetPlayerReady() {
         if (playersReady <= 0) return;
         playersReady--;
     }
 
+    /**
+     * Adds a player to the list of players
+     *
+     * @param player Player to be added
+     */
     public void addPlayer(Player player) {
         players.add(player);
     }
 
+    /**
+     * Removes a player from the list of players
+     *
+     * @param player Player to be removed
+     */
     public void removePlayer(Player player) {
         players.remove(player);
     }
@@ -84,10 +100,13 @@ public class GameSession {
         this.currentQuestion = question;
     }
 
-    public void updateStatus(String sessionStatus) {
+    public void setSessionStatus(String sessionStatus) {
         this.sessionStatus = sessionStatus;
     }
 
+    /**
+     * Updates the question of the game session
+     */
     public void updateQuestion() {
         Question q = new Question(
                 "Question #" + questionCounter++,
