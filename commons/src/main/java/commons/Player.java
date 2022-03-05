@@ -22,6 +22,9 @@ public class Player {
 
     public String username;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    public Answer answer;
+
     @SuppressWarnings("unused")
     private Player() {
         // for object mapper
@@ -29,6 +32,11 @@ public class Player {
 
     public Player(String username) {
         this.username = username;
+        this.answer = null;
+    }
+
+    public void setAnswer(Answer ans) {
+        this.answer = ans;
     }
 
     @Override

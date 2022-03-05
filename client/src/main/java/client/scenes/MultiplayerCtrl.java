@@ -101,7 +101,28 @@ public class MultiplayerCtrl {
     /**
      * Refreshes the multiplayer player board for the current session.
      */
-
+    public void refresh() {
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (server.getSession(sessionId).playersReady
+                                    == server.getSession(sessionId).players.size()) startEvaluation();
+                        } catch (Exception e) {
+                            cancel();
+                        }
+                    }
+                });
+            }
+            @Override
+            public boolean cancel() {
+                return super.cancel();
+            }
+        }, 0, 500);
+    }
 
     private void renderMultipleChoiceQuestion(Question q) {
         double yPosition = 0.0;
@@ -203,7 +224,6 @@ public class MultiplayerCtrl {
         answerArea.getChildren().add(rb); */
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
         this.submitButton.setDisable(true);
-        server.getSession(sessionId).playersReady++;
 
         Answer ans = new Answer(currentQuestion.type);
         for (int i = 0 ; i < multiChoiceAnswers.size(); ++i) {
@@ -211,13 +231,16 @@ public class MultiplayerCtrl {
                 ans.addAnswer(i);
             }
         }
+        server.addPlayerAnswer(sessionId, playerId, ans);
+        server.toggleReady(sessionId, true);
+        refresh();
+    }
 
+    public void startEvaluation() {
+        Answer ans = server.getPlayerAnswer(sessionId, playerId);
         Evaluation eval = server.submitAnswer(sessionId, ans);
         points += eval.points;
 
-        while(server.getSession(sessionId).playersReady != server.getSession(sessionId).players.size()){
-            System.out.println(server.getSession(sessionId).playersReady);
-        }
         renderPoints();
         renderCorrectAnswer(eval);
 

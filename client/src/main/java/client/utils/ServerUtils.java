@@ -205,4 +205,21 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(answer, APPLICATION_JSON), Evaluation.class);
     }
+
+    public Answer addPlayerAnswer(long sessionId, long playerId, Answer answer) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId + "/answered")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(answer, APPLICATION_JSON), Answer.class);
+    }
+
+    public Answer getPlayerAnswer(long sessionId, long playerId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId + "/answer")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Answer>() {
+                });
+    }
 }

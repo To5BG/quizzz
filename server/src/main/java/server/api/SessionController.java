@@ -1,5 +1,6 @@
 package server.api;
 
+import commons.Answer;
 import commons.GameSession;
 import commons.Player;
 import org.springframework.http.ResponseEntity;
@@ -216,6 +217,32 @@ public class SessionController {
         session.removePlayer(player);
         repo.save(session);
         return ResponseEntity.ok(player);
+    }
+
+    @GetMapping("/{id}/players/{playerId}/answer")
+    public ResponseEntity<Answer> getPlayerAnswer(@PathVariable("id") long sessionId,
+                                                  @PathVariable("playerId") long playerId) {
+
+        if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
+        GameSession session = repo.findById(sessionId).get();
+
+        Player player = session.players.stream().filter(p -> p.id == playerId).findFirst().orElse(null);
+        if (player == null) return ResponseEntity.badRequest().build();
+
+        return ResponseEntity.ok(player.answer);
+    }
+
+    @PostMapping("/{id}/players/{playerId}/answered")
+    public ResponseEntity<Answer> setAnswer(@PathVariable("id") long id, @PathVariable long playerId, Answer ans) {
+
+        if (isInvalid(id)) return ResponseEntity.badRequest().build();
+        GameSession session = repo.findById(id).get();
+
+        Player player = session.players.stream().filter(p -> p.id == playerId).findFirst().orElse(null);
+        if (player == null) return ResponseEntity.badRequest().build();
+
+        player.setAnswer(ans);
+        return ResponseEntity.ok(ans);
     }
 
     /**
