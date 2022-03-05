@@ -218,8 +218,6 @@ public class SessionController {
         return ResponseEntity.ok(player);
     }
 
-//
-
     /**
      * Checks whether a string is empty or null.
      *
