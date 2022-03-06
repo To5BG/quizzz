@@ -30,37 +30,50 @@ public class GameSession {
     public int playersReady;
     public int questionCounter;
 
-    public String sessionType;
-    public String sessionStatus;
+    public SessionType sessionType;
+    public enum SessionType {
+        WAITING_AREA,
+        MULTIPLAYER,
+        SINGLEPLAYER
+    }
+
+    public SessionStatus sessionStatus;
+    public enum SessionStatus {
+        WAITING_AREA,
+        TRANSFERRING,
+        ONGOING,
+        STARTED,
+        PAUSED
+    }
 
     @SuppressWarnings("unused")
     private GameSession() {
         // for object mapper
     }
 
-    public GameSession(String sessionType) {
+    public GameSession(SessionType sessionType) {
         this(sessionType, new ArrayList<Player>(), new ArrayList<Integer>());
     }
 
-    public GameSession(String sessionType, List<Player> players) {
+    public GameSession(SessionType sessionType, List<Player> players) {
         this(sessionType, players, new ArrayList<Integer>());
     }
 
-    public GameSession(String sessionType, List<Player> players, List<Integer> expectedAnswers) {
+    public GameSession(SessionType sessionType, List<Player> players, List<Integer> expectedAnswers) {
         this.players = players;
         this.sessionType = sessionType;
         this.expectedAnswers = expectedAnswers;
         this.playersReady = 0;
         this.questionCounter = 0;
-        this.sessionStatus = "started";
-        if (sessionType.equals("waiting_area")) this.sessionStatus = "waiting_area";
+        this.sessionStatus = SessionStatus.STARTED;
+        if (sessionType == SessionType.WAITING_AREA) this.sessionStatus = SessionStatus.WAITING_AREA;
     }
 
     /**
      * Called when a new player has triggered a ready event
      */
     public void setPlayerReady() {
-        if (sessionType.equals("waiting_area")) {
+        if (sessionType == SessionType.WAITING_AREA) {
             if (playersReady >= players.size()) return;
             playersReady++;
         } else {
@@ -100,7 +113,7 @@ public class GameSession {
         this.currentQuestion = question;
     }
 
-    public void setSessionStatus(String sessionStatus) {
+    public void setSessionStatus(SessionStatus sessionStatus) {
         this.sessionStatus = sessionStatus;
     }
 

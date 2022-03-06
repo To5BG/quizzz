@@ -41,7 +41,7 @@ public class SessionController {
             stmt.executeUpdate("DELETE FROM GAME_SESSION");
             stmt.executeUpdate("DELETE FROM QUESTION");
             stmt.executeUpdate("ALTER SEQUENCE HIBERNATE_SEQUENCE RESTART WITH 1");
-            repo.save(new GameSession("waiting_area"));
+            repo.save(new GameSession(GameSession.SessionType.WAITING_AREA));
             if (resetPlayers) stmt.executeUpdate("DELETE FROM PLAYER");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -94,7 +94,8 @@ public class SessionController {
     @GetMapping({"/join"})
     public ResponseEntity<GameSession> getAvailableSession() {
         var session = repo.findAll().stream()
-                .filter(s -> s.sessionType.equals("multiplayer") && s.sessionStatus.equals("started"))
+                .filter(s -> s.sessionType == GameSession.SessionType.MULTIPLAYER &&
+                        s.sessionStatus == GameSession.SessionStatus.STARTED)
                 .findFirst();
         if (session.isEmpty()) return ResponseEntity.ok(null);
         else return ResponseEntity.ok(session.get());
@@ -124,8 +125,8 @@ public class SessionController {
 
         GameSession session = repo.findById(id).orElse(null);
         if (session != null) {
-            session.currentQuestion= null;
-            session.expectedAnswers= null;
+            session.currentQuestion = null;
+            session.expectedAnswers = null;
             updateSession(session);
             repo.delete(session);
         }
@@ -171,7 +172,8 @@ public class SessionController {
      * @return The updated game session
      */
     @PutMapping("/{id}/status")
-    public ResponseEntity<GameSession> updateStatus(@PathVariable("id") long sessionId, @RequestBody String status) {
+    public ResponseEntity<GameSession> updateStatus(@PathVariable("id") long sessionId,
+                                                    @RequestBody GameSession.SessionStatus status) {
         if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = repo.findById(sessionId).get();
         session.setSessionStatus(status);

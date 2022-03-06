@@ -33,26 +33,28 @@ public class SessionControllerTest {
     private TestGameSessionRepository repo;
 
     private SessionController sut;
+    private GameSession first;
 
     @BeforeEach
     public void setup() {
         random = new MyRandom();
         repo = new TestGameSessionRepository();
         sut = new SessionController(random, repo, "test");
+        first = new GameSession(GameSession.SessionType.MULTIPLAYER);
     }
 
     @Test
     public void testCreateEmptySession() {
-        var actual = sut.addSession(new GameSession("multiplayer"));
+        var actual = sut.addSession(first);
         assertEquals(OK, actual.getStatusCode());
     }
 
     @Test
     public void testUpdateSession() {
-        var actual = sut.addSession(new GameSession("multiplayer"));
+        var actual = sut.addSession(first);
         GameSession s = actual.getBody();
 
-        GameSession next = new GameSession("multiplayer");
+        GameSession next = new GameSession(GameSession.SessionType.MULTIPLAYER);
         next.id = s.id;
         next.playersReady = 42;
 
@@ -65,10 +67,10 @@ public class SessionControllerTest {
         var sessions = sut.getAllSessions();
         assertTrue(sessions.size() == 0);
 
-        sut.addSession(new GameSession("multiplayer"));
+        sut.addSession(first);
         assertTrue(sessions.size() == 1);
 
-        sut.addSession(new GameSession("multiplayer"));
+        sut.addSession(new GameSession(GameSession.SessionType.MULTIPLAYER));
         assertTrue(sessions.size() == 2);
 
         assertEquals(1, sessions.get(0).id);
@@ -82,7 +84,7 @@ public class SessionControllerTest {
         // make sure fetch returns null if no sessions were added
         assertEquals(sut.getAvailableSession().getBody(), null);
 
-        sut.addSession(new GameSession("multiplayer"));
+        sut.addSession(first);
         var availableSession = sut.getAvailableSession().getBody();
 
         // make sure that a game session is returned successfully
@@ -91,8 +93,8 @@ public class SessionControllerTest {
 
     @Test
     public void getSessionTest() {
-        GameSession firstSession = sut.addSession(new GameSession("multiplayer")).getBody();
-        sut.addSession(new GameSession("multiplayer"));
+        sut.addSession(first);
+        sut.addSession(new GameSession(GameSession.SessionType.MULTIPLAYER));
 
         //try to get an invalid session
         assertEquals(ResponseEntity.badRequest().build(), sut.getSessionById(42L));
@@ -101,19 +103,19 @@ public class SessionControllerTest {
         assertNotEquals(ResponseEntity.badRequest().build(), sut.getSessionById(2L));
 
         //make sure that when getting a session it does not alter the session
-        assertEquals(sut.getSessionById(1L).getBody(), firstSession);
+        assertEquals(sut.getSessionById(1L).getBody(), first);
     }
 
     @Test
     public void addSessionTest() {
-        var savedSession = sut.addSession(new GameSession("multiplayer")).getBody();
+        sut.addSession(first);
         assertTrue(repo.calledMethods.contains("save"));
-        assertEquals(savedSession, repo.findAll().get(0));
+        assertEquals(first, repo.findAll().get(0));
     }
 
     @Test
     public void deleteSessionTest() {
-        sut.addSession(new GameSession("multiplayer"));
+        sut.addSession(first);
         var deletedSession = sut.removeSession(1);
         assertTrue(repo.calledMethods.contains("delete"));
         assertTrue(repo.existsById(deletedSession.getBody().id));
@@ -121,37 +123,37 @@ public class SessionControllerTest {
 
     @Test
     public void getPlayersTest() {
-        GameSession session = sut.addSession(new GameSession("multiplayer")).getBody();
-        Player firstPlayer = sut.addPlayer(session.id, new Player("test")).getBody();
-        sut.addPlayer(session.id, new Player("test2"));
-        assertTrue(sut.getPlayers(session.id).getBody().size() == 2);
-        assertEquals(firstPlayer, sut.getPlayers(session.id).getBody().get(0));
+        sut.addSession(first);
+        Player firstPlayer = sut.addPlayer(first.id, new Player("test")).getBody();
+        sut.addPlayer(first.id, new Player("test2"));
+        assertTrue(sut.getPlayers(first.id).getBody().size() == 2);
+        assertEquals(firstPlayer, sut.getPlayers(first.id).getBody().get(0));
     }
 
     @Test
     public void addPlayerTest() {
-        GameSession session = sut.addSession(new GameSession("multiplayer")).getBody();
+        sut.addSession(first);
         // player list is empty at first
-        assertTrue(session.players.isEmpty());
-        Player player = sut.addPlayer(session.id, new Player("test")).getBody();
+        assertTrue(first.players.isEmpty());
+        Player player = sut.addPlayer(first.id, new Player("test")).getBody();
 
         // player list modified after operation
-        assertTrue(session.players.size() != 0);
+        assertTrue(first.players.size() != 0);
 
         // make sure the method refers to the same player
-        assertEquals(session.players.get(0), player);
+        assertEquals(first.players.get(0), player);
     }
 
     @Test
     public void removePlayerTest() {
-        GameSession session = sut.addSession(new GameSession("multiplayer")).getBody();
-        Player firstPlayer = sut.addPlayer(session.id, new Player("test")).getBody();
-        sut.addPlayer(session.id, new Player("test2"));
+        sut.addSession(first);
+        Player firstPlayer = sut.addPlayer(first.id, new Player("test")).getBody();
+        sut.addPlayer(first.id, new Player("test2"));
 
-        assertTrue(session.players.size() == 2);
+        assertTrue(first.players.size() == 2);
         assertEquals(ResponseEntity.badRequest().build(), sut.removePlayer(10, 5));
         assertEquals(ResponseEntity.badRequest().build(), sut.removePlayer(0, 10));
-        assertEquals(firstPlayer, sut.removePlayer(session.id, 0).getBody());
+        assertEquals(firstPlayer, sut.removePlayer(first.id, 0).getBody());
     }
 
     @SuppressWarnings("serial")

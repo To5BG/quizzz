@@ -15,6 +15,7 @@
  */
 package commons;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.stream.Collectors;
@@ -25,10 +26,16 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GameSessionTest {
 
     private static final Player SOME_PLAYER = new Player("test");
+    private static GameSession s = null;
+
+    @BeforeEach
+    public void setup() {
+        s = new GameSession(GameSession.SessionType.MULTIPLAYER,
+                Stream.of(SOME_PLAYER).collect(Collectors.toList()));
+    }
 
     @Test
     public void checkConstructor() {
-        var s = new GameSession("multiplayer", Stream.of(SOME_PLAYER).collect(Collectors.toList()));
         assertEquals(SOME_PLAYER, s.players.get(0));
         assertNotNull(s.expectedAnswers);
         assertSame(0, s.questionCounter);
@@ -37,8 +44,6 @@ public class GameSessionTest {
 
     @Test
     public void testAddPlayer() {
-        GameSession s = new GameSession("multiplayer",
-                Stream.of(SOME_PLAYER).collect(Collectors.toList()));
         Player p = new Player("test2");
         s.addPlayer(p);
         assertSame(2, s.players.size());
@@ -47,16 +52,12 @@ public class GameSessionTest {
 
     @Test
     public void testRemovePlayer() {
-        GameSession s = new GameSession("multiplayer",
-                Stream.of(SOME_PLAYER).collect(Collectors.toList()));
         s.removePlayer(SOME_PLAYER);
         assertSame(0, s.players.size());
     }
 
     @Test
     public void testUpdateQuestion() {
-        GameSession s = new GameSession("multiplayer",
-                Stream.of(SOME_PLAYER).collect(Collectors.toList()));
         s.updateQuestion();
         assertSame(1, s.expectedAnswers.size());
         assertSame(1, s.questionCounter);
@@ -66,8 +67,6 @@ public class GameSessionTest {
 
     @Test
     public void testPlayerAnswerMiddle() {
-        GameSession s = new GameSession("multiplayer",
-                Stream.of(SOME_PLAYER).collect(Collectors.toList()));
         Player p = new Player("test2");
         s.addPlayer(p);
         s.updateQuestion();
@@ -80,8 +79,6 @@ public class GameSessionTest {
 
     @Test
     public void testPlayerAnswerFinal() {
-        GameSession s = new GameSession("multiplayer",
-                Stream.of(SOME_PLAYER).collect(Collectors.toList()));
         s.updateQuestion();
         Question tmp = s.currentQuestion;
         s.setPlayerReady();
@@ -95,32 +92,42 @@ public class GameSessionTest {
 
     @Test
     public void testEquals() {
-        var a = new GameSession("multiplayer", Stream.of(new Player("blah"))
-                .collect(Collectors.toList()));
-        var b = new GameSession("multiplayer", Stream.of(new Player("blah"))
-                .collect(Collectors.toList()));
-        var c = new GameSession("multiplayer",
-                Stream.of(new Player("blahhh")).collect(Collectors.toList()));
+        var s2 = new GameSession(GameSession.SessionType.MULTIPLAYER,
+                Stream.of(new Player("blah"))
+                        .collect(Collectors.toList()));
 
-        assertEquals(a, a);
-        assertEquals(a, b);
-        assertNotEquals(a, c);
+        var s3 = new GameSession(GameSession.SessionType.MULTIPLAYER,
+                Stream.of(new Player("blah"))
+                        .collect(Collectors.toList()));
+
+        var s4 = new GameSession(GameSession.SessionType.MULTIPLAYER,
+                Stream.of(new Player("blahhh"))
+                        .collect(Collectors.toList()));
+
+        assertEquals(s2, s2);
+        assertEquals(s2, s3);
+        assertNotEquals(s, s4);
     }
 
     @Test
     public void testHashCode() {
-        var a = new GameSession("multiplayer", Stream.of(new Player("blah"))
-                .collect(Collectors.toList()));
-        var b = new GameSession("multiplayer", Stream.of(new Player("blah"))
-                .collect(Collectors.toList()));
-        assertEquals(a.hashCode(), a.hashCode());
-        assertEquals(a.hashCode(), b.hashCode());
+        var s2 = new GameSession(GameSession.SessionType.MULTIPLAYER,
+                Stream.of(new Player("blah"))
+                        .collect(Collectors.toList()));
+
+        var s3 = new GameSession(GameSession.SessionType.MULTIPLAYER,
+                Stream.of(new Player("blah"))
+                        .collect(Collectors.toList()));
+
+        assertEquals(s2.hashCode(), s2.hashCode());
+        assertEquals(s3.hashCode(), s3.hashCode());
     }
 
     @Test
     public void testToString() {
-        var s = new GameSession("multiplayer", Stream.of(new Player("blah"))
-                .collect(Collectors.toList()));
+        var s = new GameSession(GameSession.SessionType.MULTIPLAYER,
+                Stream.of(new Player("blah"))
+                        .collect(Collectors.toList()));
         String str = s.toString();
 
         System.out.println(str);

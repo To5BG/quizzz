@@ -165,7 +165,7 @@ public class ServerUtils {
      * @param status  new status to be set
      * @return The updated session
      */
-    public GameSession updateStatus(GameSession session, String status) {
+    public GameSession updateStatus(GameSession session, GameSession.SessionStatus status) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + session.id + "/status")
                 .request(APPLICATION_JSON)

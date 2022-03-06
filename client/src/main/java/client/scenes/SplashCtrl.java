@@ -83,7 +83,7 @@ public class SplashCtrl {
      */
     public void showSinglePlayer() {
         String newUserName = usernameField.getText();
-        GameSession newSession = new GameSession("multiplayer",
+        GameSession newSession = new GameSession(GameSession.SessionType.MULTIPLAYER,
                 List.of(new Player(newUserName)));
         newSession = server.addSession(newSession);
         var playerId = server
