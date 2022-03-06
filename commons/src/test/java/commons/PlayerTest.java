@@ -28,6 +28,13 @@ public class PlayerTest {
 	}
 
 	@Test
+	public void testSetPoint() {
+		var p = new Player("abc", 0);
+		p.setPoint(8);
+		assertEquals(8, p.point);
+	}
+
+	@Test
 	public void equalsHashCodeTest() {
 		var p = new Player("test",0);
 		var p2 = new Player("test",0);
