@@ -116,12 +116,7 @@ public class SplashCtrl {
     public void showWaitingArea() {
         String newUserName = usernameField.getText();
 
-        Optional<Player> existingPlayerInSession = server
-                .getPlayers(1L)
-                .stream().filter(p -> p.username.equals(newUserName))
-                .findFirst();
-
-        if(existingPlayerInSession.isPresent() || isDuplInDB(newUserName)) {
+        if(isDuplInDB(newUserName)) {
             invalidUserName.setOpacity(0);
             duplUsername.setOpacity(1);
             usernameField.clear();
