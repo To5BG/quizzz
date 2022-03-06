@@ -94,7 +94,7 @@ public class SplashCtrl {
      *
      * @param username username of the player to be checked
      */
-    public void removeDuplIfPresent(String username) {
+    public void removeDuplFromDB(String username) {
         for(GameSession gs : server.getSessions()) {
             long sessionid = gs.id;
             Optional<Player> existing = gs
@@ -137,7 +137,7 @@ public class SplashCtrl {
         }
 
         else {
-            removeDuplIfPresent(newUserName);
+            removeDuplFromDB(newUserName);
             duplUsername.setOpacity(0);
             invalidUserName.setOpacity(0);
             server.addPlayer(1L /*waiting area id*/, new Player(newUserName));
@@ -161,7 +161,7 @@ public class SplashCtrl {
         }
 
         else {
-            removeDuplIfPresent(newUserName);
+            removeDuplFromDB(newUserName);
             invalidUserName.setOpacity(0);
             GameSession newSession = new GameSession("multiplayer",
                     List.of(new Player(newUserName)));
