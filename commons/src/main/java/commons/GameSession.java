@@ -104,6 +104,10 @@ public class GameSession {
         this.expectedAnswers.add(new Random().nextInt(3));
     }
 
+    /**
+     * Returns the list of players in the game session
+     * @return list of players belonging to the game session
+     */
     public List<Player> getPlayers() {
         return players;
     }
