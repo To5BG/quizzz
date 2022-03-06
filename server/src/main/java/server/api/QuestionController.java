@@ -41,7 +41,6 @@ public class QuestionController {
         Evaluation eval = new Evaluation((answer.answers.equals(s.expectedAnswers)) ? 1 : 0,
                 s.currentQuestion.type, List.copyOf(s.expectedAnswers));
 
-        s.setPlayerReady();
         sessions.updateSession(s);
         return ResponseEntity.ok(eval);
     }

@@ -29,10 +29,10 @@ import java.util.*;
 
 public class MultiplayerCtrl {
 
-    private final int GAME_ROUNDS = 20;
+    private final int GAME_ROUNDS = 5;
     private final int GAME_ROUND_TIME = 10;
     private final int TIMER_UPDATE_INTERVAL_MS = 50;
-    private final int GAME_ROUND_DELAY = 5;
+    private final int GAME_ROUND_DELAY = 2;
 
     @FXML
     private StackPane answerArea;
@@ -227,6 +227,7 @@ public class MultiplayerCtrl {
         answerArea.getChildren().add(rb); */
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
         this.submitButton.setDisable(true);
+        server.toggleReady(sessionId, true);
 
         Answer ans = new Answer(currentQuestion.type);
         for (int i = 0 ; i < multiChoiceAnswers.size(); ++i) {
@@ -234,14 +235,15 @@ public class MultiplayerCtrl {
                 ans.addAnswer(i);
             }
         }
+
         server.addPlayerAnswer(sessionId, playerId, ans);
-        server.toggleReady(sessionId, true);
         var session = server.getSession(sessionId);
         if (session.playersReady == session.players.size()) server.updateStatus(session, "pause");
         refresh();
     }
 
     public void startEvaluation() {
+
         Answer ans = server.getPlayerAnswer(sessionId, playerId);
         Evaluation eval = server.submitAnswer(sessionId, ans);
         points += eval.points;
@@ -258,9 +260,8 @@ public class MultiplayerCtrl {
                         // TODO display leaderboard things here
                         gameCleanup();
                     } else {
-                        Integer playersReady = server.toggleReady(sessionId, false);
-                        System.out.println(playersReady);
-                        if (playersReady == 0) server.updateStatus(server.getSession(sessionId), "ongoing");
+                        GameSession session = server.toggleReady(sessionId, false);
+                        if (session.playersReady == 0) server.updateStatus(session, "ongoing");
                         loadQuestion();
                     }
                 });

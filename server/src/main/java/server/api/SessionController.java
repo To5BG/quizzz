@@ -133,12 +133,12 @@ public class SessionController {
      * @return new count of ready players
      */
     @GetMapping("/{id}/ready")
-    public ResponseEntity<Integer> setPlayerReady(@PathVariable("id") long sessionId) {
+    public ResponseEntity<GameSession> setPlayerReady(@PathVariable("id") long sessionId) {
         if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = repo.findById(sessionId).get();
         session.setPlayerReady();
         repo.save(session);
-        return ResponseEntity.ok(session.playersReady);
+        return ResponseEntity.ok(session);
     }
 
     /**
@@ -148,12 +148,12 @@ public class SessionController {
      * @return new count of ready players
      */
     @GetMapping("/{id}/notready")
-    public ResponseEntity<Integer> unsetPlayerReady(@PathVariable("id") long sessionId) {
+    public ResponseEntity<GameSession> unsetPlayerReady(@PathVariable("id") long sessionId) {
         if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = repo.findById(sessionId).get();
         session.unsetPlayerReady();
         repo.save(session);
-        return ResponseEntity.ok(session.playersReady);
+        return ResponseEntity.ok(session);
     }
 
 
@@ -219,7 +219,7 @@ public class SessionController {
         return ResponseEntity.ok(player);
     }
 
-    @GetMapping("/{id}/players/{playerId}/answer")
+    @GetMapping("/{id}/players/{playerId}")
     public ResponseEntity<Answer> getPlayerAnswer(@PathVariable("id") long sessionId,
                                                   @PathVariable("playerId") long playerId) {
 
@@ -232,7 +232,7 @@ public class SessionController {
         return ResponseEntity.ok(player.parsedAnswer());
     }
 
-    @PostMapping("/{id}/players/{playerId}/answered")
+    @PostMapping("/{id}/players/{playerId}")
     public ResponseEntity<Answer> setAnswer(@PathVariable("id") long id, @PathVariable long playerId,
                                             @RequestBody Answer ans) {
 
