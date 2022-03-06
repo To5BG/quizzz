@@ -26,9 +26,7 @@ public class Player {
     */
 
     public String username;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    public String answer;
+    public String ans;
 
     @SuppressWarnings("unused")
     private Player() {
@@ -37,21 +35,20 @@ public class Player {
 
     public Player(String username) {
         this.username = username;
-        this.answer = null;
     }
 
     public void setAnswer(Answer ans) {
-        this.answer = ans.toString();
+        this.ans = ans.toString().substring(ans.toString().indexOf("["));
     }
 
     public Answer parsedAnswer() {
-        String[] splitAnswer = this.answer.split("=");
+        String[] splitAnswer = this.ans.split("=");
         String answer = splitAnswer[1].substring(0,splitAnswer[1].indexOf("]"));
         List<Integer> answers = new ArrayList<>(
                 Arrays.stream(answer.split(","))
                         .map(Integer::valueOf)
                         .collect(Collectors.toList()));
-        Question.QuestionType type = null;
+        Question.QuestionType type;
         switch (splitAnswer[2].substring(0,splitAnswer[2].indexOf("]"))) {
             case "MULTIPLE_CHOICE" -> type = Question.QuestionType.MULTIPLE_CHOICE;
             default -> type = Question.QuestionType.UNKNOWN;

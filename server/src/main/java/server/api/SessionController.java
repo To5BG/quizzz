@@ -37,10 +37,10 @@ public class SessionController {
         try (Connection conn = DriverManager.getConnection("jdbc:h2:file:./quizzzz", "sa", "")) {
             Statement stmt = conn.createStatement();
             stmt.executeUpdate("DELETE FROM QUESTION_ANSWER_OPTIONS");
-            stmt.executeUpdate("DELETE FROM QUESTION");
             stmt.executeUpdate("DELETE FROM GAME_SESSION_EXPECTED_ANSWERS");
             stmt.executeUpdate("DELETE FROM GAME_SESSION_PLAYERS");
             stmt.executeUpdate("DELETE FROM GAME_SESSION");
+            stmt.executeUpdate("DELETE FROM QUESTION");
             stmt.executeUpdate("ALTER SEQUENCE HIBERNATE_SEQUENCE RESTART WITH 1");
             repo.save(new GameSession("waiting_area"));
             if (resetPlayers) stmt.executeUpdate("DELETE FROM PLAYER");
@@ -233,7 +233,8 @@ public class SessionController {
     }
 
     @PostMapping("/{id}/players/{playerId}/answered")
-    public ResponseEntity<Answer> setAnswer(@PathVariable("id") long id, @PathVariable long playerId, Answer ans) {
+    public ResponseEntity<Answer> setAnswer(@PathVariable("id") long id, @PathVariable long playerId,
+                                            @RequestBody Answer ans) {
 
         if (isInvalid(id)) return ResponseEntity.badRequest().build();
         GameSession session = repo.findById(id).get();
