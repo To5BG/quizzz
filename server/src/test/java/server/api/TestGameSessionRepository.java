@@ -132,10 +132,25 @@ public class TestGameSessionRepository implements SessionRepository {
         return null;
     }
 
+    private <S extends GameSession> boolean replaceIfExists(S entity) {
+        int idx = -1;
+        for (int i = 0; i < GameSessions.size(); ++i) {
+            if (GameSessions.get(i).id == entity.id) {
+                idx = i;
+                break;
+            }
+        }
+
+        if (idx == -1) return false;
+        GameSessions.set(idx, entity);
+        return true;
+    }
+
     @Override
     public <S extends GameSession> S save(S entity) {
         call("save");
-        entity.id = (long) GameSessions.size();
+        if (entity.id != 0 && replaceIfExists(entity)) return entity;
+        entity.id = (long) GameSessions.size() + 1;
         GameSessions.add(entity);
         return entity;
     }
@@ -164,7 +179,9 @@ public class TestGameSessionRepository implements SessionRepository {
 
     @Override
     public void delete(GameSession entity) {
-        //TODO delete from repo
+        calledMethods.add("delete");
+        call("delete");
+
     }
 
     @Override

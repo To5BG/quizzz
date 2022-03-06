@@ -19,9 +19,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.util.List;
 
-import commons.GameSession;
-import commons.Player;
-import jakarta.ws.rs.core.Response;
+import commons.*;
 import org.glassfish.jersey.client.ClientConfig;
 
 import jakarta.ws.rs.client.ClientBuilder;
@@ -50,7 +48,7 @@ public class ServerUtils {
      * @param sessionId the id of the session
      * @return List of all players from a session
      */
-    public List<Player> getPlayers(Long sessionId) {
+    public List<Player> getPlayers(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + sessionId + "/players")
                 .request(APPLICATION_JSON)
@@ -81,12 +79,12 @@ public class ServerUtils {
      * @param playerId  id of player to be removed
      * @return The response from player removal
      */
-    public Response removePlayer(long sessionId, long playerId) {
+    public Player removePlayer(long sessionId, long playerId) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .delete();
+                .delete(Player.class);
     }
 
     /**
@@ -143,7 +141,7 @@ public class ServerUtils {
                 .target(SERVER).path("api/sessions")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .put(Entity.entity(session, APPLICATION_JSON), GameSession.class);
+                .post(Entity.entity(session, APPLICATION_JSON), GameSession.class);
     }
 
     /**
@@ -152,11 +150,142 @@ public class ServerUtils {
      * @param sessionId Id of session to be removed
      * @return The response from session removal
      */
-    public Response removeSession(long sessionId) {
+    public GameSession removeSession(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + sessionId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .delete();
+                .delete(GameSession.class);
+    }
+
+    /**
+     * Updates a session status
+     *
+     * @param session Session to update
+     * @param status  new status to be set
+     * @return The updated session
+     */
+    public GameSession updateStatus(GameSession session, GameSession.SessionStatus status) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + session.id + "/status")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(status, APPLICATION_JSON), GameSession.class);
+    }
+
+    /**
+     * Sets and unsets a player as being ready for a multiplayer game
+     *
+     * @param sessionId
+     * @param isReady   True iff a player must be set as ready
+     * @return New count of players that are ready
+     */
+    public GameSession toggleReady(long sessionId, boolean isReady) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId + "/" + ((isReady) ? "" : "not") + "ready")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<GameSession>() {
+                });
+    }
+
+    /**
+     * Fetches a question from the server database
+     *
+     * @param sessionId Session to check
+     * @return Question object related to the session with the provided id
+     */
+    public Question fetchOneQuestion(long sessionId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/questions/" + sessionId)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Question>() {
+                });
+    }
+
+    /**
+     * Submits an answer to the server database
+     *
+     * @param sessionId Session Id to send the answer to
+     * @param answer    Answer object to be sent
+     * @return Evaluation object to check the provided answers
+     */
+    public Evaluation submitAnswer(long sessionId, Answer answer) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/questions/" + sessionId)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(answer, APPLICATION_JSON), Evaluation.class);
+    }
+
+    /**
+     * Stores the player's answer with that particular player.
+     *
+     * @param sessionId The current session.
+     * @param playerId  The player who answered.
+     * @param answer    The player's answer.
+     * @return          The player's answer.
+     */
+    public Answer addPlayerAnswer(long sessionId, long playerId, Answer answer) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(answer, APPLICATION_JSON), Answer.class);
+    }
+
+    /**
+     * Fetches the last answer of the player.
+     * @param sessionId The current session.
+     * @param playerId  The player who answered.
+     * @return          The player's answer.
+     */
+    public Answer getPlayerAnswer(long sessionId, long playerId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Answer>() {
+                });
+    }
+
+    /**
+     * Gets the list of positions of correct answers for a question from the server
+     * @param sessionId - long representing the current session
+     * @return a list of integer corresponding to the positions of correct answers for a question
+     */
+    public List<Integer> getCorrectAnswers(long sessionId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/questions/answers/" + sessionId)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Integer>>() {});
+    }
+
+    /**
+     * get player from the DB
+     * @return whether the getting is successful or not
+     */
+    public List<Player> getPlayersFromRepository() {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("api/leaderboard/") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Player>>() {
+                });
+    }
+
+    /**
+     * add a new player to the DB
+     * @param player the player to be added
+     * @return a message to show whether the adding is successful or not
+     */
+    public Player addPlayerToRepository(Player player) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("api/leaderboard") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(player, APPLICATION_JSON), Player.class);
     }
 }

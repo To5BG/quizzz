@@ -18,7 +18,6 @@ package server.api;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.OK;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import commons.GameSession;
@@ -34,18 +33,33 @@ public class SessionControllerTest {
     private TestGameSessionRepository repo;
 
     private SessionController sut;
+    private GameSession first;
 
     @BeforeEach
     public void setup() {
         random = new MyRandom();
         repo = new TestGameSessionRepository();
-        sut = new SessionController(random, repo);
+        sut = new SessionController(random, repo, "test");
+        first = new GameSession(GameSession.SessionType.MULTIPLAYER);
     }
 
     @Test
-    public void createEmptySession() {
-        var actual = sut.addSession(new GameSession(new ArrayList<>()));
+    public void testCreateEmptySession() {
+        var actual = sut.addSession(first);
         assertEquals(OK, actual.getStatusCode());
+    }
+
+    @Test
+    public void testUpdateSession() {
+        var actual = sut.addSession(first);
+        GameSession s = actual.getBody();
+
+        GameSession next = new GameSession(GameSession.SessionType.MULTIPLAYER);
+        next.id = s.id;
+        next.playersReady = 42;
+
+        sut.updateSession(next);
+        assertEquals(42, repo.GameSessions.get(0).playersReady);
     }
 
     @Test
@@ -53,99 +67,93 @@ public class SessionControllerTest {
         var sessions = sut.getAllSessions();
         assertTrue(sessions.size() == 0);
 
-        sut.addSession(new GameSession(new ArrayList<>()));
+        sut.addSession(first);
         assertTrue(sessions.size() == 1);
 
-        // Instead of defaulting the arraylist in a new constructor a new array is passed every time
-        // due to the comment below the default constructor that says "for object mapper"
-        sut.addSession(new GameSession(new ArrayList<>()));
+        sut.addSession(new GameSession(GameSession.SessionType.MULTIPLAYER));
         assertTrue(sessions.size() == 2);
 
-        assertEquals(0, sessions.get(0).id);
-        assertEquals(1, sessions.get(1).id);
+        assertEquals(1, sessions.get(0).id);
+        assertEquals(2, sessions.get(1).id);
     }
 
     @Test
     public void getAvailableSessionTest() {
 
         var newSession = sut.getAvailableSession();
-        // make sure that not a new session is created, since one is already available
-        assertEquals(sut.getAvailableSession(), newSession);
+        // make sure fetch returns null if no sessions were added
+        assertEquals(sut.getAvailableSession().getBody(), null);
 
-        sut.addSession(new GameSession(new ArrayList<>()));
+        sut.addSession(first);
         var availableSession = sut.getAvailableSession().getBody();
 
         // make sure that a game session is returned successfully
         assertTrue(availableSession.getClass() == GameSession.class);
-
-        // make sure that the returned available session is not different from the new session
-        assertEquals(availableSession, newSession.getBody());
     }
 
     @Test
     public void getSessionTest() {
-        GameSession firstSession = sut.addSession(new GameSession(new ArrayList<>())).getBody();
-        sut.addSession(new GameSession(new ArrayList<>()));
+        sut.addSession(first);
+        sut.addSession(new GameSession(GameSession.SessionType.MULTIPLAYER));
 
         //try to get an invalid session
         assertEquals(ResponseEntity.badRequest().build(), sut.getSessionById(42L));
 
         //make sure that it gets a valid session successfully
-        assertNotEquals(ResponseEntity.badRequest().build(), sut.getSessionById(1L));
+        assertNotEquals(ResponseEntity.badRequest().build(), sut.getSessionById(2L));
 
         //make sure that when getting a session it does not alter the session
-        assertEquals(sut.getSessionById(0L).getBody(), firstSession);
+        assertEquals(sut.getSessionById(1L).getBody(), first);
     }
 
     @Test
     public void addSessionTest() {
-        var savedSession = sut.addSession(new GameSession(new ArrayList<>())).getBody();
+        sut.addSession(first);
         assertTrue(repo.calledMethods.contains("save"));
-        assertEquals(savedSession, repo.findAll().get(0));
+        assertEquals(first, repo.findAll().get(0));
     }
 
     @Test
     public void deleteSessionTest() {
-        /*
-        var deletedSession = sut.removeSession(1).getBody();
-        repo.calledMethods.contains("delete");
-        assertTrue(repo.existsById(deletedSession.id));
-         */
+        sut.addSession(first);
+        var deletedSession = sut.removeSession(1);
+        assertTrue(repo.calledMethods.contains("delete"));
+        assertTrue(repo.existsById(deletedSession.getBody().id));
     }
 
     @Test
     public void getPlayersTest() {
-        GameSession session = sut.addSession(new GameSession(new ArrayList<>())).getBody();
-        Player firstPlayer = sut.addPlayer(session.id, new Player("test")).getBody();
-        sut.addPlayer(session.id, new Player("test2"));
-        assertTrue(sut.getPlayers(session.id).getBody().size() == 2);
-        assertEquals(firstPlayer, sut.getPlayers(session.id).getBody().get(0));
+        sut.addSession(first);
+        Player firstPlayer = sut.addPlayer(first.id, new Player("test",0)).getBody();
+        sut.addPlayer(first.id, new Player("test2",0));
+        assertTrue(sut.getPlayers(first.id).getBody().size() == 2);
+        assertEquals(firstPlayer, sut.getPlayers(first.id).getBody().get(0));
     }
 
     @Test
     public void addPlayerTest() {
-        GameSession session = sut.addSession(new GameSession(new ArrayList<>())).getBody();
+        sut.addSession(first);
         // player list is empty at first
-        assertTrue(session.players.isEmpty());
-        Player player = sut.addPlayer(0, new Player("test")).getBody();
+        assertTrue(first.players.isEmpty());
+        Player player = sut.addPlayer(first.id, new Player("test",0)).getBody();
 
         // player list modified after operation
-        assertTrue(session.players.size() != 0);
+        assertTrue(first.players.size() != 0);
 
         // make sure the method refers to the same player
-        assertEquals(session.players.get(0), player);
+        assertEquals(first.players.get(0), player);
     }
 
     @Test
     public void removePlayerTest() {
-        GameSession session = sut.addSession(new GameSession(new ArrayList<>())).getBody();
-        Player firstPlayer = sut.addPlayer(session.id, new Player("test")).getBody();
-        sut.addPlayer(session.id, new Player("test2"));
+        sut.addSession(first);
+        Player firstPlayer = sut.addPlayer(first.id, new Player("test",0)).getBody();
+        sut.addPlayer(first.id, new Player("test2",0));
 
-        assertTrue(session.players.size() == 2);
+        assertTrue(first.players.size() == 2);
         assertEquals(ResponseEntity.badRequest().build(), sut.removePlayer(10, 5));
         assertEquals(ResponseEntity.badRequest().build(), sut.removePlayer(0, 10));
-        assertEquals(firstPlayer, sut.removePlayer(session.id, 0).getBody());
+        assertEquals(firstPlayer, sut.removePlayer(first.id, 0).getBody());
     }
 
     @SuppressWarnings("serial")

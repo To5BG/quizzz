@@ -23,8 +23,29 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class Config {
 
+    /**
+     * Configure a random object for the game session
+     *
+     * @return Return a new object Random
+     */
     @Bean
     public Random getRandom() {
         return new Random();
     }
+
+    /**
+     * Configuration for resetting the database.
+     *
+     * @return one of options
+     * Options:
+     * "sessions" - reset sessions
+     * "player" - reset players
+     * "all" - both players and game sessions
+     * "test" - used for unit testing
+     */
+    @Bean
+    public String updatePlayerDB() {
+        return "all";
+    }
+
 }

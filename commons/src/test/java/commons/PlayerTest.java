@@ -15,41 +15,47 @@
  */
 package commons;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerTest {
 
 	@Test
 	public void checkConstructor() {
-		var p = new Player("test");
-		assertEquals("test", p.username);
+		var p = new Player("test",0);
+		assertEquals(new Player("test", 0), p);
 	}
 
 	@Test
-	public void equalsHashCode() {
-		var p = new Player("test");
-		var p2 = new Player("test");
+	public void testSetPoint() {
+		var p = new Player("abc", 0);
+		p.setPoint(8);
+		assertEquals(8, p.point);
+	}
+
+	@Test
+	public void equalsHashCodeTest() {
+		var p = new Player("test",0);
+		var p2 = new Player("test",0);
 		assertEquals(p2, p2);
 		assertEquals(p.hashCode(), p2.hashCode());
 	}
 
 	@Test
-	public void notEqualsHashCode() {
-		var p = new Player("test");
-		var p2 = new Player("test2");
+	public void notEqualsHashCodeTest() {
+		var p = new Player("test",0);
+		var p2 = new Player("test2",0);
 		assertNotEquals(p, p2);
 		assertNotEquals(p.hashCode(), p2.hashCode());
 	}
 
 	@Test
-	public void hasToString() {
-		var str = new Player("test").toString();
+	public void hasToStringTest() {
+		var str = new Player("test",0).toString();
 		assertTrue(str.contains(Player.class.getSimpleName()));
 		assertTrue(str.contains("\n"));
 		assertTrue(str.contains("username"));
+		assertTrue(str.contains("0"));
 	}
 }

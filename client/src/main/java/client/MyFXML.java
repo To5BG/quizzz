@@ -37,6 +37,13 @@ public class MyFXML {
         this.injector = injector;
     }
 
+    /**
+     * FXML wrapper for pairing an fxml file with its controller
+     * @param c controller to pair with
+     * @param parts string parts of overall FXML path
+     * @param <T>
+     * @return Controller and FXML pair
+     */
     public <T> Pair<T, Parent> load(Class<T> c, String... parts) {
         try {
             var loader = new FXMLLoader(getLocation(parts), null, null, new MyFactory(), StandardCharsets.UTF_8);

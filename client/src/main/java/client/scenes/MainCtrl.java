@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -33,15 +34,30 @@ public class MainCtrl {
     private MultiplayerCtrl multiplayerCtrl;
     private Scene multiPlayerScreen;
 
+    private GameCtrl gameCtrl;
+    private Scene gameScreen;
+
+    private WaitingAreaCtrl waitingAreaCtrl;
+    private Scene waitingAreaScreen;
+
+    private LeaderBoardCtrl leaderBoardCtrl;
+    private Scene leaderBoardScreen;
+
+    // for now a field will suffice, in case more constants are needed an enum must be created
+    public final long WAITING_AREA_ID = 1L;
+
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
      *
      * @param primaryStage store base stage of the application
      * @param splash       Controller and Scene pair for the splash screen of the application
      * @param multi        Controller and Scene pair for the multiplayer screen of the application
+     * @param leaderboard  Controller and Scene pair for the leaderboard screen of the application
      */
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
-                           Pair<MultiplayerCtrl, Parent> multi) {
+                           Pair<MultiplayerCtrl, Parent> multi,
+                           Pair<WaitingAreaCtrl, Parent> wait,
+                           Pair<GameCtrl, Parent> game, Pair<LeaderBoardCtrl, Parent> leaderboard) {
         this.primaryStage = primaryStage;
 
         this.splashCtrl = splash.getKey();
@@ -50,8 +66,18 @@ public class MainCtrl {
         this.multiplayerCtrl = multi.getKey();
         this.multiPlayerScreen = new Scene(multi.getValue());
 
+        this.waitingAreaCtrl = wait.getKey();
+        this.waitingAreaScreen = new Scene(wait.getValue());
+
+        this.gameCtrl = game.getKey();
+        this.gameScreen = new Scene(game.getValue());
+
+        this.leaderBoardCtrl = leaderboard.getKey();
+        this.leaderBoardScreen = new Scene(leaderboard.getValue());
+
         showSplash();
         primaryStage.show();
+
     }
 
     /**
@@ -63,44 +89,76 @@ public class MainCtrl {
     }
 
     /**
-     * Sets the current screen to the multiplayer screen and adds the player to the game session DB. Contains a
-     * scheduled task to refresh the multiplayer player board.
+     * Sets the current screen to the multiplayer screen and adds the player to the game session DB. Loads the first
+     * question.
+     *
      * @param sessionId Id of session to be joined
-     * @param playerId Id of player that is about to join
+     * @param playerId  Id of player that is about to join
      */
-    public void enterMultiplayerGame(long sessionId, long playerId) {
+    public void showMultiplayer(long sessionId, long playerId) {
         primaryStage.setTitle("Multiplayer game");
         primaryStage.setScene(multiPlayerScreen);
         multiPlayerScreen.setOnKeyPressed(e -> multiplayerCtrl.keyPressed(e));
         multiplayerCtrl.setSessionId(sessionId);
         multiplayerCtrl.setPlayerId(playerId);
+        multiplayerCtrl.loadQuestion();
+    }
+
+    /**
+     * Sets the current screen to the waiting area and adds the player to it. Contains a
+     * scheduled task to refresh the waiting area player board.
+     *
+     * @param playerId Id of player that's about to join
+     */
+    public void showWaitingArea(long playerId) {
+        primaryStage.setTitle("Waiting area");
+        primaryStage.setScene(waitingAreaScreen);
+        waitingAreaScreen.setOnKeyPressed(e -> waitingAreaCtrl.keyPressed(e));
+        waitingAreaCtrl.setPlayerId(playerId);
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                try {
-                    multiplayerCtrl.refresh();
-                } catch (Exception e) {
-                    cancel();
-                }
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (!waitingAreaCtrl.refresh()) cancel();
+                        } catch (Exception e) {
+                            cancel();
+                        }
+                    }
+                });
             }
 
             @Override
             public boolean cancel() {
                 return super.cancel();
             }
-        }, 0, 1000);
+        }, 0, 500);
     }
 
     /**
-     * Sets the current screen to the singleplayer screen.
+     * Sets the current screen to the single player screen.
      */
-    public void showSingleplayer() {
+    public void showSinglePlayer(long sessionId, long playerId) {
+        primaryStage.setTitle("Singe player game");
+        primaryStage.setScene(gameScreen);
+        gameScreen.setOnKeyPressed(e -> gameCtrl.keyPressed(e));
+        gameCtrl.setSessionId(sessionId);
+        gameCtrl.setPlayerId(playerId);
+        gameCtrl.disableSingleplayerJokers();
+        gameCtrl.loadQuestion();
     }
 
     /**
-     * Sets the current room to the leaderboard screen.
+     * Sets the current screen to the leaderboard screen.
      */
     public void showLeaderboard() {
+        primaryStage.setTitle("LeaderBoard");
+        primaryStage.setScene(leaderBoardScreen);
+        leaderBoardCtrl.refresh();
+        leaderBoardScreen.setOnKeyPressed(e -> leaderBoardCtrl.keyPressed(e));
+
     }
 }

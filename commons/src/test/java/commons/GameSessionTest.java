@@ -15,46 +15,143 @@
  */
 package commons;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class GameSessionTest {
 
-	private static final Player SOME_PLAYER = new Player("test");
+    private static final Player SOME_PLAYER = new Player("test",0);
+    private static GameSession s = null;
 
-	@Test
-	public void checkConstructor() {
-		var s = new GameSession(Stream.of(SOME_PLAYER).collect(Collectors.toList()));
-		assertEquals(SOME_PLAYER, s.players.get(0));
-	}
+    @BeforeEach
+    public void setup() {
+        s = new GameSession(GameSession.SessionType.MULTIPLAYER,
+                Stream.of(SOME_PLAYER).collect(Collectors.toList()));
+    }
 
-	@Test
-	public void equalsHashCode() {
-		var a = new GameSession(Stream.of(new Player("blah")).collect(Collectors.toList()));
-		var b = new GameSession(Stream.of(new Player("blah")).collect(Collectors.toList()));
-		assertEquals(a, b);
-		assertEquals(a.hashCode(), b.hashCode());
-	}
+    @Test
+    public void checkConstructor() {
+        assertEquals(SOME_PLAYER, s.players.get(0));
+        assertNotNull(s.expectedAnswers);
+        assertSame(1, s.questionCounter);
+        assertSame(0, s.playersReady);
+    }
 
-	@Test
-	public void notEqualsHashCode() {
-		var a = new GameSession(Stream.of(new Player("blah")).collect(Collectors.toList()));
-		var b = new GameSession(Stream.of(new Player("blahh")).collect(Collectors.toList()));
-		assertNotEquals(a, b);
-		assertNotEquals(a.hashCode(), b.hashCode());
-	}
+    @Test
+    public void testAddPlayer() {
+        Player p = new Player("test2",0);
+        s.addPlayer(p);
+        assertSame(2, s.players.size());
+        assertEquals(p, s.players.get(1));
+    }
 
-	@Test
-	public void hasToString() {
-		var str = new GameSession(Stream.of(new Player("blah")).collect(Collectors.toList())).toString();
-		assertTrue(str.contains(GameSession.class.getSimpleName()));
-		assertTrue(str.contains("\n"));
-		assertTrue(str.contains("player"));
-	}
+    @Test
+    public void testRemovePlayer() {
+        s.removePlayer(SOME_PLAYER);
+        assertSame(0, s.players.size());
+    }
+
+    @Test
+    public void testGetPlayers() {
+        GameSession s = new GameSession(GameSession.SessionType.MULTIPLAYER,
+                Stream.of(SOME_PLAYER).collect(Collectors.toList()));
+        Player a = new Player("abc", 0);
+        Player b = new Player("def", 0);
+        s.addPlayer(a);
+        s.addPlayer(b);
+        List<Player> players = s.getPlayers();
+        assertSame(3, players.size());
+        assertEquals(a, players.get(1));
+        assertEquals(b, players.get(2));
+    }
+
+    @Test
+    public void testUpdateQuestion() {
+        s.updateQuestion();
+        assertSame(1, s.expectedAnswers.size());
+        assertSame(2, s.questionCounter);
+        assertNotNull(s.currentQuestion);
+        assertEquals("Question #1", s.currentQuestion.prompt);
+    }
+
+    @Test
+    public void testPlayerAnswerMiddle() {
+        Player p = new Player("test2",0);
+        s.addPlayer(p);
+        s.updateQuestion();
+        Question tmp = s.currentQuestion;
+        s.setPlayerReady();
+        assertSame(2, s.questionCounter);
+        assertSame(1, s.playersReady);
+        assertEquals(tmp, s.currentQuestion);
+    }
+
+    @Test
+    public void testPlayerAnswerFinal() {
+        s.updateQuestion();
+        Question tmp = s.currentQuestion;
+        s.setPlayerReady();
+        assertSame(3, s.questionCounter);
+        assertSame(1, s.playersReady);
+        assertSame(1, s.expectedAnswers.size());
+        assertNotNull(s.currentQuestion);
+        assertNotEquals(tmp, s.currentQuestion);
+        assertEquals("Question #2", s.currentQuestion.prompt);
+    }
+
+    @Test
+    public void testEquals() {
+        var s2 = new GameSession(GameSession.SessionType.MULTIPLAYER,
+                Stream.of(new Player("blah",0))
+                        .collect(Collectors.toList()));
+
+        var s3 = new GameSession(GameSession.SessionType.MULTIPLAYER,
+                Stream.of(new Player("blah",0))
+                        .collect(Collectors.toList()));
+
+        var s4 = new GameSession(GameSession.SessionType.MULTIPLAYER,
+                Stream.of(new Player("blahhh",0))
+                        .collect(Collectors.toList()));
+
+        assertEquals(s2, s2);
+        assertEquals(s2, s3);
+        assertNotEquals(s, s4);
+    }
+
+    @Test
+    public void testHashCode() {
+        var s2 = new GameSession(GameSession.SessionType.MULTIPLAYER,
+                Stream.of(new Player("blah",0))
+                        .collect(Collectors.toList()));
+
+        var s3 = new GameSession(GameSession.SessionType.MULTIPLAYER,
+                Stream.of(new Player("blah",0))
+                        .collect(Collectors.toList()));
+
+        assertEquals(s2.hashCode(), s2.hashCode());
+        assertEquals(s3.hashCode(), s3.hashCode());
+    }
+
+    @Test
+    public void testToString() {
+        var s = new GameSession(GameSession.SessionType.MULTIPLAYER,
+                Stream.of(new Player("blah",0))
+                        .collect(Collectors.toList()));
+        String str = s.toString();
+
+        System.out.println(str);
+        assertTrue(str.contains(GameSession.class.getSimpleName()));
+        assertTrue(str.contains("username=blah"));
+        assertTrue(str.contains("questionCounter=1"));
+        assertTrue(str.contains("playersReady=0"));
+        assertTrue(str.contains("expectedAnswers=[]"));
+        assertTrue(str.contains("currentQuestion=<null>"));
+        assertTrue(str.contains(s.players.get(0).toString()));
+    }
 }
