@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GameSessionTest {
 
-    private static final Player SOME_PLAYER = new Player("test");
+    private static final Player SOME_PLAYER = new Player("test",0);
 
     @Test
     public void checkConstructor() {
@@ -40,7 +40,7 @@ public class GameSessionTest {
     public void testAddPlayer() {
         GameSession s = new GameSession("multiplayer",
                 Stream.of(SOME_PLAYER).collect(Collectors.toList()));
-        Player p = new Player("test2");
+        Player p = new Player("test2",0);
         s.addPlayer(p);
         assertSame(2, s.players.size());
         assertEquals(p, s.players.get(1));
@@ -83,7 +83,7 @@ public class GameSessionTest {
     public void testPlayerAnswerMiddle() {
         GameSession s = new GameSession("multiplayer",
                 Stream.of(SOME_PLAYER).collect(Collectors.toList()));
-        Player p = new Player("test2");
+        Player p = new Player("test2",0);
         s.addPlayer(p);
         s.updateQuestion();
         Question tmp = s.currentQuestion;
@@ -110,12 +110,12 @@ public class GameSessionTest {
 
     @Test
     public void testEquals() {
-        var a = new GameSession("multiplayer", Stream.of(new Player("blah"))
+        var a = new GameSession("multiplayer", Stream.of(new Player("blah",0))
                 .collect(Collectors.toList()));
-        var b = new GameSession("multiplayer", Stream.of(new Player("blah"))
+        var b = new GameSession("multiplayer", Stream.of(new Player("blah",0))
                 .collect(Collectors.toList()));
         var c = new GameSession("multiplayer",
-                Stream.of(new Player("blahhh")).collect(Collectors.toList()));
+                Stream.of(new Player("blahhh",0)).collect(Collectors.toList()));
 
         assertEquals(a, a);
         assertEquals(a, b);
@@ -124,9 +124,9 @@ public class GameSessionTest {
 
     @Test
     public void testHashCode() {
-        var a = new GameSession("multiplayer", Stream.of(new Player("blah"))
+        var a = new GameSession("multiplayer", Stream.of(new Player("blah",0))
                 .collect(Collectors.toList()));
-        var b = new GameSession("multiplayer", Stream.of(new Player("blah"))
+        var b = new GameSession("multiplayer", Stream.of(new Player("blah",0))
                 .collect(Collectors.toList()));
         assertEquals(a.hashCode(), a.hashCode());
         assertEquals(a.hashCode(), b.hashCode());
@@ -134,7 +134,7 @@ public class GameSessionTest {
 
     @Test
     public void testToString() {
-        var s = new GameSession("multiplayer", Stream.of(new Player("blah"))
+        var s = new GameSession("multiplayer", Stream.of(new Player("blah",0))
                 .collect(Collectors.toList()));
         String str = s.toString();
 
