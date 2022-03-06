@@ -124,8 +124,8 @@ public class SessionControllerTest {
     @Test
     public void getPlayersTest() {
         sut.addSession(first);
-        Player firstPlayer = sut.addPlayer(first.id, new Player("test")).getBody();
-        sut.addPlayer(first.id, new Player("test2"));
+        Player firstPlayer = sut.addPlayer(first.id, new Player("test",0)).getBody();
+        sut.addPlayer(first.id, new Player("test2",0));
         assertTrue(sut.getPlayers(first.id).getBody().size() == 2);
         assertEquals(firstPlayer, sut.getPlayers(first.id).getBody().get(0));
     }
@@ -135,7 +135,7 @@ public class SessionControllerTest {
         sut.addSession(first);
         // player list is empty at first
         assertTrue(first.players.isEmpty());
-        Player player = sut.addPlayer(first.id, new Player("test")).getBody();
+        Player player = sut.addPlayer(first.id, new Player("test",0)).getBody();
 
         // player list modified after operation
         assertTrue(first.players.size() != 0);
@@ -147,8 +147,8 @@ public class SessionControllerTest {
     @Test
     public void removePlayerTest() {
         sut.addSession(first);
-        Player firstPlayer = sut.addPlayer(first.id, new Player("test")).getBody();
-        sut.addPlayer(first.id, new Player("test2"));
+        Player firstPlayer = sut.addPlayer(first.id, new Player("test",0)).getBody();
+        sut.addPlayer(first.id, new Player("test2",0));
 
         assertTrue(first.players.size() == 2);
         assertEquals(ResponseEntity.badRequest().build(), sut.removePlayer(10, 5));

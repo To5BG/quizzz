@@ -180,12 +180,12 @@ public class ServerUtils {
      * @param isReady   True iff a player must be set as ready
      * @return New count of players that are ready
      */
-    public Integer toggleReady(long sessionId, boolean isReady) {
+    public GameSession toggleReady(long sessionId, boolean isReady) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + sessionId + "/" + ((isReady) ? "" : "not") + "ready")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<Integer>() {
+                .get(new GenericType<GameSession>() {
                 });
     }
 
@@ -220,6 +220,37 @@ public class ServerUtils {
     }
 
     /**
+     * Stores the player's answer with that particular player.
+     *
+     * @param sessionId The current session.
+     * @param playerId  The player who answered.
+     * @param answer    The player's answer.
+     * @return          The player's answer.
+     */
+    public Answer addPlayerAnswer(long sessionId, long playerId, Answer answer) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(answer, APPLICATION_JSON), Answer.class);
+    }
+
+    /**
+     * Fetches the last answer of the player.
+     * @param sessionId The current session.
+     * @param playerId  The player who answered.
+     * @return          The player's answer.
+     */
+    public Answer getPlayerAnswer(long sessionId, long playerId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Answer>() {
+                });
+    }
+
+    /**
      * Gets the list of positions of correct answers for a question from the server
      * @param sessionId - long representing the current session
      * @return a list of integer corresponding to the positions of correct answers for a question
@@ -230,5 +261,31 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Integer>>() {});
+    }
+
+    /**
+     * get player from the DB
+     * @return whether the getting is successful or not
+     */
+    public List<Player> getPlayersFromRepository() {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("api/leaderboard/") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Player>>() {
+                });
+    }
+
+    /**
+     * add a new player to the DB
+     * @param player the player to be added
+     * @return a message to show whether the adding is successful or not
+     */
+    public Player addPlayerToRepository(Player player) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("api/leaderboard") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(player, APPLICATION_JSON), Player.class);
     }
 }

@@ -40,6 +40,9 @@ public class MainCtrl {
     private WaitingAreaCtrl waitingAreaCtrl;
     private Scene waitingAreaScreen;
 
+    private LeaderBoardCtrl leaderBoardCtrl;
+    private Scene leaderBoardScreen;
+
     // for now a field will suffice, in case more constants are needed an enum must be created
     public final long WAITING_AREA_ID = 1L;
 
@@ -49,11 +52,12 @@ public class MainCtrl {
      * @param primaryStage store base stage of the application
      * @param splash       Controller and Scene pair for the splash screen of the application
      * @param multi        Controller and Scene pair for the multiplayer screen of the application
+     * @param leaderboard  Controller and Scene pair for the leaderboard screen of the application
      */
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
                            Pair<MultiplayerCtrl, Parent> multi,
                            Pair<WaitingAreaCtrl, Parent> wait,
-                           Pair<GameCtrl, Parent> game) {
+                           Pair<GameCtrl, Parent> game, Pair<LeaderBoardCtrl, Parent> leaderboard) {
         this.primaryStage = primaryStage;
 
         this.splashCtrl = splash.getKey();
@@ -67,6 +71,9 @@ public class MainCtrl {
 
         this.gameCtrl = game.getKey();
         this.gameScreen = new Scene(game.getValue());
+
+        this.leaderBoardCtrl = leaderboard.getKey();
+        this.leaderBoardScreen = new Scene(leaderboard.getValue());
 
         showSplash();
         primaryStage.show();
@@ -82,8 +89,8 @@ public class MainCtrl {
     }
 
     /**
-     * Sets the current screen to the multiplayer screen and adds the player to the game session DB. Contains a
-     * scheduled task to refresh the multiplayer player board.
+     * Sets the current screen to the multiplayer screen and adds the player to the game session DB. Loads the first
+     * question.
      *
      * @param sessionId Id of session to be joined
      * @param playerId  Id of player that is about to join
@@ -94,22 +101,7 @@ public class MainCtrl {
         multiPlayerScreen.setOnKeyPressed(e -> multiplayerCtrl.keyPressed(e));
         multiplayerCtrl.setSessionId(sessionId);
         multiplayerCtrl.setPlayerId(playerId);
-
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    if (!multiplayerCtrl.refresh()) cancel();
-                } catch (Exception e) {
-                    cancel();
-                }
-            }
-
-            @Override
-            public boolean cancel() {
-                return super.cancel();
-            }
-        }, 0, 500);
+        multiplayerCtrl.loadQuestion();
     }
 
     /**
@@ -138,6 +130,7 @@ public class MainCtrl {
                     }
                 });
             }
+
             @Override
             public boolean cancel() {
                 return super.cancel();
@@ -159,8 +152,13 @@ public class MainCtrl {
     }
 
     /**
-     * Sets the current room to the leaderboard screen.
+     * Sets the current screen to the leaderboard screen.
      */
     public void showLeaderboard() {
+        primaryStage.setTitle("LeaderBoard");
+        primaryStage.setScene(leaderBoardScreen);
+        leaderBoardCtrl.refresh();
+        leaderBoardScreen.setOnKeyPressed(e -> leaderBoardCtrl.keyPressed(e));
+
     }
 }

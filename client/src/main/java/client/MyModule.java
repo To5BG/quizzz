@@ -16,15 +16,10 @@
 package client;
 
 
+import client.scenes.*;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
-
-import client.scenes.GameCtrl;
-import client.scenes.MultiplayerCtrl;
-import client.scenes.MainCtrl;
-import client.scenes.SplashCtrl;
-import client.scenes.WaitingAreaCtrl;
 
 public class MyModule implements Module {
 
@@ -35,5 +30,6 @@ public class MyModule implements Module {
         binder.bind(SplashCtrl.class).in(Scopes.SINGLETON);
         binder.bind(WaitingAreaCtrl.class).in(Scopes.SINGLETON);
         binder.bind(GameCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(LeaderBoardCtrl.class).in(Scopes.SINGLETON);
     }
 }
