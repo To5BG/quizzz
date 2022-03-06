@@ -124,8 +124,10 @@ public class SessionController {
 
         GameSession session = repo.findById(id).orElse(null);
         if (session != null) {
+            session.currentQuestion= null;
+            session.expectedAnswers= null;
+            updateSession(session);
             repo.delete(session);
-
         }
         return ResponseEntity.ok(session);
     }

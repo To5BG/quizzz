@@ -78,6 +78,7 @@ public class GameCtrl {
 
     /**
      * Load general question information
+     *
      * @param q
      */
     private void renderGeneralInformation(Question q) {
@@ -102,6 +103,7 @@ public class GameCtrl {
 
     /**
      * Render question of the multiple choice question variant
+     *
      * @param q
      */
     private void renderMultipleChoiceQuestion(Question q) {
@@ -134,6 +136,7 @@ public class GameCtrl {
 
     /**
      * Render answers of the multiple choice question variant
+     *
      * @param correctIndices Indexes of the correct answer(s)
      */
     private void renderMultipleChoiceAnswers(List<Integer> correctIndices) {
@@ -188,6 +191,7 @@ public class GameCtrl {
     public void shutdown() {
         server.removePlayer(sessionId, playerId);
         server.removeSession(sessionId);
+        this.timerThread.interrupt();
         setPlayerId(0);
         setSessionId(0);
     }
@@ -242,7 +246,7 @@ public class GameCtrl {
         }
 
         Evaluation eval = server.submitAnswer(sessionId, ans);
-        if(doublePointsIsActive()) {
+        if (doublePointsIsActive()) {
             points += 2 * eval.points;
             switchStatusOfDoublePoints();
         } else {
@@ -270,7 +274,8 @@ public class GameCtrl {
 
     /**
      * Disable button so the player can not interact with it
-     * @param button - Button to be disabled
+     *
+     * @param button  - Button to be disabled
      * @param disable - boolean value whether the button should be disabled or enabled
      */
     public void disableButton(Button button, boolean disable) {
@@ -285,9 +290,9 @@ public class GameCtrl {
         disableButton(removeOneButton, true);
 
         switch (currentQuestion.type) {
-            case MULTIPLE_CHOICE:
+            case MULTIPLE_CHOICE -> {
                 List<Integer> incorrectAnswers = new ArrayList<>();
-                List<Integer> correctAnswers = api.getCorrectAnswers(sessionId);
+                List<Integer> correctAnswers = server.getCorrectAnswers(sessionId);
                 for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
                     if (!correctAnswers.contains(i)) {
                         incorrectAnswers.add(i);
@@ -295,9 +300,8 @@ public class GameCtrl {
                 }
                 int randomIndex = new Random().nextInt(incorrectAnswers.size());
                 multiChoiceAnswers.get(incorrectAnswers.get(randomIndex)).setDisable(true);
-                break;
-            default:
-                disableButton(removeOneButton, false);
+            }
+            default -> disableButton(removeOneButton, false);
         }
 
 
@@ -324,6 +328,7 @@ public class GameCtrl {
 
     /**
      * Check if the doublePointsJoker is active for this question
+     *
      * @return true if the joker is active
      */
     private boolean doublePointsIsActive() {
@@ -336,6 +341,7 @@ public class GameCtrl {
     private void switchStatusOfDoublePoints() {
         doublePointsJoker = !doublePointsJoker;
     }
+
     /**
      * Disable the jokers that do not work for single-player
      */
