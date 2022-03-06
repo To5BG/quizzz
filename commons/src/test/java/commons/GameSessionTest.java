@@ -93,15 +93,15 @@ public class GameSessionTest {
     @Test
     public void testEquals() {
         var s2 = new GameSession(GameSession.SessionType.MULTIPLAYER,
-                Stream.of(new Player("blah"))
+                Stream.of(new Player("blah",0))
                         .collect(Collectors.toList()));
 
         var s3 = new GameSession(GameSession.SessionType.MULTIPLAYER,
-                Stream.of(new Player("blah"))
+                Stream.of(new Player("blah",0))
                         .collect(Collectors.toList()));
 
         var s4 = new GameSession(GameSession.SessionType.MULTIPLAYER,
-                Stream.of(new Player("blahhh"))
+                Stream.of(new Player("blahhh",0))
                         .collect(Collectors.toList()));
 
         assertEquals(s2, s2);
