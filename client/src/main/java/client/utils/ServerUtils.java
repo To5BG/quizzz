@@ -249,4 +249,30 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Integer>>() {});
     }
+
+    /**
+     * get player from the DB
+     * @return whether the getting is successful or not
+     */
+    public List<Player> getPlayersFromRepository() {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("api/leaderboard/") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Player>>() {
+                });
+    }
+
+    /**
+     * add a new player to the DB
+     * @param player the player to be added
+     * @return a message to show whether the adding is successful or not
+     */
+    public Player addPlayerToRepository(Player player) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("api/leaderboard") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(player, APPLICATION_JSON), Player.class);
+    }
 }

@@ -19,6 +19,7 @@ public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     public long id;
+    public int point;
 
     /*
     @ManyToOne
@@ -34,8 +35,9 @@ public class Player {
         // for object mapper
     }
 
-    public Player(String username) {
+    public Player(String username, int point) {
         this.username = username;
+        this.point = point;
     }
 
     /**
@@ -71,18 +73,32 @@ public class Player {
         return new Answer(answers, type);
     }
 
+    /**
+     * the method to judge whether two players are the same
+     * @param obj another player to be compared with
+     * @return a boolean value which represents the result of the comparison
+     */
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 
+    /**
+     * the hashcode method to generate a hashcode for each player
+     * @return a hashcode for the player input
+     */
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
+    /**
+     * the method to convert the information about a player to a sentence
+     * @return a string which contains all information about this player
+     */
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
     }
+
 }

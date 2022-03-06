@@ -21,7 +21,7 @@ public class QuestionControllerTest {
         repo = new TestGameSessionRepository();
         session = new SessionController(new Random(), repo, "test");
         ResponseEntity<GameSession> cur = session.addSession(new GameSession("multiplayer",
-                List.of(new Player("test"))));
+                List.of(new Player("test",0))));
         sut = new QuestionController(session);
     }
 
