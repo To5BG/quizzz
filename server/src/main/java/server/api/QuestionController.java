@@ -44,4 +44,21 @@ public class QuestionController {
         sessions.updateSession(s);
         return ResponseEntity.ok(eval);
     }
+
+    /**
+     * Gets the list of positions of correct answers for the current question in a session
+     * @param sessionId - long representing the id of a session
+     * @return a list of integer corresponding to the positions of correct answers
+     * for the current question in the session
+     */
+    @GetMapping(path = "/answers/{sessionId}")
+    public ResponseEntity<List<Integer>> getCorrectAnswers(@PathVariable("sessionId") long sessionId) {
+        ResponseEntity<GameSession> session = sessions.getSessionById(sessionId);
+        if (session.getStatusCode() == HttpStatus.BAD_REQUEST) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        GameSession s = session.getBody();
+        return ResponseEntity.ok(s.expectedAnswers);
+    }
 }

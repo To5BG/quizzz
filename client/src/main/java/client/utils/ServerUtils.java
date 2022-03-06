@@ -236,4 +236,17 @@ public class ServerUtils {
                 .get(new GenericType<Answer>() {
                 });
     }
+
+    /**
+     * Gets the list of positions of correct answers for a question from the server
+     * @param sessionId - long representing the current session
+     * @return a list of integer corresponding to the positions of correct answers for a question
+     */
+    public List<Integer> getCorrectAnswers(long sessionId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/questions/answers/" + sessionId)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Integer>>() {});
+    }
 }
