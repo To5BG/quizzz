@@ -99,7 +99,7 @@ public class MultiplayerCtrl {
     }
 
     /**
-     * Refreshes the multiplayer player board for the current session.
+     * Refreshes the multiplayer player board to check whether the evaluation can start.
      */
     public void refresh() {
         Timer t = new Timer();
@@ -127,6 +127,11 @@ public class MultiplayerCtrl {
         }, 0, 100);
     }
 
+    /**
+     * Sets the answer buttons for a multiple choice question.
+     *
+     * @param q The multiple choice question.
+     */
     private void renderMultipleChoiceQuestion(Question q) {
         double yPosition = 0.0;
         multiChoiceAnswers.clear();
@@ -140,6 +145,11 @@ public class MultiplayerCtrl {
         }
     }
 
+    /**
+     * Assigns a green colour to the correct answer field(s).
+     *
+     * @param correctIndices The correct answer(s).
+     */
     private void renderMultipleChoiceAnswers(List<Integer> correctIndices) {
         for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
             if (correctIndices.contains(i)) {
@@ -148,11 +158,21 @@ public class MultiplayerCtrl {
         }
     }
 
+    /**
+     * Renders the question prompt with the current question.
+     *
+     * @param q The current question.
+     */
     private void renderGeneralInformation(Question q) {
         this.questionPrompt.setText(q.prompt);
         // TODO load image
     }
 
+    /**
+     * Envokes the correct method that renders the answer fields for the current question type.
+     *
+     * @param q The current question.
+     */
     private void renderAnswerFields(Question q) {
         switch (q.type) {
             case MULTIPLE_CHOICE:
@@ -163,6 +183,9 @@ public class MultiplayerCtrl {
         }
     }
 
+    /**
+     * Fetches a question, loads the question and starts the progressbar.
+     */
     public void loadQuestion() {
         Question q = this.server.fetchOneQuestion(this.sessionId);
         this.currentQuestion = q;
@@ -196,6 +219,11 @@ public class MultiplayerCtrl {
         this.timerThread.start();
     }
 
+    /**
+     * Envokes the correct method that shows the correct answer for the current question type.
+     *
+     * @param eval The evaluation of the current question.
+     */
     private void renderCorrectAnswer(Evaluation eval) {
         switch (eval.type) {
             case MULTIPLE_CHOICE:
@@ -206,6 +234,9 @@ public class MultiplayerCtrl {
         }
     }
 
+    /**
+     * Cleans the screen, brings the user back to the main screen and terminates the session once everyone has left.
+     */
     public void gameCleanup() {
         if (server.getSession(sessionId).players.size() - 1 == 0) { server.removeSession(sessionId); }
         this.questionPrompt.setText("[Question]");
@@ -218,10 +249,17 @@ public class MultiplayerCtrl {
         mainCtrl.showSplash();
     }
 
+    /**
+     * Renders the user's score.
+     */
     public void renderPoints() {
         pointsLabel.setText(String.format("Points: %d", this.points));
     }
 
+    /**
+     * Interrupts the timer, disables the submit button, sends the user's answer for evaluation and pauses the game
+     * until everyone has answered or the timer has terminated.
+     */
     public void submitAnswer() {
         /* RadioButton rb = new RadioButton("Answer option #1");
         answerArea.getChildren().add(rb); */
@@ -242,6 +280,9 @@ public class MultiplayerCtrl {
         refresh();
     }
 
+    /**
+     * Gets the user's answer, starts the evaluation and loads a new question or ends the game.
+     */
     public void startEvaluation() {
 
         Answer ans = server.getPlayerAnswer(sessionId, playerId);

@@ -206,6 +206,14 @@ public class ServerUtils {
                 .post(Entity.entity(answer, APPLICATION_JSON), Evaluation.class);
     }
 
+    /**
+     * Stores the player's answer with that particular player.
+     *
+     * @param sessionId The current session.
+     * @param playerId  The player who answered.
+     * @param answer    The player's answer.
+     * @return          The player's answer.
+     */
     public Answer addPlayerAnswer(long sessionId, long playerId, Answer answer) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
@@ -214,6 +222,12 @@ public class ServerUtils {
                 .post(Entity.entity(answer, APPLICATION_JSON), Answer.class);
     }
 
+    /**
+     * Fetches the last answer of the player.
+     * @param sessionId The current session.
+     * @param playerId  The player who answered.
+     * @return          The player's answer.
+     */
     public Answer getPlayerAnswer(long sessionId, long playerId) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)

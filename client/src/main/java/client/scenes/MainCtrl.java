@@ -79,8 +79,8 @@ public class MainCtrl {
     }
 
     /**
-     * Sets the current screen to the multiplayer screen and adds the player to the game session DB. Contains a
-     * scheduled task to refresh the multiplayer player board.
+     * Sets the current screen to the multiplayer screen and adds the player to the game session DB. Loads the first
+     * question.
      *
      * @param sessionId Id of session to be joined
      * @param playerId  Id of player that is about to join

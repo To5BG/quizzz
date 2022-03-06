@@ -38,10 +38,20 @@ public class Player {
         this.username = username;
     }
 
+    /**
+     * Converts the answer to a string.
+     *
+     * @param ans The player's answer.
+     */
     public void setAnswer(Answer ans) {
         this.ans = ans.toString().substring(ans.toString().indexOf("["));
     }
 
+    /**
+     * Parses the answer that has been turned into a string back into and answer object.
+     *
+     * @return The answer in answer form.
+     */
     public Answer parsedAnswer() {
         String[] splitAnswer = this.ans.split("=");
         String answer = splitAnswer[1].substring(1, splitAnswer[1].indexOf("]"));

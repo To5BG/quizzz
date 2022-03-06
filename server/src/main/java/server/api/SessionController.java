@@ -219,6 +219,13 @@ public class SessionController {
         return ResponseEntity.ok(player);
     }
 
+    /**
+     * Fetches the player's answer in parsed form.
+     *
+     * @param   sessionId The current session.
+     * @param   playerId The player who answered.
+     * @return  The player's answer in answer form.
+     */
     @GetMapping("/{id}/players/{playerId}")
     public ResponseEntity<Answer> getPlayerAnswer(@PathVariable("id") long sessionId,
                                                   @PathVariable("playerId") long playerId) {
@@ -232,6 +239,14 @@ public class SessionController {
         return ResponseEntity.ok(player.parsedAnswer());
     }
 
+    /**
+     * Converts the player's answer to a string and stores it with the player.
+     *
+     * @param id        The current session.
+     * @param playerId  The player who answered.
+     * @param ans       The player's answer.
+     * @return          The player's answer.
+     */
     @PostMapping("/{id}/players/{playerId}")
     public ResponseEntity<Answer> setAnswer(@PathVariable("id") long id, @PathVariable long playerId,
                                             @RequestBody Answer ans) {

@@ -24,6 +24,12 @@ public class Answer {
         answers = new ArrayList<Integer>();
     }
 
+    /**
+     * Constructor to create an answer when the answers are known.
+     *
+     * @param answers   The given answer.
+     * @param type      The question type.
+     */
     public Answer(List<Integer> answers, Question.QuestionType type) {
         this.type = type;
         this.answers = answers;
