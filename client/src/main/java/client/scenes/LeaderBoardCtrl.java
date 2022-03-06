@@ -92,7 +92,7 @@ public class LeaderBoardCtrl implements Initializable {
      * refresh the screen to show the leaderboards
      */
     public void refresh() {
-        var players = server.getPlayers();
+        var players = server.getPlayersFromRepository();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
     }

@@ -210,7 +210,7 @@ public class ServerUtils {
      * get player from the DB
      * @return whether the getting is successful or not
      */
-    public List<Player> getPlayers() {
+    public List<Player> getPlayersFromRepository() {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER).path("api/leaderboard/") //
                 .request(APPLICATION_JSON) //
@@ -224,7 +224,7 @@ public class ServerUtils {
      * @param player the player to be added
      * @return a message to show whether the adding is successful or not
      */
-    public Player addPlayer(Player player) {
+    public Player addPlayerToRepository(Player player) {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER).path("api/leaderboard") //
                 .request(APPLICATION_JSON) //
