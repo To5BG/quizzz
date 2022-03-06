@@ -64,7 +64,6 @@ public class GameSession {
         } else {
             if (++playersReady != this.players.size()) return;
             updateQuestion();
-            playersReady = 0;
         }
     }
 

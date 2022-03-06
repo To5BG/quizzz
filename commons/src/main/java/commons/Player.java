@@ -3,6 +3,7 @@ package commons;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import javax.persistence.*;
 
 import java.util.ArrayList;
@@ -43,13 +44,17 @@ public class Player {
 
     public Answer parsedAnswer() {
         String[] splitAnswer = this.ans.split("=");
-        String answer = splitAnswer[1].substring(0,splitAnswer[1].indexOf("]"));
-        List<Integer> answers = new ArrayList<>(
-                Arrays.stream(answer.split(","))
-                        .map(Integer::valueOf)
-                        .collect(Collectors.toList()));
+        String answer = splitAnswer[1].substring(1, splitAnswer[1].indexOf("]"));
+        List<Integer> answers;
+        if (answer.equals("")) answers = new ArrayList<>();
+        else {
+            answers = new ArrayList<>(
+                    Arrays.stream(answer.split(", "))
+                            .map(Integer::valueOf)
+                            .collect(Collectors.toList()));
+        }
         Question.QuestionType type;
-        switch (splitAnswer[2].substring(0,splitAnswer[2].indexOf("]"))) {
+        switch (splitAnswer[2].substring(0, splitAnswer[2].indexOf("]"))) {
             case "MULTIPLE_CHOICE" -> type = Question.QuestionType.MULTIPLE_CHOICE;
             default -> type = Question.QuestionType.UNKNOWN;
         }

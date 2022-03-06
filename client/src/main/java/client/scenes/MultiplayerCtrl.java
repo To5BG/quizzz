@@ -32,7 +32,7 @@ public class MultiplayerCtrl {
     private final int GAME_ROUNDS = 20;
     private final int GAME_ROUND_TIME = 10;
     private final int TIMER_UPDATE_INTERVAL_MS = 50;
-    private final int GAME_ROUND_DELAY = 2;
+    private final int GAME_ROUND_DELAY = 5;
 
     @FXML
     private StackPane answerArea;
@@ -102,15 +102,18 @@ public class MultiplayerCtrl {
      * Refreshes the multiplayer player board for the current session.
      */
     public void refresh() {
-        new Timer().scheduleAtFixedRate(new TimerTask() {
+        Timer t = new Timer();
+        t.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
                         try {
-                            if (server.getSession(sessionId).playersReady
-                                    == server.getSession(sessionId).players.size()) startEvaluation();
+                            if (server.getSession(sessionId).sessionStatus.equals("pause")) {
+                                startEvaluation();
+                                cancel();
+                            }
                         } catch (Exception e) {
                             cancel();
                         }
@@ -121,7 +124,7 @@ public class MultiplayerCtrl {
             public boolean cancel() {
                 return super.cancel();
             }
-        }, 0, 500);
+        }, 0, 100);
     }
 
     private void renderMultipleChoiceQuestion(Question q) {
@@ -233,6 +236,8 @@ public class MultiplayerCtrl {
         }
         server.addPlayerAnswer(sessionId, playerId, ans);
         server.toggleReady(sessionId, true);
+        var session = server.getSession(sessionId);
+        if (session.playersReady == session.players.size()) server.updateStatus(session, "pause");
         refresh();
     }
 
@@ -253,6 +258,9 @@ public class MultiplayerCtrl {
                         // TODO display leaderboard things here
                         gameCleanup();
                     } else {
+                        Integer playersReady = server.toggleReady(sessionId, false);
+                        System.out.println(playersReady);
+                        if (playersReady == 0) server.updateStatus(server.getSession(sessionId), "ongoing");
                         loadQuestion();
                     }
                 });
