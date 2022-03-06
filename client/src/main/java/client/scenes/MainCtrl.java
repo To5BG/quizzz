@@ -86,8 +86,8 @@ public class MainCtrl {
     }
 
     /**
-     * Sets the current screen to the multiplayer screen and adds the player to the game session DB. Contains a
-     * scheduled task to refresh the multiplayer player board.
+     * Sets the current screen to the multiplayer screen and adds the player to the game session DB. Loads the first
+     * question.
      *
      * @param sessionId Id of session to be joined
      * @param playerId  Id of player that is about to join
@@ -98,22 +98,7 @@ public class MainCtrl {
         multiPlayerScreen.setOnKeyPressed(e -> multiplayerCtrl.keyPressed(e));
         multiplayerCtrl.setSessionId(sessionId);
         multiplayerCtrl.setPlayerId(playerId);
-
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    if (!multiplayerCtrl.refresh()) cancel();
-                } catch (Exception e) {
-                    cancel();
-                }
-            }
-
-            @Override
-            public boolean cancel() {
-                return super.cancel();
-            }
-        }, 0, 500);
+        multiplayerCtrl.loadQuestion();
     }
 
     /**

@@ -31,7 +31,7 @@ public class GameSessionTest {
         var s = new GameSession("multiplayer", Stream.of(SOME_PLAYER).collect(Collectors.toList()));
         assertEquals(SOME_PLAYER, s.players.get(0));
         assertNotNull(s.expectedAnswers);
-        assertSame(0, s.questionCounter);
+        assertSame(1, s.questionCounter);
         assertSame(0, s.playersReady);
     }
 
@@ -59,9 +59,9 @@ public class GameSessionTest {
                 Stream.of(SOME_PLAYER).collect(Collectors.toList()));
         s.updateQuestion();
         assertSame(1, s.expectedAnswers.size());
-        assertSame(1, s.questionCounter);
+        assertSame(2, s.questionCounter);
         assertNotNull(s.currentQuestion);
-        assertEquals("Question #0", s.currentQuestion.prompt);
+        assertEquals("Question #1", s.currentQuestion.prompt);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class GameSessionTest {
         s.updateQuestion();
         Question tmp = s.currentQuestion;
         s.setPlayerReady();
-        assertSame(1, s.questionCounter);
+        assertSame(2, s.questionCounter);
         assertSame(1, s.playersReady);
         assertEquals(tmp, s.currentQuestion);
     }
@@ -85,12 +85,12 @@ public class GameSessionTest {
         s.updateQuestion();
         Question tmp = s.currentQuestion;
         s.setPlayerReady();
-        assertSame(2, s.questionCounter);
-        assertSame(0, s.playersReady);
+        assertSame(3, s.questionCounter);
+        assertSame(1, s.playersReady);
         assertSame(1, s.expectedAnswers.size());
         assertNotNull(s.currentQuestion);
         assertNotEquals(tmp, s.currentQuestion);
-        assertEquals("Question #1", s.currentQuestion.prompt);
+        assertEquals("Question #2", s.currentQuestion.prompt);
     }
 
     @Test
@@ -126,7 +126,7 @@ public class GameSessionTest {
         System.out.println(str);
         assertTrue(str.contains(GameSession.class.getSimpleName()));
         assertTrue(str.contains("username=blah"));
-        assertTrue(str.contains("questionCounter=0"));
+        assertTrue(str.contains("questionCounter=1"));
         assertTrue(str.contains("playersReady=0"));
         assertTrue(str.contains("expectedAnswers=[]"));
         assertTrue(str.contains("currentQuestion=<null>"));

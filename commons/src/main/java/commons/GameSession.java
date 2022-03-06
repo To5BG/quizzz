@@ -51,7 +51,8 @@ public class GameSession {
         this.sessionType = sessionType;
         this.expectedAnswers = expectedAnswers;
         this.playersReady = 0;
-        this.questionCounter = 0;
+        this.questionCounter = 1;
+
         this.sessionStatus = "started";
         if (sessionType.equals("waiting_area")) this.sessionStatus = "waiting_area";
     }
@@ -63,7 +64,6 @@ public class GameSession {
         } else {
             if (++playersReady != this.players.size()) return;
             updateQuestion();
-            playersReady = 0;
         }
     }
 
