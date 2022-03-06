@@ -54,8 +54,7 @@ public class SplashCtrl {
     public void enterMultiplayerGame() {
         GameSession sessionToJoin = server.getAvailableSession();
         String newUserName = usernameField.getText();
-
-        server.addPlayer(sessionToJoin.id, new Player(newUserName));
+        server.addPlayer(sessionToJoin.id, new Player(newUserName, 0));
         var playerId = server
                 .getPlayers(sessionToJoin.id)
                 .stream().filter(p -> p.username.equals(newUserName))
@@ -69,8 +68,7 @@ public class SplashCtrl {
      */
     public void showWaitingArea() {
         String newUserName = usernameField.getText();
-
-        server.addPlayer(1L /*waiting area id*/, new Player(newUserName));
+        server.addPlayer(1L /*waiting area id*/, new Player(newUserName, 0));
         var playerId = server
                 .getPlayers(1L)
                 .stream().filter(p -> p.username.equals(newUserName))
@@ -84,7 +82,7 @@ public class SplashCtrl {
     public void showSinglePlayer() {
         String newUserName = usernameField.getText();
         GameSession newSession = new GameSession("multiplayer",
-                List.of(new Player(newUserName)));
+                List.of(new Player(newUserName, 0)));
         newSession = server.addSession(newSession);
         var playerId = server
                 .getPlayers(newSession.id)
