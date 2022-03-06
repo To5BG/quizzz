@@ -23,14 +23,6 @@ class ActivityTest {
     }
 
     @Test
-    public void notEqualsHashCode() {
-        var a = new Activity("t", "1", "root", "google.com");
-        var b = new Activity("notT", "2", "root", "google.com");
-        assertNotEquals(a, b);
-        assertNotEquals(a.hashCode(), b.hashCode());
-    }
-
-    @Test
     public void hasToString() {
         var actual = new Activity("t", "1", "root", "google.com").toString();
         assertTrue(actual.contains(Activity.class.getSimpleName()));

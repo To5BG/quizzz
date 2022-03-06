@@ -43,6 +43,10 @@ public class Question {
         this.answerOptions = new ArrayList<String>();
     }
 
+    /**
+     * Add a new answer option to the list
+     * @param answerOption String representation of the answer to be added
+     */
     public void addAnswerOption(String answerOption) {
         if (this.type != QuestionType.MULTIPLE_CHOICE) {
             throw new UnsupportedOperationException(

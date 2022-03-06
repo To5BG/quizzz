@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 
 import java.util.*;
@@ -47,7 +48,7 @@ public class GameCtrl {
     @FXML
     private Button doublePointsButton;
 
-    private ServerUtils api;
+    private ServerUtils server;
     private MainCtrl main;
 
     private List<RadioButton> multiChoiceAnswers;
@@ -60,8 +61,8 @@ public class GameCtrl {
     private boolean doublePointsJoker;
 
     @Inject
-    public GameCtrl(ServerUtils api, MainCtrl main) {
-        this.api = api;
+    public GameCtrl(ServerUtils server, MainCtrl main) {
+        this.server = server;
         this.main = main;
         this.multiChoiceAnswers = new ArrayList<RadioButton>();
         this.doublePointsJoker = false;
@@ -75,6 +76,36 @@ public class GameCtrl {
         this.playerId = playerId;
     }
 
+    /**
+     * Load general question information
+     *
+     * @param q
+     */
+    private void renderGeneralInformation(Question q) {
+        this.questionPrompt.setText(q.prompt);
+        // TODO load image
+    }
+
+    /**
+     * Switch method to render answer options for a given question
+     *
+     * @param q Question from which to take the possible answers
+     */
+    private void renderAnswerFields(Question q) {
+        switch (q.type) {
+            case MULTIPLE_CHOICE:
+                renderMultipleChoiceQuestion(q);
+                break;
+            default:
+                throw new UnsupportedOperationException("Currently only multiple choice questions can be rendered");
+        }
+    }
+
+    /**
+     * Render question of the multiple choice question variant
+     *
+     * @param q
+     */
     private void renderMultipleChoiceQuestion(Question q) {
         double yPosition = 0.0;
         multiChoiceAnswers.clear();
@@ -88,6 +119,26 @@ public class GameCtrl {
         }
     }
 
+    /**
+     * Switch method to render correct answers based on the question type
+     *
+     * @param eval Evaluation containing the true answers
+     */
+    private void renderCorrectAnswer(Evaluation eval) {
+        switch (eval.type) {
+            case MULTIPLE_CHOICE:
+                renderMultipleChoiceAnswers(eval.correctAnswers);
+                break;
+            default:
+                throw new UnsupportedOperationException("Currently only multiple choice answers can be rendered");
+        }
+    }
+
+    /**
+     * Render answers of the multiple choice question variant
+     *
+     * @param correctIndices Indexes of the correct answer(s)
+     */
     private void renderMultipleChoiceAnswers(List<Integer> correctIndices) {
         for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
             if (correctIndices.contains(i)) {
@@ -98,23 +149,11 @@ public class GameCtrl {
         }
     }
 
-    private void renderGeneralInformation(Question q) {
-        this.questionPrompt.setText(q.prompt);
-        // TODO load image
-    }
-
-    private void renderAnswerFields(Question q) {
-        switch (q.type) {
-            case MULTIPLE_CHOICE:
-                renderMultipleChoiceQuestion(q);
-                break;
-            default:
-                throw new UnsupportedOperationException("Currently only multiple choice questions can be rendered");
-        }
-    }
-
+    /**
+     * Loads a question and updates the timer bar
+     */
     public void loadQuestion() {
-        Question q = this.api.fetchOneQuestion(this.sessionId);
+        Question q = this.server.fetchOneQuestion(this.sessionId);
         this.currentQuestion = q;
         renderGeneralInformation(q);
         renderAnswerFields(q);
@@ -146,18 +185,22 @@ public class GameCtrl {
         this.timerThread.start();
     }
 
-    private void renderCorrectAnswer(Evaluation eval) {
-        switch (eval.type) {
-            case MULTIPLE_CHOICE:
-                renderMultipleChoiceAnswers(eval.correctAnswers);
-                break;
-            default:
-                throw new UnsupportedOperationException("Currently only multiple choice answers can be rendered");
-        }
+    /**
+     * Removes player from session, along with the singleplayer session. Also called if controller is closed forcibly
+     */
+    public void shutdown() {
+        server.removePlayer(sessionId, playerId);
+        server.removeSession(sessionId);
+        this.timerThread.interrupt();
+        setPlayerId(0);
+        setSessionId(0);
     }
 
-    public void gameCleanup() {
-        api.removeSession(sessionId);
+    /**
+     * Reverts the player to the splash screen and remove him from the current game session.
+     */
+    public void back() {
+        shutdown();
         this.questionPrompt.setText("[Question]");
         this.answerArea.getChildren().clear();
         this.pointsLabel.setText("Points: 0");
@@ -168,10 +211,27 @@ public class GameCtrl {
         main.showSplash();
     }
 
+    /**
+     * Switch method that maps keyboard key presses to functions.
+     *
+     * @param e KeyEvent to be switched
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ESCAPE -> back();
+        }
+    }
+
+    /**
+     * Called when player points are rendered or updated
+     */
     public void renderPoints() {
         pointsLabel.setText(String.format("Points: %d", this.points));
     }
 
+    /**
+     * Submit an answer to the server
+     */
     public void submitAnswer() {
         /* RadioButton rb = new RadioButton("Answer option #1");
         answerArea.getChildren().add(rb); */
@@ -179,14 +239,14 @@ public class GameCtrl {
         disableButton(submitButton, true);
 
         Answer ans = new Answer(currentQuestion.type);
-        for (int i = 0 ; i < multiChoiceAnswers.size(); ++i) {
+        for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
             if (multiChoiceAnswers.get(i).isSelected()) {
                 ans.addAnswer(i);
             }
         }
 
-        Evaluation eval = api.submitAnswer(sessionId, ans);
-        if(doublePointsIsActive()) {
+        Evaluation eval = server.submitAnswer(sessionId, ans);
+        if (doublePointsIsActive()) {
             points += 2 * eval.points;
             switchStatusOfDoublePoints();
         } else {
@@ -202,7 +262,7 @@ public class GameCtrl {
                 Platform.runLater(() -> {
                     if (++rounds == GAME_ROUNDS) {
                         // TODO display leaderboard things here
-                        gameCleanup();
+                        back();
                     } else {
                         loadQuestion();
                     }
@@ -214,7 +274,8 @@ public class GameCtrl {
 
     /**
      * Disable button so the player can not interact with it
-     * @param button - Button to be disabled
+     *
+     * @param button  - Button to be disabled
      * @param disable - boolean value whether the button should be disabled or enabled
      */
     public void disableButton(Button button, boolean disable) {
@@ -229,9 +290,9 @@ public class GameCtrl {
         disableButton(removeOneButton, true);
 
         switch (currentQuestion.type) {
-            case MULTIPLE_CHOICE:
+            case MULTIPLE_CHOICE -> {
                 List<Integer> incorrectAnswers = new ArrayList<>();
-                List<Integer> correctAnswers = api.getCorrectAnswers(sessionId);
+                List<Integer> correctAnswers = server.getCorrectAnswers(sessionId);
                 for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
                     if (!correctAnswers.contains(i)) {
                         incorrectAnswers.add(i);
@@ -239,9 +300,8 @@ public class GameCtrl {
                 }
                 int randomIndex = new Random().nextInt(incorrectAnswers.size());
                 multiChoiceAnswers.get(incorrectAnswers.get(randomIndex)).setDisable(true);
-                break;
-            default:
-                disableButton(removeOneButton, false);
+            }
+            default -> disableButton(removeOneButton, false);
         }
 
 
@@ -268,6 +328,7 @@ public class GameCtrl {
 
     /**
      * Check if the doublePointsJoker is active for this question
+     *
      * @return true if the joker is active
      */
     private boolean doublePointsIsActive() {
@@ -280,6 +341,7 @@ public class GameCtrl {
     private void switchStatusOfDoublePoints() {
         doublePointsJoker = !doublePointsJoker;
     }
+
     /**
      * Disable the jokers that do not work for single-player
      */

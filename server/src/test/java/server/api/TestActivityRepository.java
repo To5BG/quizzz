@@ -217,7 +217,12 @@ public class TestActivityRepository implements ActivityRepository {
         return null;
     }
 
-    public  <S extends Activity> int findPos(long id) {
+    /**
+     * Finds position of id in repo
+     * @param id Position to be checked
+     * @return id of object at given position. If position is not found, returns -1
+     */
+    public int findPos(long id) {
         int position = -1;
         if (existsById(id)) {
             for (Activity a : activities) {

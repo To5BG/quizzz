@@ -42,13 +42,18 @@ public class SessionController {
             stmt.executeUpdate("DELETE FROM GAME_SESSION");
             stmt.executeUpdate("DELETE FROM QUESTION");
             stmt.executeUpdate("ALTER SEQUENCE HIBERNATE_SEQUENCE RESTART WITH 1");
-            repo.save(new GameSession("waiting_area"));
+            repo.save(new GameSession(GameSession.SessionType.WAITING_AREA));
             if (resetPlayers) stmt.executeUpdate("DELETE FROM PLAYER");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Updates session in database. Called when changes to existing entries are made
+     *
+     * @param session Session to update
+     */
     public void updateSession(GameSession session) {
         if (isInvalid(session.id)) return;
         this.repo.save(session);
@@ -90,7 +95,8 @@ public class SessionController {
     @GetMapping({"/join"})
     public ResponseEntity<GameSession> getAvailableSession() {
         var session = repo.findAll().stream()
-                .filter(s -> s.sessionType.equals("multiplayer") && s.sessionStatus.equals("started"))
+                .filter(s -> s.sessionType == GameSession.SessionType.MULTIPLAYER &&
+                        s.sessionStatus == GameSession.SessionStatus.STARTED)
                 .findFirst();
         if (session.isEmpty()) return ResponseEntity.ok(null);
         else return ResponseEntity.ok(session.get());
@@ -120,8 +126,10 @@ public class SessionController {
 
         GameSession session = repo.findById(id).orElse(null);
         if (session != null) {
-            repo.delete(session);
             session.currentQuestion = null;
+            session.expectedAnswers = null;
+            updateSession(session);
+            repo.delete(session);
         }
         return ResponseEntity.ok(session);
     }
@@ -157,11 +165,19 @@ public class SessionController {
     }
 
 
+    /**
+     * Updates status of game session
+     *
+     * @param sessionId Id of session to update
+     * @param status    new status of game session
+     * @return The updated game session
+     */
     @PutMapping("/{id}/status")
-    public ResponseEntity<GameSession> updateStatus(@PathVariable("id") long sessionId, @RequestBody String status) {
+    public ResponseEntity<GameSession> updateStatus(@PathVariable("id") long sessionId,
+                                                    @RequestBody GameSession.SessionStatus status) {
         if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = repo.findById(sessionId).get();
-        session.updateStatus(status);
+        session.setSessionStatus(status);
         repo.save(session);
         return ResponseEntity.ok(session);
     }

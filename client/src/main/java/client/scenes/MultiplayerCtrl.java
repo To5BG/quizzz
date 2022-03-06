@@ -70,17 +70,20 @@ public class MultiplayerCtrl {
         this.playerId = 0L;
     }
 
+    /**
+     * Removes player from the current session and also the session itself if empty.
+     * Also called if controller is closed forcibly
+     */
     public void shutdown() {
         if (sessionId != 0) server.removePlayer(sessionId, playerId);
+        if (server.getPlayers(sessionId).size() == 0) server.removeSession(sessionId);
     }
 
     /**
      * Reverts the player to the splash screen and remove him from the current game session.
      */
     public void back() {
-        server.removePlayer(sessionId, playerId);
-        var session = server.getSession(sessionId);
-        if (session.players.size() == 0) server.removeSession(sessionId);
+        shutdown();
         sessionId = playerId = 0L;
         mainCtrl.showSplash();
     }
@@ -92,9 +95,7 @@ public class MultiplayerCtrl {
      */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
-            case ESCAPE:
-                back();
-                break;
+            case ESCAPE -> back();
         }
     }
 
@@ -120,6 +121,7 @@ public class MultiplayerCtrl {
                     }
                 });
             }
+
             @Override
             public boolean cancel() {
                 return super.cancel();
@@ -238,7 +240,9 @@ public class MultiplayerCtrl {
      * Cleans the screen, brings the user back to the main screen and terminates the session once everyone has left.
      */
     public void gameCleanup() {
-        if (server.getSession(sessionId).players.size() - 1 == 0) { server.removeSession(sessionId); }
+        if (server.getSession(sessionId).players.size() - 1 == 0) {
+            server.removeSession(sessionId);
+        }
         this.questionPrompt.setText("[Question]");
         this.answerArea.getChildren().clear();
         this.pointsLabel.setText("Points: 0");
@@ -268,7 +272,7 @@ public class MultiplayerCtrl {
         server.toggleReady(sessionId, true);
 
         Answer ans = new Answer(currentQuestion.type);
-        for (int i = 0 ; i < multiChoiceAnswers.size(); ++i) {
+        for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
             if (multiChoiceAnswers.get(i).isSelected()) {
                 ans.addAnswer(i);
             }
@@ -276,7 +280,9 @@ public class MultiplayerCtrl {
 
         server.addPlayerAnswer(sessionId, playerId, ans);
         var session = server.getSession(sessionId);
-        if (session.playersReady == session.players.size()) server.updateStatus(session, "pause");
+        if (session.playersReady == session.players.size()) {
+            server.updateStatus(session, GameSession.SessionStatus.PAUSED);
+        }
         refresh();
     }
 
@@ -302,7 +308,9 @@ public class MultiplayerCtrl {
                         gameCleanup();
                     } else {
                         GameSession session = server.toggleReady(sessionId, false);
-                        if (session.playersReady == 0) server.updateStatus(session, "ongoing");
+                        if (session.playersReady == 0) {
+                            server.updateStatus(session, GameSession.SessionStatus.ONGOING);
+                        }
                         loadQuestion();
                     }
                 });

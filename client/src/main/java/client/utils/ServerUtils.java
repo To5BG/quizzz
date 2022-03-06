@@ -165,7 +165,7 @@ public class ServerUtils {
      * @param status  new status to be set
      * @return The updated session
      */
-    public GameSession updateStatus(GameSession session, String status) {
+    public GameSession updateStatus(GameSession session, GameSession.SessionStatus status) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/sessions/" + session.id + "/status")
                 .request(APPLICATION_JSON)
@@ -189,6 +189,12 @@ public class ServerUtils {
                 });
     }
 
+    /**
+     * Fetches a question from the server database
+     *
+     * @param sessionId Session to check
+     * @return Question object related to the session with the provided id
+     */
     public Question fetchOneQuestion(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/questions/" + sessionId)
@@ -198,6 +204,13 @@ public class ServerUtils {
                 });
     }
 
+    /**
+     * Submits an answer to the server database
+     *
+     * @param sessionId Session Id to send the answer to
+     * @param answer    Answer object to be sent
+     * @return Evaluation object to check the provided answers
+     */
     public Evaluation submitAnswer(long sessionId, Answer answer) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(SERVER).path("api/questions/" + sessionId)

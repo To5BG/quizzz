@@ -39,9 +39,6 @@ public class WaitingAreaCtrl implements Initializable {
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
     private long playerId;
-    private final long WAITING_AREA_ID = 1L;
-
-    private ObservableList<Player> data;
 
     @FXML
     private TableView<Player> currentPlayers;
@@ -68,11 +65,11 @@ public class WaitingAreaCtrl implements Initializable {
     }
 
     /**
-     * Called if controller is closed forcibly
+     * Removes player from session. Also called if controller is closed forcibly
      */
     public void shutdown() {
-        if (readyButton.getText().equals("Not Ready")) server.toggleReady(WAITING_AREA_ID, false);
-        server.removePlayer(WAITING_AREA_ID, playerId);
+        if (readyButton.getText().equals("Not Ready")) server.toggleReady(mainCtrl.WAITING_AREA_ID, false);
+        server.removePlayer(mainCtrl.WAITING_AREA_ID, playerId);
         setPlayerId(0L);
     }
 
@@ -92,11 +89,11 @@ public class WaitingAreaCtrl implements Initializable {
         switch (readyButton.getText()) {
             case "Ready" -> {
                 readyButton.setText("Not Ready");
-                server.toggleReady(WAITING_AREA_ID, true);
+                server.toggleReady(mainCtrl.WAITING_AREA_ID, true);
             }
             case "Not Ready" -> {
                 readyButton.setText("Ready");
-                server.toggleReady(WAITING_AREA_ID, false);
+                server.toggleReady(mainCtrl.WAITING_AREA_ID, false);
             }
         }
     }
@@ -115,38 +112,42 @@ public class WaitingAreaCtrl implements Initializable {
 
     /**
      * Refreshes the multiplayer player board for the current session.
+     *
      * @return True iff the refresh should continue
      */
     public boolean refresh() {
-        GameSession waitingArea = server.getSession(WAITING_AREA_ID);
-        data = FXCollections.observableList(waitingArea.players);
+        GameSession waitingArea = server.getSession(mainCtrl.WAITING_AREA_ID);
+        ObservableList<Player> data = FXCollections.observableList(waitingArea.players);
         currentPlayers.setItems(data);
 
         int playersReady = waitingArea.playersReady;
         int playersCount = waitingArea.players.size();
 
-        if (waitingArea.sessionStatus.equals("transferring")) {
+        if (waitingArea.sessionStatus == GameSession.SessionStatus.TRANSFERRING) {
 
-            server.toggleReady(WAITING_AREA_ID, false);
+            server.toggleReady(mainCtrl.WAITING_AREA_ID, false);
             GameSession sessionToJoin = server.getAvailableSession();
             if (sessionToJoin == null) return true;
 
             readyButton.setText("Ready");
             readyButton.setVisible(false);
 
-            server.addPlayer(sessionToJoin.id, server.removePlayer(WAITING_AREA_ID, playerId));
-            if (server.getPlayers(WAITING_AREA_ID).size() == 0) {
-                sessionToJoin = server.updateStatus(sessionToJoin, "ongoing");
-                server.updateStatus(waitingArea, "waiting_area");
+            server.addPlayer(sessionToJoin.id, server.removePlayer(mainCtrl.WAITING_AREA_ID, playerId));
+            if (server.getPlayers(mainCtrl.WAITING_AREA_ID).size() == 0) {
+                sessionToJoin = server.updateStatus(sessionToJoin, GameSession.SessionStatus.ONGOING);
+                server.updateStatus(waitingArea, GameSession.SessionStatus.WAITING_AREA);
             }
             mainCtrl.showMultiplayer(sessionToJoin.id, playerId);
             return false;
+        } else if (playersReady == playersCount && playersReady >= 2) {
+            toggleReady();
+            server.updateStatus(waitingArea, GameSession.SessionStatus.TRANSFERRING);
+            var sessionToJoin = server.addSession(
+                    new GameSession(GameSession.SessionType.MULTIPLAYER));
+            server.addPlayer(sessionToJoin.id, server.removePlayer(mainCtrl.WAITING_AREA_ID, playerId));
+            mainCtrl.showMultiplayer(sessionToJoin.id, playerId);
+            return false;
         }
-        else if (playersReady == playersCount && playersReady >= 2){
-            server.addSession(new GameSession("multiplayer"));
-            server.updateStatus(waitingArea, "transferring");
-        }
-
         readyButton.setVisible(playersCount >= 2);
         playerText.setText("Ready: " + playersReady + "/" + playersCount);
         return true;
@@ -155,7 +156,7 @@ public class WaitingAreaCtrl implements Initializable {
     /**
      * Setter for playerId.
      *
-     * @param playerId
+     * @param playerId New playerId
      */
     public void setPlayerId(long playerId) {
         this.playerId = playerId;

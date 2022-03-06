@@ -27,6 +27,11 @@
         <module name="AnnotationLocation">
             <property name="allowSamelineSingleParameterlessAnnotation" value="false"/>
         </module>
+        <module name="MissingJavadocMethod">
+            <property name="ignoreMethodNamesRegex" value="^main$|^setup$|.*([tT]est|check).*"/>
+            <property name="allowMissingPropertyJavadoc" value="true"/>
+            <property name="tokens" value="METHOD_DEF"/>
+        </module>
     </module>
     <module name="LineLength">
         <property name="max" value="120"/>

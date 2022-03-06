@@ -15,11 +15,9 @@
  */
 package commons;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerTest {
 
@@ -37,7 +35,7 @@ public class PlayerTest {
 	}
 
 	@Test
-	public void equalsHashCode() {
+	public void equalsHashCodeTest() {
 		var p = new Player("test",0);
 		var p2 = new Player("test",0);
 		assertEquals(p2, p2);
@@ -45,7 +43,7 @@ public class PlayerTest {
 	}
 
 	@Test
-	public void notEqualsHashCode() {
+	public void notEqualsHashCodeTest() {
 		var p = new Player("test",0);
 		var p2 = new Player("test2",0);
 		assertNotEquals(p, p2);
@@ -53,7 +51,7 @@ public class PlayerTest {
 	}
 
 	@Test
-	public void hasToString() {
+	public void hasToStringTest() {
 		var str = new Player("test",0).toString();
 		assertTrue(str.contains(Player.class.getSimpleName()));
 		assertTrue(str.contains("\n"));

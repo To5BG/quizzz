@@ -203,7 +203,7 @@ public class SplashCtrl {
             if(isDuplInRepository(newUserName)) {
                 getDuplPlayer(newUserName).setPoint(0);
             }
-            GameSession newSession = new GameSession("multiplayer",
+            GameSession newSession = new GameSession(GameSession.SessionType.MULTIPLAYER,
                     List.of(isDuplInRepository(newUserName) ? getDuplPlayer(newUserName) : new Player(newUserName, 0)));
             newSession = server.addSession(newSession);
             var playerId = server
