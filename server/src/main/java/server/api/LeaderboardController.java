@@ -42,7 +42,7 @@ public class LeaderboardController {
      * @return the point data of this player
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Player> getOneSpecificPlayer(@PathVariable("id") long id) {
+    public ResponseEntity<Player> getPlayerById(@PathVariable("id") long id) {
         if (id < 0 || !por.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
@@ -56,7 +56,7 @@ public class LeaderboardController {
      * @return return ok when succeeded, badRequest when fail
      */
     @PostMapping(path = {"", "/"})
-    public ResponseEntity<Player> addPlayerToTheRepository(@RequestBody Player player) {
+    public ResponseEntity<Player> addPlayerToRepository(@RequestBody Player player) {
 
         if (player == null || isNullOrEmpty(player.username)) {
             return ResponseEntity.badRequest().build();
@@ -76,14 +76,4 @@ public class LeaderboardController {
         return s == null || s.isEmpty();
     }
 
-    /**
-     * give a random number
-     *
-     * @return a random number
-     */
-    @GetMapping("rnd")
-    public ResponseEntity<Player> getRandom() {
-        var idx = random.nextInt((int) por.count());
-        return ResponseEntity.ok(por.getById((long) idx));
-    }
 }

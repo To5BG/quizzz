@@ -61,19 +61,4 @@ public class Player {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
     }
 
-    /**
-     * return the username of a player
-     * @return the username of the player
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * a method to return the point of the player
-     * @return the point of the player
-     */
-    public int getPoint() {
-        return point;
-    }
 }

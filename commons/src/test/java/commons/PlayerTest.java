@@ -26,7 +26,7 @@ public class PlayerTest {
 	@Test
 	public void checkConstructor() {
 		var p = new Player("test",0);
-		assertEquals("test", p.username);
+		assertEquals(new Player("test", 0), p);
 	}
 
 	@Test
@@ -51,5 +51,6 @@ public class PlayerTest {
 		assertTrue(str.contains(Player.class.getSimpleName()));
 		assertTrue(str.contains("\n"));
 		assertTrue(str.contains("username"));
+		assertTrue(str.contains("0"));
 	}
 }
