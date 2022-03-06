@@ -229,7 +229,7 @@ public class SessionController {
         Player player = session.players.stream().filter(p -> p.id == playerId).findFirst().orElse(null);
         if (player == null) return ResponseEntity.badRequest().build();
 
-        return ResponseEntity.ok(player.answer);
+        return ResponseEntity.ok(player.parsedAnswer());
     }
 
     @PostMapping("/{id}/players/{playerId}/answered")
@@ -242,6 +242,7 @@ public class SessionController {
         if (player == null) return ResponseEntity.badRequest().build();
 
         player.setAnswer(ans);
+        repo.save(session);
         return ResponseEntity.ok(ans);
     }
 

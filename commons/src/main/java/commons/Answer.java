@@ -4,19 +4,12 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
-@Entity
+
 public class Answer {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    public long id;
 
     public Question.QuestionType type;
     public List<Integer> answers;
@@ -29,6 +22,11 @@ public class Answer {
     public Answer(Question.QuestionType type) {
         this.type = type;
         answers = new ArrayList<Integer>();
+    }
+
+    public Answer(List<Integer> answers, Question.QuestionType type) {
+        this.type = type;
+        this.answers = answers;
     }
 
     public void addAnswer(int answer) {
