@@ -34,6 +34,14 @@ public class Player {
     }
 
     /**
+     * Sets the player's points to the parameter value
+     * @param point points to assign to the player
+     */
+    public void setPoint(int point) {
+        this.point = point;
+    }
+
+    /**
      * the method to judge whether two players are the same
      * @param obj another player to be compared with
      * @return a boolean value which represents the result of the comparison

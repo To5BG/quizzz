@@ -58,8 +58,8 @@ public class GameSessionTest {
     public void testGetPlayers() {
         GameSession s = new GameSession("multiplayer",
                 Stream.of(SOME_PLAYER).collect(Collectors.toList()));
-        Player a = new Player("abc");
-        Player b = new Player("def");
+        Player a = new Player("abc", 0);
+        Player b = new Player("def", 0);
         s.addPlayer(a);
         s.addPlayer(b);
         List<Player> players = s.getPlayers();

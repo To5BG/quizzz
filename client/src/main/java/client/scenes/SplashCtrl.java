@@ -63,7 +63,7 @@ public class SplashCtrl {
         GameSession sessionToJoin = server.getAvailableSession();
         String newUserName = usernameField.getText();
 
-        server.addPlayer(sessionToJoin.id, new Player(newUserName));
+        server.addPlayer(sessionToJoin.id, new Player(newUserName, 0));
         var playerId = server
                 .getPlayers(sessionToJoin.id)
                 .stream().filter(p -> p.username.equals(newUserName))
@@ -94,7 +94,7 @@ public class SplashCtrl {
      * @param username username of the player to be checked
      * @return true if another Player with the same username exists
      */
-    public boolean isDuplInDB(String username) {
+    public boolean isDuplInActive(String username) {
         for(GameSession gs : server.getSessions()) {
             Optional<Player> existing = gs
                     .getPlayers()
@@ -106,17 +106,46 @@ public class SplashCtrl {
         return false;
     }
 
+    /**
+     * Checks the player repository if another Player entry with the same username is present.
+     *
+     * @param username username of the player to be checked
+     * @return true if another Player with the same username exists
+     */
+    public boolean isDuplInRepository(String username) {
+        for(Player p : server.getPlayersFromRepository()) {
+            if(p.username.equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Gets the player with the same username (if exists) from the player repository
+     * @param username username of the player to be obtained
+     * @return the player if it exists, null otherwise
+     */
+    public Player getDuplPlayer(String username) {
+        for(Player p : server.getPlayersFromRepository()) {
+            if(p.username.equals(username)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
 
     /**
      * Initialize setup for main controller's showMultiplayer() method. Creates a new session if no free session is
      * available and adds the player to the session.
-     * In case a player enters a username already present in the current multiplayer session's waiting area, or an
-     * invalid/blank username, they are not added to the session, instead being prompted to change their username.
+     * In case a player enters a username already present in an active game session, or an invalid/blank username, they
+     * are not added to the session, instead being prompted to change their username.
      */
     public void showWaitingArea() {
         String newUserName = usernameField.getText();
 
-        if(isDuplInDB(newUserName)) {
+        if(isDuplInActive(newUserName)) {
             invalidUserName.setOpacity(0);
             duplUsername.setOpacity(1);
             usernameField.clear();
@@ -131,7 +160,15 @@ public class SplashCtrl {
         else {
             duplUsername.setOpacity(0);
             invalidUserName.setOpacity(0);
-            server.addPlayer(1L /*waiting area id*/, new Player(newUserName));
+
+            if(isDuplInRepository(newUserName)) {
+                Player p = getDuplPlayer(newUserName);
+                p.setPoint(0);
+                server.addPlayer(1L, p);
+            }
+            else {
+                server.addPlayer(1L /*waiting area id*/, new Player(newUserName, 0));
+            }
             var playerId = server
                     .getPlayers(1L)
                     .stream().filter(p -> p.username.equals(newUserName))
@@ -142,6 +179,8 @@ public class SplashCtrl {
 
     /**
      * Initialize setup for main controller's showSinglePlayer() method.
+     * In case a player enters an invalid/blank username, or if the username is used in an active game session, they are
+     * not added to the session, instead being prompted to change their username.
      */
     public void showSinglePlayer() {
         String newUserName = usernameField.getText();
@@ -152,7 +191,7 @@ public class SplashCtrl {
             usernameField.clear();
         }
 
-        else if(isDuplInDB(newUserName)) {
+        else if(isDuplInActive(newUserName)) {
             invalidUserName.setOpacity(0);
             duplUsername.setOpacity(1);
             usernameField.clear();
@@ -161,8 +200,11 @@ public class SplashCtrl {
         else {
             invalidUserName.setOpacity(0);
             duplUsername.setOpacity(0);
+            if(isDuplInRepository(newUserName)) {
+                getDuplPlayer(newUserName).setPoint(0);
+            }
             GameSession newSession = new GameSession("multiplayer",
-                    List.of(new Player(newUserName)));
+                    List.of(isDuplInRepository(newUserName) ? getDuplPlayer(newUserName) : new Player(newUserName, 0)));
             newSession = server.addSession(newSession);
             var playerId = server
                     .getPlayers(newSession.id)
