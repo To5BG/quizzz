@@ -41,6 +41,14 @@ public class Player {
     }
 
     /**
+     * Sets the player's point total to the value in parameter
+     * @param point points to set to the player
+     */
+    public void setPoint(int point) {
+        this.point = point;
+    }
+
+    /**
      * Converts the answer to a string.
      *
      * @param ans The player's answer.

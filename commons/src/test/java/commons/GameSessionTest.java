@@ -17,6 +17,7 @@ package commons;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -51,6 +52,20 @@ public class GameSessionTest {
                 Stream.of(SOME_PLAYER).collect(Collectors.toList()));
         s.removePlayer(SOME_PLAYER);
         assertSame(0, s.players.size());
+    }
+
+    @Test
+    public void testGetPlayers() {
+        GameSession s = new GameSession("multiplayer",
+                Stream.of(SOME_PLAYER).collect(Collectors.toList()));
+        Player a = new Player("abc", 0);
+        Player b = new Player("def", 0);
+        s.addPlayer(a);
+        s.addPlayer(b);
+        List<Player> players = s.getPlayers();
+        assertSame(3, players.size());
+        assertEquals(a, players.get(1));
+        assertEquals(b, players.get(2));
     }
 
     @Test
