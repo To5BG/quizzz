@@ -89,24 +89,21 @@ public class SplashCtrl {
     }
 
     /**
-     * Checks active sessions in the DB if another Player entry with the same username is present. If so, removes that
-     * previous player
+     * Checks active sessions in the DB if another Player entry with the same username is present.
      *
      * @param username username of the player to be checked
+     * @return true if another Player with the same username exists
      */
-    public void removeDuplFromDB(String username) {
+    public boolean isDuplInDB(String username) {
         for(GameSession gs : server.getSessions()) {
-            long sessionid = gs.id;
             Optional<Player> existing = gs
                     .getPlayers()
                     .stream().filter(p -> p.username.equals(username))
                     .findFirst();
 
-            if(existing.isPresent()) {
-                long playerid = existing.get().id;
-                server.removePlayer(sessionid, playerid);
-            }
+            if(existing.isPresent()) return true;
         }
+        return false;
     }
 
 
@@ -124,7 +121,7 @@ public class SplashCtrl {
                 .stream().filter(p -> p.username.equals(newUserName))
                 .findFirst();
 
-        if(existingPlayerInSession.isPresent()) {
+        if(existingPlayerInSession.isPresent() || isDuplInDB(newUserName)) {
             invalidUserName.setOpacity(0);
             duplUsername.setOpacity(1);
             usernameField.clear();
@@ -137,7 +134,6 @@ public class SplashCtrl {
         }
 
         else {
-            removeDuplFromDB(newUserName);
             duplUsername.setOpacity(0);
             invalidUserName.setOpacity(0);
             server.addPlayer(1L /*waiting area id*/, new Player(newUserName));
@@ -160,8 +156,13 @@ public class SplashCtrl {
             usernameField.clear();
         }
 
+        else if(isDuplInDB(newUserName)) {
+            invalidUserName.setOpacity(0);
+            duplUsername.setOpacity(1);
+            usernameField.clear();
+        }
+
         else {
-            removeDuplFromDB(newUserName);
             invalidUserName.setOpacity(0);
             GameSession newSession = new GameSession("multiplayer",
                     List.of(new Player(newUserName)));

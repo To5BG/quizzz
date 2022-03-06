@@ -21,8 +21,7 @@
    <Button layoutX="142.0" layoutY="317.0" mnemonicParsing="false" onAction="#showWaitingArea" text="Multiplayer"/>
    <Button layoutX="142.0" layoutY="372.0" mnemonicParsing="false" onAction="#showLeaderboard" text="Leaderboard"/>
    <Text fx:id="duplUsername" layoutX="316.0" layoutY="203.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0"
-         text="Username already exists in current session. Change to continue in multiplayer mode"
-         wrappingWidth="270.13665771484375"/>
+         text="Username already exists. Change to continue" wrappingWidth="270.13665771484375"/>
    <Text fx:id="invalidUserName" layoutX="57.0" layoutY="229.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0"
          text="Username should be non-empty, and only contain letters and/or numbers."/>
 </AnchorPane>
