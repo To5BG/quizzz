@@ -15,10 +15,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class GameCtrl {
 
@@ -42,6 +39,15 @@ public class GameCtrl {
     @FXML
     private Button submitButton;
 
+    @FXML
+    private Button removeOneButton;
+
+    @FXML
+    private Button decreaseTimeButton;
+
+    @FXML
+    private Button doublePointsButton;
+
     private ServerUtils server;
     private MainCtrl main;
 
@@ -52,12 +58,14 @@ public class GameCtrl {
     private int points = 0;
     private int rounds = 0;
     private Thread timerThread;
+    private boolean doublePointsJoker;
 
     @Inject
     public GameCtrl(ServerUtils server, MainCtrl main) {
         this.server = server;
         this.main = main;
         this.multiChoiceAnswers = new ArrayList<RadioButton>();
+        this.doublePointsJoker = false;
     }
 
     public void setSessionId(long sessionId) {
@@ -132,6 +140,8 @@ public class GameCtrl {
         for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
             if (correctIndices.contains(i)) {
                 multiChoiceAnswers.get(i).setStyle("-fx-background-color: green");
+            } else {
+                multiChoiceAnswers.get(i).setDisable(true);
             }
         }
     }
@@ -144,7 +154,7 @@ public class GameCtrl {
         this.currentQuestion = q;
         renderGeneralInformation(q);
         renderAnswerFields(q);
-        this.submitButton.setDisable(false);
+        disableButton(submitButton, false);
 
         Task roundTimer = new Task() {
             @Override
@@ -193,7 +203,7 @@ public class GameCtrl {
         this.multiChoiceAnswers.clear();
         this.points = 0;
         this.currentQuestion = null;
-        this.submitButton.setDisable(true);
+        disableButton(submitButton, true);
         main.showSplash();
     }
 
@@ -222,7 +232,7 @@ public class GameCtrl {
         /* RadioButton rb = new RadioButton("Answer option #1");
         answerArea.getChildren().add(rb); */
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
-        this.submitButton.setDisable(true);
+        disableButton(submitButton, true);
 
         Answer ans = new Answer(currentQuestion.type);
         for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
@@ -232,7 +242,12 @@ public class GameCtrl {
         }
 
         Evaluation eval = server.submitAnswer(sessionId, ans);
-        points += eval.points;
+        if(doublePointsIsActive()) {
+            points += 2 * eval.points;
+            switchStatusOfDoublePoints();
+        } else {
+            points += eval.points;
+        }
         renderPoints();
         renderCorrectAnswer(eval);
 
@@ -250,5 +265,81 @@ public class GameCtrl {
                 });
             }
         }, GAME_ROUND_DELAY * 1000);
+    }
+
+
+    /**
+     * Disable button so the player can not interact with it
+     * @param button - Button to be disabled
+     * @param disable - boolean value whether the button should be disabled or enabled
+     */
+    public void disableButton(Button button, boolean disable) {
+        button.setDisable(disable);
+    }
+
+    /**
+     * Remove One Answer Joker
+     * When this joker is used it removes one incorrect answer from the answers list for the player that used it
+     */
+    public void removeOneAnswer() {
+        disableButton(removeOneButton, true);
+
+        switch (currentQuestion.type) {
+            case MULTIPLE_CHOICE:
+                List<Integer> incorrectAnswers = new ArrayList<>();
+                List<Integer> correctAnswers = api.getCorrectAnswers(sessionId);
+                for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
+                    if (!correctAnswers.contains(i)) {
+                        incorrectAnswers.add(i);
+                    }
+                }
+                int randomIndex = new Random().nextInt(incorrectAnswers.size());
+                multiChoiceAnswers.get(incorrectAnswers.get(randomIndex)).setDisable(true);
+                break;
+            default:
+                disableButton(removeOneButton, false);
+        }
+
+
+    }
+
+    /**
+     * Decrease Time Joker
+     * When this joker is used, it decreases the time by a set percentage
+     * This joker can not be used in single-player
+     */
+    public void decreaseTime() {
+        disableButton(decreaseTimeButton, true);
+        //TODO Add functionality to button when multiplayer is functional
+    }
+
+    /**
+     * Double Points Joker
+     * When this joker is used, it doubles the points gained for the question when it was used.
+     */
+    public void doublePoints() {
+        disableButton(doublePointsButton, true);
+        switchStatusOfDoublePoints();
+    }
+
+    /**
+     * Check if the doublePointsJoker is active for this question
+     * @return true if the joker is active
+     */
+    private boolean doublePointsIsActive() {
+        return doublePointsJoker;
+    }
+
+    /**
+     * Switch the doublePointsJoker status from true to false and from false to true
+     */
+    private void switchStatusOfDoublePoints() {
+        doublePointsJoker = !doublePointsJoker;
+    }
+    /**
+     * Disable the jokers that do not work for single-player
+     */
+    public void disableSingleplayerJokers() {
+        disableButton(decreaseTimeButton, true);
     }
 }

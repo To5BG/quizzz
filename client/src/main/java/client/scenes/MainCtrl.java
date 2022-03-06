@@ -151,6 +151,7 @@ public class MainCtrl {
         gameScreen.setOnKeyPressed(e -> gameCtrl.keyPressed(e));
         gameCtrl.setSessionId(sessionId);
         gameCtrl.setPlayerId(playerId);
+        gameCtrl.disableSingleplayerJokers();
         gameCtrl.loadQuestion();
     }
 
