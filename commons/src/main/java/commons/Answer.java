@@ -10,6 +10,7 @@ import java.util.List;
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 public class Answer {
+
     public Question.QuestionType type;
     public List<Integer> answers;
 
@@ -21,6 +22,17 @@ public class Answer {
     public Answer(Question.QuestionType type) {
         this.type = type;
         answers = new ArrayList<Integer>();
+    }
+
+    /**
+     * Constructor to create an answer when the answers are known.
+     *
+     * @param answers   The given answer.
+     * @param type      The question type.
+     */
+    public Answer(List<Integer> answers, Question.QuestionType type) {
+        this.type = type;
+        this.answers = answers;
     }
 
     public void addAnswer(int answer) {
