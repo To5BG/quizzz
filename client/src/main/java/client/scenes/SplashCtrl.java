@@ -148,6 +148,7 @@ public class SplashCtrl {
 
         if(!isUsernameValid(newUserName)) {
             invalidUserName.setOpacity(1);
+            duplUsername.setOpacity(0);
             usernameField.clear();
         }
 
@@ -159,6 +160,7 @@ public class SplashCtrl {
 
         else {
             invalidUserName.setOpacity(0);
+            duplUsername.setOpacity(0);
             GameSession newSession = new GameSession("multiplayer",
                     List.of(new Player(newUserName)));
             newSession = server.addSession(newSession);
