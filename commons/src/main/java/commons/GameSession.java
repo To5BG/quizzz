@@ -104,6 +104,10 @@ public class GameSession {
         this.expectedAnswers.add(new Random().nextInt(3));
     }
 
+    public List<Player> getPlayers() {
+        return players;
+    }
+
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);

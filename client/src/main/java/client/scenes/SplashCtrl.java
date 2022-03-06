@@ -74,6 +74,7 @@ public class SplashCtrl {
     /**
      * Check whether a given username is valid or not. Valid usernames are non-empty and contain only letters and/or
      * numbers
+     *
      * @param username - the username whose validity is to be determined
      * @return true if username is valid, false otherwise
      */
@@ -88,6 +89,28 @@ public class SplashCtrl {
     }
 
     /**
+     * Checks active sessions in the DB if another Player entry with the same username is present. If so, removes that
+     * previous player
+     *
+     * @param username username of the player to be checked
+     */
+    public void removeDuplIfPresent(String username) {
+        for(GameSession gs : server.getSessions()) {
+            long sessionid = gs.id;
+            Optional<Player> existing = gs
+                    .getPlayers()
+                    .stream().filter(p -> p.username.equals(username))
+                    .findFirst();
+
+            if(existing.isPresent()) {
+                long playerid = existing.get().id;
+                server.removePlayer(sessionid, playerid);
+            }
+        }
+    }
+
+
+    /**
      * Initialize setup for main controller's showMultiplayer() method. Creates a new session if no free session is
      * available and adds the player to the session.
      * In case a player enters a username already present in the current multiplayer session's waiting area, or an
@@ -96,12 +119,12 @@ public class SplashCtrl {
     public void showWaitingArea() {
         String newUserName = usernameField.getText();
 
-        Optional<Player> existingPlayer = server
+        Optional<Player> existingPlayerInSession = server
                 .getPlayers(1L)
                 .stream().filter(p -> p.username.equals(newUserName))
                 .findFirst();
 
-        if(existingPlayer.isPresent()) {
+        if(existingPlayerInSession.isPresent()) {
             invalidUserName.setOpacity(0);
             duplUsername.setOpacity(1);
             usernameField.clear();
@@ -114,6 +137,7 @@ public class SplashCtrl {
         }
 
         else {
+            removeDuplIfPresent(newUserName);
             duplUsername.setOpacity(0);
             invalidUserName.setOpacity(0);
             server.addPlayer(1L /*waiting area id*/, new Player(newUserName));
@@ -137,6 +161,7 @@ public class SplashCtrl {
         }
 
         else {
+            removeDuplIfPresent(newUserName);
             invalidUserName.setOpacity(0);
             GameSession newSession = new GameSession("multiplayer",
                     List.of(new Player(newUserName)));
