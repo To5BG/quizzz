@@ -119,7 +119,6 @@ public class TestPlayerRepository implements PlayerRepository {
     }
 
     /**
-     *
      * @param entity
      * @param <S>
      * @return
@@ -139,8 +138,8 @@ public class TestPlayerRepository implements PlayerRepository {
     }
 
     /**
-     * Saves a given entity. Use the returned instance for further operations as the save operation might have changed the
-     * entity instance completely.
+     * Saves a given entity. Use the returned instance for further operations as the save operation might have changed
+     * the entity instance completely.
      *
      * @param entity must not be {@literal null}.
      * @return the saved entity; will never be {@literal null}.
@@ -350,7 +349,8 @@ public class TestPlayerRepository implements PlayerRepository {
      * @param queryFunction the query function defining projection, sorting, and the result type
      */
     @Override
-    public <S extends Player, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+    public <S extends Player, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R>
+            queryFunction) {
         // TODO Auto-generated method stub
         return null;
     }

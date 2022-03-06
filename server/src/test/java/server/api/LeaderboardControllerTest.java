@@ -1,10 +1,8 @@
 package server.api;
 
-import commons.GameSession;
 import commons.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
 import java.util.Random;
