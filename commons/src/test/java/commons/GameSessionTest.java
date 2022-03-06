@@ -86,7 +86,7 @@ public class GameSessionTest {
         Question tmp = s.currentQuestion;
         s.setPlayerReady();
         assertSame(3, s.questionCounter);
-        assertSame(0, s.playersReady);
+        assertSame(1, s.playersReady);
         assertSame(1, s.expectedAnswers.size());
         assertNotNull(s.currentQuestion);
         assertNotEquals(tmp, s.currentQuestion);
