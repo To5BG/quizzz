@@ -206,7 +206,10 @@ public class ServerUtils {
                 .post(Entity.entity(answer, APPLICATION_JSON), Evaluation.class);
     }
 
-
+    /**
+     * get player from the DB
+     * @return whether the getting is successful or not
+     */
     public List<Player> getPlayers() {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER).path("api/leaderboard/") //
@@ -216,7 +219,11 @@ public class ServerUtils {
                 });
     }
 
-
+    /**
+     * add a new player to the DB
+     * @param player the player to be added
+     * @return a message to show whether the adding is successful or not
+     */
     public Player addPlayer(Player player) {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER).path("api/leaderboard") //
