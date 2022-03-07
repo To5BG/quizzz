@@ -19,7 +19,6 @@ import com.google.inject.Inject;
 import client.utils.ServerUtils;
 import commons.GameSession;
 import commons.Player;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;

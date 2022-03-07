@@ -1,7 +1,6 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
-import com.google.inject.Inject;
 import commons.Answer;
 import commons.Evaluation;
 import commons.GameSession;
