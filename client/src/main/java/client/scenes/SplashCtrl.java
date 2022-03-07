@@ -23,7 +23,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
-import java.util.List;
 import java.util.Optional;
 
 public class SplashCtrl {
@@ -203,9 +202,11 @@ public class SplashCtrl {
             if(isDuplInRepository(newUserName)) {
                 getDuplPlayer(newUserName).setPoint(0);
             }
-            GameSession newSession = new GameSession(GameSession.SessionType.MULTIPLAYER,
-                    List.of(isDuplInRepository(newUserName) ? getDuplPlayer(newUserName) : new Player(newUserName, 0)));
+            GameSession newSession = new GameSession(GameSession.SessionType.SINGLEPLAYER);
             newSession = server.addSession(newSession);
+            server.addPlayer(newSession.id, isDuplInRepository(newUserName) ?
+                    getDuplPlayer(newUserName) : new Player(newUserName, 0));
+
             var playerId = server
                     .getPlayers(newSession.id)
                     .stream().filter(p -> p.username.equals(newUserName))

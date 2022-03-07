@@ -84,6 +84,14 @@ public class MultiplayerCtrl {
      */
     public void back() {
         shutdown();
+        this.questionPrompt.setText("[Question]");
+        this.answerArea.getChildren().clear();
+        this.pointsLabel.setText("Points: 0");
+        this.multiChoiceAnswers.clear();
+        this.points = 0;
+        this.currentQuestion = null;
+        this.submitButton.setDisable(true);
+        mainCtrl.showSplash();
         sessionId = playerId = 0L;
         mainCtrl.showSplash();
     }
@@ -111,7 +119,8 @@ public class MultiplayerCtrl {
                     @Override
                     public void run() {
                         try {
-                            if (server.getSession(sessionId).sessionStatus.equals("pause")) {
+                            if (server.getSession(sessionId).sessionStatus
+                                    == GameSession.SessionStatus.PAUSED) {
                                 startEvaluation();
                                 cancel();
                             }
@@ -237,23 +246,6 @@ public class MultiplayerCtrl {
     }
 
     /**
-     * Cleans the screen, brings the user back to the main screen and terminates the session once everyone has left.
-     */
-    public void gameCleanup() {
-        if (server.getSession(sessionId).players.size() - 1 == 0) {
-            server.removeSession(sessionId);
-        }
-        this.questionPrompt.setText("[Question]");
-        this.answerArea.getChildren().clear();
-        this.pointsLabel.setText("Points: 0");
-        this.multiChoiceAnswers.clear();
-        this.points = 0;
-        this.currentQuestion = null;
-        this.submitButton.setDisable(true);
-        mainCtrl.showSplash();
-    }
-
-    /**
      * Renders the user's score.
      */
     public void renderPoints() {
@@ -305,7 +297,7 @@ public class MultiplayerCtrl {
                 Platform.runLater(() -> {
                     if (++rounds == GAME_ROUNDS) {
                         // TODO display leaderboard things here
-                        gameCleanup();
+                        back();
                     } else {
                         GameSession session = server.toggleReady(sessionId, false);
                         if (session.playersReady == 0) {

@@ -63,7 +63,10 @@ public class Main extends Application {
                 try {
                     multiplayer.getKey().shutdown();
                 } catch (Exception exit2) {
-                    game.getKey().shutdown();
+                    try {
+                        game.getKey().shutdown();
+                    } catch (Exception exit3) {
+                    }
                 }
             }
         });
