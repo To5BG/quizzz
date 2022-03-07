@@ -19,7 +19,7 @@ import java.util.*;
 
 public abstract class GameCtrl {
 
-    protected final int GAME_ROUNDS = 5;
+    protected final int GAME_ROUNDS = 2;
     protected final int GAME_ROUND_TIME = 10;
     protected final int TIMER_UPDATE_INTERVAL_MS = 50;
     protected final int GAME_ROUND_DELAY = 2;
@@ -215,6 +215,14 @@ public abstract class GameCtrl {
      */
     public void back() {
         shutdown();
+        this.questionPrompt.setText("[Question]");
+        this.answerArea.getChildren().clear();
+        this.pointsLabel.setText("Points: 0");
+        this.multiChoiceAnswers.clear();
+        this.points = 0;
+        this.rounds = 0;
+        this.currentQuestion = null;
+        disableButton(submitButton, true);
         mainCtrl.showSplash();
     }
 
