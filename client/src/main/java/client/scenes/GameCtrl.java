@@ -206,6 +206,7 @@ public class GameCtrl {
         this.pointsLabel.setText("Points: 0");
         this.multiChoiceAnswers.clear();
         this.points = 0;
+        this.rounds = 0;
         this.currentQuestion = null;
         disableButton(submitButton, true);
         main.showSplash();
@@ -246,6 +247,7 @@ public class GameCtrl {
         }
 
         Evaluation eval = server.submitAnswer(sessionId, ans);
+        server.toggleReady(sessionId, true);
         if (doublePointsIsActive()) {
             points += 2 * eval.points;
             switchStatusOfDoublePoints();
@@ -265,6 +267,7 @@ public class GameCtrl {
                         back();
                     } else {
                         loadQuestion();
+                        server.toggleReady(sessionId, false);
                     }
                 });
             }

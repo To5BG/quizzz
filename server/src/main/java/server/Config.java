@@ -45,7 +45,7 @@ public class Config {
      */
     @Bean
     public String updatePlayerDB() {
-        return "all";
+        return "sessions";
     }
 
 }
