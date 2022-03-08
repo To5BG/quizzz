@@ -27,6 +27,8 @@ public class Question {
         MULTIPLE_CHOICE,
         TRUE_FALSE,
         RANGE_GUESS,
+        COMPARISON,
+        EQUIVALENCE,
         UNKNOWN
     }
 
