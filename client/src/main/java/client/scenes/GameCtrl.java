@@ -8,10 +8,7 @@ import commons.Question;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.RadioButton;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 
@@ -52,6 +49,7 @@ public class GameCtrl {
     private MainCtrl main;
 
     private List<RadioButton> multiChoiceAnswers;
+    private TextField estimationAnswer;
     private long sessionId;
     private long playerId;
     private Question currentQuestion;
@@ -94,11 +92,21 @@ public class GameCtrl {
     private void renderAnswerFields(Question q) {
         switch (q.type) {
             case MULTIPLE_CHOICE:
+            case COMPARISON:
+            case EQUIVALENCE:
                 renderMultipleChoiceQuestion(q);
                 break;
+            case RANGE_GUESS:
+                renderEstimationQuestion();
+                break;
             default:
-                throw new UnsupportedOperationException("Currently only multiple choice questions can be rendered");
+                throw new UnsupportedOperationException("Unsupported question type when rendering answers");
         }
+    }
+
+    private void renderEstimationQuestion() {
+        this.estimationAnswer = new TextField();
+        answerArea.getChildren().add(estimationAnswer);
     }
 
     /**
@@ -127,11 +135,30 @@ public class GameCtrl {
     private void renderCorrectAnswer(Evaluation eval) {
         switch (eval.type) {
             case MULTIPLE_CHOICE:
+            case COMPARISON:
+            case EQUIVALENCE:
                 renderMultipleChoiceAnswers(eval.correctAnswers);
+                break;
+            case RANGE_GUESS:
+                renderEstimationAnswers(eval.correctAnswers);
                 break;
             default:
                 throw new UnsupportedOperationException("Currently only multiple choice answers can be rendered");
         }
+    }
+
+    private void renderEstimationAnswers(List<Integer> correctAnswers) {
+        int givenAnswer = Integer.parseInt(estimationAnswer.getText());
+        int actualAnswer = correctAnswers.get(0);
+        int diff = givenAnswer - actualAnswer;
+        String correctAnswer = "Correct Answer: " + actualAnswer;
+
+        if (diff > 0) correctAnswer += " (+" + diff + ")";
+        else if (diff < 0) correctAnswer += " (-" + diff + ")";
+
+        Label resultText = new Label(correctAnswer);
+        answerArea.getChildren().clear();
+        answerArea.getChildren().add(resultText);
     }
 
     /**
@@ -240,10 +267,23 @@ public class GameCtrl {
         disableButton(submitButton, true);
 
         Answer ans = new Answer(currentQuestion.type);
-        for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
-            if (multiChoiceAnswers.get(i).isSelected()) {
-                ans.addAnswer(i);
-            }
+
+        switch (currentQuestion.type) {
+            case MULTIPLE_CHOICE:
+            case COMPARISON:
+            case EQUIVALENCE:
+                for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
+                    if (multiChoiceAnswers.get(i).isSelected()) {
+                        ans.addAnswer(i);
+                    }
+                }
+                break;
+            case RANGE_GUESS:
+                // TODO disallow non-numeric answer
+                ans.addAnswer(Integer.parseInt(estimationAnswer.getText()));
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported question type when parsing answer");
         }
 
         Evaluation eval = server.submitAnswer(sessionId, ans);
