@@ -1,8 +1,8 @@
-package server.api;
+package commons;
 
 import commons.Activity;
 import commons.Question;
-import org.springframework.data.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class QuestionGenerator {
 
-    public static Pair<Question, List<Integer>> generateComparisonQuestion(List<Activity> activities) {
+    private static Pair<Question, List<Integer>> generateComparisonQuestion(List<Activity> activities) {
         Question q = new Question("Which activity takes the most energy?", "N/A",
                 Question.QuestionType.COMPARISON);
 
@@ -29,7 +29,7 @@ public class QuestionGenerator {
         return Pair.of(q, List.of(answerIndex));
     }
 
-    public static Pair<Question, List<Integer>> generateMultipleChoiceQuestion(Activity activity) {
+    private static Pair<Question, List<Integer>> generateMultipleChoiceQuestion(Activity activity) {
         Question q = new Question("Guess how much energy the following activity takes\n" + activity.title,
                 activity.imagePath, Question.QuestionType.MULTIPLE_CHOICE);
 
@@ -46,14 +46,14 @@ public class QuestionGenerator {
         return Pair.of(q, answerOptions);
     }
 
-    public static Pair<Question, List<Integer>> generateEstimationQuestion(Activity activity) {
+    private static Pair<Question, List<Integer>> generateEstimationQuestion(Activity activity) {
         Question q = new Question("Guess how much Wh of energy the following activity takes\n" + activity.title,
                 activity.imagePath, Question.QuestionType.RANGE_GUESS);
 
         return Pair.of(q, List.of(Integer.parseInt(activity.consumption)));
     }
 
-    public static Pair<Question, List<Integer>> generateEquivalenceQuestion(Activity a, List<Activity> other) {
+    private static Pair<Question, List<Integer>> generateEquivalenceQuestion(Activity a, List<Activity> other) {
         Question q = new Question(
                 "What could you do instead of the following activity to use the same energy?\n" +
                 a.title, a.imagePath, Question.QuestionType.EQUIVALENCE);
@@ -71,5 +71,34 @@ public class QuestionGenerator {
         }
 
         return Pair.of(q, List.of(closestIndex));
+    }
+
+    public static Pair<Question, List<Integer>> generateQuestion() {
+        Random rng = new Random();
+        switch (rng.nextInt(4)) {
+            case 0:
+                return generateComparisonQuestion(List.of(
+                        new Activity("Comp 1", "1000", "img1", "no"),
+                        new Activity("Comp 2", "4000", "img2", "no"),
+                        new Activity("Comp 3", "2000", "img3", "no"),
+                        new Activity("Comp 4", "1500", "img4", "no")
+                ));
+            case 1:
+                return generateMultipleChoiceQuestion(new Activity(
+                        "MC 1", "570", "img1", "no"
+                ));
+            case 2:
+                return generateEquivalenceQuestion(new Activity(
+                    "Eq 1", "1000", "img1", "no"
+                ), List.of(
+                    new Activity("Eq 2", "4000", "img2", "no"),
+                    new Activity("Eq 3", "2000", "img3", "no"),
+                    new Activity("Eq 4", "1500", "img4", "no")
+                ));
+            default:
+                return generateEstimationQuestion(new Activity(
+                        "Est 1", "440", "img1", "no"
+                ));
+        }
     }
 }
