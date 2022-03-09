@@ -2,7 +2,6 @@ package commons;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -92,10 +91,26 @@ public class QuestionGenerator {
 
     /**
      * Generate a question from the 4 basic types
+     * @param rng The random source to use when deciding the type of question
+     * @return The question and the list of expected answers
+     */
+    public static Pair<Question, List<Integer>> generateQuestion(Random rng) {
+        return generateQuestionInternal(rng);
+    }
+
+    /**
+     * Generate a question from the 4 basic types
      * @return The question and the list of expected answers
      */
     public static Pair<Question, List<Integer>> generateQuestion() {
-        Random rng = new Random();
+        return generateQuestionInternal(new Random());
+    }
+
+    /**
+     * Generate a question from the 4 basic types
+     * @return The question and the list of expected answers
+     */
+    private static Pair<Question, List<Integer>> generateQuestionInternal(Random rng) {
 
         switch (rng.nextInt(4)) {
             case 0:
