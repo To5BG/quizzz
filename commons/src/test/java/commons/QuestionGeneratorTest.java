@@ -63,7 +63,8 @@ public class QuestionGeneratorTest {
         StubRandom rng = new StubRandom(2);
         Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion(rng);
         Question q = res.getKey();
-        assertTrue(q.prompt.startsWith("What could you do instead of the following activity to use the same energy?\n"));
+        assertTrue(
+                q.prompt.startsWith("What could you do instead of the following activity to use the same energy?\n"));
         assertEquals(Question.QuestionType.EQUIVALENCE, q.type);
         assertSame(3, q.answerOptions.size());
         assertSame(1, res.getValue().size());

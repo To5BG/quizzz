@@ -76,7 +76,7 @@ public class GameSessionTest {
         Question previousQuestion = s.currentQuestion;
         s.updateQuestion();
         assertNotNull(s.currentQuestion);
-        assertNotEquals(previousQuestion, s.currentQuestion);
+        assertNotSame(previousQuestion, s.currentQuestion);
     }
 
     @Test
@@ -99,7 +99,7 @@ public class GameSessionTest {
         assertSame(3, s.questionCounter);
         assertSame(1, s.playersReady);
         assertNotNull(s.currentQuestion);
-        assertNotEquals(tmp, s.currentQuestion);
+        assertNotSame(tmp, s.currentQuestion);
     }
 
     @Test
