@@ -198,7 +198,7 @@ public class MultiplayerCtrl {
      * Fetches a question, loads the question and starts reading time.
      */
     public void loadQuestion() {
-        this.submitButton.setDisable(false);
+        this.submitButton.setDisable(true);
         this.answerArea.getChildren().clear();
         Question q = this.server.fetchOneQuestion(this.sessionId);
         this.currentQuestion = q;
@@ -220,7 +220,7 @@ public class MultiplayerCtrl {
     public void loadAnswer() {
         Question q = this.currentQuestion;
         renderAnswerFields(q);
-        this.submitButton.setDisable(true);
+        this.submitButton.setDisable(false);
 
         Task roundTimer = new Task() {
             @Override
