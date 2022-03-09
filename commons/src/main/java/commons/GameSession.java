@@ -121,6 +121,7 @@ public class GameSession {
      * Updates the question of the game session
      */
     public void updateQuestion() {
+        ++questionCounter;
         Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion();
         this.currentQuestion = res.getKey();
         System.out.println("Question updated to:");

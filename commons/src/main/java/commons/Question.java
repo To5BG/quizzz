@@ -50,6 +50,11 @@ public class Question {
      * @param answerOption String representation of the answer to be added
      */
     public void addAnswerOption(String answerOption) {
+        if (type != QuestionType.MULTIPLE_CHOICE && type != QuestionType.COMPARISON &&
+                type != QuestionType.EQUIVALENCE) {
+            throw new UnsupportedOperationException(
+                    "Answer options are only allowed for Multiple Choice, comparison and equivalence type questions");
+        }
         this.answerOptions.add(answerOption);
     }
 
