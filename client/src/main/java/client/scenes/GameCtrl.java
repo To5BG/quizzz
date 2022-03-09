@@ -106,6 +106,7 @@ public class GameCtrl {
 
     private void renderEstimationQuestion() {
         this.estimationAnswer = new TextField();
+        answerArea.getChildren().clear();
         answerArea.getChildren().add(estimationAnswer);
     }
 
@@ -156,7 +157,7 @@ public class GameCtrl {
         if (diff > 0) {
             correctAnswer += " (+" + diff + ")";
         } else if (diff < 0) {
-            correctAnswer += " (-" + diff + ")";
+            correctAnswer += " (" + diff + ")";
         }
 
         Label resultText = new Label(correctAnswer);
@@ -187,6 +188,9 @@ public class GameCtrl {
         this.currentQuestion = q;
         renderGeneralInformation(q);
         renderAnswerFields(q);
+
+        disableButton(removeOneButton, q.type == Question.QuestionType.RANGE_GUESS);
+
         disableButton(submitButton, false);
 
         Task roundTimer = new Task() {

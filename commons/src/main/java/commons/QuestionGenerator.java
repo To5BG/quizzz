@@ -41,17 +41,14 @@ public class QuestionGenerator {
         Question q = new Question("Guess how much energy the following activity takes\n" + activity.title,
                 activity.imagePath, Question.QuestionType.MULTIPLE_CHOICE);
 
-        List<Integer> answerOptions = new ArrayList<Integer>();
-        answerOptions.add(Integer.parseInt(activity.consumption));
-        q.addAnswerOption(answerOptions.get(0) + "Wh");
+        q.addAnswerOption(Integer.parseInt(activity.consumption) + " Wh");
 
         Random rng = new Random();
         for (int i = 0; i < 3; ++i) {
-            answerOptions.add(rng.nextInt(10000));
-            q.addAnswerOption(answerOptions.get(i + 1) + "Wh");
+            q.addAnswerOption(rng.nextInt(10000) + " Wh");
         }
 
-        return Pair.of(q, answerOptions);
+        return Pair.of(q, List.of(0));
     }
 
     /**
@@ -82,6 +79,7 @@ public class QuestionGenerator {
 
         for (int i = 0; i < other.size(); ++i) {
             Activity act = other.get(i);
+            q.addAnswerOption(act.title);
             int curDiff = Math.abs(Integer.parseInt(a.consumption) - Integer.parseInt(act.consumption));
             if (curDiff < diff) {
                 diff = curDiff;
@@ -98,6 +96,7 @@ public class QuestionGenerator {
      */
     public static Pair<Question, List<Integer>> generateQuestion() {
         Random rng = new Random();
+
         switch (rng.nextInt(4)) {
             case 0:
                 return generateComparisonQuestion(List.of(
