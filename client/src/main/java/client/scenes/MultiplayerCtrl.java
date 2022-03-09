@@ -195,14 +195,32 @@ public class MultiplayerCtrl {
     }
 
     /**
-     * Fetches a question, loads the question and starts the progressbar.
+     * Fetches a question, loads the question and starts reading time.
      */
     public void loadQuestion() {
+        this.submitButton.setDisable(false);
+        this.answerArea.getChildren().clear();
         Question q = this.server.fetchOneQuestion(this.sessionId);
         this.currentQuestion = q;
         renderGeneralInformation(q);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    loadAnswer();
+                });
+            }
+        }, 5000);
+
+    }
+
+    /**
+     * Loads the answers of the current question and updates the timer after reading time is over
+     */
+    public void loadAnswer() {
+        Question q = this.currentQuestion;
         renderAnswerFields(q);
-        this.submitButton.setDisable(false);
+        this.submitButton.setDisable(true);
 
         Task roundTimer = new Task() {
             @Override
