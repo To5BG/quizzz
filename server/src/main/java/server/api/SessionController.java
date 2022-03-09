@@ -41,11 +41,11 @@ public class SessionController {
             stmt.executeUpdate("DELETE FROM GAME_SESSION_PLAYERS");
             stmt.executeUpdate("DELETE FROM GAME_SESSION WHERE SESSION_TYPE <> 0");
             stmt.executeUpdate("DELETE FROM QUESTION");
-            repo.save(new GameSession(GameSession.SessionType.WAITING_AREA));
             if (resetPlayers) {
                 stmt.executeUpdate("DELETE FROM PLAYER");
                 stmt.executeUpdate("ALTER SEQUENCE HIBERNATE_SEQUENCE RESTART WITH 1");
             }
+            if (repo.count() == 0) repo.save(new GameSession(GameSession.SessionType.WAITING_AREA));
         } catch (SQLException e) {
             e.printStackTrace();
         }
