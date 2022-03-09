@@ -1,7 +1,5 @@
 package commons;
 
-import commons.Activity;
-import commons.Question;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -10,6 +8,11 @@ import java.util.Random;
 
 public class QuestionGenerator {
 
+    /**
+     * Generate a comparison style question
+     * @param activities List of activities to compare
+     * @return The question and the list of expected answers
+     */
     private static Pair<Question, List<Integer>> generateComparisonQuestion(List<Activity> activities) {
         Question q = new Question("Which activity takes the most energy?", "N/A",
                 Question.QuestionType.COMPARISON);
@@ -29,6 +32,11 @@ public class QuestionGenerator {
         return Pair.of(q, List.of(answerIndex));
     }
 
+    /**
+     * Generate a multiple choice type question
+     * @param activity The activity to guess the consumption of
+     * @return A question and the list of expected answers
+     */
     private static Pair<Question, List<Integer>> generateMultipleChoiceQuestion(Activity activity) {
         Question q = new Question("Guess how much energy the following activity takes\n" + activity.title,
                 activity.imagePath, Question.QuestionType.MULTIPLE_CHOICE);
@@ -46,6 +54,11 @@ public class QuestionGenerator {
         return Pair.of(q, answerOptions);
     }
 
+    /**
+     * Generate an estimation style question
+     * @param activity The activity with the consumption to be estimated
+     * @return A question and the list of expected answers
+     */
     private static Pair<Question, List<Integer>> generateEstimationQuestion(Activity activity) {
         Question q = new Question("Guess how much Wh of energy the following activity takes\n" + activity.title,
                 activity.imagePath, Question.QuestionType.RANGE_GUESS);
@@ -53,6 +66,12 @@ public class QuestionGenerator {
         return Pair.of(q, List.of(Integer.parseInt(activity.consumption)));
     }
 
+    /**
+     * Generate an equivalence style question
+     * @param a The activity being compared to alternatives
+     * @param other Alternative activities instead of the first one
+     * @return A question and the list of expected answers
+     */
     private static Pair<Question, List<Integer>> generateEquivalenceQuestion(Activity a, List<Activity> other) {
         Question q = new Question(
                 "What could you do instead of the following activity to use the same energy?\n" +
@@ -73,6 +92,10 @@ public class QuestionGenerator {
         return Pair.of(q, List.of(closestIndex));
     }
 
+    /**
+     * Generate a question from the 4 basic types
+     * @return The question and the list of expected answers
+     */
     public static Pair<Question, List<Integer>> generateQuestion() {
         Random rng = new Random();
         switch (rng.nextInt(4)) {

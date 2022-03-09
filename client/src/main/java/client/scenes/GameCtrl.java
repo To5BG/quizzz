@@ -153,8 +153,11 @@ public class GameCtrl {
         int diff = givenAnswer - actualAnswer;
         String correctAnswer = "Correct Answer: " + actualAnswer;
 
-        if (diff > 0) correctAnswer += " (+" + diff + ")";
-        else if (diff < 0) correctAnswer += " (-" + diff + ")";
+        if (diff > 0) {
+            correctAnswer += " (+" + diff + ")";
+        } else if (diff < 0) {
+            correctAnswer += " (-" + diff + ")";
+        }
 
         Label resultText = new Label(correctAnswer);
         answerArea.getChildren().clear();
