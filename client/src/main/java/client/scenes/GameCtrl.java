@@ -150,12 +150,30 @@ public class GameCtrl {
     }
 
     /**
-     * Loads a question and updates the timer bar
+     * Loads a question and starts reading time.
      */
     public void loadQuestion() {
+        disableButton(submitButton, true);
+        this.answerArea.getChildren().clear();
         Question q = this.server.fetchOneQuestion(this.sessionId);
         this.currentQuestion = q;
         renderGeneralInformation(q);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    loadAnswer();
+                });
+            }
+        }, 5000);
+
+    }
+
+    /**
+     * Loads the answers of the current question and updates the timer after reading time is over
+     */
+    public void loadAnswer() {
+        Question q = this.currentQuestion;
         renderAnswerFields(q);
         disableButton(submitButton, false);
 
