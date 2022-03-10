@@ -3,12 +3,21 @@ package client.scenes;
 import client.utils.ServerUtils;
 
 import javax.inject.Inject;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class SingleplayerCtrl extends GameCtrl{
+public class SingleplayerCtrl extends GameCtrl {
 
     @Inject
     public SingleplayerCtrl(ServerUtils server, MainCtrl mainCtrl) {
         super(server, mainCtrl);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
     }
 
     /**

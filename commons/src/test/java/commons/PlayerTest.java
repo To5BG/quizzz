@@ -28,10 +28,17 @@ public class PlayerTest {
 	}
 
 	@Test
-	public void testSetPoint() {
+	public void testSetCurrentPoint() {
 		var p = new Player("abc", 0);
-		p.setPoint(8);
-		assertEquals(8, p.point);
+		p.setCurrentPoints(8);
+		assertEquals(8, p.currentPoints);
+	}
+
+	@Test
+	public void testSetBestPoint() {
+		var p = new Player("abc", 0);
+		p.setBestPoints(8);
+		assertEquals(8, p.bestScore);
 	}
 
 	@Test
