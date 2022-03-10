@@ -42,6 +42,14 @@ public class StubRepository<T, S> {
     }
 
     /**
+     * Set the sequencer to a given value
+     * @param value The value to set the sequencer to
+     */
+    public void setSequence(long value) {
+        this.sequence = value;
+    }
+
+    /**
      * Register a method call
      * @param callName The name of the method called
      */
