@@ -20,41 +20,39 @@ class LeaderboardControllerTest {
     public void setup() {
         random = new Random();
         testRepo = new TestPlayerRepository();
-        lbc = new LeaderboardController(random, testRepo);
+        lbc = new LeaderboardController(testRepo);
     }
 
     @Test
     public void constructorTest() {
-        LeaderboardController temp = new LeaderboardController(random, testRepo);
+        LeaderboardController temp = new LeaderboardController(testRepo);
         assertNotNull(temp);
     }
 
     @Test
     void getAllPlayers() {
-        var players = lbc.getAllPlayers();
-        System.out.println(players.size());
+        var players = lbc.getAllPlayers().getBody();
         assertTrue(players.size() == 0);
 
-        lbc.addPlayerToRepository(new Player("David", 10));
-        System.out.println(players.size());
-        assertTrue(players.size() == 1);
+        lbc.addPlayerForcibly(new Player("David", 10));
+        assertTrue(lbc.getAllPlayers().getBody().size() == 1);
 
-        lbc.addPlayerToRepository(new Player("Yongcheng", 15));
-        System.out.println(players.size());
-        assertTrue(players.size() == 2);
+        lbc.addPlayerForcibly(new Player("Yongcheng", 15));
+        assertTrue(lbc.getAllPlayers().getBody().size() == 2);
     }
 
     @Test
     void getPlayerById() {
-        Optional<Player> temp = Optional.ofNullable(lbc.addPlayerToRepository(new Player("david", 10)).getBody());
-        lbc.addPlayerToRepository(new Player("david", 10));
+        Optional<Player> temp = Optional.ofNullable(lbc.addPlayerForcibly(
+                new Player("david", 10)).getBody());
+        lbc.addPlayerForcibly(new Player("david", 10));
         var player = testRepo.findById(1L);
         assertEquals(player, temp);
     }
 
     @Test
     void addPlayerToTheRepository() {
-        var savedPlayer = lbc.addPlayerToRepository(new Player("david", 10)).getBody();
+        var savedPlayer = lbc.addPlayerForcibly(new Player("david", 10)).getBody();
         assertTrue(testRepo.calledMethods.contains("save"));
         assertEquals(savedPlayer, testRepo.findAll().get(0));
     }
