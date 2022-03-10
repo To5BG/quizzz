@@ -67,7 +67,24 @@ public class LeaderboardController {
     }
 
     /**
-     * judge whether the String is empty or null
+     * Updates current points of a player entry
+     *
+     * @param playerId Id of player
+     * @param points   Point count to be updated with
+     * @return Updated player entity
+     */
+    @PutMapping("/{id}/score")
+    public ResponseEntity<Player> updateCurrentPoints(@PathVariable("id") long playerId,
+                                                      @RequestBody int points) {
+        if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
+        Player updatedPlayer = repo.findById(playerId).get();
+        updatedPlayer.setCurrentPoints(points);
+        repo.save(updatedPlayer);
+        return ResponseEntity.ok(updatedPlayer);
+    }
+
+    /**
+     * Updates best points of a player entry
      *
      * @param playerId Id of player
      * @param points   Point count to be updated with

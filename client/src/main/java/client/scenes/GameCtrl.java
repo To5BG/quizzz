@@ -1,25 +1,22 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
-import commons.Answer;
-import commons.Evaluation;
-import commons.GameSession;
-import commons.Question;
+import commons.*;
+import jakarta.ws.rs.BadRequestException;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.RadioButton;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 
 import java.util.*;
 
-public abstract class GameCtrl {
+public abstract class GameCtrl implements Initializable {
 
-    protected final int GAME_ROUNDS = 2;
+    protected final int GAME_ROUNDS = 5;
     protected final int GAME_ROUND_TIME = 10;
     protected final int TIMER_UPDATE_INTERVAL_MS = 50;
     protected final int GAME_ROUND_DELAY = 2;
@@ -56,6 +53,7 @@ public abstract class GameCtrl {
     protected long playerId;
     protected Question currentQuestion;
     protected int points = 0;
+    protected int bestScore = 0;
     protected int rounds = 0;
     protected Thread timerThread;
 
@@ -87,6 +85,13 @@ public abstract class GameCtrl {
      */
     public void setPlayerId(long playerId) {
         this.playerId = playerId;
+    }
+
+    /**
+     * Setter for bestScore.
+     */
+    public void setBestScore() {
+        this.bestScore = server.getPlayerById(playerId).bestScore;
     }
 
     /**
@@ -202,7 +207,9 @@ public abstract class GameCtrl {
      */
     public void shutdown() {
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
-        if (sessionId != 0)  {
+        if (sessionId != 0) {
+            server.updateScore(playerId, 0, false);
+            server.addPlayerAnswer(sessionId, playerId, new Answer(Question.QuestionType.MULTIPLE_CHOICE));
             server.removePlayer(sessionId, playerId);
             setPlayerId(0);
         }
@@ -240,6 +247,17 @@ public abstract class GameCtrl {
     }
 
     /**
+     * Updates the point counter in client side, and then updates database entry
+     *
+     * @param eval Evaluation of received answers
+     */
+    public void updatePoints(Evaluation eval) {
+        points += eval.points;
+        renderPoints();
+        server.updateScore(playerId, points, false);
+    }
+
+    /**
      * Called when player points are rendered or updated
      */
     public void renderPoints() {
@@ -268,6 +286,7 @@ public abstract class GameCtrl {
             server.updateStatus(session, GameSession.SessionStatus.PAUSED);
         }
     }
+
     /**
      * Gets the user's answer, starts the evaluation and loads a new question or ends the game.
      */
@@ -275,9 +294,8 @@ public abstract class GameCtrl {
 
         Answer ans = server.getPlayerAnswer(sessionId, playerId);
         Evaluation eval = server.submitAnswer(sessionId, ans);
-        points += eval.points;
 
-        renderPoints();
+        updatePoints(eval);
         renderCorrectAnswer(eval);
 
         // TODO disable button while waiting
@@ -285,15 +303,21 @@ public abstract class GameCtrl {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    if (++rounds == GAME_ROUNDS) {
+                    rounds++;
+                    if (rounds == GAME_ROUNDS) {
                         // TODO display leaderboard things here
+                        if (points > bestScore) server.updateScore(playerId, points, true);
                         back();
                     } else {
-                        GameSession session = server.toggleReady(sessionId, false);
-                        if (session.playersReady == 0) {
-                            server.updateStatus(session, GameSession.SessionStatus.ONGOING);
+                        try {
+                            GameSession session = server.toggleReady(sessionId, false);
+                            if (session.playersReady == 0) {
+                                server.updateStatus(session, GameSession.SessionStatus.ONGOING);
+                            }
+                            loadQuestion();
+                        } catch (BadRequestException e) {
+                            System.out.println("takingover");
                         }
-                        loadQuestion();
                     }
                 });
             }

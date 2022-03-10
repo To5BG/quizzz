@@ -65,7 +65,7 @@ public class LeaderBoardCtrl implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         colName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
-        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().point)));
+        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestScore)));
     }
 
     /**
@@ -92,7 +92,7 @@ public class LeaderBoardCtrl implements Initializable {
      * refresh the screen to show the leaderboards
      */
     public void refresh() {
-        var players = server.getPlayersFromRepository();
+        var players = server.getAllPlayers();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
     }

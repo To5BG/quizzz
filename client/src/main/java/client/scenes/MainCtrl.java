@@ -102,6 +102,7 @@ public class MainCtrl {
         multiPlayerScreen.setOnKeyPressed(e -> multiplayerCtrl.keyPressed(e));
         multiplayerCtrl.setSessionId(sessionId);
         multiplayerCtrl.setPlayerId(playerId);
+        multiplayerCtrl.setBestScore();
         multiplayerCtrl.loadQuestion();
     }
 
@@ -149,6 +150,7 @@ public class MainCtrl {
         singlePlayerScreen.setOnKeyPressed(e -> singlePlayerCtrl.keyPressed(e));
         singlePlayerCtrl.setSessionId(sessionId);
         singlePlayerCtrl.setPlayerId(playerId);
+        singlePlayerCtrl.setBestScore();
         singlePlayerCtrl.disableSingleplayerJokers();
         singlePlayerCtrl.loadQuestion();
     }
