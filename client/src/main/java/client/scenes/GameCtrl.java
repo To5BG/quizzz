@@ -18,6 +18,7 @@ public abstract class GameCtrl implements Initializable {
 
     protected final int GAME_ROUNDS = 5;
     protected final int GAME_ROUND_TIME = 10;
+    protected final int MIDGAME_BREAK_TIME = 10;
     protected final int TIMER_UPDATE_INTERVAL_MS = 50;
     protected final int GAME_ROUND_DELAY = 2;
 
@@ -44,6 +45,18 @@ public abstract class GameCtrl implements Initializable {
 
     @FXML
     protected Button doublePointsButton;
+
+    @FXML
+    protected TableView<Player> leaderboard;
+
+    @FXML
+    protected TableColumn<Player, Integer> colRank;
+
+    @FXML
+    protected TableColumn<Player, String> colUserName;
+
+    @FXML
+    protected TableColumn<Player, Integer> colPoints;
 
     protected ServerUtils server;
     protected MainCtrl mainCtrl;
@@ -308,6 +321,9 @@ public abstract class GameCtrl implements Initializable {
                         // TODO display leaderboard things here
                         if (points > bestScore) server.updateScore(playerId, points, true);
                         back();
+                    } else if (rounds == GAME_ROUNDS / 2 &&
+                            server.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
+                        displayMidGameScreen();
                     } else {
                         try {
                             GameSession session = server.toggleReady(sessionId, false);
@@ -324,6 +340,56 @@ public abstract class GameCtrl implements Initializable {
         }, GAME_ROUND_DELAY * 1000);
     }
 
+    /**
+     * Display mid-game leaderboard
+     */
+    public void displayMidGameScreen() {
+        var players = server.getPlayers(sessionId);
+        var data = FXCollections.observableList(players);
+        leaderboard.setItems(data);
+        answerArea.setOpacity(0);
+        submitButton.setOpacity(0);
+        leaderboard.setOpacity(1);
+
+        Task roundTimer = new Task() {
+            @Override
+            public Object call() {
+                long refreshCounter = 0;
+                long gameRoundMs = MIDGAME_BREAK_TIME * 1000;
+                while (refreshCounter * TIMER_UPDATE_INTERVAL_MS < gameRoundMs) {
+                    updateProgress(gameRoundMs - refreshCounter * TIMER_UPDATE_INTERVAL_MS, gameRoundMs);
+                    ++refreshCounter;
+                    try {
+                        Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
+                    } catch (InterruptedException e) {
+                        updateProgress(0, 1);
+                        return null;
+                    }
+                }
+                updateProgress(0, 1);
+                return null;
+            }
+        };
+        timeProgress.progressProperty().bind(roundTimer.progressProperty());
+        this.timerThread = new Thread(roundTimer);
+        this.timerThread.start();
+
+        GameSession session = server.toggleReady(sessionId, false);
+        if (session.playersReady == 0) {
+            server.updateStatus(session, GameSession.SessionStatus.ONGOING);
+        }
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    leaderboard.setOpacity(0);
+                    answerArea.setOpacity(1);
+                    submitButton.setOpacity(1);
+                    loadQuestion();
+                });
+            }
+        }, MIDGAME_BREAK_TIME * 1000);
+    }
 
     /**
      * Disable button so the player can not interact with it
