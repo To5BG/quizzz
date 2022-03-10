@@ -19,7 +19,8 @@ public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     public long id;
-    public int point;
+    public int currentPoints;
+    public int bestScore;
 
     /*
     @ManyToOne
@@ -37,15 +38,43 @@ public class Player {
 
     public Player(String username, int point) {
         this.username = username;
-        this.point = point;
+        this.bestScore = point;
     }
 
     /**
      * Sets the player's point total to the value in parameter
-     * @param point points to set to the player
+     *
+     * @param points points to set to the player
      */
-    public void setPoint(int point) {
-        this.point = point;
+    public void setCurrentPoints(int points) {
+        this.currentPoints = points;
+    }
+
+    /**
+     * Sets the player's best point total to the value in parameter
+     *
+     * @param points points to set to the player
+     */
+    public void setBestPoints(int points) {
+        this.bestScore = points;
+    }
+
+    /**
+     * Getter method for bestScore
+     *
+     * @return autoboxed best score of player
+     */
+    public Integer getBestScore() {
+        return this.bestScore;
+    }
+
+    /**
+     * Getter method for current points
+     *
+     * @return autoboxed best score of player
+     */
+    public Integer getCurrentPoints() {
+        return this.currentPoints;
     }
 
     /**
@@ -83,6 +112,7 @@ public class Player {
 
     /**
      * the method to judge whether two players are the same
+     *
      * @param obj another player to be compared with
      * @return a boolean value which represents the result of the comparison
      */
@@ -93,6 +123,7 @@ public class Player {
 
     /**
      * the hashcode method to generate a hashcode for each player
+     *
      * @return a hashcode for the player input
      */
     @Override
@@ -102,6 +133,7 @@ public class Player {
 
     /**
      * the method to convert the information about a player to a sentence
+     *
      * @return a string which contains all information about this player
      */
     @Override
