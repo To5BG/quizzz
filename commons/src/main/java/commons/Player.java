@@ -31,8 +31,8 @@ public class Player {
     public String ans;
 
     @SuppressWarnings("unused")
-    private Player() {
-        // for object mapper
+    public Player() {
+        this.point = 0;
     }
 
     public Player(String username, int point) {
@@ -74,7 +74,7 @@ public class Player {
                             .collect(Collectors.toList()));
         }
         Question.QuestionType type;
-        switch (splitAnswer[2].substring(0, splitAnswer[2].indexOf("]"))) {
+        switch (splitAnswer[2].substring(0, splitAnswer[2].indexOf("]")).trim()) {
             case "MULTIPLE_CHOICE" -> type = Question.QuestionType.MULTIPLE_CHOICE;
             default -> type = Question.QuestionType.UNKNOWN;
         }
