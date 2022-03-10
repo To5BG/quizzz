@@ -37,10 +37,12 @@ class LeaderboardControllerTest {
         assertTrue(players.size() == 0);
 
         lbc.addPlayerToRepository(new Player("David", 10));
+        players = lbc.getAllPlayers();
         System.out.println(players.size());
         assertTrue(players.size() == 1);
 
         lbc.addPlayerToRepository(new Player("Yongcheng", 15));
+        players = lbc.getAllPlayers();
         System.out.println(players.size());
         assertTrue(players.size() == 2);
     }
