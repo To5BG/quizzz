@@ -222,5 +222,4 @@ public class SplashCtrl {
     public void showLeaderboard() {
         mainCtrl.showLeaderboard();
     }
-
 }
