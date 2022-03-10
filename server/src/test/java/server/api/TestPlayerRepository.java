@@ -182,6 +182,9 @@ public class TestPlayerRepository implements PlayerRepository {
     @Override
     public boolean existsById(Long aLong) {
         // TODO Auto-generated method stub
+        for (Player p : players) {
+            if (p.id == aLong) return true;
+        }
         return false;
     }
 

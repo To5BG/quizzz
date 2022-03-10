@@ -3,6 +3,8 @@ package server.api;
 import commons.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
 import java.util.Random;
@@ -46,10 +48,15 @@ class LeaderboardControllerTest {
 
     @Test
     void getPlayerById() {
-        Optional<Player> temp = Optional.ofNullable(lbc.addPlayerToRepository(new Player("david", 10)).getBody());
-        lbc.addPlayerToRepository(new Player("david", 10));
-        var player = testRepo.findById(1L);
-        assertEquals(player, temp);
+        Player p = new Player("David", 10);
+        lbc.addPlayerToRepository(p);
+
+        var player = lbc.getPlayerById(1L);
+        assertEquals(HttpStatus.OK, player.getStatusCode());
+        assertEquals(p, player.getBody());
+
+        ResponseEntity<Player> wrong = lbc.getPlayerById(42L);
+        assertEquals(HttpStatus.BAD_REQUEST, wrong.getStatusCode());
     }
 
     @Test
@@ -57,5 +64,14 @@ class LeaderboardControllerTest {
         var savedPlayer = lbc.addPlayerToRepository(new Player("david", 10)).getBody();
         assertTrue(testRepo.calledMethods.contains("save"));
         assertEquals(savedPlayer, testRepo.findAll().get(0));
+
+        ResponseEntity<Player> resp = lbc.addPlayerToRepository(null);
+        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
+
+        resp = lbc.addPlayerToRepository(new Player(null, 0));
+        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
+
+        resp = lbc.addPlayerToRepository(new Player("", 0));
+        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
     }
 }
