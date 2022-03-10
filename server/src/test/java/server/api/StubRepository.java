@@ -94,6 +94,11 @@ public class StubRepository<T, S> {
         reg("save");
         S objId = getObjectId(obj);
         db.put(objId, obj);
+        try {
+            idField.set(obj, objId);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
         return obj;
     }
 

@@ -63,7 +63,7 @@ public class SessionControllerTest {
         next.playersReady = 42;
 
         sut.updateSession(next);
-        assertEquals(42, repo.GameSessions.get(0).playersReady);
+        assertEquals(42, repo.findAll().get(0).playersReady);
     }
 
     @Test
@@ -72,9 +72,11 @@ public class SessionControllerTest {
         assertTrue(sessions.size() == 0);
 
         sut.addSession(first);
+        sessions = sut.getAllSessions();
         assertTrue(sessions.size() == 1);
 
         sut.addSession(new GameSession(GameSession.SessionType.MULTIPLAYER));
+        sessions = sut.getAllSessions();
         assertTrue(sessions.size() == 2);
 
         assertEquals(1, sessions.get(0).id);
@@ -122,7 +124,7 @@ public class SessionControllerTest {
         sut.addSession(first);
         var deletedSession = sut.removeSession(1);
         assertTrue(repo.calledMethods.contains("delete"));
-        assertTrue(repo.existsById(deletedSession.getBody().id));
+        assertFalse(repo.existsById(deletedSession.getBody().id));
     }
 
     @Test
