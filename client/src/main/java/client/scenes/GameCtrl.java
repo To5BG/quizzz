@@ -61,12 +61,14 @@ public abstract class GameCtrl {
 
     private boolean doublePointsJoker;
 
-    //@Inject
     public GameCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.multiChoiceAnswers = new ArrayList<RadioButton>();
         this.doublePointsJoker = false;
+        // Set to defaults
+        this.sessionId = 0L;
+        this.playerId = 0L;
     }
 
     /**
@@ -199,13 +201,13 @@ public abstract class GameCtrl {
      * Removes player from session, along with the singleplayer session. Also called if controller is closed forcibly
      */
     public void shutdown() {
+        if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
         if (sessionId != 0)  {
             server.removePlayer(sessionId, playerId);
             setPlayerId(0);
         }
         if (server.getPlayers(sessionId).size() == 0) {
             server.removeSession(sessionId);
-            this.timerThread.interrupt();
             setSessionId(0);
         }
     }

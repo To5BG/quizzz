@@ -28,9 +28,6 @@ public class MultiplayerCtrl extends GameCtrl{
     @Inject
     public MultiplayerCtrl(ServerUtils server, MainCtrl mainCtrl) {
         super(server,mainCtrl);
-        // Set to defaults
-        this.sessionId = 0L;
-        this.playerId = 0L;
     }
 
     /**
