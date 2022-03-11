@@ -64,7 +64,7 @@ public class GameSession {
         this.sessionType = sessionType;
         this.expectedAnswers = expectedAnswers;
         this.playersReady = 0;
-        this.questionCounter = 1;
+        this.questionCounter = 0;
 
         this.sessionStatus = SessionStatus.STARTED;
         if (sessionType == SessionType.WAITING_AREA) this.sessionStatus = SessionStatus.WAITING_AREA;
@@ -122,7 +122,7 @@ public class GameSession {
      */
     public void updateQuestion() {
         Question q = new Question(
-                "Question #" + questionCounter++,
+                "Question #" + ++questionCounter,
                 "N/A",
                 Question.QuestionType.MULTIPLE_CHOICE
         );

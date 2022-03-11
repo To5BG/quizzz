@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Optional;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,58 +22,53 @@ class LeaderboardControllerTest {
     public void setup() {
         random = new Random();
         testRepo = new TestPlayerRepository();
-        lbc = new LeaderboardController(random, testRepo);
+        lbc = new LeaderboardController(testRepo);
     }
 
     @Test
     public void constructorTest() {
-        LeaderboardController temp = new LeaderboardController(random, testRepo);
+        LeaderboardController temp = new LeaderboardController(testRepo);
         assertNotNull(temp);
     }
 
     @Test
     void getAllPlayers() {
-        var players = lbc.getAllPlayers();
-        System.out.println(players.size());
+        var players = lbc.getAllPlayers().getBody();
         assertTrue(players.size() == 0);
 
-        lbc.addPlayerToRepository(new Player("David", 10));
-        players = lbc.getAllPlayers();
-        System.out.println(players.size());
-        assertTrue(players.size() == 1);
+        lbc.addPlayerForcibly(new Player("David", 10));
+        assertTrue(lbc.getAllPlayers().getBody().size() == 1);
 
-        lbc.addPlayerToRepository(new Player("Yongcheng", 15));
-        players = lbc.getAllPlayers();
-        System.out.println(players.size());
-        assertTrue(players.size() == 2);
+        lbc.addPlayerForcibly(new Player("Yongcheng", 15));
+        assertTrue(lbc.getAllPlayers().getBody().size() == 2);
     }
 
     @Test
     void getPlayerById() {
-        Player p = new Player("David", 10);
-        lbc.addPlayerToRepository(p);
+        Optional<Player> temp = Optional.ofNullable(lbc.addPlayerForcibly(
+                new Player("david", 10)).getBody());
+        lbc.addPlayerForcibly(new Player("david", 10));
 
         var player = lbc.getPlayerById(1L);
-        assertEquals(HttpStatus.OK, player.getStatusCode());
-        assertEquals(p, player.getBody());
+        assertEquals(temp.get(), player.getBody());
 
         ResponseEntity<Player> wrong = lbc.getPlayerById(42L);
         assertEquals(HttpStatus.BAD_REQUEST, wrong.getStatusCode());
     }
 
     @Test
-    void addPlayerToTheRepository() {
-        var savedPlayer = lbc.addPlayerToRepository(new Player("david", 10)).getBody();
+    void addPlayerForcibly() {
+        var savedPlayer = lbc.addPlayerForcibly(new Player("david", 10)).getBody();
         assertTrue(testRepo.calledMethods.contains("save"));
         assertEquals(savedPlayer, testRepo.findAll().get(0));
 
-        ResponseEntity<Player> resp = lbc.addPlayerToRepository(null);
+        ResponseEntity<Player> resp = lbc.addPlayerForcibly(null);
         assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
 
-        resp = lbc.addPlayerToRepository(new Player(null, 0));
+        resp = lbc.addPlayerForcibly(new Player(null, 0));
         assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
 
-        resp = lbc.addPlayerToRepository(new Player("", 0));
+        resp = lbc.addPlayerForcibly(new Player("", 0));
         assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
     }
 }

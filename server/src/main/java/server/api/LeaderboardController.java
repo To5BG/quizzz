@@ -1,38 +1,38 @@
 package server.api;
 
+import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
+import java.util.stream.Collectors;
 
 import commons.Player;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import server.database.PlayerRepository;
 
+import static server.Config.isNullOrEmpty;
+
+@SuppressWarnings("OptionalGetWithoutIsPresent")
 @RestController
 @RequestMapping("/api/leaderboard")
 public class LeaderboardController {
 
-    private final Random random;
-    private final PlayerRepository por;
+    private final PlayerRepository repo;
 
-    public LeaderboardController(Random random, PlayerRepository por) {
-        this.random = random;
-        this.por = por;
+    public LeaderboardController(PlayerRepository por) {
+        this.repo = por;
     }
 
     /**
      * Deliver all Player data in the DB
+     *
      * @return a list of all data about past players
      */
     @GetMapping(path = {"", "/"})
-    public List<Player> getAllPlayers() {
-        return por.findAll();
+    public ResponseEntity<List<Player>> getAllPlayers() {
+        return ResponseEntity.ok(repo.findAll()
+                .stream().sorted(Comparator.comparing(Player::getBestScore).reversed())
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -43,37 +43,65 @@ public class LeaderboardController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Player> getPlayerById(@PathVariable("id") long id) {
-        if (id < 0 || !por.existsById(id)) {
+        if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(por.findById(id).get());
+        return ResponseEntity.ok(repo.findById(id).get());
     }
 
     /**
-     * Upload the point of a player to the DB
-     * Rookie players are allowed to play the game now!
-     * @param player the owner of the point
-     * @return return ok when succeeded, badRequest when fail
+     * Adds a player entry to the database with no associated game session/forcibly
+     *
+     * @param player Player to be added
+     * @return ResponseEntity that contains added player entry
      */
     @PostMapping(path = {"", "/"})
-    public ResponseEntity<Player> addPlayerToRepository(@RequestBody Player player) {
+    public ResponseEntity<Player> addPlayerForcibly(@RequestBody Player player) {
 
         if (player == null || isNullOrEmpty(player.username)) {
             return ResponseEntity.badRequest().build();
         }
 
-        Player saved = por.save(player);
+        Player saved = repo.save(player);
         return ResponseEntity.ok(saved);
     }
 
     /**
-     * judge whether the String is empty or null
+     * Updates current points of a player entry
      *
-     * @param s a string to be judged
-     * @return a boolean value which represents whether the string is empty or null
+     * @param playerId Id of player
+     * @param points   Point count to be updated with
+     * @return Updated player entity
      */
-    private static boolean isNullOrEmpty(String s) {
-        return s == null || s.isEmpty();
+    @PutMapping("/{id}/score")
+    public ResponseEntity<Player> updateCurrentPoints(@PathVariable("id") long playerId,
+                                                      @RequestBody int points) {
+        if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
+        Player updatedPlayer = repo.findById(playerId).get();
+        updatedPlayer.setCurrentPoints(points);
+        repo.save(updatedPlayer);
+        return ResponseEntity.ok(updatedPlayer);
+    }
+
+    /**
+     * Updates best points of a player entry
+     *
+     * @param playerId Id of player
+     * @param points   Point count to be updated with
+     * @return Updated player entity
+     */
+    @PutMapping("/{id}/bestscore")
+    public ResponseEntity<Player> updateBestScore(@PathVariable("id") long playerId,
+                                                  @RequestBody int points) {
+        if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
+        Player updatedPlayer = repo.findById(playerId).get();
+        updatedPlayer.setBestPoints(points);
+
+        /* assumption that best score is updated only at the end of a game */
+        // updatedPlayer.setCurrentPoints(0);
+
+        repo.save(updatedPlayer);
+        return ResponseEntity.ok(updatedPlayer);
     }
 
 }

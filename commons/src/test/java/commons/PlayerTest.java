@@ -26,7 +26,7 @@ public class PlayerTest {
 	@Test
 	public void checkEmptyConstructor() {
 		Player p = new Player();
-		assertSame(0, p.point);
+		assertSame(0, p.currentPoints);
 		assertNull(p.username);
 		assertNull(p.ans);
 	}
@@ -38,10 +38,17 @@ public class PlayerTest {
 	}
 
 	@Test
-	public void testSetPoint() {
+	public void testSetCurrentPoint() {
 		var p = new Player("abc", 0);
-		p.setPoint(8);
-		assertEquals(8, p.point);
+		p.setCurrentPoints(8);
+		assertEquals(8, p.currentPoints);
+	}
+
+	@Test
+	public void testSetBestPoint() {
+		var p = new Player("abc", 0);
+		p.setBestPoints(8);
+		assertEquals(8, p.bestScore);
 	}
 
 	@Test
