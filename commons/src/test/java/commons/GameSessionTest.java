@@ -39,7 +39,7 @@ public class GameSessionTest {
     public void checkConstructor() {
         assertEquals(SOME_PLAYER, s.players.get(0));
         assertNotNull(s.expectedAnswers);
-        assertSame(1, s.questionCounter);
+        assertSame(0, s.questionCounter);
         assertSame(0, s.playersReady);
     }
 
@@ -75,7 +75,7 @@ public class GameSessionTest {
     public void testUpdateQuestion() {
         s.updateQuestion();
         assertSame(1, s.expectedAnswers.size());
-        assertSame(2, s.questionCounter);
+        assertSame(1, s.questionCounter);
         assertNotNull(s.currentQuestion);
         assertEquals("Question #1", s.currentQuestion.prompt);
     }
@@ -87,7 +87,7 @@ public class GameSessionTest {
         s.updateQuestion();
         Question tmp = s.currentQuestion;
         s.setPlayerReady();
-        assertSame(2, s.questionCounter);
+        assertSame(1, s.questionCounter);
         assertSame(1, s.playersReady);
         assertEquals(tmp, s.currentQuestion);
     }
@@ -97,7 +97,7 @@ public class GameSessionTest {
         s.updateQuestion();
         Question tmp = s.currentQuestion;
         s.setPlayerReady();
-        assertSame(3, s.questionCounter);
+        assertSame(2, s.questionCounter);
         assertSame(1, s.playersReady);
         assertSame(1, s.expectedAnswers.size());
         assertNotNull(s.currentQuestion);
@@ -148,7 +148,7 @@ public class GameSessionTest {
         System.out.println(str);
         assertTrue(str.contains(GameSession.class.getSimpleName()));
         assertTrue(str.contains("username=blah"));
-        assertTrue(str.contains("questionCounter=1"));
+        assertTrue(str.contains("questionCounter=0"));
         assertTrue(str.contains("playersReady=0"));
         assertTrue(str.contains("expectedAnswers=[]"));
         assertTrue(str.contains("currentQuestion=<null>"));

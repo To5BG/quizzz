@@ -112,7 +112,7 @@ public class SplashCtrl {
      * @return true if another Player with the same username exists
      */
     public boolean isDuplInRepository(String username) {
-        for(Player p : server.getPlayersFromRepository()) {
+        for(Player p : server.getAllPlayers()) {
             if(p.username.equals(username)) {
                 return true;
             }
@@ -126,7 +126,7 @@ public class SplashCtrl {
      * @return the player if it exists, null otherwise
      */
     public Player getDuplPlayer(String username) {
-        for(Player p : server.getPlayersFromRepository()) {
+        for(Player p : server.getAllPlayers()) {
             if(p.username.equals(username)) {
                 return p;
             }
@@ -162,7 +162,7 @@ public class SplashCtrl {
 
             if(isDuplInRepository(newUserName)) {
                 Player p = getDuplPlayer(newUserName);
-                p.setPoint(0);
+                p.setCurrentPoints(0);
                 server.addPlayer(1L, p);
             }
             else {
@@ -200,7 +200,7 @@ public class SplashCtrl {
             invalidUserName.setOpacity(0);
             duplUsername.setOpacity(0);
             if(isDuplInRepository(newUserName)) {
-                getDuplPlayer(newUserName).setPoint(0);
+                getDuplPlayer(newUserName).setCurrentPoints(0);
             }
             GameSession newSession = new GameSession(GameSession.SessionType.SINGLEPLAYER);
             newSession = server.addSession(newSession);

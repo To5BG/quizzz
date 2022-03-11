@@ -30,62 +30,9 @@ public class ServerUtils {
 
     private static final String SERVER = "http://localhost:8080/";
 
-    /*
-    public void getQuotesTheHardWay() throws IOException {
-        var url = new URL("http://localhost:8080/api/quotes");
-        var is = url.openConnection().getInputStream();
-        var br = new BufferedReader(new InputStreamReader(is));
-        String line;
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-        }
-    }
-    */
-
-    /**
-     * Retrieve all players from a session in the DB.
-     *
-     * @param sessionId the id of the session
-     * @return List of all players from a session
-     */
-    public List<Player> getPlayers(long sessionId) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/" + sessionId + "/players")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<List<Player>>() {
-                });
-    }
-
-    /**
-     * Adds a player to a game session.
-     *
-     * @param sessionId id of the session to add the player to
-     * @param player    Player object to be added
-     * @return The player that has been added
-     */
-    public Player addPlayer(long sessionId, Player player) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/" + sessionId + "/players")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .post(Entity.entity(player, APPLICATION_JSON), Player.class);
-    }
-
-    /**
-     * Removes a player from a game session.
-     *
-     * @param sessionId id of the session to remove the player from
-     * @param playerId  id of player to be removed
-     * @return The response from player removal
-     */
-    public Player removePlayer(long sessionId, long playerId) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .delete(Player.class);
-    }
+    /*-----------------------------------------------------------------------------------------*/
+    /*--------------------------------- SESSION HANDLING --------------------------------------*/
+    /*-----------------------------------------------------------------------------------------*/
 
     /**
      * Retrieves a game session from the DB.
@@ -190,6 +137,55 @@ public class ServerUtils {
     }
 
     /**
+     * Adds a player to a game session.
+     *
+     * @param sessionId id of the session to add the player to
+     * @param player    Player object to be added
+     * @return The player that has been added
+     */
+    public Player addPlayer(long sessionId, Player player) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId + "/players")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(player, APPLICATION_JSON), Player.class);
+    }
+
+    /**
+     * Removes a player from a game session.
+     *
+     * @param sessionId id of the session to remove the player from
+     * @param playerId  id of player to be removed
+     * @return The response from player removal
+     */
+    public Player removePlayer(long sessionId, long playerId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(Player.class);
+    }
+
+    /**
+     * Retrieve all players from a session in the DB.
+     *
+     * @param sessionId the id of the session
+     * @return List of all players from a session
+     */
+    public List<Player> getPlayers(long sessionId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId + "/players")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Player>>() {
+                });
+    }
+
+    /*-----------------------------------------------------------------------------------------*/
+    /*----------------------------- ANSWER AND QUESTION HANDLING ------------------------------*/
+    /*-----------------------------------------------------------------------------------------*/
+
+    /**
      * Fetches a question from the server database
      *
      * @param sessionId Session to check
@@ -225,7 +221,7 @@ public class ServerUtils {
      * @param sessionId The current session.
      * @param playerId  The player who answered.
      * @param answer    The player's answer.
-     * @return          The player's answer.
+     * @return The player's answer.
      */
     public Answer addPlayerAnswer(long sessionId, long playerId, Answer answer) {
         return ClientBuilder.newClient(new ClientConfig())
@@ -237,9 +233,10 @@ public class ServerUtils {
 
     /**
      * Fetches the last answer of the player.
+     *
      * @param sessionId The current session.
      * @param playerId  The player who answered.
-     * @return          The player's answer.
+     * @return The player's answer.
      */
     public Answer getPlayerAnswer(long sessionId, long playerId) {
         return ClientBuilder.newClient(new ClientConfig())
@@ -252,6 +249,7 @@ public class ServerUtils {
 
     /**
      * Gets the list of positions of correct answers for a question from the server
+     *
      * @param sessionId - long representing the current session
      * @return a list of integer corresponding to the positions of correct answers for a question
      */
@@ -260,14 +258,20 @@ public class ServerUtils {
                 .target(SERVER).path("api/questions/answers/" + sessionId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<List<Integer>>() {});
+                .get(new GenericType<List<Integer>>() {
+                });
     }
 
+    /*----------------------------------------------------------------------------*/
+    /*----------------------------- PLAYER HANDLING ------------------------------*/
+    /*----------------------------------------------------------------------------*/
+
     /**
-     * get player from the DB
-     * @return whether the getting is successful or not
+     * Get all player object entries from the database
+     *
+     * @return List of all player entries
      */
-    public List<Player> getPlayersFromRepository() {
+    public List<Player> getAllPlayers() {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER).path("api/leaderboard/") //
                 .request(APPLICATION_JSON) //
@@ -277,11 +281,44 @@ public class ServerUtils {
     }
 
     /**
-     * add a new player to the DB
+     * Retrieve a player entry from the database by ID
+     *
+     * @param playerId Id of player to fetch
+     * @return Player entry reference, if one with the given id exists
+     */
+    public Player getPlayerById(long playerId) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("api/leaderboard/" + playerId) //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<Player>() {
+                });
+    }
+
+    /**
+     * Update a player's score in DB
+     *
+     * @param playerId    Id of player
+     * @param points      Updated points
+     * @param isBestScore Is this over the current best score for the player
+     * @return Updated player DB entry reference
+     */
+    public Player updateScore(long playerId, int points, boolean isBestScore) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/leaderboard/" + playerId +
+                        ((isBestScore) ? "/best" : "/") + "score")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(points, APPLICATION_JSON), Player.class);
+    }
+
+    /**
+     * Adds a player entry to the database forcibly (without an associated game session)
+     *
      * @param player the player to be added
      * @return a message to show whether the adding is successful or not
      */
-    public Player addPlayerToRepository(Player player) {
+    public Player addPlayerForcibly(Player player) {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER).path("api/leaderboard") //
                 .request(APPLICATION_JSON) //
