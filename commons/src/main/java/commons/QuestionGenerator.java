@@ -8,6 +8,9 @@ import java.util.Random;
 
 public class QuestionGenerator {
 
+    private static final List<Question.QuestionType> QUESTION_TYPES = Arrays.stream(Question.QuestionType.values())
+            .filter(qt -> qt != Question.QuestionType.UNKNOWN).toList();
+
     /**
      * Generate a comparison style question
      * @param activities List of activities to compare
@@ -95,11 +98,8 @@ public class QuestionGenerator {
      * @return The question and the list of expected answers
      */
     public static Pair<Question, List<Integer>> generateQuestion() {
-        List<Question.QuestionType> choices = Arrays.stream(Question.QuestionType.values()).filter(
-                qt -> qt != Question.QuestionType.UNKNOWN).toList();
-
         Random rng = new Random();
-        return generateQuestion(choices.get(rng.nextInt(choices.size())));
+        return generateQuestion(QUESTION_TYPES.get(rng.nextInt(QUESTION_TYPES.size())));
     }
 
     /**
