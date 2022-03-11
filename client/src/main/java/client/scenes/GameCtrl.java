@@ -16,7 +16,7 @@ import java.util.*;
 
 public abstract class GameCtrl implements Initializable {
 
-    protected final int GAME_ROUNDS = 5;
+    protected final int GAME_ROUNDS = 2;
     protected final int GAME_ROUND_TIME = 10;
     protected final int MIDGAME_BREAK_TIME = 10;
     protected final int TIMER_UPDATE_INTERVAL_MS = 50;
@@ -244,6 +244,12 @@ public abstract class GameCtrl implements Initializable {
         this.points = 0;
         this.rounds = 0;
         this.currentQuestion = null;
+
+        //re-enable jokers
+        disableButton(removeOneButton, false);
+        disableButton(decreaseTimeButton, false);
+        disableButton(doublePointsButton, false);
+
         disableButton(submitButton, true);
         mainCtrl.showSplash();
     }
