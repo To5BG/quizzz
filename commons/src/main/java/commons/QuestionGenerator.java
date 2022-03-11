@@ -2,6 +2,7 @@ package commons;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -91,40 +92,35 @@ public class QuestionGenerator {
 
     /**
      * Generate a question from the 4 basic types
-     * @param rng The random source to use when deciding the type of question
-     * @return The question and the list of expected answers
-     */
-    public static Pair<Question, List<Integer>> generateQuestion(Random rng) {
-        return generateQuestionInternal(rng);
-    }
-
-    /**
-     * Generate a question from the 4 basic types
      * @return The question and the list of expected answers
      */
     public static Pair<Question, List<Integer>> generateQuestion() {
-        return generateQuestionInternal(new Random());
+        List<Question.QuestionType> choices = Arrays.stream(Question.QuestionType.values()).filter(
+                qt -> qt != Question.QuestionType.UNKNOWN).toList();
+
+        Random rng = new Random();
+        return generateQuestion(choices.get(rng.nextInt(choices.size())));
     }
 
     /**
-     * Generate a question from the 4 basic types
+     * Generate a question of the provided type
+     * @param type The type of the question to generate
      * @return The question and the list of expected answers
      */
-    private static Pair<Question, List<Integer>> generateQuestionInternal(Random rng) {
-
-        switch (rng.nextInt(4)) {
-            case 0:
+    public static Pair<Question, List<Integer>> generateQuestion(Question.QuestionType type) {
+        switch (type) {
+            case COMPARISON:
                 return generateComparisonQuestion(List.of(
                         new Activity("Comp 1", "1000", "img1", "no"),
                         new Activity("Comp 2", "4000", "img2", "no"),
                         new Activity("Comp 3", "2000", "img3", "no"),
                         new Activity("Comp 4", "1500", "img4", "no")
                 ));
-            case 1:
+            case MULTIPLE_CHOICE:
                 return generateMultipleChoiceQuestion(new Activity(
                         "MC 1", "570", "img1", "no"
                 ));
-            case 2:
+            case EQUIVALENCE:
                 return generateEquivalenceQuestion(new Activity(
                     "Eq 1", "1000", "img1", "no"
                 ), List.of(

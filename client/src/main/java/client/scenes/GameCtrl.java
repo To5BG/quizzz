@@ -165,18 +165,16 @@ public abstract class GameCtrl implements Initializable {
 
     /**
      * Switch method to render correct answers based on the question type
-     *
-     * @param eval Evaluation containing the true answers
      */
-    protected void renderCorrectAnswer(Evaluation eval) {
-        switch (eval.type) {
+    protected void renderCorrectAnswer() {
+        switch (this.evaluation.type) {
             case MULTIPLE_CHOICE:
             case COMPARISON:
             case EQUIVALENCE:
-                renderMultipleChoiceAnswers(eval.correctAnswers);
+                renderMultipleChoiceAnswers(this.evaluation.correctAnswers);
                 break;
             case RANGE_GUESS:
-                renderEstimationAnswers(eval.correctAnswers);
+                renderEstimationAnswers(this.evaluation.correctAnswers);
                 break;
             default:
                 throw new UnsupportedOperationException("Currently only multiple choice answers can be rendered");
@@ -299,11 +297,9 @@ public abstract class GameCtrl implements Initializable {
 
     /**
      * Updates the point counter in client side, and then updates database entry
-     *
-     * @param eval Evaluation of received answers
      */
-    public void updatePoints(Evaluation eval) {
-        points += eval.points;
+    public void updatePoints() {
+        points += this.evaluation.points;
         renderPoints();
         server.updateScore(playerId, points, false);
     }
@@ -356,8 +352,8 @@ public abstract class GameCtrl implements Initializable {
      */
     public void startEvaluation() {
 
-        updatePoints(this.evaluation);
-        renderCorrectAnswer(this.evaluation);
+        updatePoints();
+        renderCorrectAnswer();
 
         // TODO disable button while waiting
         new Timer().schedule(new TimerTask() {

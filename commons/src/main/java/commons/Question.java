@@ -25,7 +25,6 @@ public class Question {
 
     public enum QuestionType {
         MULTIPLE_CHOICE,
-        TRUE_FALSE,
         RANGE_GUESS,
         COMPARISON,
         EQUIVALENCE,
