@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
 
+<?import javafx.scene.text.Font?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
             prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.scenes.MultiplayerCtrl">
@@ -26,5 +27,15 @@
         <Label fx:id="pointsLabel" layoutX="492.0" layoutY="14.0" text="Points: 0"/>
         <ProgressBar fx:id="timeProgress" layoutX="18.0" layoutY="248.0" prefHeight="20.0" prefWidth="321.0"
                      progress="0.0"/>
+        <Button fx:id="removeOneButton" layoutX="29.0" layoutY="323.0" mnemonicParsing="false"
+        onAction="#removeOneAnswer" prefHeight="26.0" prefWidth="103.0" text="Remove One Answer">
+        <font>
+            <Font size="9.0"/>
+        </font>
+        </Button>
+        <Button fx:id="decreaseTimeButton" layoutX="189.0" layoutY="323.0" mnemonicParsing="false"
+            onAction="#decreaseTime" prefHeight="26.0" prefWidth="103.0" text="Decrease Time"/>
+        <Button fx:id="doublePointsButton" layoutX="340.0" layoutY="323.0" mnemonicParsing="false"
+            onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points"/>
     </children>
 </AnchorPane>

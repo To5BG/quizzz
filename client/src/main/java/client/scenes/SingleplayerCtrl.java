@@ -29,6 +29,13 @@ public class SingleplayerCtrl extends GameCtrl {
         startEvaluation();
     }
 
+    @Override
+    public void loadQuestion() {
+        super.loadQuestion();
+        if(doublePointsJoker) {
+            disableButton(doublePointsButton, false);
+        }
+    }
     /**
      * Reverts the player to the splash screen and remove him from the current game session.
      */
@@ -41,6 +48,7 @@ public class SingleplayerCtrl extends GameCtrl {
      * Disable the jokers that do not work for single-player
      */
     public void disableSingleplayerJokers() {
+        decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
     }
 }

@@ -16,7 +16,7 @@ import java.util.*;
 
 public abstract class GameCtrl implements Initializable {
 
-    protected final int GAME_ROUNDS = 2;
+    protected final int GAME_ROUNDS = 5;
     protected final int GAME_ROUND_TIME = 10;
     protected final int MIDGAME_BREAK_TIME = 10;
     protected final int TIMER_UPDATE_INTERVAL_MS = 50;
@@ -70,13 +70,22 @@ public abstract class GameCtrl implements Initializable {
     protected int rounds = 0;
     protected Thread timerThread;
 
-    private boolean doublePointsJoker;
+    protected boolean doublePointsJoker;
+    protected boolean doublePointsActive;
+    protected boolean decreaseTimeJoker;
+    protected boolean removeOneJoker;
+
 
     public GameCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.multiChoiceAnswers = new ArrayList<RadioButton>();
-        this.doublePointsJoker = false;
+
+        doublePointsJoker = true;
+        doublePointsActive = false;
+        decreaseTimeJoker = true;
+        removeOneJoker = true;
+
         // Set to defaults
         this.sessionId = 0L;
         this.playerId = 0L;
@@ -126,6 +135,9 @@ public abstract class GameCtrl implements Initializable {
         switch (q.type) {
             case MULTIPLE_CHOICE:
                 renderMultipleChoiceQuestion(q);
+                if(removeOneJoker) {
+                    disableButton(removeOneButton, false);
+                }
                 break;
             default:
                 throw new UnsupportedOperationException("Currently only multiple choice questions can be rendered");
@@ -184,6 +196,10 @@ public abstract class GameCtrl implements Initializable {
      * Loads a question and updates the timer bar
      */
     public void loadQuestion() {
+        disableButton(removeOneButton, true);
+        disableButton(doublePointsButton, true);
+        disableButton(decreaseTimeButton, true);
+
         Question q = this.server.fetchOneQuestion(this.sessionId);
         this.currentQuestion = q;
         renderGeneralInformation(q);
@@ -246,9 +262,10 @@ public abstract class GameCtrl implements Initializable {
         this.currentQuestion = null;
 
         //re-enable jokers
-        disableButton(removeOneButton, false);
-        disableButton(decreaseTimeButton, false);
-        disableButton(doublePointsButton, false);
+        doublePointsJoker = true;
+        doublePointsActive = false;
+        decreaseTimeJoker = true;
+        removeOneJoker = true;
 
         disableButton(submitButton, true);
         mainCtrl.showSplash();
@@ -271,7 +288,12 @@ public abstract class GameCtrl implements Initializable {
      * @param eval Evaluation of received answers
      */
     public void updatePoints(Evaluation eval) {
-        points += eval.points;
+        if(doublePointsIsActive()) {
+            points = points + 2 * eval.points;
+            switchStatusOfDoublePoints();
+        } else {
+            points += eval.points;
+        }
         renderPoints();
         server.updateScore(playerId, points, false);
     }
@@ -291,6 +313,7 @@ public abstract class GameCtrl implements Initializable {
         answerArea.getChildren().add(rb); */
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
         disableButton(submitButton, true);
+        disableButton(removeOneButton, true);
         server.toggleReady(sessionId, true);
 
         Answer ans = new Answer(currentQuestion.type);
@@ -313,6 +336,10 @@ public abstract class GameCtrl implements Initializable {
 
         Answer ans = server.getPlayerAnswer(sessionId, playerId);
         Evaluation eval = server.submitAnswer(sessionId, ans);
+
+        disableButton(removeOneButton, true);
+        disableButton(decreaseTimeButton, true);
+        disableButton(doublePointsButton, true);
 
         updatePoints(eval);
         renderCorrectAnswer(eval);
@@ -355,6 +382,9 @@ public abstract class GameCtrl implements Initializable {
         leaderboard.setItems(data);
         answerArea.setOpacity(0);
         submitButton.setOpacity(0);
+        removeOneButton.setOpacity(0);
+        doublePointsButton.setOpacity(0);
+        decreaseTimeButton.setOpacity(0);
         questionPrompt.setOpacity(0);
         leaderboard.setOpacity(1);
 
@@ -393,6 +423,9 @@ public abstract class GameCtrl implements Initializable {
                     answerArea.setOpacity(1);
                     questionPrompt.setOpacity(1);
                     submitButton.setOpacity(1);
+                    removeOneButton.setOpacity(1);
+                    doublePointsButton.setOpacity(1);
+                    decreaseTimeButton.setOpacity(1);
                     loadQuestion();
                 });
             }
@@ -406,6 +439,8 @@ public abstract class GameCtrl implements Initializable {
      * @param disable - boolean value whether the button should be disabled or enabled
      */
     public void disableButton(Button button, boolean disable) {
+        if(disable) button.setOpacity(0.5);
+        if(!disable) button.setOpacity(1);
         button.setDisable(disable);
     }
 
@@ -414,6 +449,7 @@ public abstract class GameCtrl implements Initializable {
      * When this joker is used it removes one incorrect answer from the answers list for the player that used it
      */
     public void removeOneAnswer() {
+        removeOneJoker = false;
         disableButton(removeOneButton, true);
 
         switch (currentQuestion.type) {
@@ -428,7 +464,9 @@ public abstract class GameCtrl implements Initializable {
                 int randomIndex = new Random().nextInt(incorrectAnswers.size());
                 multiChoiceAnswers.get(incorrectAnswers.get(randomIndex)).setDisable(true);
             }
-            default -> disableButton(removeOneButton, false);
+            default -> {
+                disableButton(removeOneButton, false);
+            }
         }
 
 
@@ -440,6 +478,7 @@ public abstract class GameCtrl implements Initializable {
      * This joker can not be used in single-player
      */
     public void decreaseTime() {
+        decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
         //TODO Add functionality to button when multiplayer is functional
     }
@@ -449,6 +488,7 @@ public abstract class GameCtrl implements Initializable {
      * When this joker is used, it doubles the points gained for the question when it was used.
      */
     public void doublePoints() {
+        doublePointsJoker = false;
         disableButton(doublePointsButton, true);
         switchStatusOfDoublePoints();
     }
@@ -466,7 +506,7 @@ public abstract class GameCtrl implements Initializable {
      * Switch the doublePointsJoker status from true to false and from false to true
      */
     private void switchStatusOfDoublePoints() {
-        doublePointsJoker = !doublePointsJoker;
+        doublePointsActive = !doublePointsActive;
     }
 
 }

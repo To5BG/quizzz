@@ -97,6 +97,14 @@ public class MultiplayerCtrl extends GameCtrl {
      * until everyone has answered or the timer has terminated.
      */
     public void submitAnswer() {
+        //enable jokers that can be used after submitting an answer
+        if(decreaseTimeJoker) {
+            disableButton(decreaseTimeButton, false);
+        }
+        if(doublePointsJoker) {
+            disableButton(doublePointsButton, false);
+        }
+
         super.submitAnswer();
         refresh();
     }
