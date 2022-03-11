@@ -31,16 +31,17 @@ public class ActivityControllerTest {
 
     @Test
     public void getAllActivitiesTest() {
-        sut.addActivity(getActivity("a1"));
+        Activity a = getActivity("a1");
+        sut.addActivity(a);
         var actual = ResponseEntity.ok(sut.getAllActivities());
-        assertTrue(List.of(getActivity("a1")).equals(actual.getBody()));
+        assertTrue(List.of(a).equals(actual.getBody()));
     }
 
     @Test
     public void getOneActivityTest() {
         Activity activity = getActivity("a1");
         sut.addActivity(activity);
-        assertEquals(sut.getActivityById(0L).getBody(), activity);
+        assertEquals(sut.getActivityById(1L).getBody(), activity);
     }
 
     @Test
@@ -55,7 +56,8 @@ public class ActivityControllerTest {
         Activity activity = getActivity("a1");
         Activity other = getActivity("a2");
         sut.addActivity(activity);
-        var actual = ResponseEntity.ok(sut.updateActivityById(0L, other)).getBody();
+        var actual = ResponseEntity.ok(sut.updateActivityById(1L, other)).getBody();
+        other.id = 1L;
         assertEquals(other, actual.getBody());
     }
 
@@ -81,7 +83,7 @@ public class ActivityControllerTest {
     public void deleteActivityTest() {
         Activity activity = getActivity("a1");
         sut.addActivity(activity);
-        var actual = ResponseEntity.ok(sut.removeActivityById(0L)).getBody();
+        var actual = ResponseEntity.ok(sut.removeActivityById(1L)).getBody();
         assertEquals(NO_CONTENT, actual.getStatusCode());
     }
 

@@ -47,7 +47,7 @@ public class GameSession {
     }
 
     @SuppressWarnings("unused")
-    private GameSession() {
+    public GameSession() {
         // for object mapper
     }
 
@@ -64,7 +64,7 @@ public class GameSession {
         this.sessionType = sessionType;
         this.expectedAnswers = expectedAnswers;
         this.playersReady = 0;
-        this.questionCounter = 1;
+        this.questionCounter = 0;
 
         this.sessionStatus = SessionStatus.STARTED;
         if (sessionType == SessionType.WAITING_AREA) this.sessionStatus = SessionStatus.WAITING_AREA;

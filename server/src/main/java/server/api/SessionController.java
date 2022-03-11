@@ -11,8 +11,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
+
+import static server.Config.isInvalid;
+import static server.Config.isNullOrEmpty;
 
 @RestController
 @RequestMapping("api/sessions")
@@ -41,11 +46,11 @@ public class SessionController {
             stmt.executeUpdate("DELETE FROM GAME_SESSION_PLAYERS");
             stmt.executeUpdate("DELETE FROM GAME_SESSION WHERE SESSION_TYPE <> 0");
             stmt.executeUpdate("DELETE FROM QUESTION");
-            repo.save(new GameSession(GameSession.SessionType.WAITING_AREA));
             if (resetPlayers) {
                 stmt.executeUpdate("DELETE FROM PLAYER");
                 stmt.executeUpdate("ALTER SEQUENCE HIBERNATE_SEQUENCE RESTART WITH 1");
             }
+            if (repo.count() == 0) repo.save(new GameSession(GameSession.SessionType.WAITING_AREA));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -57,7 +62,7 @@ public class SessionController {
      * @param session Session to update
      */
     public void updateSession(GameSession session) {
-        if (isInvalid(session.id)) return;
+        if (isInvalid(session.id,repo)) return;
         this.repo.save(session);
     }
 
@@ -113,7 +118,7 @@ public class SessionController {
     @GetMapping("/{id}")
     public ResponseEntity<GameSession> getSessionById(@PathVariable("id") long id) {
 
-        if (isInvalid(id)) return ResponseEntity.badRequest().build();
+        if (isInvalid(id,repo)) return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(repo.findById(id).get());
     }
 
@@ -144,7 +149,7 @@ public class SessionController {
      */
     @GetMapping("/{id}/ready")
     public ResponseEntity<GameSession> setPlayerReady(@PathVariable("id") long sessionId) {
-        if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
+        if (isInvalid(sessionId,repo)) return ResponseEntity.badRequest().build();
         GameSession session = repo.findById(sessionId).get();
         session.setPlayerReady();
         repo.save(session);
@@ -159,7 +164,7 @@ public class SessionController {
      */
     @GetMapping("/{id}/notready")
     public ResponseEntity<GameSession> unsetPlayerReady(@PathVariable("id") long sessionId) {
-        if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
+        if (isInvalid(sessionId,repo)) return ResponseEntity.badRequest().build();
         GameSession session = repo.findById(sessionId).get();
         session.unsetPlayerReady();
         repo.save(session);
@@ -177,7 +182,7 @@ public class SessionController {
     @PutMapping("/{id}/status")
     public ResponseEntity<GameSession> updateStatus(@PathVariable("id") long sessionId,
                                                     @RequestBody GameSession.SessionStatus status) {
-        if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
+        if (isInvalid(sessionId,repo)) return ResponseEntity.badRequest().build();
         GameSession session = repo.findById(sessionId).get();
         session.setSessionStatus(status);
         repo.save(session);
@@ -193,8 +198,10 @@ public class SessionController {
     @GetMapping("/{id}/players")
     public ResponseEntity<List<Player>> getPlayers(@PathVariable("id") long id) {
 
-        if (isInvalid(id)) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(repo.findById(id).get().players);
+        if (isInvalid(id,repo)) return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(repo.findById(id).get().players
+                .stream().sorted(Comparator.comparing(Player::getCurrentPoints).reversed())
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -207,7 +214,7 @@ public class SessionController {
     @PostMapping("/{id}/players")
     public ResponseEntity<Player> addPlayer(@PathVariable("id") long id, @RequestBody Player player) {
 
-        if (isInvalid(id)) return ResponseEntity.badRequest().build();
+        if (isInvalid(id,repo)) return ResponseEntity.badRequest().build();
         GameSession session = repo.findById(id).get();
 
         session.addPlayer(player);
@@ -226,7 +233,7 @@ public class SessionController {
     public ResponseEntity<Player> removePlayer(@PathVariable("id") long sessionId,
                                                @PathVariable("playerId") long playerId) {
 
-        if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
+        if (isInvalid(sessionId, repo)) return ResponseEntity.badRequest().build();
         GameSession session = repo.findById(sessionId).get();
 
         Player player = session.players.stream().filter(p -> p.id == playerId).findFirst().orElse(null);
@@ -248,7 +255,7 @@ public class SessionController {
     public ResponseEntity<Answer> getPlayerAnswer(@PathVariable("id") long sessionId,
                                                   @PathVariable("playerId") long playerId) {
 
-        if (isInvalid(sessionId)) return ResponseEntity.badRequest().build();
+        if (isInvalid(sessionId, repo)) return ResponseEntity.badRequest().build();
         GameSession session = repo.findById(sessionId).get();
 
         Player player = session.players.stream().filter(p -> p.id == playerId).findFirst().orElse(null);
@@ -269,7 +276,7 @@ public class SessionController {
     public ResponseEntity<Answer> setAnswer(@PathVariable("id") long id, @PathVariable long playerId,
                                             @RequestBody Answer ans) {
 
-        if (isInvalid(id)) return ResponseEntity.badRequest().build();
+        if (isInvalid(id, repo)) return ResponseEntity.badRequest().build();
         GameSession session = repo.findById(id).get();
 
         Player player = session.players.stream().filter(p -> p.id == playerId).findFirst().orElse(null);
@@ -278,25 +285,5 @@ public class SessionController {
         player.setAnswer(ans);
         repo.save(session);
         return ResponseEntity.ok(ans);
-    }
-
-    /**
-     * Checks whether a string is empty or null.
-     *
-     * @param s String to be checked
-     * @return True iff the object is either null or an empty string
-     */
-    private static boolean isNullOrEmpty(String s) {
-        return s == null || s.isEmpty();
-    }
-
-    /**
-     * Checks if the provided id is invalid for the game session repo.
-     *
-     * @param id id to be checked
-     * @return True iff the id is a negative integer or no entry has the provided id
-     */
-    private boolean isInvalid(long id) {
-        return id < 0 || !repo.existsById(id);
     }
 }
