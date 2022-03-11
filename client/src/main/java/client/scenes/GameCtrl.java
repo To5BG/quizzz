@@ -70,6 +70,7 @@ public abstract class GameCtrl implements Initializable {
     protected int bestScore = 0;
     protected int rounds = 0;
     protected Thread timerThread;
+    protected Evaluation evaluation;
 
     private boolean doublePointsJoker;
 
@@ -318,11 +319,8 @@ public abstract class GameCtrl implements Initializable {
      * Submit an answer to the server
      */
     public void submitAnswer() {
-        /* RadioButton rb = new RadioButton("Answer option #1");
-        answerArea.getChildren().add(rb); */
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
         disableButton(submitButton, true);
-        server.toggleReady(sessionId, true);
 
         Answer ans = new Answer(currentQuestion.type);
 
@@ -343,7 +341,10 @@ public abstract class GameCtrl implements Initializable {
             default:
                 throw new UnsupportedOperationException("Unsupported question type when parsing answer");
         }
-        server.addPlayerAnswer(sessionId, playerId, ans);
+
+        this.evaluation = server.submitAnswer(sessionId, ans);
+        server.toggleReady(sessionId, true);
+
         var session = server.getSession(sessionId);
         if (session.playersReady == session.players.size()) {
             server.updateStatus(session, GameSession.SessionStatus.PAUSED);
@@ -355,11 +356,8 @@ public abstract class GameCtrl implements Initializable {
      */
     public void startEvaluation() {
 
-        Answer ans = server.getPlayerAnswer(sessionId, playerId);
-        Evaluation eval = server.submitAnswer(sessionId, ans);
-
-        updatePoints(eval);
-        renderCorrectAnswer(eval);
+        updatePoints(this.evaluation);
+        renderCorrectAnswer(this.evaluation);
 
         // TODO disable button while waiting
         new Timer().schedule(new TimerTask() {
@@ -450,6 +448,7 @@ public abstract class GameCtrl implements Initializable {
      * @param disable - boolean value whether the button should be disabled or enabled
      */
     public void disableButton(Button button, boolean disable) {
+        if (button == null) return;
         button.setDisable(disable);
     }
 
