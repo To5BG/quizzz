@@ -5,6 +5,16 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ActivityTest {
+
+    @Test
+    public void checkEmptyConstructor() {
+        Activity a = new Activity();
+        assertNull(a.title);
+        assertNull(a.consumption);
+        assertNull(a.imagePath);
+        assertNull(a.source);
+    }
+
     @Test
     public void checkConstructor() {
         var a = new Activity("t", "1", "root", "google.com");

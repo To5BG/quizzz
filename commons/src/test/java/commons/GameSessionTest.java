@@ -36,10 +36,55 @@ public class GameSessionTest {
     }
 
     @Test
+    public void testEmptyConstructor() {
+        GameSession session = new GameSession();
+        assertNull(session.expectedAnswers);
+        assertNull(session.currentQuestion);
+        assertNull(session.players);
+        assertNull(session.sessionStatus);
+        assertNull(session.sessionType);
+        assertSame(0, session.playersReady);
+        assertSame(0, session.questionCounter);
+        assertSame(0L, session.id);
+    }
+
+    @Test
+    public void testSetReadyWaitingArea() {
+        GameSession waitingArea = new GameSession(GameSession.SessionType.WAITING_AREA);
+        waitingArea.addPlayer(SOME_PLAYER);
+        waitingArea.setPlayerReady();
+        assertSame(1, waitingArea.playersReady);
+        waitingArea.setPlayerReady();
+        assertSame(1, waitingArea.playersReady);
+    }
+
+    @Test
+    public void testUnsetReady() {
+        s.unsetPlayerReady();
+        assertSame(0, s.playersReady);
+        s.setPlayerReady();
+        s.unsetPlayerReady();
+        assertSame(0, s.playersReady);
+    }
+
+    @Test
+    public void testSetCurrentQuestion() {
+        Question q = new Question("Question 1", "img1", Question.QuestionType.MULTIPLE_CHOICE);
+        s.setCurrentQuestion(q);
+        assertEquals(q, s.currentQuestion);
+    }
+
+    @Test
+    public void testSetSessionStatus() {
+        s.setSessionStatus(GameSession.SessionStatus.ONGOING);
+        assertEquals(GameSession.SessionStatus.ONGOING, s.sessionStatus);
+    }
+
+    @Test
     public void checkConstructor() {
         assertEquals(SOME_PLAYER, s.players.get(0));
         assertNotNull(s.expectedAnswers);
-        assertSame(1, s.questionCounter);
+        assertSame(0, s.questionCounter);
         assertSame(0, s.playersReady);
     }
 
@@ -75,7 +120,7 @@ public class GameSessionTest {
     public void testUpdateQuestion() {
         s.updateQuestion();
         assertSame(1, s.expectedAnswers.size());
-        assertSame(2, s.questionCounter);
+        assertSame(1, s.questionCounter);
         assertNotNull(s.currentQuestion);
         assertEquals("Question #1", s.currentQuestion.prompt);
     }
@@ -87,7 +132,7 @@ public class GameSessionTest {
         s.updateQuestion();
         Question tmp = s.currentQuestion;
         s.setPlayerReady();
-        assertSame(2, s.questionCounter);
+        assertSame(1, s.questionCounter);
         assertSame(1, s.playersReady);
         assertEquals(tmp, s.currentQuestion);
     }
@@ -97,7 +142,7 @@ public class GameSessionTest {
         s.updateQuestion();
         Question tmp = s.currentQuestion;
         s.setPlayerReady();
-        assertSame(3, s.questionCounter);
+        assertSame(2, s.questionCounter);
         assertSame(1, s.playersReady);
         assertSame(1, s.expectedAnswers.size());
         assertNotNull(s.currentQuestion);
@@ -148,7 +193,7 @@ public class GameSessionTest {
         System.out.println(str);
         assertTrue(str.contains(GameSession.class.getSimpleName()));
         assertTrue(str.contains("username=blah"));
-        assertTrue(str.contains("questionCounter=1"));
+        assertTrue(str.contains("questionCounter=0"));
         assertTrue(str.contains("playersReady=0"));
         assertTrue(str.contains("expectedAnswers=[]"));
         assertTrue(str.contains("currentQuestion=<null>"));

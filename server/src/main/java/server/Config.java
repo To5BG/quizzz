@@ -19,9 +19,30 @@ import java.util.Random;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 @Configuration
 public class Config {
+
+    /**
+     * Utility method to check if the provided id is invalid for the game session repo.
+     *
+     * @param id id to be checked
+     * @return True iff the id is a negative integer or no entry has the provided id
+     */
+    public static boolean isInvalid(long id, JpaRepository repo) {
+        return id < 0 || !repo.existsById(id);
+    }
+
+    /**
+     * Utility method to check whether a string is empty or null.
+     *
+     * @param s String to be checked
+     * @return True iff the object is either null or an empty string
+     */
+    public static boolean isNullOrEmpty(String s) {
+        return s == null || s.isEmpty();
+    }
 
     /**
      * Configure a random object for the game session

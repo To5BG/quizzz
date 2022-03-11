@@ -34,8 +34,8 @@ public class MainCtrl {
     private MultiplayerCtrl multiplayerCtrl;
     private Scene multiPlayerScreen;
 
-    private GameCtrl gameCtrl;
-    private Scene gameScreen;
+    private SingleplayerCtrl singlePlayerCtrl;
+    private Scene singlePlayerScreen;
 
     private WaitingAreaCtrl waitingAreaCtrl;
     private Scene waitingAreaScreen;
@@ -57,7 +57,7 @@ public class MainCtrl {
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
                            Pair<MultiplayerCtrl, Parent> multi,
                            Pair<WaitingAreaCtrl, Parent> wait,
-                           Pair<GameCtrl, Parent> game,
+                           Pair<SingleplayerCtrl, Parent> single,
                            Pair<LeaderBoardCtrl, Parent> leaderboard) {
         this.primaryStage = primaryStage;
 
@@ -70,8 +70,8 @@ public class MainCtrl {
         this.waitingAreaCtrl = wait.getKey();
         this.waitingAreaScreen = new Scene(wait.getValue());
 
-        this.gameCtrl = game.getKey();
-        this.gameScreen = new Scene(game.getValue());
+        this.singlePlayerCtrl = single.getKey();
+        this.singlePlayerScreen = new Scene(single.getValue());
 
         this.leaderBoardCtrl = leaderboard.getKey();
         this.leaderBoardScreen = new Scene(leaderboard.getValue());
@@ -102,6 +102,7 @@ public class MainCtrl {
         multiPlayerScreen.setOnKeyPressed(e -> multiplayerCtrl.keyPressed(e));
         multiplayerCtrl.setSessionId(sessionId);
         multiplayerCtrl.setPlayerId(playerId);
+        multiplayerCtrl.setBestScore();
         multiplayerCtrl.loadQuestion();
     }
 
@@ -139,17 +140,19 @@ public class MainCtrl {
         }, 0, 500);
     }
 
+
     /**
      * Sets the current screen to the single player screen.
      */
     public void showSinglePlayer(long sessionId, long playerId) {
         primaryStage.setTitle("Singe player game");
-        primaryStage.setScene(gameScreen);
-        gameScreen.setOnKeyPressed(e -> gameCtrl.keyPressed(e));
-        gameCtrl.setSessionId(sessionId);
-        gameCtrl.setPlayerId(playerId);
-        gameCtrl.disableSingleplayerJokers();
-        gameCtrl.loadQuestion();
+        primaryStage.setScene(singlePlayerScreen);
+        singlePlayerScreen.setOnKeyPressed(e -> singlePlayerCtrl.keyPressed(e));
+        singlePlayerCtrl.setSessionId(sessionId);
+        singlePlayerCtrl.setPlayerId(playerId);
+        singlePlayerCtrl.setBestScore();
+        singlePlayerCtrl.disableSingleplayerJokers();
+        singlePlayerCtrl.loadQuestion();
     }
 
     /**
