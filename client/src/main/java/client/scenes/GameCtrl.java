@@ -349,6 +349,7 @@ public abstract class GameCtrl implements Initializable {
         leaderboard.setItems(data);
         answerArea.setOpacity(0);
         submitButton.setOpacity(0);
+        questionPrompt.setOpacity(0);
         leaderboard.setOpacity(1);
 
         Task roundTimer = new Task() {
@@ -384,6 +385,7 @@ public abstract class GameCtrl implements Initializable {
                 Platform.runLater(() -> {
                     leaderboard.setOpacity(0);
                     answerArea.setOpacity(1);
+                    questionPrompt.setOpacity(1);
                     submitButton.setOpacity(1);
                     loadQuestion();
                 });

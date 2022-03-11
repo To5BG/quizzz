@@ -39,6 +39,7 @@ public class Player {
     public Player(String username, int point) {
         this.username = username;
         this.bestScore = point;
+        this.currentPoints = 0;
     }
 
     /**
