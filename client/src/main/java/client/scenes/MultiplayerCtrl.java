@@ -19,15 +19,45 @@ import com.google.inject.Inject;
 import client.utils.ServerUtils;
 import commons.*;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.util.Callback;
 
-import java.util.*;
+import java.net.URL;
+import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class MultiplayerCtrl extends GameCtrl{
+public class MultiplayerCtrl extends GameCtrl {
 
 
     @Inject
     public MultiplayerCtrl(ServerUtils server, MainCtrl mainCtrl) {
-        super(server,mainCtrl);
+        super(server, mainCtrl);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void initialize(URL url, ResourceBundle res) {
+        colUserName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
+        colPoints.setCellValueFactory(p -> new SimpleIntegerProperty(p.getValue().currentPoints).asObject());
+
+        colRank.setCellFactory(new Callback<>() {
+            @Override
+            public TableCell<Player, Integer> call(TableColumn<Player, Integer> param) {
+                return new TableCell<>() {
+                    @Override
+                    protected void updateItem(Integer item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (!empty) setText(this.getTableRow().getIndex() + 1 + "");
+                        else setText("");
+                    }
+                };
+            }
+        });
     }
 
     /**

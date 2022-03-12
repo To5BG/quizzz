@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import commons.Activity;
 import server.database.ActivityRepository;
 
+import static server.Config.isInvalid;
+import static server.Config.isNullOrEmpty;
+
 
 @RestController
 @RequestMapping("/api/activities")
@@ -25,15 +28,6 @@ public class ActivityController {
     }
 
     /**
-     * Check if a String is Null or Empty
-     * @param s - String to be checked
-     * @return true if the String is null or is empty
-     */
-    private static boolean isNullOrEmpty(String s) {
-        return s == null || s.isEmpty();
-    }
-
-    /**
      * Check if all the attributes of the activity are neither null nor empty
      * @param activity - Activity to be checked
      * @return true if any of the attributes is null or empty
@@ -42,13 +36,6 @@ public class ActivityController {
         return  isNullOrEmpty(activity.title) || isNullOrEmpty(activity.consumption)
                 || isNullOrEmpty(activity.imagePath) || isNullOrEmpty(activity.source);
     }
-
-    /**
-     * Check if the id is existent in the repository
-     * @param id - long that will be checked
-     * @return true if id < 0 or the id is not in the repository
-     */
-    private boolean invalidId(long id){return id < 0 || !repo.existsById(id);}
 
     /**
      * Get all the activities from the repository
@@ -65,7 +52,7 @@ public class ActivityController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Activity> getActivityById(@PathVariable("id") long id) {
-        if (invalidId(id)){
+        if (isInvalid(id,repo)){
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(repo.findById(id).get());
@@ -94,7 +81,7 @@ public class ActivityController {
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> removeActivityById(@PathVariable("id") long id) {
         //Get the activity with the id or null if it does not exist
-        if(invalidId(id)) {
+        if(isInvalid(id,repo)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         Activity activity = repo.findById(id).get();
@@ -118,7 +105,7 @@ public class ActivityController {
     public ResponseEntity<Activity> updateActivityById(@PathVariable("id") long id,
                                                        @RequestBody Activity activityDetails) {
 
-        if(invalidId(id) || invalidActivity(activityDetails)){
+        if(isInvalid(id,repo) || invalidActivity(activityDetails)){
             return ResponseEntity.badRequest().build();
         }
 
