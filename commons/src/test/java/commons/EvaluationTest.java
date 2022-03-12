@@ -29,7 +29,7 @@ public class EvaluationTest {
         List<Integer> correctAnswers = List.of(1,2,3,4);
         Evaluation eval1 = new Evaluation(10, Question.QuestionType.MULTIPLE_CHOICE, correctAnswers);
         Evaluation eval2 = new Evaluation(10, Question.QuestionType.MULTIPLE_CHOICE, correctAnswers);
-        Evaluation eval3 = new Evaluation(20, Question.QuestionType.TRUE_FALSE, List.of(1));
+        Evaluation eval3 = new Evaluation(20, Question.QuestionType.RANGE_GUESS, List.of(1));
 
         assertEquals(eval1, eval1);
         assertEquals(eval1, eval2);
