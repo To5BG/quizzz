@@ -32,6 +32,9 @@ public abstract class GameCtrl implements Initializable {
     protected Label pointsLabel;
 
     @FXML
+    protected Label countdown;
+
+    @FXML
     protected ProgressBar timeProgress;
 
     @FXML
@@ -181,6 +184,28 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
+     * Starts reading time countdown and updates label accordingly to inform the user.
+     */
+    public void countdown() {
+        final int[] i = {5};
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    if (i[0] < 0) {
+                        cancel();
+                        loadAnswer();
+                    }
+                    else {
+                        countdown.setText("The options will appear in " + i[0] + " seconds.");
+                        i[0]--;
+                    }
+                });
+            }
+        }, 0, 1000);
+    }
+
+    /**
      * Loads a question and starts reading time.
      */
     public void loadQuestion() {
@@ -189,21 +214,14 @@ public abstract class GameCtrl implements Initializable {
         Question q = this.server.fetchOneQuestion(this.sessionId);
         this.currentQuestion = q;
         renderGeneralInformation(q);
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    loadAnswer();
-                });
-            }
-        }, 5000);
-
+        countdown();
     }
 
     /**
      * Loads the answers of the current question and updates the timer after reading time is over
      */
     public void loadAnswer() {
+        this.countdown.setText("Options:");
         Question q = this.currentQuestion;
         renderAnswerFields(q);
         disableButton(submitButton, false);
