@@ -213,6 +213,7 @@ public abstract class GameCtrl implements Initializable {
                 long gameRoundMs = GAME_ROUND_TIME * 1000;
                 long timeElapsed = 0;
                 while (timeElapsed < gameRoundMs) {
+                    //the speed on which the timer updates, with default speed 1
                     long booster = getTimeJokers() + 1;
                     updateProgress(gameRoundMs - timeElapsed, gameRoundMs);
                     refreshCounter += booster;
@@ -485,22 +486,21 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Reset the number of time Jokers for the current session to 0
+     * Reset the number of time Jokers for the current session to default value
      */
     public void resetTimeJokers() {
-        if(server.getSession(sessionId).getTimeJokers() != 0) {
+        if(getTimeJokers() != 0) {
             server.updateTimeJokers(sessionId, 0);
         }
     }
     /**
      * Decrease Time Joker
-     * When this joker is used, it decreases the time by a set percentage
+     * When this joker is used, the timer speeds up
      * This joker can not be used in single-player
      */
     public void decreaseTime() {
         decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
-        //TODO Add functionality to button when multiplayer is functional
         server.updateTimeJokers(sessionId, getTimeJokers() + 1);
     }
 

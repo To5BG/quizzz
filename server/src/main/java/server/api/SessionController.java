@@ -194,7 +194,7 @@ public class SessionController {
      *
      * @param sessionId Id of session to update
      * @param timeJoker  new number of time Jokers
-     * @return HTTP status OK if successfully changed
+     * @return the number of time jokers
      */
     @GetMapping("/{id}/timeJokers/{timeJoker}")
     public ResponseEntity<Integer> updateTimeJokers(@PathVariable("id") long sessionId,

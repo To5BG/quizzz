@@ -186,6 +186,7 @@ public class ServerUtils {
      *
      * @param sessionID  Session to update
      * @param timeJokers new number of timeJokers to be set
+     * @return integer for number of jokers in use now
      */
     public Integer updateTimeJokers(long sessionID, int timeJokers) {
         return ClientBuilder.newClient(new ClientConfig())

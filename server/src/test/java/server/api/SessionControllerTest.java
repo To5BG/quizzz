@@ -156,6 +156,17 @@ public class SessionControllerTest {
         assertEquals(firstPlayer, sut.removePlayer(first.id, 0).getBody());
     }
 
+    @Test
+    public void updateTimeJokersTest() {
+        sut.addSession(first);
+        //Number of jokers is 0 at first
+        assertTrue(first.timeJokers == 0);
+
+        //make sure the number of jokers gets updated to 1
+        sut.updateTimeJokers(first.id, 1);
+        assertTrue(first.timeJokers == 1);
+    }
+
     @SuppressWarnings("serial")
     public class MyRandom extends Random {
 
