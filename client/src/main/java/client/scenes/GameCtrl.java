@@ -305,7 +305,29 @@ public abstract class GameCtrl implements Initializable {
      * Updates the point counter in client side, and then updates database entry
      */
     public void updatePoints() {
-        points += this.evaluation.points;
+        switch(this.evaluation.type) {
+            case MULTIPLE_CHOICE:
+            case COMPARISON:
+            case EQUIVALENCE:
+                points += (int) (100 * this.evaluation.points * timeProgress.getProgress());
+                break;
+            case RANGE_GUESS:
+                int givenAnswer = 0;
+                int actualAnswer = this.evaluation.correctAnswers.get(0);
+                try {
+                    givenAnswer = Integer.parseInt(estimationAnswer.getText());
+                } catch (NumberFormatException ex) {
+                    givenAnswer = actualAnswer;
+                }
+                int diff = Math.abs(givenAnswer - actualAnswer);
+                if(diff == 0) {
+                    points += (int) (100 * this.evaluation.points * timeProgress.getProgress());
+                }
+                else {
+                    if(diff > actualAnswer) diff = actualAnswer;
+                    points += (int) (100 * (1 - (double) diff/actualAnswer) * timeProgress.getProgress());
+                }
+        }
         renderPoints();
         server.updateScore(playerId, points, false);
     }
