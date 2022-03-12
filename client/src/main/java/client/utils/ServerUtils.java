@@ -181,6 +181,19 @@ public class ServerUtils {
                 });
     }
 
+    /**
+     * Updates a session's number of time jokers
+     *
+     * @param sessionID Session to update
+     * @param timeJokers  new number of timeJokers to be set
+     */
+    public void updateTimeJokers(long sessionID, int timeJokers) {
+        ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionID + "/timeJokers/" + timeJokers)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON);
+    }
+
     /*-----------------------------------------------------------------------------------------*/
     /*----------------------------- ANSWER AND QUESTION HANDLING ------------------------------*/
     /*-----------------------------------------------------------------------------------------*/

@@ -211,11 +211,14 @@ public abstract class GameCtrl implements Initializable {
             public Object call() {
                 long refreshCounter = 0;
                 long gameRoundMs = GAME_ROUND_TIME * 1000;
-                while (refreshCounter * TIMER_UPDATE_INTERVAL_MS < gameRoundMs) {
-                    updateProgress(gameRoundMs - refreshCounter * TIMER_UPDATE_INTERVAL_MS, gameRoundMs);
+                long timeElapsed = 0;
+                while (timeElapsed < gameRoundMs) {
+                    updateProgress(gameRoundMs - timeElapsed, gameRoundMs);
                     ++refreshCounter;
                     try {
                         Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
+                        long booster = getTimeJokers() * 10 + 1;
+                        timeElapsed = booster * refreshCounter * TIMER_UPDATE_INTERVAL_MS;
                     } catch (InterruptedException e) {
                         updateProgress(0, 1);
                         return null;
@@ -288,7 +291,7 @@ public abstract class GameCtrl implements Initializable {
      * @param eval Evaluation of received answers
      */
     public void updatePoints(Evaluation eval) {
-        if(doublePointsIsActive()) {
+        if(doublePointsActive) {
             points = points + 2 * eval.points;
             switchStatusOfDoublePoints();
         } else {
@@ -340,6 +343,8 @@ public abstract class GameCtrl implements Initializable {
         disableButton(removeOneButton, true);
         disableButton(decreaseTimeButton, true);
         disableButton(doublePointsButton, true);
+
+        resetTimeJokers();
 
         updatePoints(eval);
         renderCorrectAnswer(eval);
@@ -473,6 +478,22 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
+     * Get number of time Jokers for the current session
+     * @return int representing number of time jokers
+     */
+    public int getTimeJokers() {
+        return server.getSession(sessionId).getTimeJokers();
+    }
+
+    /**
+     * Reset the number of time Jokers for the current session to 0
+     */
+    public void resetTimeJokers() {
+        if(server.getSession(sessionId).getTimeJokers() != 0) {
+            server.updateTimeJokers(sessionId, 0);
+        }
+    }
+    /**
      * Decrease Time Joker
      * When this joker is used, it decreases the time by a set percentage
      * This joker can not be used in single-player
@@ -481,6 +502,7 @@ public abstract class GameCtrl implements Initializable {
         decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
         //TODO Add functionality to button when multiplayer is functional
+        server.updateTimeJokers(sessionId, getTimeJokers() + 1);
     }
 
     /**
@@ -491,15 +513,6 @@ public abstract class GameCtrl implements Initializable {
         doublePointsJoker = false;
         disableButton(doublePointsButton, true);
         switchStatusOfDoublePoints();
-    }
-
-    /**
-     * Check if the doublePointsJoker is active for this question
-     *
-     * @return true if the joker is active
-     */
-    private boolean doublePointsIsActive() {
-        return doublePointsJoker;
     }
 
     /**

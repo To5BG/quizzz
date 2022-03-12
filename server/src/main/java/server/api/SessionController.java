@@ -3,6 +3,7 @@ package server.api;
 import commons.Answer;
 import commons.GameSession;
 import commons.Player;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.SessionRepository;
@@ -187,6 +188,22 @@ public class SessionController {
         session.setSessionStatus(status);
         repo.save(session);
         return ResponseEntity.ok(session);
+    }
+    /**
+     * Updates number of timeJokers of game session
+     *
+     * @param sessionId Id of session to update
+     * @param timeJoker  new number of time Jokers
+     * @return HTTP status OK if successfully changed
+     */
+    @PutMapping("/{id}/timeJokers/{timeJoker}")
+    public ResponseEntity<HttpStatus> updateTimeJokers(@PathVariable("id") long sessionId,
+                                                       @PathVariable("timeJoker") int timeJoker) {
+        if (isInvalid(sessionId,repo)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        GameSession session = repo.findById(sessionId).get();
+        session.setTimeJokers(timeJoker);
+        repo.save(session);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     /**

@@ -29,6 +29,7 @@ public class GameSession {
 
     public int playersReady;
     public int questionCounter;
+    public int timeJokers;
 
     public SessionType sessionType;
     public enum SessionType {
@@ -65,6 +66,7 @@ public class GameSession {
         this.expectedAnswers = expectedAnswers;
         this.playersReady = 0;
         this.questionCounter = 0;
+        this.timeJokers = 0;
 
         this.sessionStatus = SessionStatus.STARTED;
         if (sessionType == SessionType.WAITING_AREA) this.sessionStatus = SessionStatus.WAITING_AREA;
@@ -134,6 +136,22 @@ public class GameSession {
         this.currentQuestion = q;
         this.expectedAnswers.clear();
         this.expectedAnswers.add(new Random().nextInt(3));
+    }
+
+    /**
+     * Get the number of time jokers used in this round
+     * @return int representing the number of time jokers
+     */
+    public int getTimeJokers() {
+        return timeJokers;
+    }
+
+    /**
+     * Set the timeJoker to a new value
+     * @param timeJokers - the new value for time Joker
+     */
+    public void setTimeJokers(int timeJokers) {
+        this.timeJokers = timeJokers;
     }
 
     /**
