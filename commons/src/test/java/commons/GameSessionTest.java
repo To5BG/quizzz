@@ -36,6 +36,51 @@ public class GameSessionTest {
     }
 
     @Test
+    public void testEmptyConstructor() {
+        GameSession session = new GameSession();
+        assertNull(session.expectedAnswers);
+        assertNull(session.currentQuestion);
+        assertNull(session.players);
+        assertNull(session.sessionStatus);
+        assertNull(session.sessionType);
+        assertSame(0, session.playersReady);
+        assertSame(0, session.questionCounter);
+        assertSame(0L, session.id);
+    }
+
+    @Test
+    public void testSetReadyWaitingArea() {
+        GameSession waitingArea = new GameSession(GameSession.SessionType.WAITING_AREA);
+        waitingArea.addPlayer(SOME_PLAYER);
+        waitingArea.setPlayerReady();
+        assertSame(1, waitingArea.playersReady);
+        waitingArea.setPlayerReady();
+        assertSame(1, waitingArea.playersReady);
+    }
+
+    @Test
+    public void testUnsetReady() {
+        s.unsetPlayerReady();
+        assertSame(0, s.playersReady);
+        s.setPlayerReady();
+        s.unsetPlayerReady();
+        assertSame(0, s.playersReady);
+    }
+
+    @Test
+    public void testSetCurrentQuestion() {
+        Question q = new Question("Question 1", "img1", Question.QuestionType.MULTIPLE_CHOICE);
+        s.setCurrentQuestion(q);
+        assertEquals(q, s.currentQuestion);
+    }
+
+    @Test
+    public void testSetSessionStatus() {
+        s.setSessionStatus(GameSession.SessionStatus.ONGOING);
+        assertEquals(GameSession.SessionStatus.ONGOING, s.sessionStatus);
+    }
+
+    @Test
     public void checkConstructor() {
         assertEquals(SOME_PLAYER, s.players.get(0));
         assertNotNull(s.expectedAnswers);

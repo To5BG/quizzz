@@ -48,7 +48,7 @@ public class GameSession {
     }
 
     @SuppressWarnings("unused")
-    private GameSession() {
+    public GameSession() {
         // for object mapper
     }
 

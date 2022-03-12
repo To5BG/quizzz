@@ -3,6 +3,8 @@ package server.api;
 import commons.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
 import java.util.Random;
@@ -46,14 +48,27 @@ class LeaderboardControllerTest {
         Optional<Player> temp = Optional.ofNullable(lbc.addPlayerForcibly(
                 new Player("david", 10)).getBody());
         lbc.addPlayerForcibly(new Player("david", 10));
-        var player = testRepo.findById(1L);
-        assertEquals(player, temp);
+
+        var player = lbc.getPlayerById(1L);
+        assertEquals(temp.get(), player.getBody());
+
+        ResponseEntity<Player> wrong = lbc.getPlayerById(42L);
+        assertEquals(HttpStatus.BAD_REQUEST, wrong.getStatusCode());
     }
 
     @Test
-    void addPlayerToTheRepository() {
+    void addPlayerForcibly() {
         var savedPlayer = lbc.addPlayerForcibly(new Player("david", 10)).getBody();
         assertTrue(testRepo.calledMethods.contains("save"));
         assertEquals(savedPlayer, testRepo.findAll().get(0));
+
+        ResponseEntity<Player> resp = lbc.addPlayerForcibly(null);
+        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
+
+        resp = lbc.addPlayerForcibly(new Player(null, 0));
+        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
+
+        resp = lbc.addPlayerForcibly(new Player("", 0));
+        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
     }
 }
