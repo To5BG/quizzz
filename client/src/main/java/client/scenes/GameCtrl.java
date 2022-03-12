@@ -182,8 +182,14 @@ public abstract class GameCtrl implements Initializable {
     }
 
     private void renderEstimationAnswers(List<Integer> correctAnswers) {
-        int givenAnswer = Integer.parseInt(estimationAnswer.getText());
+        int givenAnswer = 0;
         int actualAnswer = correctAnswers.get(0);
+        try {
+            givenAnswer = Integer.parseInt(estimationAnswer.getText());
+        } catch (NumberFormatException ex) {
+            givenAnswer = actualAnswer;
+        }
+
         int diff = givenAnswer - actualAnswer;
         String correctAnswer = "Correct Answer: " + actualAnswer;
 
@@ -242,7 +248,7 @@ public abstract class GameCtrl implements Initializable {
                     }
                 }
                 updateProgress(0, 1);
-                Platform.runLater(() -> submitAnswer());
+                Platform.runLater(() -> submitAnswer(true));
                 return null;
             }
         };
@@ -312,12 +318,16 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
+     * Submit button click event handler
+     */
+    public void submitAnswerButton() {
+        submitAnswer(false);
+    }
+
+    /**
      * Submit an answer to the server
      */
-    public void submitAnswer() {
-        if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
-        disableButton(submitButton, true);
-
+    public void submitAnswer(boolean initiatedByTimer) {
         Answer ans = new Answer(currentQuestion.type);
 
         switch (currentQuestion.type) {
@@ -332,11 +342,28 @@ public abstract class GameCtrl implements Initializable {
                 break;
             case RANGE_GUESS:
                 // TODO disallow non-numeric answer
-                ans.addAnswer(Integer.parseInt(estimationAnswer.getText()));
+                try {
+                    ans.addAnswer(Integer.parseInt(estimationAnswer.getText()));
+                } catch (NumberFormatException ex) {
+                    System.out.println("Invalid answer yo");
+                    if (!initiatedByTimer) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Invalid answer");
+                        alert.setHeaderText("Invalid answer");
+                        alert.setContentText("You should only enter an integer number");
+                        alert.show();
+                        return;
+                    } else {
+                        ans.addAnswer(0);
+                    }
+                }
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported question type when parsing answer");
         }
+
+        if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
+        disableButton(submitButton, true);
 
         this.evaluation = server.submitAnswer(sessionId, ans);
         server.toggleReady(sessionId, true);
@@ -352,8 +379,12 @@ public abstract class GameCtrl implements Initializable {
      */
     public void startEvaluation() {
 
+        if (this.evaluation == null) return;
+
         updatePoints();
         renderCorrectAnswer();
+
+        this.evaluation = null;
 
         // TODO disable button while waiting
         new Timer().schedule(new TimerTask() {
