@@ -217,7 +217,7 @@ public abstract class GameCtrl implements Initializable {
                     ++refreshCounter;
                     try {
                         Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
-                        long booster = getTimeJokers() * 10 + 1;
+                        long booster = getTimeJokers() + 1;
                         timeElapsed = booster * refreshCounter * TIMER_UPDATE_INTERVAL_MS;
                     } catch (InterruptedException e) {
                         updateProgress(0, 1);
@@ -344,8 +344,6 @@ public abstract class GameCtrl implements Initializable {
         disableButton(decreaseTimeButton, true);
         disableButton(doublePointsButton, true);
 
-        resetTimeJokers();
-
         updatePoints(eval);
         renderCorrectAnswer(eval);
 
@@ -366,6 +364,7 @@ public abstract class GameCtrl implements Initializable {
                         try {
                             GameSession session = server.toggleReady(sessionId, false);
                             if (session.playersReady == 0) {
+                                resetTimeJokers();
                                 server.updateStatus(session, GameSession.SessionStatus.ONGOING);
                             }
                             loadQuestion();

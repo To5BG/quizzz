@@ -143,7 +143,7 @@ public class GameSession {
      * @return int representing the number of time jokers
      */
     public int getTimeJokers() {
-        return timeJokers;
+        return this.timeJokers;
     }
 
     /**

@@ -196,14 +196,14 @@ public class SessionController {
      * @param timeJoker  new number of time Jokers
      * @return HTTP status OK if successfully changed
      */
-    @PutMapping("/{id}/timeJokers/{timeJoker}")
-    public ResponseEntity<HttpStatus> updateTimeJokers(@PathVariable("id") long sessionId,
+    @GetMapping("/{id}/timeJokers/{timeJoker}")
+    public ResponseEntity<Integer> updateTimeJokers(@PathVariable("id") long sessionId,
                                                        @PathVariable("timeJoker") int timeJoker) {
         if (isInvalid(sessionId,repo)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         GameSession session = repo.findById(sessionId).get();
         session.setTimeJokers(timeJoker);
         repo.save(session);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok(session.timeJokers);
     }
 
     /**
