@@ -53,8 +53,8 @@ public class QuestionControllerTest {
     @Test
     public void submitAnswerTest() {
         GameSession s = session.getAllSessions().get(0);
-        System.out.println(s);
         List<Integer> expectedAnswers = List.copyOf(s.expectedAnswers);
+        Question q = s.currentQuestion;
 
         ResponseEntity<Evaluation> resp = sut.submitAnswer(s.id,
                 new Answer(Question.QuestionType.MULTIPLE_CHOICE));
@@ -63,7 +63,7 @@ public class QuestionControllerTest {
 
         assertEquals(HttpStatus.OK, resp.getStatusCode());
         assertEquals(expectedAnswers, eval.correctAnswers);
-        assertEquals(Question.QuestionType.MULTIPLE_CHOICE, eval.type);
+        assertEquals(q.type, eval.type);
     }
 
     @Test

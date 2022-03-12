@@ -96,8 +96,9 @@ public class MultiplayerCtrl extends GameCtrl {
      * Interrupts the timer, disables the submit button, sends the user's answer for evaluation and pauses the game
      * until everyone has answered or the timer has terminated.
      */
-    public void submitAnswer() {
-        super.submitAnswer();
+    public void submitAnswer(boolean initiatedByTimer) {
+        super.submitAnswer(initiatedByTimer);
+        if (!initiatedByTimer && this.evaluation == null) return;
         refresh();
     }
 }
