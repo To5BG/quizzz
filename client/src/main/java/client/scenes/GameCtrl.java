@@ -18,7 +18,7 @@ public abstract class GameCtrl implements Initializable {
 
     protected final int GAME_ROUNDS = 5;
     protected final int GAME_ROUND_TIME = 10;
-    protected final int MIDGAME_BREAK_TIME = 10;
+    protected final int MIDGAME_BREAK_TIME = 6;
     protected final int TIMER_UPDATE_INTERVAL_MS = 50;
     protected final int GAME_ROUND_DELAY = 2;
 
@@ -213,12 +213,12 @@ public abstract class GameCtrl implements Initializable {
                 long gameRoundMs = GAME_ROUND_TIME * 1000;
                 long timeElapsed = 0;
                 while (timeElapsed < gameRoundMs) {
+                    long booster = getTimeJokers() + 1;
                     updateProgress(gameRoundMs - timeElapsed, gameRoundMs);
-                    ++refreshCounter;
+                    refreshCounter += booster;
                     try {
                         Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
-                        long booster = getTimeJokers() + 1;
-                        timeElapsed = booster * refreshCounter * TIMER_UPDATE_INTERVAL_MS;
+                        timeElapsed = refreshCounter * TIMER_UPDATE_INTERVAL_MS;
                     } catch (InterruptedException e) {
                         updateProgress(0, 1);
                         return null;
@@ -353,6 +353,7 @@ public abstract class GameCtrl implements Initializable {
             public void run() {
                 Platform.runLater(() -> {
                     rounds++;
+                    resetTimeJokers();
                     if (rounds == GAME_ROUNDS) {
                         // TODO display leaderboard things here
                         if (points > bestScore) server.updateScore(playerId, points, true);
@@ -364,7 +365,6 @@ public abstract class GameCtrl implements Initializable {
                         try {
                             GameSession session = server.toggleReady(sessionId, false);
                             if (session.playersReady == 0) {
-                                resetTimeJokers();
                                 server.updateStatus(session, GameSession.SessionStatus.ONGOING);
                             }
                             loadQuestion();
