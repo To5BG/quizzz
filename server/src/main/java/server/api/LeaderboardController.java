@@ -28,10 +28,17 @@ public class LeaderboardController {
      *
      * @return a list of all data about past players
      */
-    @GetMapping(path = {"", "/"})
-    public ResponseEntity<List<Player>> getAllPlayers() {
+    @GetMapping(path = { "/single"})
+    public ResponseEntity<List<Player>> getPlayerSingleScores() {
         return ResponseEntity.ok(repo.findAll()
-                .stream().sorted(Comparator.comparing(Player::getBestScore).reversed())
+                .stream().sorted(Comparator.comparing(Player::getBestSingleScore).reversed())
+                .collect(Collectors.toList()));
+    }
+
+    @GetMapping(path = {"/multi"})
+    public ResponseEntity<List<Player>> getPlayerMultiScore() {
+        return ResponseEntity.ok(repo.findAll()
+                .stream().sorted(Comparator.comparing(Player::getBestMultiScore).reversed())
                 .collect(Collectors.toList()));
     }
 
@@ -91,11 +98,11 @@ public class LeaderboardController {
      * @return Updated player entity
      */
     @PutMapping("/{id}/bestscore")
-    public ResponseEntity<Player> updateBestScore(@PathVariable("id") long playerId,
+    public ResponseEntity<Player> updateBestSingleScore(@PathVariable("id") long playerId,
                                                   @RequestBody int points) {
         if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
         Player updatedPlayer = repo.findById(playerId).get();
-        updatedPlayer.setBestPoints(points);
+        updatedPlayer.setBestSingleScore(points);
 
         /* assumption that best score is updated only at the end of a game */
         // updatedPlayer.setCurrentPoints(0);

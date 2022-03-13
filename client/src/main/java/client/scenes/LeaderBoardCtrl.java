@@ -28,7 +28,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
+import java.util.Comparator;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class LeaderBoardCtrl implements Initializable {
 
@@ -91,8 +93,17 @@ public class LeaderBoardCtrl implements Initializable {
     /**
      * refresh the screen to show the leaderboards
      */
-    public void refresh() {
-        var players = server.getAllPlayers();
+    public void refreshSingle() {
+        var players = server.getPlayerSingleScore();
+        data = FXCollections.observableList(players);
+        allPlayers.setItems(data);
+    }
+
+    /**
+     * refresh the screen to show the leaderboards
+     */
+    public void refreshMulti() {
+        var players = server.getPlayerMultiScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
     }
@@ -102,6 +113,12 @@ public class LeaderBoardCtrl implements Initializable {
      */
     public void showMultiLeaderboard() {
         colPoint.setCellValueFactory(q ->  new SimpleStringProperty(String.valueOf(q.getValue().bestMultiScore)));
+        data.stream().sorted(Comparator.comparing(Player::getBestMultiScore).reversed())
+                .collect(Collectors.toList());
+        allPlayers.setItems(data);
+        for(Player p : data) {
+            System.out.println(p.toString());
+        }
         allPlayers.refresh();
     }
 
@@ -110,6 +127,9 @@ public class LeaderBoardCtrl implements Initializable {
      */
     public void showSingleLeaderBoard() {
         colPoint.setCellValueFactory(q ->  new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
+        data.stream().sorted(Comparator.comparing(Player::getBestSingleScore).reversed())
+                .collect(Collectors.toList());
+        allPlayers.setItems(data);
         allPlayers.refresh();
     }
 

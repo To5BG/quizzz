@@ -70,7 +70,8 @@ public abstract class GameCtrl implements Initializable {
     protected long playerId;
     protected Question currentQuestion;
     protected int points = 0;
-    protected int bestScore = 0;
+    protected int bestSingleScore = 0;
+    protected int bestMultiScore = 0;
     protected int rounds = 0;
     protected Thread timerThread;
     protected Evaluation evaluation;
@@ -115,10 +116,17 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Setter for bestScore.
+     * Setter for bestScore in single mode.
      */
-    public void setBestScore() {
-        this.bestScore = server.getPlayerById(playerId).bestScore;
+    public void setBestSingleScore() {
+        this.bestSingleScore = server.getPlayerById(playerId).bestSingleScore;
+    }
+
+    /**
+     * Setter for bestScore in multiplayer mode.
+     */
+    public void setBestMultiScore() {
+        this.bestMultiScore = server.getPlayerById(playerId).bestMultiScore;
     }
 
     /**
@@ -478,7 +486,7 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Gets the user's answer, starts the evaluation and loads a new question or ends the game.
      */
-    public void startEvaluation() {
+    public void startSingleEvaluation() {
 
         if (this.evaluation == null) return;
 
@@ -500,7 +508,7 @@ public abstract class GameCtrl implements Initializable {
                     resetTimeJokers();
                     if (rounds == GAME_ROUNDS) {
                         // TODO display leaderboard things here
-                        if (points > bestScore) server.updateScore(playerId, points, true);
+                        if (points > bestSingleScore) server.updateScore(playerId, points, true);
                         back();
                     } else if (rounds == GAME_ROUNDS / 2 &&
                             server.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {

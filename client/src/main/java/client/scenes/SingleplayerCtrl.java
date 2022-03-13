@@ -26,7 +26,7 @@ public class SingleplayerCtrl extends GameCtrl {
     @Override
     public void submitAnswer(boolean initiatedByTimer) {
         super.submitAnswer(initiatedByTimer);
-        startEvaluation();
+        startSingleEvaluation();
     }
 
     /**

@@ -102,7 +102,7 @@ public class MainCtrl {
         multiPlayerScreen.setOnKeyPressed(e -> multiplayerCtrl.keyPressed(e));
         multiplayerCtrl.setSessionId(sessionId);
         multiplayerCtrl.setPlayerId(playerId);
-        multiplayerCtrl.setBestScore();
+        multiplayerCtrl.setBestMultiScore();
         multiplayerCtrl.loadQuestion();
     }
 
@@ -150,7 +150,7 @@ public class MainCtrl {
         singlePlayerScreen.setOnKeyPressed(e -> singlePlayerCtrl.keyPressed(e));
         singlePlayerCtrl.setSessionId(sessionId);
         singlePlayerCtrl.setPlayerId(playerId);
-        singlePlayerCtrl.setBestScore();
+        singlePlayerCtrl.setBestSingleScore();
         singlePlayerCtrl.disableSingleplayerJokers();
         singlePlayerCtrl.loadQuestion();
     }
@@ -161,7 +161,7 @@ public class MainCtrl {
     public void showLeaderboard() {
         primaryStage.setTitle("LeaderBoard");
         primaryStage.setScene(leaderBoardScreen);
-        leaderBoardCtrl.refresh();
+        leaderBoardCtrl.refreshSingle();
         leaderBoardScreen.setOnKeyPressed(e -> leaderBoardCtrl.keyPressed(e));
 
     }
