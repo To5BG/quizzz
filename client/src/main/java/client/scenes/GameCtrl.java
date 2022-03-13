@@ -281,7 +281,9 @@ public abstract class GameCtrl implements Initializable {
         Question q = this.currentQuestion;
         renderAnswerFields(q);
 
-        disableButton(removeOneButton, q.type == Question.QuestionType.RANGE_GUESS);
+        if(removeOneJoker) {
+            disableButton(removeOneButton, q.type == Question.QuestionType.RANGE_GUESS);
+        }
 
         disableButton(submitButton, false);
 
