@@ -378,11 +378,6 @@ public abstract class GameCtrl implements Initializable {
             case EQUIVALENCE:
                 temppoints = (int) (80 * this.evaluation.points * timeProgress.getProgress()) +
                         (20 * this.evaluation.points);
-                if (doublePointsActive) {
-                    temppoints = temppoints * 2;
-                    switchStatusOfDoublePoints();
-                }
-                points += temppoints;
                 break;
             case RANGE_GUESS:
                 int givenAnswer;
@@ -401,15 +396,15 @@ public abstract class GameCtrl implements Initializable {
                     temppoints = (int) ((90 * (1 - (double) diff/actualAnswer) * timeProgress.getProgress()) +
                             ((diff < actualAnswer) ? 10 * (1 - (double) diff/actualAnswer) : 0));
                 }
-                if (doublePointsActive) {
-                    temppoints = temppoints * 2;
-                    switchStatusOfDoublePoints();
-                }
-                points += temppoints;
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported question type when parsing answer");
         }
+        if (doublePointsActive) {
+            temppoints = temppoints * 2;
+            switchStatusOfDoublePoints();
+        }
+        points += temppoints;
         renderPoints();
         server.updateScore(playerId, points, false);
     }
