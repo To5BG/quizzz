@@ -371,11 +371,44 @@ public abstract class GameCtrl implements Initializable {
      * Updates the point counter in client side, and then updates database entry
      */
     public void updatePoints() {
-        if (doublePointsActive) {
-            points = points + 2 * this.evaluation.points;
-            switchStatusOfDoublePoints();
-        } else {
-            points += this.evaluation.points;
+        int temppoints;
+        switch(this.evaluation.type) {
+            case MULTIPLE_CHOICE:
+            case COMPARISON:
+            case EQUIVALENCE:
+                temppoints = (int) (80 * this.evaluation.points * timeProgress.getProgress()) +
+                        (20 * this.evaluation.points);
+                if (doublePointsActive) {
+                    temppoints = temppoints * 2;
+                    switchStatusOfDoublePoints();
+                }
+                points += temppoints;
+                break;
+            case RANGE_GUESS:
+                int givenAnswer;
+                int actualAnswer = this.evaluation.correctAnswers.get(0);
+                try {
+                    givenAnswer = Integer.parseInt(estimationAnswer.getText());
+                } catch (NumberFormatException ex) {
+                    givenAnswer = 0;
+                }
+                int diff = Math.abs(givenAnswer - actualAnswer);
+                if(diff == 0) {
+                    temppoints = (int) (60 * this.evaluation.points * timeProgress.getProgress()) + 40;
+                }
+                else {
+                    if(diff > actualAnswer) diff = actualAnswer;
+                    temppoints = (int) ((90 * (1 - (double) diff/actualAnswer) * timeProgress.getProgress()) +
+                            ((diff < actualAnswer) ? 10 * (1 - (double) diff/actualAnswer) : 0));
+                }
+                if (doublePointsActive) {
+                    temppoints = temppoints * 2;
+                    switchStatusOfDoublePoints();
+                }
+                points += temppoints;
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported question type when parsing answer");
         }
         renderPoints();
         server.updateScore(playerId, points, false);
