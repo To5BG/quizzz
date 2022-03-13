@@ -32,6 +32,9 @@ public abstract class GameCtrl implements Initializable {
     protected Label pointsLabel;
 
     @FXML
+    protected Label countdown;
+
+    @FXML
     protected ProgressBar timeProgress;
 
     @FXML
@@ -62,6 +65,7 @@ public abstract class GameCtrl implements Initializable {
     protected MainCtrl mainCtrl;
 
     protected List<RadioButton> multiChoiceAnswers;
+    protected TextField estimationAnswer;
     protected long sessionId;
     protected long playerId;
     protected Question currentQuestion;
@@ -69,6 +73,7 @@ public abstract class GameCtrl implements Initializable {
     protected int bestScore = 0;
     protected int rounds = 0;
     protected Thread timerThread;
+    protected Evaluation evaluation;
 
     protected boolean doublePointsJoker;
     protected boolean doublePointsActive;
@@ -134,14 +139,26 @@ public abstract class GameCtrl implements Initializable {
     protected void renderAnswerFields(Question q) {
         switch (q.type) {
             case MULTIPLE_CHOICE:
+            case COMPARISON:
+            case EQUIVALENCE:
                 renderMultipleChoiceQuestion(q);
-                if(removeOneJoker) {
+                if (removeOneJoker) {
                     disableButton(removeOneButton, false);
                 }
                 break;
+            case RANGE_GUESS:
+                renderEstimationQuestion();
+                break;
             default:
-                throw new UnsupportedOperationException("Currently only multiple choice questions can be rendered");
+                throw new UnsupportedOperationException("Unsupported question type when rendering answers");
         }
+    }
+
+    private void renderEstimationQuestion() {
+        this.countdown.setText("");
+        this.estimationAnswer = new TextField();
+        answerArea.getChildren().clear();
+        answerArea.getChildren().add(estimationAnswer);
     }
 
     /**
@@ -151,6 +168,7 @@ public abstract class GameCtrl implements Initializable {
      */
     protected void renderMultipleChoiceQuestion(Question q) {
         double yPosition = 0.0;
+        this.countdown.setText("Options:");
         multiChoiceAnswers.clear();
         answerArea.getChildren().clear();
         for (String opt : q.answerOptions) {
@@ -164,17 +182,43 @@ public abstract class GameCtrl implements Initializable {
 
     /**
      * Switch method to render correct answers based on the question type
-     *
-     * @param eval Evaluation containing the true answers
      */
-    protected void renderCorrectAnswer(Evaluation eval) {
-        switch (eval.type) {
+    protected void renderCorrectAnswer() {
+        switch (this.evaluation.type) {
             case MULTIPLE_CHOICE:
-                renderMultipleChoiceAnswers(eval.correctAnswers);
+            case COMPARISON:
+            case EQUIVALENCE:
+                renderMultipleChoiceAnswers(this.evaluation.correctAnswers);
+                break;
+            case RANGE_GUESS:
+                renderEstimationAnswers(this.evaluation.correctAnswers);
                 break;
             default:
                 throw new UnsupportedOperationException("Currently only multiple choice answers can be rendered");
         }
+    }
+
+    private void renderEstimationAnswers(List<Integer> correctAnswers) {
+        int givenAnswer = 0;
+        int actualAnswer = correctAnswers.get(0);
+        try {
+            givenAnswer = Integer.parseInt(estimationAnswer.getText());
+        } catch (NumberFormatException ex) {
+            givenAnswer = actualAnswer;
+        }
+
+        int diff = givenAnswer - actualAnswer;
+        String correctAnswer = "Correct Answer: " + actualAnswer;
+
+        if (diff > 0) {
+            correctAnswer += " (+" + diff + ")";
+        } else if (diff < 0) {
+            correctAnswer += " (" + diff + ")";
+        }
+
+        Label resultText = new Label(correctAnswer);
+        answerArea.getChildren().clear();
+        answerArea.getChildren().add(resultText);
     }
 
     /**
@@ -193,17 +237,52 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Loads a question and updates the timer bar
+     * Starts reading time countdown and updates label accordingly to inform the user.
+     */
+    public void countdown() {
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            int i = 5;
+
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    if (i < 0) {
+                        cancel();
+                        loadAnswer();
+                    } else {
+                        countdown.setText("The answer option will appear in " + i + " seconds.");
+                        i--;
+                    }
+                });
+            }
+        }, 0, 1000);
+    }
+
+    /**
+     * Loads a question and starts reading time.
      */
     public void loadQuestion() {
         disableButton(removeOneButton, true);
         disableButton(doublePointsButton, true);
         disableButton(decreaseTimeButton, true);
+        disableButton(submitButton, true);
+        this.answerArea.getChildren().clear();
 
         Question q = this.server.fetchOneQuestion(this.sessionId);
         this.currentQuestion = q;
         renderGeneralInformation(q);
+        countdown();
+    }
+
+    /**
+     * Loads the answers of the current question and updates the timer after reading time is over
+     */
+    public void loadAnswer() {
+        Question q = this.currentQuestion;
         renderAnswerFields(q);
+
+        disableButton(removeOneButton, q.type == Question.QuestionType.RANGE_GUESS);
+
         disableButton(submitButton, false);
 
         Task roundTimer = new Task() {
@@ -226,7 +305,7 @@ public abstract class GameCtrl implements Initializable {
                     }
                 }
                 updateProgress(0, 1);
-                Platform.runLater(() -> submitAnswer());
+                Platform.runLater(() -> submitAnswer(true));
                 return null;
             }
         };
@@ -288,15 +367,13 @@ public abstract class GameCtrl implements Initializable {
 
     /**
      * Updates the point counter in client side, and then updates database entry
-     *
-     * @param eval Evaluation of received answers
      */
-    public void updatePoints(Evaluation eval) {
-        if(doublePointsActive) {
-            points = points + 2 * eval.points;
+    public void updatePoints() {
+        if (doublePointsActive) {
+            points = points + 2 * this.evaluation.points;
             switchStatusOfDoublePoints();
         } else {
-            points += eval.points;
+            points += this.evaluation.points;
         }
         renderPoints();
         server.updateScore(playerId, points, false);
@@ -310,23 +387,58 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
+     * Submit button click event handler
+     */
+    public void submitAnswerButton() {
+        submitAnswer(false);
+    }
+
+    /**
      * Submit an answer to the server
      */
-    public void submitAnswer() {
-        /* RadioButton rb = new RadioButton("Answer option #1");
-        answerArea.getChildren().add(rb); */
+    public void submitAnswer(boolean initiatedByTimer) {
+        Answer ans = new Answer(currentQuestion.type);
+
+        switch (currentQuestion.type) {
+            case MULTIPLE_CHOICE:
+            case COMPARISON:
+            case EQUIVALENCE:
+                for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
+                    if (multiChoiceAnswers.get(i).isSelected()) {
+                        ans.addAnswer(i);
+                    }
+                }
+                break;
+            case RANGE_GUESS:
+                // TODO disallow non-numeric answer
+                try {
+                    ans.addAnswer(Integer.parseInt(estimationAnswer.getText()));
+                } catch (NumberFormatException ex) {
+                    System.out.println("Invalid answer yo");
+                    if (!initiatedByTimer) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Invalid answer");
+                        alert.setHeaderText("Invalid answer");
+                        alert.setContentText("You should only enter an integer number");
+                        alert.show();
+                        return;
+                    } else {
+                        ans.addAnswer(0);
+                    }
+                }
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported question type when parsing answer");
+        }
+
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
         disableButton(submitButton, true);
         disableButton(removeOneButton, true);
+
+        this.evaluation = server.submitAnswer(sessionId, ans);
+
         server.toggleReady(sessionId, true);
 
-        Answer ans = new Answer(currentQuestion.type);
-        for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
-            if (multiChoiceAnswers.get(i).isSelected()) {
-                ans.addAnswer(i);
-            }
-        }
-        server.addPlayerAnswer(sessionId, playerId, ans);
         var session = server.getSession(sessionId);
         if (session.playersReady == session.players.size()) {
             server.updateStatus(session, GameSession.SessionStatus.PAUSED);
@@ -338,15 +450,16 @@ public abstract class GameCtrl implements Initializable {
      */
     public void startEvaluation() {
 
-        Answer ans = server.getPlayerAnswer(sessionId, playerId);
-        Evaluation eval = server.submitAnswer(sessionId, ans);
+        if (this.evaluation == null) return;
 
         disableButton(removeOneButton, true);
         disableButton(decreaseTimeButton, true);
         disableButton(doublePointsButton, true);
 
-        updatePoints(eval);
-        renderCorrectAnswer(eval);
+        updatePoints();
+        renderCorrectAnswer();
+
+        this.evaluation = null;
 
         // TODO disable button while waiting
         new Timer().schedule(new TimerTask() {
@@ -444,8 +557,9 @@ public abstract class GameCtrl implements Initializable {
      * @param disable - boolean value whether the button should be disabled or enabled
      */
     public void disableButton(Button button, boolean disable) {
-        if(disable) button.setOpacity(0.5);
-        if(!disable) button.setOpacity(1);
+        if (button == null) return;
+        if (disable) button.setOpacity(0.5);
+        if (!disable) button.setOpacity(1);
         button.setDisable(disable);
     }
 
@@ -458,7 +572,9 @@ public abstract class GameCtrl implements Initializable {
         disableButton(removeOneButton, true);
 
         switch (currentQuestion.type) {
-            case MULTIPLE_CHOICE -> {
+            case COMPARISON:
+            case EQUIVALENCE:
+            case MULTIPLE_CHOICE:
                 List<Integer> incorrectAnswers = new ArrayList<>();
                 List<Integer> correctAnswers = server.getCorrectAnswers(sessionId);
                 for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
@@ -468,14 +584,12 @@ public abstract class GameCtrl implements Initializable {
                 }
                 int randomIndex = new Random().nextInt(incorrectAnswers.size());
                 multiChoiceAnswers.get(incorrectAnswers.get(randomIndex)).setDisable(true);
-            }
-            default -> {
+                break;
+            default:
                 disableButton(removeOneButton, false);
-            }
         }
-
-
     }
+
 
     /**
      * Get number of time Jokers for the current session

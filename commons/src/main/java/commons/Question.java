@@ -25,8 +25,9 @@ public class Question {
 
     public enum QuestionType {
         MULTIPLE_CHOICE,
-        TRUE_FALSE,
         RANGE_GUESS,
+        COMPARISON,
+        EQUIVALENCE,
         UNKNOWN
     }
 
@@ -48,9 +49,10 @@ public class Question {
      * @param answerOption String representation of the answer to be added
      */
     public void addAnswerOption(String answerOption) {
-        if (this.type != QuestionType.MULTIPLE_CHOICE) {
+        if (type != QuestionType.MULTIPLE_CHOICE && type != QuestionType.COMPARISON &&
+                type != QuestionType.EQUIVALENCE) {
             throw new UnsupportedOperationException(
-                    "Answer options are only allowed for multiple choice type questions");
+                    "Answer options are only allowed for Multiple Choice, comparison and equivalence type questions");
         }
         this.answerOptions.add(answerOption);
     }

@@ -96,7 +96,8 @@ public class MultiplayerCtrl extends GameCtrl {
      * Interrupts the timer, disables the submit button, sends the user's answer for evaluation and pauses the game
      * until everyone has answered or the timer has terminated.
      */
-    public void submitAnswer() {
+    public void submitAnswer(boolean initiatedByTimer) {
+        super.submitAnswer(initiatedByTimer);
         //enable jokers that can be used after submitting an answer
         if(decreaseTimeJoker) {
             disableButton(decreaseTimeButton, false);
@@ -104,8 +105,7 @@ public class MultiplayerCtrl extends GameCtrl {
         if(doublePointsJoker) {
             disableButton(doublePointsButton, false);
         }
-
-        super.submitAnswer();
+        if (!initiatedByTimer && this.evaluation == null) return;
         refresh();
     }
 }

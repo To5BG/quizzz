@@ -24,17 +24,17 @@ public class SingleplayerCtrl extends GameCtrl {
      * Submit an answer to the server and start evaluation
      */
     @Override
-    public void submitAnswer() {
-        super.submitAnswer();
+    public void submitAnswer(boolean initiatedByTimer) {
+        super.submitAnswer(initiatedByTimer);
         startEvaluation();
     }
 
     @Override
-    public void loadQuestion() {
-        super.loadQuestion();
+    public void loadAnswer() {
         if(doublePointsJoker) {
             disableButton(doublePointsButton, false);
         }
+        super.loadAnswer();
     }
     /**
      * Reverts the player to the splash screen and remove him from the current game session.
