@@ -74,7 +74,7 @@ public class MultiplayerCtrl extends GameCtrl {
                         try {
                             if (server.getSession(sessionId).sessionStatus
                                     == GameSession.SessionStatus.PAUSED) {
-                                startEvaluation();
+                                startSingleEvaluation();
                                 cancel();
                             }
                         } catch (Exception e) {

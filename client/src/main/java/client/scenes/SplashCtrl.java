@@ -112,7 +112,7 @@ public class SplashCtrl {
      * @return true if another Player with the same username exists
      */
     public boolean isDuplInRepository(String username) {
-        for(Player p : server.getAllPlayers()) {
+        for(Player p : server.getPlayerSingleScore()) {
             if(p.username.equals(username)) {
                 return true;
             }
@@ -126,7 +126,7 @@ public class SplashCtrl {
      * @return the player if it exists, null otherwise
      */
     public Player getDuplPlayer(String username) {
-        for(Player p : server.getAllPlayers()) {
+        for(Player p : server.getPlayerSingleScore()) {
             if(p.username.equals(username)) {
                 return p;
             }

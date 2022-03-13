@@ -283,12 +283,26 @@ public class ServerUtils {
 
     /**
      * Get all player object entries from the database
-     *
+     * for single mode
      * @return List of all player entries
      */
-    public List<Player> getAllPlayers() {
+    public List<Player> getPlayerSingleScore() {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/leaderboard/") //
+                .target(SERVER).path("api/leaderboard/single") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Player>>() {
+                });
+    }
+
+    /**
+     * Get all player object entries from the database
+     * for multi mode
+     * @return List of all player entries
+     */
+    public List<Player> getPlayerMultiScore() {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("api/leaderboard/multi") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Player>>() {
