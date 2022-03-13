@@ -309,7 +309,7 @@ public abstract class GameCtrl implements Initializable {
             case MULTIPLE_CHOICE:
             case COMPARISON:
             case EQUIVALENCE:
-                points += (int) (80 * this.evaluation.points * timeProgress.getProgress()) + 20;
+                points += (int) (80 * this.evaluation.points * timeProgress.getProgress()) + (20 * this.evaluation.points);
                 break;
             case RANGE_GUESS:
                 int givenAnswer;
@@ -325,7 +325,7 @@ public abstract class GameCtrl implements Initializable {
                 }
                 else {
                     if(diff > actualAnswer) diff = actualAnswer;
-                    points += (int) (80 * (1 - (double) diff/actualAnswer) * timeProgress.getProgress()) + 20;
+                    points += (int) (90 * (1 - (double) diff/actualAnswer) * timeProgress.getProgress()) + ((diff < actualAnswer) ? 10 : 0);
                 }
                 break;
             default:
