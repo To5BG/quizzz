@@ -32,6 +32,9 @@ public abstract class GameCtrl implements Initializable {
     protected Label pointsLabel;
 
     @FXML
+    protected Label countdown;
+
+    @FXML
     protected ProgressBar timeProgress;
 
     @FXML
@@ -140,6 +143,7 @@ public abstract class GameCtrl implements Initializable {
     }
 
     private void renderEstimationQuestion() {
+        this.countdown.setText("");
         this.estimationAnswer = new TextField();
         answerArea.getChildren().clear();
         answerArea.getChildren().add(estimationAnswer);
@@ -152,6 +156,7 @@ public abstract class GameCtrl implements Initializable {
      */
     protected void renderMultipleChoiceQuestion(Question q) {
         double yPosition = 0.0;
+        this.countdown.setText("Options:");
         multiChoiceAnswers.clear();
         answerArea.getChildren().clear();
         for (String opt : q.answerOptions) {
@@ -220,12 +225,44 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Loads a question and updates the timer bar
+     * Starts reading time countdown and updates label accordingly to inform the user.
+     */
+    public void countdown() {
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            int i = 5;
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    if (i < 0) {
+                        cancel();
+                        loadAnswer();
+                    }
+                    else {
+                        countdown.setText("The answer option will appear in " + i + " seconds.");
+                        i--;
+                    }
+                });
+            }
+        }, 0, 1000);
+    }
+
+    /**
+     * Loads a question and starts reading time.
      */
     public void loadQuestion() {
+        disableButton(submitButton, true);
+        this.answerArea.getChildren().clear();
         Question q = this.server.fetchOneQuestion(this.sessionId);
         this.currentQuestion = q;
         renderGeneralInformation(q);
+        countdown();
+    }
+
+    /**
+     * Loads the answers of the current question and updates the timer after reading time is over
+     */
+    public void loadAnswer() {
+        Question q = this.currentQuestion;
         renderAnswerFields(q);
 
         disableButton(removeOneButton, q.type == Question.QuestionType.RANGE_GUESS);
