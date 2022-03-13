@@ -228,18 +228,18 @@ public abstract class GameCtrl implements Initializable {
      * Starts reading time countdown and updates label accordingly to inform the user.
      */
     public void countdown() {
-        final int[] i = {5};
         new Timer().scheduleAtFixedRate(new TimerTask() {
+            int i = 5;
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    if (i[0] < 0) {
+                    if (i < 0) {
                         cancel();
                         loadAnswer();
                     }
                     else {
-                        countdown.setText("The answer option will appear in " + i[0] + " seconds.");
-                        i[0]--;
+                        countdown.setText("The answer option will appear in " + i + " seconds.");
+                        i--;
                     }
                 });
             }
