@@ -1,7 +1,13 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
-
+import commons.Player;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -13,11 +19,22 @@ public class SingleplayerCtrl extends GameCtrl {
         super(server, mainCtrl);
     }
 
+    private ObservableList<Player> data;
+
+    @FXML
+    private TableView<Player> allPlayers;
+    @FXML
+    private TableColumn<Player, String> colName;
+    @FXML
+    private TableColumn<Player, String> colPoint;
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        colName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
+        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestScore)));
     }
 
     /**
@@ -53,5 +70,14 @@ public class SingleplayerCtrl extends GameCtrl {
     public void disableSingleplayerJokers() {
         decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
+    }
+
+    /**
+     * refresh the screen to show the leaderboards
+     */
+    public void refresh() {
+        var players = server.getAllPlayers();
+        data = FXCollections.observableList(players);
+        allPlayers.setItems(data);
     }
 }
