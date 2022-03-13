@@ -149,6 +149,17 @@ public class GameSessionTest {
     }
 
     @Test
+    public void getTimeJokersTest() {
+        assertTrue(s.getTimeJokers() == 0);
+    }
+
+    @Test
+    public void setTimeJokersTest() {
+        s.setTimeJokers(2);
+        assertTrue(s.getTimeJokers() == 2);
+    }
+
+    @Test
     public void testEquals() {
         var s2 = new GameSession(GameSession.SessionType.MULTIPLAYER,
                 Stream.of(new Player("blah",0))
