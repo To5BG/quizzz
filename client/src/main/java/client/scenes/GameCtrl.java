@@ -312,12 +312,12 @@ public abstract class GameCtrl implements Initializable {
                 points += (int) (100 * this.evaluation.points * timeProgress.getProgress());
                 break;
             case RANGE_GUESS:
-                int givenAnswer = 0;
+                int givenAnswer;
                 int actualAnswer = this.evaluation.correctAnswers.get(0);
                 try {
                     givenAnswer = Integer.parseInt(estimationAnswer.getText());
                 } catch (NumberFormatException ex) {
-                    givenAnswer = actualAnswer;
+                    givenAnswer = 0;
                 }
                 int diff = Math.abs(givenAnswer - actualAnswer);
                 if(diff == 0) {
@@ -327,6 +327,9 @@ public abstract class GameCtrl implements Initializable {
                     if(diff > actualAnswer) diff = actualAnswer;
                     points += (int) (100 * (1 - (double) diff/actualAnswer) * timeProgress.getProgress());
                 }
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported question type when parsing answer");
         }
         renderPoints();
         server.updateScore(playerId, points, false);
