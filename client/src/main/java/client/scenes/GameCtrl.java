@@ -358,11 +358,12 @@ public abstract class GameCtrl implements Initializable {
                 }
                 int diff = Math.abs(givenAnswer - actualAnswer);
                 if(diff == 0) {
-                    points += (int) (80 * this.evaluation.points * timeProgress.getProgress()) + 20;
+                    points += (int) (60 * this.evaluation.points * timeProgress.getProgress()) + 40;
                 }
                 else {
                     if(diff > actualAnswer) diff = actualAnswer;
-                    points += (int) (90 * (1 - (double) diff/actualAnswer) * timeProgress.getProgress()) + ((diff < actualAnswer) ? 10 : 0);
+                    points += (int) (90 * (1 - (double) diff/actualAnswer) * timeProgress.getProgress()) +
+                            ((diff < actualAnswer) ? 10 * (1 - (double) diff/actualAnswer) : 0);
                 }
                 break;
             default:
