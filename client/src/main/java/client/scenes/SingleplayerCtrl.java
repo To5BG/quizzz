@@ -30,6 +30,16 @@ public class SingleplayerCtrl extends GameCtrl {
     }
 
     /**
+     * Enables the doublePoints joker if still available and calls the overridden method
+     */
+    @Override
+    public void loadAnswer() {
+        if(doublePointsJoker) {
+            disableButton(doublePointsButton, false);
+        }
+        super.loadAnswer();
+    }
+    /**
      * Reverts the player to the splash screen and remove him from the current game session.
      */
     @Override
@@ -41,6 +51,7 @@ public class SingleplayerCtrl extends GameCtrl {
      * Disable the jokers that do not work for single-player
      */
     public void disableSingleplayerJokers() {
+        decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
     }
 }

@@ -18,7 +18,7 @@ public abstract class GameCtrl implements Initializable {
 
     protected final int GAME_ROUNDS = 5;
     protected final int GAME_ROUND_TIME = 10;
-    protected final int MIDGAME_BREAK_TIME = 10;
+    protected final int MIDGAME_BREAK_TIME = 6;
     protected final int TIMER_UPDATE_INTERVAL_MS = 50;
     protected final int GAME_ROUND_DELAY = 2;
 
@@ -75,13 +75,22 @@ public abstract class GameCtrl implements Initializable {
     protected Thread timerThread;
     protected Evaluation evaluation;
 
-    private boolean doublePointsJoker;
+    protected boolean doublePointsJoker;
+    protected boolean doublePointsActive;
+    protected boolean decreaseTimeJoker;
+    protected boolean removeOneJoker;
+
 
     public GameCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.multiChoiceAnswers = new ArrayList<RadioButton>();
-        this.doublePointsJoker = false;
+
+        doublePointsJoker = true;
+        doublePointsActive = false;
+        decreaseTimeJoker = true;
+        removeOneJoker = true;
+
         // Set to defaults
         this.sessionId = 0L;
         this.playerId = 0L;
@@ -133,6 +142,9 @@ public abstract class GameCtrl implements Initializable {
             case COMPARISON:
             case EQUIVALENCE:
                 renderMultipleChoiceQuestion(q);
+                if (removeOneJoker) {
+                    disableButton(removeOneButton, false);
+                }
                 break;
             case RANGE_GUESS:
                 renderEstimationQuestion();
@@ -230,14 +242,14 @@ public abstract class GameCtrl implements Initializable {
     public void countdown() {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             int i = 5;
+
             @Override
             public void run() {
                 Platform.runLater(() -> {
                     if (i < 0) {
                         cancel();
                         loadAnswer();
-                    }
-                    else {
+                    } else {
                         countdown.setText("The answer option will appear in " + i + " seconds.");
                         i--;
                     }
@@ -250,8 +262,12 @@ public abstract class GameCtrl implements Initializable {
      * Loads a question and starts reading time.
      */
     public void loadQuestion() {
+        disableButton(removeOneButton, true);
+        disableButton(doublePointsButton, true);
+        disableButton(decreaseTimeButton, true);
         disableButton(submitButton, true);
         this.answerArea.getChildren().clear();
+
         Question q = this.server.fetchOneQuestion(this.sessionId);
         this.currentQuestion = q;
         renderGeneralInformation(q);
@@ -265,7 +281,9 @@ public abstract class GameCtrl implements Initializable {
         Question q = this.currentQuestion;
         renderAnswerFields(q);
 
-        disableButton(removeOneButton, q.type == Question.QuestionType.RANGE_GUESS);
+        if(removeOneJoker) {
+            disableButton(removeOneButton, q.type == Question.QuestionType.RANGE_GUESS);
+        }
 
         disableButton(submitButton, false);
 
@@ -274,11 +292,15 @@ public abstract class GameCtrl implements Initializable {
             public Object call() {
                 long refreshCounter = 0;
                 long gameRoundMs = GAME_ROUND_TIME * 1000;
-                while (refreshCounter * TIMER_UPDATE_INTERVAL_MS < gameRoundMs) {
-                    updateProgress(gameRoundMs - refreshCounter * TIMER_UPDATE_INTERVAL_MS, gameRoundMs);
-                    ++refreshCounter;
+                long timeElapsed = 0;
+                while (timeElapsed < gameRoundMs) {
+                    //the speed on which the timer updates, with default speed 1
+                    long booster = getTimeJokers() + 1;
+                    updateProgress(gameRoundMs - timeElapsed, gameRoundMs);
+                    refreshCounter += booster;
                     try {
                         Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
+                        timeElapsed = refreshCounter * TIMER_UPDATE_INTERVAL_MS;
                     } catch (InterruptedException e) {
                         updateProgress(0, 1);
                         return null;
@@ -323,6 +345,13 @@ public abstract class GameCtrl implements Initializable {
         this.points = 0;
         this.rounds = 0;
         this.currentQuestion = null;
+
+        //re-enable jokers
+        doublePointsJoker = true;
+        doublePointsActive = false;
+        decreaseTimeJoker = true;
+        removeOneJoker = true;
+
         disableButton(submitButton, true);
         mainCtrl.showSplash();
     }
@@ -342,33 +371,11 @@ public abstract class GameCtrl implements Initializable {
      * Updates the point counter in client side, and then updates database entry
      */
     public void updatePoints() {
-        switch(this.evaluation.type) {
-            case MULTIPLE_CHOICE:
-            case COMPARISON:
-            case EQUIVALENCE:
-                points += (int) (80 * this.evaluation.points * timeProgress.getProgress()) +
-                        (20 * this.evaluation.points);
-                break;
-            case RANGE_GUESS:
-                int givenAnswer;
-                int actualAnswer = this.evaluation.correctAnswers.get(0);
-                try {
-                    givenAnswer = Integer.parseInt(estimationAnswer.getText());
-                } catch (NumberFormatException ex) {
-                    givenAnswer = 0;
-                }
-                int diff = Math.abs(givenAnswer - actualAnswer);
-                if(diff == 0) {
-                    points += (int) (60 * this.evaluation.points * timeProgress.getProgress()) + 40;
-                }
-                else {
-                    if(diff > actualAnswer) diff = actualAnswer;
-                    points += (int) (90 * (1 - (double) diff/actualAnswer) * timeProgress.getProgress()) +
-                            ((diff < actualAnswer) ? 10 * (1 - (double) diff/actualAnswer) : 0);
-                }
-                break;
-            default:
-                throw new UnsupportedOperationException("Unsupported question type when parsing answer");
+        if (doublePointsActive) {
+            points = points + 2 * this.evaluation.points;
+            switchStatusOfDoublePoints();
+        } else {
+            points += this.evaluation.points;
         }
         renderPoints();
         server.updateScore(playerId, points, false);
@@ -428,8 +435,10 @@ public abstract class GameCtrl implements Initializable {
 
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
         disableButton(submitButton, true);
+        disableButton(removeOneButton, true);
 
         this.evaluation = server.submitAnswer(sessionId, ans);
+
         server.toggleReady(sessionId, true);
 
         var session = server.getSession(sessionId);
@@ -445,6 +454,10 @@ public abstract class GameCtrl implements Initializable {
 
         if (this.evaluation == null) return;
 
+        disableButton(removeOneButton, true);
+        disableButton(decreaseTimeButton, true);
+        disableButton(doublePointsButton, true);
+
         updatePoints();
         renderCorrectAnswer();
 
@@ -456,6 +469,7 @@ public abstract class GameCtrl implements Initializable {
             public void run() {
                 Platform.runLater(() -> {
                     rounds++;
+                    resetTimeJokers();
                     if (rounds == GAME_ROUNDS) {
                         // TODO display leaderboard things here
                         if (points > bestScore) server.updateScore(playerId, points, true);
@@ -488,6 +502,9 @@ public abstract class GameCtrl implements Initializable {
         leaderboard.setItems(data);
         answerArea.setOpacity(0);
         submitButton.setOpacity(0);
+        removeOneButton.setOpacity(0);
+        doublePointsButton.setOpacity(0);
+        decreaseTimeButton.setOpacity(0);
         questionPrompt.setOpacity(0);
         leaderboard.setOpacity(1);
 
@@ -526,6 +543,9 @@ public abstract class GameCtrl implements Initializable {
                     answerArea.setOpacity(1);
                     questionPrompt.setOpacity(1);
                     submitButton.setOpacity(1);
+                    removeOneButton.setOpacity(1);
+                    doublePointsButton.setOpacity(1);
+                    decreaseTimeButton.setOpacity(1);
                     loadQuestion();
                 });
             }
@@ -540,6 +560,8 @@ public abstract class GameCtrl implements Initializable {
      */
     public void disableButton(Button button, boolean disable) {
         if (button == null) return;
+        if (disable) button.setOpacity(0.5);
+        if (!disable) button.setOpacity(1);
         button.setDisable(disable);
     }
 
@@ -548,10 +570,13 @@ public abstract class GameCtrl implements Initializable {
      * When this joker is used it removes one incorrect answer from the answers list for the player that used it
      */
     public void removeOneAnswer() {
+        removeOneJoker = false;
         disableButton(removeOneButton, true);
 
         switch (currentQuestion.type) {
-            case MULTIPLE_CHOICE -> {
+            case COMPARISON:
+            case EQUIVALENCE:
+            case MULTIPLE_CHOICE:
                 List<Integer> incorrectAnswers = new ArrayList<>();
                 List<Integer> correctAnswers = server.getCorrectAnswers(sessionId);
                 for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
@@ -560,22 +585,43 @@ public abstract class GameCtrl implements Initializable {
                     }
                 }
                 int randomIndex = new Random().nextInt(incorrectAnswers.size());
-                multiChoiceAnswers.get(incorrectAnswers.get(randomIndex)).setDisable(true);
-            }
-            default -> disableButton(removeOneButton, false);
+                RadioButton button = multiChoiceAnswers.get(incorrectAnswers.get(randomIndex));
+                if(button.isSelected()) {
+                    button.setSelected(false);
+                }
+                button.setDisable(true);
+                break;
+            default:
+                disableButton(removeOneButton, false);
         }
+    }
 
 
+    /**
+     * Get number of time Jokers for the current session
+     * @return int representing number of time jokers
+     */
+    public int getTimeJokers() {
+        return server.getSession(sessionId).getTimeJokers();
     }
 
     /**
+     * Reset the number of time Jokers for the current session to default value
+     */
+    public void resetTimeJokers() {
+        if(getTimeJokers() != 0) {
+            server.updateTimeJokers(sessionId, 0);
+        }
+    }
+    /**
      * Decrease Time Joker
-     * When this joker is used, it decreases the time by a set percentage
+     * When this joker is used, the timer speeds up
      * This joker can not be used in single-player
      */
     public void decreaseTime() {
+        decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
-        //TODO Add functionality to button when multiplayer is functional
+        server.updateTimeJokers(sessionId, getTimeJokers() + 1);
     }
 
     /**
@@ -583,24 +629,16 @@ public abstract class GameCtrl implements Initializable {
      * When this joker is used, it doubles the points gained for the question when it was used.
      */
     public void doublePoints() {
+        doublePointsJoker = false;
         disableButton(doublePointsButton, true);
         switchStatusOfDoublePoints();
-    }
-
-    /**
-     * Check if the doublePointsJoker is active for this question
-     *
-     * @return true if the joker is active
-     */
-    private boolean doublePointsIsActive() {
-        return doublePointsJoker;
     }
 
     /**
      * Switch the doublePointsJoker status from true to false and from false to true
      */
     private void switchStatusOfDoublePoints() {
-        doublePointsJoker = !doublePointsJoker;
+        doublePointsActive = !doublePointsActive;
     }
 
 }
