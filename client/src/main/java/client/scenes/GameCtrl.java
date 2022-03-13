@@ -143,6 +143,7 @@ public abstract class GameCtrl implements Initializable {
     }
 
     private void renderEstimationQuestion() {
+        this.countdown.setText("");
         this.estimationAnswer = new TextField();
         answerArea.getChildren().clear();
         answerArea.getChildren().add(estimationAnswer);
@@ -155,6 +156,7 @@ public abstract class GameCtrl implements Initializable {
      */
     protected void renderMultipleChoiceQuestion(Question q) {
         double yPosition = 0.0;
+        this.countdown.setText("Options:");
         multiChoiceAnswers.clear();
         answerArea.getChildren().clear();
         for (String opt : q.answerOptions) {
@@ -236,7 +238,7 @@ public abstract class GameCtrl implements Initializable {
                         loadAnswer();
                     }
                     else {
-                        countdown.setText("The options will appear in " + i[0] + " seconds.");
+                        countdown.setText("The answer option will appear in " + i[0] + " seconds.");
                         i[0]--;
                     }
                 });
@@ -260,7 +262,6 @@ public abstract class GameCtrl implements Initializable {
      * Loads the answers of the current question and updates the timer after reading time is over
      */
     public void loadAnswer() {
-        this.countdown.setText("Options:");
         Question q = this.currentQuestion;
         renderAnswerFields(q);
 
