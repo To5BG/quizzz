@@ -37,7 +37,7 @@ public class QuestionTest {
     @Test
     public void testAddAnswerOptionBad() {
         Question q = new Question("Question 1", "test.png",
-                Question.QuestionType.TRUE_FALSE);
+                Question.QuestionType.RANGE_GUESS);
 
         assertThrows(UnsupportedOperationException.class, () -> q.addAnswerOption("opt1"));
         assertSame(0, q.answerOptions.size());
@@ -46,9 +46,9 @@ public class QuestionTest {
     @Test
     public void testEquals() {
         Question q1 = new Question("Question 1", "test.png",
-                Question.QuestionType.TRUE_FALSE);
+                Question.QuestionType.RANGE_GUESS);
         Question q2 = new Question("Question 1", "test.png",
-                Question.QuestionType.TRUE_FALSE);
+                Question.QuestionType.RANGE_GUESS);
         Question q3 = new Question("Question 2", "other.png",
                 Question.QuestionType.MULTIPLE_CHOICE);
 
@@ -60,9 +60,9 @@ public class QuestionTest {
     @Test
     public void testHashCode() {
         Question q1 = new Question("Question 1", "test.png",
-                Question.QuestionType.TRUE_FALSE);
+                Question.QuestionType.RANGE_GUESS);
         Question q2 = new Question("Question 1", "test.png",
-                Question.QuestionType.TRUE_FALSE);
+                Question.QuestionType.RANGE_GUESS);
 
         assertEquals(q1.hashCode(), q1.hashCode());
         assertEquals(q1.hashCode(), q2.hashCode());
@@ -71,13 +71,13 @@ public class QuestionTest {
     @Test
     public void testToString() {
         Question q1 = new Question("Question 1", "test.png",
-                Question.QuestionType.TRUE_FALSE);
+                Question.QuestionType.RANGE_GUESS);
         String result = q1.toString();
 
         assertTrue(result.contains(Question.class.getSimpleName()));
         assertTrue(result.contains("prompt=Question 1"));
         assertTrue(result.contains("imagePath=test.png"));
-        assertTrue(result.contains("type=TRUE_FALSE"));
+        assertTrue(result.contains("type=RANGE_GUESS"));
         assertTrue(result.contains("id=0"));
         assertTrue(result.contains("answerOptions=[]"));
     }

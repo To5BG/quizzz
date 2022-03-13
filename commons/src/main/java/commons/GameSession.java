@@ -3,11 +3,11 @@ package commons;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
@@ -29,6 +29,7 @@ public class GameSession {
 
     public int playersReady;
     public int questionCounter;
+    public int timeJokers;
 
     public SessionType sessionType;
     public enum SessionType {
@@ -47,7 +48,7 @@ public class GameSession {
     }
 
     @SuppressWarnings("unused")
-    private GameSession() {
+    public GameSession() {
         // for object mapper
     }
 
@@ -64,7 +65,8 @@ public class GameSession {
         this.sessionType = sessionType;
         this.expectedAnswers = expectedAnswers;
         this.playersReady = 0;
-        this.questionCounter = 1;
+        this.questionCounter = 0;
+        this.timeJokers = 0;
 
         this.sessionStatus = SessionStatus.STARTED;
         if (sessionType == SessionType.WAITING_AREA) this.sessionStatus = SessionStatus.WAITING_AREA;
@@ -121,19 +123,29 @@ public class GameSession {
      * Updates the question of the game session
      */
     public void updateQuestion() {
-        Question q = new Question(
-                "Question #" + questionCounter++,
-                "N/A",
-                Question.QuestionType.MULTIPLE_CHOICE
-        );
-        for (int i = 0; i < 3; ++i) {
-            q.addAnswerOption(String.format("Option #%d", i));
-        }
+        ++questionCounter;
+        Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion();
+        this.currentQuestion = res.getKey();
         System.out.println("Question updated to:");
-        System.out.println(q);
-        this.currentQuestion = q;
+        System.out.println(this.currentQuestion);
         this.expectedAnswers.clear();
-        this.expectedAnswers.add(new Random().nextInt(3));
+        this.expectedAnswers.addAll(res.getValue());
+    }
+
+    /**
+     * Get the number of time jokers used in this round
+     * @return int representing the number of time jokers
+     */
+    public int getTimeJokers() {
+        return this.timeJokers;
+    }
+
+    /**
+     * Set the timeJoker to a new value
+     * @param timeJokers - the new value for time Joker
+     */
+    public void setTimeJokers(int timeJokers) {
+        this.timeJokers = timeJokers;
     }
 
     /**

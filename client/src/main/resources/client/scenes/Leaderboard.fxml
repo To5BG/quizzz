@@ -24,8 +24,8 @@
             </font>
         </Label>
         <Button layoutX="526.0" layoutY="361.0" mnemonicParsing="false" onAction="#back" text="BACK" />
-      <Button fx:id="singleLeaderboard" layoutX="524.0" layoutY="125.0" mnemonicParsing="false" text="Single" />
-      <Button fx:id="multiLeaderboard" layoutX="524.0" layoutY="175.0" mnemonicParsing="false" text="Multi-" />
-      <Button fx:id="elseLeaderboard" layoutX="524.0" layoutY="224.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="51.0" text="Else" />
+        <Button fx:id="singleLeaderboard" layoutX="524.0" layoutY="125.0" mnemonicParsing="false" onAction="#showSingleLeaderBoard" text="Single" />
+        <Button fx:id="multiLeaderboard" layoutX="524.0" layoutY="175.0" mnemonicParsing="false" onAction="#showMultiLeaderboard" text="Multi-" />
+        <Button fx:id="elseLeaderboard" layoutX="524.0" layoutY="224.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="51.0" text="Else" />
     </children>
 </AnchorPane>

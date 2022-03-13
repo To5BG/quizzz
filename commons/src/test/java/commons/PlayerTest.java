@@ -17,9 +17,19 @@ package commons;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerTest {
+
+	@Test
+	public void checkEmptyConstructor() {
+		Player p = new Player();
+		assertSame(0, p.currentPoints);
+		assertNull(p.username);
+		assertNull(p.ans);
+	}
 
 	@Test
 	public void checkConstructor() {
@@ -28,10 +38,17 @@ public class PlayerTest {
 	}
 
 	@Test
-	public void testSetPoint() {
+	public void testSetCurrentPoint() {
 		var p = new Player("abc", 0);
-		p.setPoint(8);
-		assertEquals(8, p.point);
+		p.setCurrentPoints(8);
+		assertEquals(8, p.currentPoints);
+	}
+
+	@Test
+	public void testSetBestPoint() {
+		var p = new Player("abc", 0);
+		p.setBestSingleScore(8);
+		assertEquals(8, p.bestSingleScore);
 	}
 
 	@Test
@@ -57,5 +74,30 @@ public class PlayerTest {
 		assertTrue(str.contains("\n"));
 		assertTrue(str.contains("username"));
 		assertTrue(str.contains("0"));
+	}
+
+	@Test
+	public void setAnswerTest() {
+		Player p = new Player("test", 0);
+		Answer a = new Answer(List.of(1, 2, 3), Question.QuestionType.MULTIPLE_CHOICE);
+		p.setAnswer(a);
+		String expected = "[\n  answers=[1, 2, 3]\n  type=MULTIPLE_CHOICE\n]";
+		assertEquals(expected, p.ans);
+	}
+
+	@Test
+	public void parseAnswerTest() {
+		Player p = new Player("test", 0);
+		Answer a = new Answer(List.of(1, 2, 3), Question.QuestionType.MULTIPLE_CHOICE);
+		p.setAnswer(a);
+		assertEquals(a, p.parsedAnswer());
+
+		Answer b = new Answer(List.of(1), Question.QuestionType.UNKNOWN);
+		p.setAnswer(b);
+		assertEquals(b, p.parsedAnswer());
+
+		Answer c = new Answer(List.of(), Question.QuestionType.UNKNOWN);
+		p.setAnswer(c);
+		assertEquals(c, p.parsedAnswer());
 	}
 }
