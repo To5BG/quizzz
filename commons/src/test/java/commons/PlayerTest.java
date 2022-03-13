@@ -47,8 +47,8 @@ public class PlayerTest {
 	@Test
 	public void testSetBestPoint() {
 		var p = new Player("abc", 0);
-		p.setBestPoints(8);
-		assertEquals(8, p.bestScore);
+		p.setBestSingleScore(8);
+		assertEquals(8, p.bestSingleScore);
 	}
 
 	@Test
