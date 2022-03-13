@@ -346,7 +346,8 @@ public abstract class GameCtrl implements Initializable {
             case MULTIPLE_CHOICE:
             case COMPARISON:
             case EQUIVALENCE:
-                points += (int) (80 * this.evaluation.points * timeProgress.getProgress()) + (20 * this.evaluation.points);
+                points += (int) (80 * this.evaluation.points * timeProgress.getProgress()) +
+                        (20 * this.evaluation.points);
                 break;
             case RANGE_GUESS:
                 int givenAnswer;
