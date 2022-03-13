@@ -118,11 +118,11 @@ public class GameSessionTest {
 
     @Test
     public void testUpdateQuestion() {
+        Question previousQuestion = s.currentQuestion;
         s.updateQuestion();
-        assertSame(1, s.expectedAnswers.size());
         assertSame(1, s.questionCounter);
         assertNotNull(s.currentQuestion);
-        assertEquals("Question #1", s.currentQuestion.prompt);
+        assertNotSame(previousQuestion, s.currentQuestion);
     }
 
     @Test
@@ -144,10 +144,8 @@ public class GameSessionTest {
         s.setPlayerReady();
         assertSame(2, s.questionCounter);
         assertSame(1, s.playersReady);
-        assertSame(1, s.expectedAnswers.size());
         assertNotNull(s.currentQuestion);
-        assertNotEquals(tmp, s.currentQuestion);
-        assertEquals("Question #2", s.currentQuestion.prompt);
+        assertNotSame(tmp, s.currentQuestion);
     }
 
     @Test

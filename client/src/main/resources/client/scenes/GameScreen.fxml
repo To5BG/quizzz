@@ -11,17 +11,22 @@
     <children>
         <Label fx:id="questionPrompt" layoutX="14.0" layoutY="14.0" text="[Question]" />
         <StackPane fx:id="answerArea" layoutX="14.0" layoutY="61.0" prefHeight="156.0" prefWidth="407.0" />
-        <Button fx:id="submitButton" layoutX="361.0" layoutY="248.0" mnemonicParsing="false" onAction="#submitAnswer" text="Final Answer" />
+        <Button fx:id="submitButton" layoutX="361.0" layoutY="248.0" mnemonicParsing="false" onAction="#submitAnswerButton"
+                text="Final Answer" />
         <Label fx:id="pointsLabel" layoutX="492.0" layoutY="14.0" text="Points: 0" />
-        <ProgressBar fx:id="timeProgress" layoutX="18.0" layoutY="248.0" prefHeight="20.0" prefWidth="321.0" progress="0.0" />
+        <ProgressBar fx:id="timeProgress" layoutX="18.0" layoutY="248.0" prefHeight="20.0" prefWidth="321.0"
+                     progress="0.0" />
         <Button layoutX="521.0" layoutY="355.0" mnemonicParsing="false" onAction="#back" text="Go Back" />
-        <Button fx:id="removeOneButton" layoutX="29.0" layoutY="323.0" mnemonicParsing="false" onAction="#removeOneAnswer" prefHeight="26.0" prefWidth="103.0" text="Remove One Answer">
+        <Button fx:id="removeOneButton" layoutX="29.0" layoutY="323.0" mnemonicParsing="false"
+                onAction="#removeOneAnswer" prefHeight="26.0" prefWidth="103.0" text="Remove One Answer">
             <font>
-                <Font size="9.0" />
+                <Font size="9.0"/>
             </font>
         </Button>
-        <Button fx:id="decreaseTimeButton" layoutX="189.0" layoutY="323.0" mnemonicParsing="false" onAction="#decreaseTime" prefHeight="26.0" prefWidth="103.0" text="Decrease Time" />
-        <Button fx:id="doublePointsButton" layoutX="340.0" layoutY="323.0" mnemonicParsing="false" onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points" />
+        <Button fx:id="decreaseTimeButton" layoutX="189.0" layoutY="323.0" mnemonicParsing="false"
+                onAction="#decreaseTime" prefHeight="26.0" prefWidth="103.0" text="Decrease Time" />
+        <Button fx:id="doublePointsButton" layoutX="340.0" layoutY="323.0" mnemonicParsing="false"
+                onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points" />
       <Label fx:id="countdown" layoutX="16.0" layoutY="44.0" text="Options:" />
     </children>
 </AnchorPane>

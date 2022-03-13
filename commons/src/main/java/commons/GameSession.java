@@ -3,11 +3,11 @@ package commons;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
@@ -121,19 +121,13 @@ public class GameSession {
      * Updates the question of the game session
      */
     public void updateQuestion() {
-        Question q = new Question(
-                "Question #" + ++questionCounter,
-                "N/A",
-                Question.QuestionType.MULTIPLE_CHOICE
-        );
-        for (int i = 0; i < 3; ++i) {
-            q.addAnswerOption(String.format("Option #%d", i));
-        }
+        ++questionCounter;
+        Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion();
+        this.currentQuestion = res.getKey();
         System.out.println("Question updated to:");
-        System.out.println(q);
-        this.currentQuestion = q;
+        System.out.println(this.currentQuestion);
         this.expectedAnswers.clear();
-        this.expectedAnswers.add(new Random().nextInt(3));
+        this.expectedAnswers.addAll(res.getValue());
     }
 
     /**

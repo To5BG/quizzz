@@ -35,7 +35,7 @@ public class AnswerTest {
         ans1.addAnswer(1);
         Answer ans2 = new Answer(Question.QuestionType.MULTIPLE_CHOICE);
         ans2.addAnswer(1);
-        Answer ans3 = new Answer(Question.QuestionType.TRUE_FALSE);
+        Answer ans3 = new Answer(Question.QuestionType.RANGE_GUESS);
 
         assertEquals(ans1, ans1);
         assertEquals(ans1, ans2);
