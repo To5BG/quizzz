@@ -13,6 +13,7 @@
             fx:controller="client.scenes.MultiplayerCtrl">
     <children>
         <Label fx:id="questionPrompt" layoutX="14.0" layoutY="14.0" text="[Question]"/>
+        <Label fx:id="countdown" layoutX="16.0" layoutY="44.0" text="Options:" />
         <TableView fx:id="leaderboard" layoutX="14.0" layoutY="40.0" opacity="0.0" prefHeight="198.0" prefWidth="432.0">
             <columns>
                 <TableColumn fx:id="colRank" prefWidth="35.0" text="rank"/>
@@ -20,7 +21,7 @@
                 <TableColumn fx:id="colPoints" prefWidth="61.0" text="points"/>
             </columns>
         </TableView>
-        <StackPane fx:id="answerArea" layoutX="14.0" layoutY="40.0" prefHeight="177.0" prefWidth="407.0"/>
+        <StackPane fx:id="answerArea" layoutX="14.0" layoutY="61.0" prefHeight="156.0" prefWidth="407.0"/>
         <Button fx:id="submitButton" layoutX="361.0" layoutY="248.0" mnemonicParsing="false" onAction="#submitAnswerButton"
                 text="Final Answer"/>
         <Label fx:id="pointsLabel" layoutX="492.0" layoutY="14.0" text="Points: 0"/>
