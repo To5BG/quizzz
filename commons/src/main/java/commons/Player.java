@@ -20,7 +20,8 @@ public class Player {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     public long id;
     public int currentPoints;
-    public int bestScore;
+    public int bestSingleScore;
+    public int bestMultiScore;
 
     /*
     @ManyToOne
@@ -38,7 +39,8 @@ public class Player {
 
     public Player(String username, int point) {
         this.username = username;
-        this.bestScore = point;
+        this.bestSingleScore = point;
+        this.bestMultiScore = point;
         this.currentPoints = 0;
     }
 
@@ -52,21 +54,34 @@ public class Player {
     }
 
     /**
-     * Sets the player's best point total to the value in parameter
-     *
-     * @param points points to set to the player
+     * A setter for the bestSingleScore
+     * @param points the point which is the best single score
      */
-    public void setBestPoints(int points) {
-        this.bestScore = points;
+    public void setBestSingleScore(int points) {
+        this.bestSingleScore = points;
     }
 
     /**
-     * Getter method for bestScore
-     *
-     * @return autoboxed best score of player
+     * A setter for the bestMultiScore
+     * @param points the point which is the best multiMode score
      */
-    public Integer getBestScore() {
-        return this.bestScore;
+    public void setBestMultiScore(int points) {
+        this.bestMultiScore = points;
+    }
+
+    /**
+     * Getter for best single score
+     */
+    public Integer getBestSingleScore() {
+        return this.bestSingleScore;
+    }
+
+    /**
+     * Getter for best multiMode score
+     * @return
+     */
+    public Integer getBestMultiScore() {
+        return this.bestMultiScore;
     }
 
     /**
