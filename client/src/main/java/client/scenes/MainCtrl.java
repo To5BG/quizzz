@@ -153,6 +153,7 @@ public class MainCtrl {
         singlePlayerCtrl.setBestScore();
         singlePlayerCtrl.disableSingleplayerJokers();
         singlePlayerCtrl.loadQuestion();
+        singlePlayerCtrl.refresh();
     }
 
     /**
