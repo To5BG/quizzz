@@ -29,6 +29,9 @@ public class SingleplayerCtrl extends GameCtrl {
         startEvaluation();
     }
 
+    /**
+     * Enables the doublePoints joker if still available and calls the overridden method
+     */
     @Override
     public void loadAnswer() {
         if(doublePointsJoker) {

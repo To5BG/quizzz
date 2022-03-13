@@ -583,7 +583,11 @@ public abstract class GameCtrl implements Initializable {
                     }
                 }
                 int randomIndex = new Random().nextInt(incorrectAnswers.size());
-                multiChoiceAnswers.get(incorrectAnswers.get(randomIndex)).setDisable(true);
+                RadioButton button = multiChoiceAnswers.get(incorrectAnswers.get(randomIndex));
+                if(button.isSelected()) {
+                    button.setSelected(false);
+                }
+                button.setDisable(true);
                 break;
             default:
                 disableButton(removeOneButton, false);
