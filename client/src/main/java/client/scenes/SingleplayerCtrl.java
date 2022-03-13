@@ -34,7 +34,7 @@ public class SingleplayerCtrl extends GameCtrl {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         colName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
-        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestScore)));
+        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
     }
 
     /**
@@ -76,7 +76,7 @@ public class SingleplayerCtrl extends GameCtrl {
      * refresh the screen to show the leaderboards
      */
     public void refresh() {
-        var players = server.getAllPlayers();
+        var players = server.getPlayerSingleScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
     }
