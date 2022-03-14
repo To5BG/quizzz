@@ -73,6 +73,7 @@ public abstract class GameCtrl implements Initializable {
     protected int bestSingleScore = 0;
     protected int bestMultiScore = 0;
     protected int rounds = 0;
+    protected double timeFactor;
     protected Thread timerThread;
     protected Evaluation evaluation;
 
@@ -309,6 +310,7 @@ public abstract class GameCtrl implements Initializable {
                     try {
                         Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
                         timeElapsed = refreshCounter * TIMER_UPDATE_INTERVAL_MS;
+                        timeFactor = timeProgress.getProgress();
                     } catch (InterruptedException e) {
                         updateProgress(0, 1);
                         return null;
@@ -384,8 +386,8 @@ public abstract class GameCtrl implements Initializable {
             case MULTIPLE_CHOICE:
             case COMPARISON:
             case EQUIVALENCE:
-                temppoints = (int) (80 * this.evaluation.points * timeProgress.getProgress()) +
-                        (20 * this.evaluation.points);
+                temppoints = (int) ((80 * this.evaluation.points * timeFactor) +
+                        (20 * this.evaluation.points));
                 break;
             case RANGE_GUESS:
                 int givenAnswer;
@@ -397,11 +399,11 @@ public abstract class GameCtrl implements Initializable {
                 }
                 int diff = Math.abs(givenAnswer - actualAnswer);
                 if(diff == 0) {
-                    temppoints = (int) (60 * this.evaluation.points * timeProgress.getProgress()) + 40;
+                    temppoints = (int) (60 * this.evaluation.points * timeFactor) + 40;
                 }
                 else {
                     if(diff > actualAnswer) diff = actualAnswer;
-                    temppoints = (int) ((90 * (1 - (double) diff/actualAnswer) * timeProgress.getProgress()) +
+                    temppoints = (int) ((90 * (1 - (double) diff/actualAnswer) * timeFactor) +
                             ((diff < actualAnswer) ? 10 * (1 - (double) diff/actualAnswer) : 0));
                 }
                 break;
