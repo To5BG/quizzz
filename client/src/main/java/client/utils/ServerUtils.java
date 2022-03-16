@@ -17,7 +17,10 @@ package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import java.lang.reflect.Type;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 import commons.*;
 import org.glassfish.jersey.client.ClientConfig;
@@ -25,6 +28,13 @@ import org.glassfish.jersey.client.ClientConfig;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.stomp.StompFrameHandler;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 public class ServerUtils {
 
@@ -353,5 +363,62 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(player, APPLICATION_JSON), Player.class);
+    }
+
+    /*-----------------------------------------------------------------------------------------*/
+    /*----------------------------- PLAYER INTERACTION AND WEBSOCKET --------------------------*/
+    /*-----------------------------------------------------------------------------------------*/
+    private StompSession websocketServer = connect("ws://localhost:8080/websocket");
+
+    /**
+     * Create a new websocket connection
+     * @param destination URL where a protocol switch to websocket can happen
+     * @return The established StompSession
+     */
+    private StompSession connect(String destination) {
+        var client = new StandardWebSocketClient();
+        var stomp = new WebSocketStompClient(client);
+
+        // Setup magic passing of objects through the network
+        stomp.setMessageConverter(new MappingJackson2MessageConverter());
+
+        try {
+            return stomp.connect(destination, new StompSessionHandlerAdapter() { }).get();
+        } catch (InterruptedException e) {
+            System.err.println("Websocket connection timed out");
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        throw new IllegalStateException("Failed to connect to websocket server");
+    }
+
+    /**
+     * Listen for updates regarding emojis from other players
+     * @param handler The function to call with the emoji sent to the session
+     * @param sessionId The ID of the session in which to listen for emojis
+     */
+    public void registerForEmojiUpdates(Consumer<Emoji> handler, long sessionId) {
+        websocketServer.subscribe("/updates/emoji/" + sessionId, new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return Emoji.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                handler.accept((Emoji) payload);
+            }
+        });
+    }
+
+    /**
+     * Send an emoji to a given session
+     * @param sessionId The ID of the session where the emoji is sent to
+     * @param username The username of the player sending the emoji
+     * @param emoji The type of emoji to send
+     */
+    public void sendEmoji(long sessionId, String username, Emoji.EmojiType emoji) {
+        websocketServer.send("/app/emoji/" + sessionId + "/send", new Emoji(username, emoji));
     }
 }

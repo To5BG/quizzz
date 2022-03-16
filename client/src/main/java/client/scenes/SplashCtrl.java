@@ -17,6 +17,7 @@ package client.scenes;
 
 import com.google.inject.Inject;
 import client.utils.ServerUtils;
+import commons.Emoji;
 import commons.GameSession;
 import commons.Player;
 import javafx.fxml.FXML;
@@ -43,6 +44,13 @@ public class SplashCtrl {
     public SplashCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+        websocketTest();
+    }
+
+    public void websocketTest() {
+        server.registerForEmojiUpdates(System.out::println, 42L);
+        server.sendEmoji(42L, "test", Emoji.EmojiType.FUNNY);
+        server.sendEmoji(43L, "test", Emoji.EmojiType.ANGRY);
     }
 
     /*
