@@ -151,7 +151,6 @@ public class MainCtrl {
         singlePlayerCtrl.setSessionId(sessionId);
         singlePlayerCtrl.setPlayerId(playerId);
         singlePlayerCtrl.setBestSingleScore();
-        singlePlayerCtrl.disableSingleplayerJokers();
         singlePlayerCtrl.loadQuestion();
         singlePlayerCtrl.refresh();
     }
