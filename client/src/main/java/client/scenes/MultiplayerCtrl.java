@@ -108,4 +108,14 @@ public class MultiplayerCtrl extends GameCtrl {
         if (!initiatedByTimer && this.evaluation == null) return;
         refresh();
     }
+
+    /**
+     * Register the client to receive emoji reactions from other players
+     */
+    public void registerForEmojiUpdates() {
+        // TODO unsub from websocket event when possible in the shutdown method
+        this.server.registerForEmojiUpdates(emoji -> {
+            System.out.println("Emoji received for the current room: " + emoji);
+        }, this.sessionId);
+    }
 }

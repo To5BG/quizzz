@@ -44,13 +44,6 @@ public class SplashCtrl {
     public SplashCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
-        websocketTest();
-    }
-
-    public void websocketTest() {
-        server.registerForEmojiUpdates(System.out::println, 42L);
-        server.sendEmoji(42L, "test", Emoji.EmojiType.FUNNY);
-        server.sendEmoji(43L, "test", Emoji.EmojiType.ANGRY);
     }
 
     /*

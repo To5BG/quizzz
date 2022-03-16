@@ -415,10 +415,10 @@ public class ServerUtils {
     /**
      * Send an emoji to a given session
      * @param sessionId The ID of the session where the emoji is sent to
-     * @param username The username of the player sending the emoji
+     * @param playerId The ID of the player sending the emoji
      * @param emoji The type of emoji to send
      */
-    public void sendEmoji(long sessionId, String username, Emoji.EmojiType emoji) {
-        websocketServer.send("/app/emoji/" + sessionId + "/send", new Emoji(username, emoji));
+    public void sendEmoji(long sessionId, long playerId, Emoji.EmojiType emoji) {
+        websocketServer.send("/app/emoji/" + sessionId + "/send/" + playerId, emoji);
     }
 }

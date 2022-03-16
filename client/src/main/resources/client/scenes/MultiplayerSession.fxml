@@ -5,38 +5,48 @@
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
-
 <?import javafx.scene.text.Font?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-            prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="client.scenes.MultiplayerCtrl">
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MultiplayerCtrl">
     <children>
-        <Label fx:id="questionPrompt" layoutX="14.0" layoutY="14.0" text="[Question]"/>
+        <Label fx:id="questionPrompt" layoutX="14.0" layoutY="14.0" text="[Question]" />
         <Label fx:id="countdown" layoutX="16.0" layoutY="44.0" text="Options:" />
         <TableView fx:id="leaderboard" layoutX="14.0" layoutY="40.0" opacity="0.0" prefHeight="198.0" prefWidth="432.0">
             <columns>
-                <TableColumn fx:id="colRank" prefWidth="35.0" text="rank"/>
-                <TableColumn fx:id="colUserName" prefWidth="335.0" text="player"/>
-                <TableColumn fx:id="colPoints" prefWidth="61.0" text="points"/>
+                <TableColumn fx:id="colRank" prefWidth="35.0" text="rank" />
+                <TableColumn fx:id="colUserName" prefWidth="335.0" text="player" />
+                <TableColumn fx:id="colPoints" prefWidth="61.0" text="points" />
             </columns>
         </TableView>
-        <StackPane fx:id="answerArea" layoutX="14.0" layoutY="61.0" prefHeight="156.0" prefWidth="407.0"/>
-        <Button fx:id="submitButton" layoutX="361.0" layoutY="248.0" mnemonicParsing="false" onAction="#submitAnswerButton"
-                text="Final Answer"/>
-        <Label fx:id="pointsLabel" layoutX="492.0" layoutY="14.0" text="Points: 0"/>
-        <ProgressBar fx:id="timeProgress" layoutX="18.0" layoutY="248.0" prefHeight="20.0" prefWidth="321.0"
-                     progress="0.0"/>
-        <Button fx:id="removeOneButton" layoutX="29.0" layoutY="323.0" mnemonicParsing="false"
-        onAction="#removeOneAnswer" prefHeight="26.0" prefWidth="103.0" text="Remove One Answer">
+        <StackPane fx:id="answerArea" layoutX="14.0" layoutY="61.0" prefHeight="156.0" prefWidth="407.0" />
+        <Button fx:id="submitButton" layoutX="361.0" layoutY="248.0" mnemonicParsing="false" onAction="#submitAnswerButton" text="Final Answer" />
+        <Label fx:id="pointsLabel" layoutX="492.0" layoutY="14.0" text="Points: 0" />
+        <ProgressBar fx:id="timeProgress" layoutX="18.0" layoutY="248.0" prefHeight="20.0" prefWidth="321.0" progress="0.0" />
+        <Button fx:id="removeOneButton" layoutX="29.0" layoutY="304.0" mnemonicParsing="false" onAction="#removeOneAnswer" prefHeight="26.0" prefWidth="103.0" text="Remove One Answer">
         <font>
-            <Font size="9.0"/>
+            <Font size="9.0" />
         </font>
         </Button>
-        <Button fx:id="decreaseTimeButton" layoutX="189.0" layoutY="323.0" mnemonicParsing="false"
-            onAction="#decreaseTime" prefHeight="26.0" prefWidth="103.0" text="Decrease Time"/>
-        <Button fx:id="doublePointsButton" layoutX="340.0" layoutY="323.0" mnemonicParsing="false"
-            onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points"/>
+        <Button fx:id="decreaseTimeButton" layoutX="189.0" layoutY="304.0" mnemonicParsing="false" onAction="#decreaseTime" prefHeight="26.0" prefWidth="103.0" text="Decrease Time" />
+        <Button fx:id="doublePointsButton" layoutX="340.0" layoutY="304.0" mnemonicParsing="false" onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points" />
+      <ImageView fx:id="emojiFunny" fitHeight="60.0" fitWidth="60.0" layoutX="38.0" layoutY="332.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@emojis/funny.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="emojiSad" fitHeight="60.0" fitWidth="60.0" layoutX="116.0" layoutY="332.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@emojis/sad.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="emojiAngry" fitHeight="60.0" fitWidth="60.0" layoutX="194.0" layoutY="332.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@emojis/angry.png" />
+         </image>
+      </ImageView>
     </children>
 </AnchorPane>
