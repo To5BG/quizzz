@@ -394,22 +394,45 @@ public class ServerUtils {
     }
 
     /**
+     * Register for updates from the websocket server
+     * @param callback Function to call when a message is received
+     * @param type The class of the type of object that is expected
+     * @param updateUrl The URL from which to receive updates
+     * @param <T> The type of the object that is expected
+     * @return A Subscription which can be used to unsubscribe from the updates
+     */
+    private <T> StompSession.Subscription registerForWebsocketUpdates(Consumer<T> callback,
+                                                                      Class<T> type, String updateUrl) {
+        return websocketServer.subscribe("/updates" + updateUrl, new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return type;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                callback.accept((T) payload);
+            }
+        });
+    }
+
+    /**
+     * Send a message to the websocket server
+     * @param url The destination path of the message (/app is appended by the method)
+     * @param body The content of the message
+     * @param <T> The type of the message to send
+     */
+    private <T> void sendWebsocketMessage(String url, T body) {
+        websocketServer.send("/app/" + url, body);
+    }
+
+    /**
      * Listen for updates regarding emojis from other players
      * @param handler The function to call with the emoji sent to the session
      * @param sessionId The ID of the session in which to listen for emojis
      */
     public StompSession.Subscription registerForEmojiUpdates(Consumer<Emoji> handler, long sessionId) {
-        return websocketServer.subscribe("/updates/emoji/" + sessionId, new StompFrameHandler() {
-            @Override
-            public Type getPayloadType(StompHeaders headers) {
-                return Emoji.class;
-            }
-
-            @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
-                handler.accept((Emoji) payload);
-            }
-        });
+        return registerForWebsocketUpdates(handler, Emoji.class, "/emoji/" + sessionId);
     }
 
     /**
@@ -419,6 +442,6 @@ public class ServerUtils {
      * @param emoji The type of emoji to send
      */
     public void sendEmoji(long sessionId, long playerId, Emoji.EmojiType emoji) {
-        websocketServer.send("/app/emoji/" + sessionId + "/send/" + playerId, emoji);
+        sendWebsocketMessage("/emoji/" + sessionId + "/send/" + playerId, emoji);
     }
 }
