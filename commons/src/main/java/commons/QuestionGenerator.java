@@ -2,9 +2,8 @@ package commons;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class QuestionGenerator {
 
@@ -12,7 +11,7 @@ public class QuestionGenerator {
             .filter(qt -> qt != Question.QuestionType.UNKNOWN).toList();
 
     /**
-     * Generate a comparison style question
+     * Generate a Comparison style question
      * @param activities List of activities to compare
      * @return The question and the list of expected answers
      */
@@ -38,20 +37,26 @@ public class QuestionGenerator {
     /**
      * Generate a multiple choice type question
      * @param activity The activity to guess the consumption of
+     * @param difficultyFactor The difficulty factor of the question
      * @return A question and the list of expected answers
      */
-    private static Pair<Question, List<Integer>> generateMultipleChoiceQuestion(Activity activity) {
+    private static Pair<Question, List<Integer>> generateMultipleChoiceQuestion(Activity activity,
+                                                                                double difficultyFactor) {
         Question q = new Question("Guess how much energy the following activity takes\n" + activity.title,
                 activity.imagePath, Question.QuestionType.MULTIPLE_CHOICE);
 
-        q.addAnswerOption(Integer.parseInt(activity.consumption) + " Wh");
-
         Random rng = new Random();
-        for (int i = 0; i < 3; ++i) {
-            q.addAnswerOption(rng.nextInt(10000) + " Wh");
+        for (int i = 0; i < 4; ++i) {
+            int randomOption = Math.abs((Integer.parseInt(activity.consumption) - (int) (3000/difficultyFactor))
+                    + rng.nextInt((int) (6000/difficultyFactor)));
+            if(randomOption == Integer.parseInt(activity.consumption)) {
+                randomOption += rng.nextInt((int) (3000/difficultyFactor));
+            }
+            q.addAnswerOption(randomOption + " Wh");
         }
-
-        return Pair.of(q, List.of(0));
+        int answerOption = rng.nextInt(4);
+        q.answerOptions.set(answerOption, activity.consumption + " Wh");
+        return Pair.of(q, List.of(answerOption));
     }
 
     /**
@@ -68,14 +73,14 @@ public class QuestionGenerator {
 
     /**
      * Generate an equivalence style question
-     * @param a The activity being compared to alternatives
+     * @param a The activity being Compared to alternatives
      * @param other Alternative activities instead of the first one
      * @return A question and the list of expected answers
      */
     private static Pair<Question, List<Integer>> generateEquivalenceQuestion(Activity a, List<Activity> other) {
         Question q = new Question(
                 "What could you do instead of the following activity to use the same energy?\n" +
-                a.title, a.imagePath, Question.QuestionType.EQUIVALENCE);
+                        a.title, a.imagePath, Question.QuestionType.EQUIVALENCE);
 
         int diff = Integer.MAX_VALUE;
         int closestIndex = 0;
@@ -97,9 +102,9 @@ public class QuestionGenerator {
      * Generate a question from the 4 basic types
      * @return The question and the list of expected answers
      */
-    public static Pair<Question, List<Integer>> generateQuestion() {
+    public static Pair<Question, List<Integer>> generateQuestion(double difficultyFactor) {
         Random rng = new Random();
-        return generateQuestion(QUESTION_TYPES.get(rng.nextInt(QUESTION_TYPES.size())));
+        return generateTypeQuestion(QUESTION_TYPES.get(rng.nextInt(QUESTION_TYPES.size())), difficultyFactor);
     }
 
     /**
@@ -107,31 +112,63 @@ public class QuestionGenerator {
      * @param type The type of the question to generate
      * @return The question and the list of expected answers
      */
-    public static Pair<Question, List<Integer>> generateQuestion(Question.QuestionType type) {
-        switch (type) {
-            case COMPARISON:
-                return generateComparisonQuestion(List.of(
-                        new Activity("Comp 1", "1000", "img1", "no"),
-                        new Activity("Comp 2", "4000", "img2", "no"),
-                        new Activity("Comp 3", "2000", "img3", "no"),
-                        new Activity("Comp 4", "1500", "img4", "no")
-                ));
-            case MULTIPLE_CHOICE:
-                return generateMultipleChoiceQuestion(new Activity(
-                        "MC 1", "570", "img1", "no"
-                ));
-            case EQUIVALENCE:
-                return generateEquivalenceQuestion(new Activity(
-                    "Eq 1", "1000", "img1", "no"
-                ), List.of(
-                    new Activity("Eq 2", "4000", "img2", "no"),
-                    new Activity("Eq 3", "2000", "img3", "no"),
-                    new Activity("Eq 4", "1500", "img4", "no")
-                ));
-            default:
-                return generateEstimationQuestion(new Activity(
-                        "Est 1", "440", "img1", "no"
-                ));
+    public static Pair<Question, List<Integer>> generateTypeQuestion
+    (Question.QuestionType type, double difficultyFactor) {
+        List<Activity> activitybank = List.of(
+                new Activity("Act 1", "6650", "img1", "no"),
+                new Activity("Act 2", "6800", "img2", "no"),
+                new Activity("Act 3", "6500", "img3", "no"),
+                new Activity("Act 4", "4000", "img4", "no"),
+                new Activity("Act 5", "6000", "img1", "no"),
+                new Activity("Act 6", "5700", "img2", "no"),
+                new Activity("Act 7", "5000", "img3", "no"),
+                new Activity("Act 8", "6600", "img4", "no"),
+                new Activity("Act 9", "5500", "img1", "no"),
+                new Activity("Act 10", "5100", "img2", "no"),
+                new Activity("Act 11", "6100", "img3", "no"),
+                new Activity("Act 12", "6400", "img4", "no"));
+
+        Random rng = new Random();
+
+        int pivotindex = rng.nextInt(activitybank.size());
+        Activity pivot = activitybank.get(pivotindex);
+
+        if(type == Question.QuestionType.MULTIPLE_CHOICE) {
+            return generateMultipleChoiceQuestion(pivot, difficultyFactor);
+        }
+        else if(type == Question.QuestionType.RANGE_GUESS) {
+            return generateEstimationQuestion(pivot);
+        }
+
+        List<Activity> valid = activitybank
+                .stream()
+                .filter(a -> Math.abs(Integer.parseInt(a.consumption) - Integer.parseInt(pivot.consumption))
+                        <= 3000/difficultyFactor)
+                .filter(a -> !a.equals(pivot))
+                .collect(Collectors.toList());
+
+        while (valid.size() < 3) {
+            int validindex = rng.nextInt(activitybank.size());
+            if (validindex == pivotindex) {
+                validindex = (pivotindex + 1) % valid.size();
+            }
+            valid.add(activitybank.get(validindex));
+        }
+        Collections.shuffle(valid);
+
+        List<Activity> options = new ArrayList<>();
+        for(int i = 0; i < 3; ++i) {
+            options.add(valid.get(i));
+        }
+
+        if(type == Question.QuestionType.EQUIVALENCE) {
+            return generateEquivalenceQuestion(pivot, options);
+        }
+        else {
+            options.add(pivot);
+            Collections.shuffle(options);
+            return generateComparisonQuestion(options);
         }
     }
 }
+

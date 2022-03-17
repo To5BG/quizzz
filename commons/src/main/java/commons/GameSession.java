@@ -29,6 +29,7 @@ public class GameSession {
 
     public int playersReady;
     public int questionCounter;
+    public int difficultyFactor;
     public int timeJokers;
 
     public SessionType sessionType;
@@ -66,6 +67,7 @@ public class GameSession {
         this.expectedAnswers = expectedAnswers;
         this.playersReady = 0;
         this.questionCounter = 0;
+        this.difficultyFactor = 1;
         this.timeJokers = 0;
 
         this.sessionStatus = SessionStatus.STARTED;
@@ -123,8 +125,16 @@ public class GameSession {
      * Updates the question of the game session
      */
     public void updateQuestion() {
+        switch(questionCounter / 4){
+            case 0 -> difficultyFactor = 1;
+            case 1 -> difficultyFactor = 2;
+            case 2 -> difficultyFactor = 3;
+            case 3 -> difficultyFactor = 4;
+            case 4 -> difficultyFactor = 5;
+            default -> difficultyFactor = 1;
+        }
         ++questionCounter;
-        Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion();
+        Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion(difficultyFactor);
         this.currentQuestion = res.getKey();
         System.out.println("Question updated to:");
         System.out.println(this.currentQuestion);
