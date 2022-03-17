@@ -9,8 +9,11 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
+
 
 import java.util.*;
 
@@ -27,6 +30,9 @@ public abstract class GameCtrl implements Initializable {
 
     @FXML
     protected Label questionPrompt;
+
+    @FXML
+    protected ImageView imagePanel;
 
     @FXML
     protected Label pointsLabel;
@@ -137,7 +143,22 @@ public abstract class GameCtrl implements Initializable {
      */
     protected void renderGeneralInformation(Question q) {
         this.questionPrompt.setText(q.prompt);
-        // TODO load image
+        switch (q.type) {
+            case RANGE_GUESS:
+            case EQUIVALENCE:
+            case MULTIPLE_CHOICE:
+                try {
+                    Image image = new Image(q.imagePath);
+                    imagePanel.setImage(image);
+                    break;
+                }
+                catch (Exception e) {
+                    break;
+                }
+            case COMPARISON:
+                break;
+        }
+
     }
 
     /**
