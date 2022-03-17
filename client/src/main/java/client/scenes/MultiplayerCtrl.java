@@ -21,21 +21,34 @@ import commons.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.util.Callback;
 
 import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class MultiplayerCtrl extends GameCtrl {
 
+    @FXML
+    private TableView<Emoji> emojiList;
+
+    @FXML
+    private TableColumn<Emoji, String> emojiUsername;
+
+    @FXML
+    private TableColumn<Emoji, String> emojiImage;
+
+    private final ObservableList<Emoji> sessionEmojis;
 
     @Inject
     public MultiplayerCtrl(ServerUtils server, MainCtrl mainCtrl) {
         super(server, mainCtrl);
+        sessionEmojis = FXCollections.observableArrayList();
     }
 
     /**
@@ -58,6 +71,9 @@ public class MultiplayerCtrl extends GameCtrl {
                 };
             }
         });
+
+        emojiUsername.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().username));
+        emojiImage.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().emoji.toString()));
     }
 
     /**
@@ -113,9 +129,14 @@ public class MultiplayerCtrl extends GameCtrl {
      * Register the client to receive emoji reactions from other players
      */
     public void registerForEmojiUpdates() {
+        sessionEmojis.clear();
+        emojiList.setItems(sessionEmojis);
+
         // TODO unsub from websocket event when possible in the shutdown method
         this.server.registerForEmojiUpdates(emoji -> {
             System.out.println("Emoji received for the current room: " + emoji);
+            sessionEmojis.add(emoji);
+            Platform.runLater(() -> emojiList.scrollTo(sessionEmojis.size() - 1));
         }, this.sessionId);
     }
 }

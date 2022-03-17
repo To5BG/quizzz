@@ -48,5 +48,11 @@
             <Image url="@emojis/angry.png" />
          </image>
       </ImageView>
+      <TableView fx:id="emojiList" layoutX="446.0" layoutY="39.0" prefHeight="200.0" prefWidth="151.0">
+        <columns>
+          <TableColumn fx:id="emojiUsername" prefWidth="75.0" text="Username" />
+          <TableColumn fx:id="emojiImage" prefWidth="75.0" text="Emoji" />
+        </columns>
+      </TableView>
     </children>
 </AnchorPane>

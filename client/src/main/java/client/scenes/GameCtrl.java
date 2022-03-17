@@ -681,6 +681,10 @@ public abstract class GameCtrl implements Initializable {
         doublePointsActive = !doublePointsActive;
     }
 
+    /**
+     * Generic event handler for clicking on an emoji
+     * @param ev The event information
+     */
     public void emojiEventHandler(Event ev) {
         Node source = (Node) ev.getSource();
         String nodeId = source.getId();
