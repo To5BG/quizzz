@@ -46,16 +46,19 @@ public class QuestionGenerator {
                 activity.imagePath, Question.QuestionType.MULTIPLE_CHOICE);
 
         Random rng = new Random();
-        for (int i = 0; i < 4; ++i) {
-            int randomOption = Math.abs((Integer.parseInt(activity.consumption) - (int) (3000/difficultyFactor))
-                    + rng.nextInt((int) (6000/difficultyFactor)));
-            if(randomOption == Integer.parseInt(activity.consumption)) {
-                randomOption += rng.nextInt((int) (3000/difficultyFactor));
-            }
-            q.addAnswerOption(randomOption + " Wh");
-        }
         int answerOption = rng.nextInt(4);
-        q.answerOptions.set(answerOption, activity.consumption + " Wh");
+        for (int i = 0; i < 4; ++i) {
+            if(i == answerOption) {
+                q.answerOptions.add(activity.consumption + " Wh");
+            } else {
+                int randomOption = Math.abs((Integer.parseInt(activity.consumption) - (int) (3000 / difficultyFactor))
+                        + rng.nextInt((int) (6000 / difficultyFactor)));
+                if (randomOption == Integer.parseInt(activity.consumption)) {
+                    randomOption += rng.nextInt((int) (3000 / difficultyFactor));
+                }
+                q.addAnswerOption(randomOption + " Wh");
+            }
+        }
         return Pair.of(q, List.of(answerOption));
     }
 

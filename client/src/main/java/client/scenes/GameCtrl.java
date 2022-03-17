@@ -416,7 +416,7 @@ public abstract class GameCtrl implements Initializable {
                 else {
                     if(diff > actualAnswer) diff = actualAnswer;
                     temppoints = (int) (90 - 90*((double) diff*difficultyFactor*timeFactor/actualAnswer) +
-                            diff < actualAnswer ? 10 - 10*((double) diff*difficultyFactor/actualAnswer) : 0);
+                            ((diff < actualAnswer) ? 10 - 10*((double) diff*difficultyFactor/actualAnswer) : 0));
                     if (temppoints <= 0) temppoints = 0;
                 }
                 break;
