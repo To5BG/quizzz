@@ -48,6 +48,15 @@ public class MultiplayerCtrl extends GameCtrl {
     @FXML
     private TableColumn<Emoji, ImageView> emojiImage;
 
+    @FXML
+    private ImageView emojiFunny;
+
+    @FXML
+    private ImageView emojiSad;
+
+    @FXML
+    private ImageView emojiAngry;
+
     private final ObservableList<Emoji> sessionEmojis;
     private final List<Image> emojiImages;
     private StompSession.Subscription channel;
@@ -102,6 +111,10 @@ public class MultiplayerCtrl extends GameCtrl {
             iv.setFitWidth(30);
             return new SimpleObjectProperty<ImageView>(iv);
         });
+
+        emojiFunny.setImage(emojiImages.get(0));
+        emojiSad.setImage(emojiImages.get(1));
+        emojiAngry.setImage(emojiImages.get(2));
     }
 
     /**
