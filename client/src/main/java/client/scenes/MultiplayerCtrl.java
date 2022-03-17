@@ -20,6 +20,7 @@ import client.utils.ServerUtils;
 import commons.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -27,9 +28,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.*;
 
 public class MultiplayerCtrl extends GameCtrl {
@@ -41,14 +45,24 @@ public class MultiplayerCtrl extends GameCtrl {
     private TableColumn<Emoji, String> emojiUsername;
 
     @FXML
-    private TableColumn<Emoji, String> emojiImage;
+    private TableColumn<Emoji, ImageView> emojiImage;
 
     private final ObservableList<Emoji> sessionEmojis;
+    private final List<Image> emojiImages;
 
     @Inject
     public MultiplayerCtrl(ServerUtils server, MainCtrl mainCtrl) {
         super(server, mainCtrl);
         sessionEmojis = FXCollections.observableArrayList();
+        emojiImages = new ArrayList<Image>();
+        String[] emojiFileNames = {"funny", "sad", "angry"};
+        ClassLoader cl = getClass().getClassLoader();
+        for (String fileName : emojiFileNames) {
+            URL location = cl.getResource(
+                    Path.of("", "client", "scenes", "emojis", fileName + ".png").toString());
+
+            emojiImages.add(new Image(location.toString()));
+        }
     }
 
     /**
@@ -73,7 +87,19 @@ public class MultiplayerCtrl extends GameCtrl {
         });
 
         emojiUsername.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().username));
-        emojiImage.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().emoji.toString()));
+        emojiImage.setCellValueFactory(e -> {
+            Image picture;
+            switch (e.getValue().emoji) {
+                case FUNNY -> picture = emojiImages.get(0);
+                case SAD -> picture = emojiImages.get(1);
+                default -> picture = emojiImages.get(2);
+            }
+
+            ImageView iv = new ImageView(picture);
+            iv.setFitHeight(30);
+            iv.setFitWidth(30);
+            return new SimpleObjectProperty<ImageView>(iv);
+        });
     }
 
     /**
