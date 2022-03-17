@@ -21,6 +21,8 @@ import commons.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
@@ -37,6 +39,12 @@ public class MultiplayerCtrl extends GameCtrl {
     public MultiplayerCtrl(ServerUtils server, MainCtrl mainCtrl) {
         super(server, mainCtrl);
     }
+
+    @FXML
+    private Button backButton;
+
+    @FXML
+    private Button playAgain;
 
     /**
      * {@inheritDoc}
@@ -58,6 +66,9 @@ public class MultiplayerCtrl extends GameCtrl {
                 };
             }
         });
+
+        backButton.setOpacity(0);
+        playAgain.setOpacity(0);
     }
 
     /**
@@ -109,5 +120,22 @@ public class MultiplayerCtrl extends GameCtrl {
         }
 
         refresh();
+    }
+
+    public void leaveGame() {
+        super.back();
+    }
+
+    public void playAgain() {
+
+    }
+
+    @Override
+    public void back() {
+        displayLeaderboard();
+        backButton.setOpacity(1);
+        timeProgress.setOpacity(0);
+        playAgain.setOpacity(1);
+        server.toggleReady(sessionId, false);
     }
 }

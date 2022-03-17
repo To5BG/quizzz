@@ -16,7 +16,7 @@ import java.util.*;
 
 public abstract class GameCtrl implements Initializable {
 
-    protected final int GAME_ROUNDS = 5;
+    protected final int GAME_ROUNDS = 2;
     protected final int GAME_ROUND_TIME = 10;
     protected final int MIDGAME_BREAK_TIME = 6;
     protected final int TIMER_UPDATE_INTERVAL_MS = 50;
@@ -532,9 +532,9 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Display mid-game leaderboard
+     * Displays the current session's leaderboard and hides the question screen attributes
      */
-    public void displayMidGameScreen() {
+    public void displayLeaderboard() {
         var players = server.getPlayers(sessionId);
         var data = FXCollections.observableList(players);
         leaderboard.setItems(data);
@@ -545,6 +545,26 @@ public abstract class GameCtrl implements Initializable {
         decreaseTimeButton.setOpacity(0);
         questionPrompt.setOpacity(0);
         leaderboard.setOpacity(1);
+    }
+
+    /**
+     * Displays the question screen attributes and hides the leaderboard
+     */
+    public void removeLeaderboard() {
+        leaderboard.setOpacity(0);
+        answerArea.setOpacity(1);
+        questionPrompt.setOpacity(1);
+        submitButton.setOpacity(1);
+        removeOneButton.setOpacity(1);
+        doublePointsButton.setOpacity(1);
+        decreaseTimeButton.setOpacity(1);
+    }
+
+    /**
+     * Display mid-game leaderboard
+     */
+    public void displayMidGameScreen() {
+        displayLeaderboard();
 
         Task roundTimer = new Task() {
             @Override
@@ -577,13 +597,7 @@ public abstract class GameCtrl implements Initializable {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    leaderboard.setOpacity(0);
-                    answerArea.setOpacity(1);
-                    questionPrompt.setOpacity(1);
-                    submitButton.setOpacity(1);
-                    removeOneButton.setOpacity(1);
-                    doublePointsButton.setOpacity(1);
-                    decreaseTimeButton.setOpacity(1);
+                    removeLeaderboard();
                     loadQuestion();
                 });
             }
