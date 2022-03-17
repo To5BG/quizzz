@@ -31,6 +31,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
 import java.nio.file.Path;
@@ -49,6 +50,7 @@ public class MultiplayerCtrl extends GameCtrl {
 
     private final ObservableList<Emoji> sessionEmojis;
     private final List<Image> emojiImages;
+    private StompSession.Subscription channel;
 
     @Inject
     public MultiplayerCtrl(ServerUtils server, MainCtrl mainCtrl) {
@@ -151,6 +153,12 @@ public class MultiplayerCtrl extends GameCtrl {
         refresh();
     }
 
+    @Override
+    public void shutdown() {
+        channel.unsubscribe();
+        super.shutdown();
+    }
+
     /**
      * Register the client to receive emoji reactions from other players
      */
@@ -158,8 +166,7 @@ public class MultiplayerCtrl extends GameCtrl {
         sessionEmojis.clear();
         emojiList.setItems(sessionEmojis);
 
-        // TODO unsub from websocket event when possible in the shutdown method
-        this.server.registerForEmojiUpdates(emoji -> {
+        channel = this.server.registerForEmojiUpdates(emoji -> {
             System.out.println("Emoji received for the current room: " + emoji);
             sessionEmojis.add(emoji);
             Platform.runLater(() -> emojiList.scrollTo(sessionEmojis.size() - 1));
