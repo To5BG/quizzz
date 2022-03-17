@@ -301,12 +301,12 @@ public abstract class GameCtrl implements Initializable {
         Task roundTimer = new Task() {
             @Override
             public Object call() {
-                long refreshCounter = 0;
+                double refreshCounter = 0;
                 long gameRoundMs = GAME_ROUND_TIME * 1000;
-                long timeElapsed = 0;
+                double timeElapsed = 0;
                 while (timeElapsed < gameRoundMs) {
                     //the speed on which the timer updates, with default speed 1
-                    long booster = getTimeJokers() + 1;
+                    double booster = getTimeJokers() + 1;
                     updateProgress(gameRoundMs - timeElapsed, gameRoundMs);
                     refreshCounter += booster;
                     try {
@@ -641,7 +641,7 @@ public abstract class GameCtrl implements Initializable {
      * Get number of time Jokers for the current session
      * @return int representing number of time jokers
      */
-    public int getTimeJokers() {
+    public double getTimeJokers() {
         return server.getSession(sessionId).getTimeJokers();
     }
 
@@ -656,12 +656,12 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Decrease Time Joker
      * When this joker is used, the timer speeds up
-     * This joker can not be used in single-player
+     * This joker becomes Increase Time Joker in Singleplayer
      */
     public void decreaseTime() {
         decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
-        server.updateTimeJokers(sessionId, getTimeJokers() + 1);
+        server.updateTimeJokers(sessionId, (int) getTimeJokers() + 1);
     }
 
     /**

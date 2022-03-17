@@ -51,6 +51,9 @@ public class SingleplayerCtrl extends GameCtrl {
      */
     @Override
     public void loadAnswer() {
+        if(decreaseTimeJoker) {
+            disableButton(decreaseTimeButton, false);
+        }
         if(doublePointsJoker) {
             disableButton(doublePointsButton, false);
         }
@@ -65,11 +68,23 @@ public class SingleplayerCtrl extends GameCtrl {
     }
 
     /**
-     * Disable the jokers that do not work for single-player
+     * If the joker is active make the time joker -0.5 so the booster will work at half the normal speed
+     * for a singleplayer game
+     * @return -0.5 if the joker has been used, or 0 otherwise
      */
-    public void disableSingleplayerJokers() {
+    @Override
+    public double getTimeJokers() {
+        int number = server.getSession(sessionId).getTimeJokers();
+        return (number == 1) ? -0.5 : 0;
+    }
+
+    /**
+     * This is an equivalent method to decreaseTime for Multiplayer
+     */
+    public void increaseTime() {
         decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
+        server.updateTimeJokers(sessionId, 1);
     }
 
     /**
