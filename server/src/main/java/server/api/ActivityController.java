@@ -43,9 +43,19 @@ public class ActivityController {
      * @param activity - Activity to be checked
      * @return true if any of the attributes is null or empty
      */
-    private static boolean invalidActivity(Activity activity){
-        return  isNullOrEmpty(activity.title) || isNullOrEmpty(activity.consumption)
-                || isNullOrEmpty(activity.imagePath) || isNullOrEmpty(activity.source);
+    private boolean invalidActivity(Activity activity) {
+        if (isNullOrEmpty(activity.title) || isNullOrEmpty(activity.consumption_in_wh)
+                || isNullOrEmpty(activity.image_path) || isNullOrEmpty(activity.source)) {
+            return true;
+        }
+
+        Activity probe = new Activity();
+        probe.title = activity.title;
+        Example<Activity> exampleActivity = Example.of(probe, ExampleMatcher.matchingAny());
+        if (repo.exists(exampleActivity)) return true;
+
+        return !(activity.title.matches("(.*)[a-zA-Z]{2,}(.*)") &&
+                activity.consumption_in_wh.matches("[0-9]+"));
     }
 
     /**
