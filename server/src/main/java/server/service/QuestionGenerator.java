@@ -149,8 +149,9 @@ public class QuestionGenerator {
             int pivotCons = Integer.parseInt(activity.consumption_in_wh);
 
             if (!activities.contains(potential)) {
-                if (Math.abs(potentialCons - pivotCons) <= 0.5*potentialCons/difficultyFactor)
+                if (Math.abs(potentialCons - pivotCons) <= 0.5*potentialCons/difficultyFactor) {
                     activities.add(potential);
+                }
                 else attempt++;
             }
         }
