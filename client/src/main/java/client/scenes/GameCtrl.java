@@ -9,7 +9,6 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 
@@ -164,8 +163,12 @@ public abstract class GameCtrl implements Initializable {
                 if (removeOneJoker) {
                     disableButton(removeOneButton, false);
                 }
+                break;
             }
-            case RANGE_GUESS -> renderEstimationQuestion();
+            case RANGE_GUESS -> {
+                renderEstimationQuestion();
+                break;
+            }
             default -> throw new UnsupportedOperationException("Unsupported question type when rendering answers");
         }
     }
@@ -202,15 +205,21 @@ public abstract class GameCtrl implements Initializable {
     protected void renderCorrectAnswer() {
         switch (this.evaluation.type) {
             case MULTIPLE_CHOICE, COMPARISON, EQUIVALENCE
-                    -> renderMultipleChoiceAnswers(this.evaluation.correctAnswers);
-            case RANGE_GUESS -> renderEstimationAnswers(this.evaluation.correctAnswers);
+                    -> {
+                renderMultipleChoiceAnswers(this.evaluation.correctAnswers);
+                break;
+            }
+            case RANGE_GUESS -> {
+                renderEstimationAnswers(this.evaluation.correctAnswers);
+                break;
+            }
             default -> throw new
                     UnsupportedOperationException("Currently only multiple choice answers can be rendered");
         }
     }
 
     private void renderEstimationAnswers(List<Integer> correctAnswers) {
-        int givenAnswer;
+        int givenAnswer = 0;
         int actualAnswer = correctAnswers.get(0);
         try {
             givenAnswer = Integer.parseInt(estimationAnswer.getText());
@@ -375,20 +384,23 @@ public abstract class GameCtrl implements Initializable {
      * @param e KeyEvent to be switched
      */
     public void keyPressed(KeyEvent e) {
-        if (e.getCode() == KeyCode.ESCAPE) {
-            back();
+        switch (e.getCode()) {
+            case ESCAPE -> back();
         }
     }
 
     /**
      * Updates the point counter in client side, and then updates database entry
      */
+    @SuppressWarnings("checkstyle:Indentation")
     public void updatePoints() {
         int temppoints;
         switch (this.evaluation.type) {
-            case MULTIPLE_CHOICE, COMPARISON, EQUIVALENCE
-                    -> temppoints = (int) ((80 * this.evaluation.points * timeFactor) +
+            case MULTIPLE_CHOICE, COMPARISON, EQUIVALENCE -> {
+                temppoints = (int) ((80 * this.evaluation.points * timeFactor) +
                     (20 * this.evaluation.points));
+                break;
+            }
             case RANGE_GUESS -> {
                 int givenAnswer;
                 int actualAnswer = this.evaluation.correctAnswers.get(0);
@@ -406,8 +418,11 @@ public abstract class GameCtrl implements Initializable {
                             ((diff < actualAnswer) ? 10 - 10 * ((double) diff * difficultyFactor / actualAnswer) : 0));
                     if (temppoints <= 0) temppoints = 0;
                 }
+                break;
             }
-            default -> throw new UnsupportedOperationException("Unsupported question type when parsing answer");
+            default -> {
+                throw new UnsupportedOperationException("Unsupported question type when parsing answer");
+            }
         }
         if (doublePointsActive) {
             temppoints = temppoints * 2;
@@ -634,6 +649,7 @@ public abstract class GameCtrl implements Initializable {
                     button.setSelected(false);
                 }
                 button.setDisable(true);
+                break;
             }
             default -> disableButton(removeOneButton, false);
         }
