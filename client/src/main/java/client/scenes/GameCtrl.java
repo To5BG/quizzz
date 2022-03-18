@@ -348,6 +348,11 @@ public abstract class GameCtrl implements Initializable {
      */
     public void back() {
         shutdown();
+        reset();
+        mainCtrl.showSplash();
+    }
+
+    public void reset() {
         this.questionPrompt.setText("[Question]");
         this.answerArea.getChildren().clear();
         this.pointsLabel.setText("Points: 0");
@@ -363,7 +368,6 @@ public abstract class GameCtrl implements Initializable {
         removeOneJoker = true;
 
         disableButton(submitButton, true);
-        mainCtrl.showSplash();
     }
 
     /**
