@@ -23,7 +23,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Optional;
+import java.util.Scanner;
 
 public class SplashCtrl {
 
@@ -61,7 +66,11 @@ public class SplashCtrl {
     public void enterMultiplayerGame() {
         GameSession sessionToJoin = server.getAvailableSession();
         String newUserName = usernameField.getText();
-
+        try {
+            saveUsername(newUserName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         server.addPlayer(sessionToJoin.id, new Player(newUserName, 0));
         var playerId = server
                 .getPlayers(sessionToJoin.id)
@@ -197,6 +206,11 @@ public class SplashCtrl {
         }
 
         else {
+            try {
+                saveUsername(usernameField.getText());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             invalidUserName.setOpacity(0);
             duplUsername.setOpacity(0);
             if(isDuplInRepository(newUserName)) {
@@ -217,9 +231,40 @@ public class SplashCtrl {
     }
 
     /**
+     * Save the username to a file so it can be retrieved after coming back to the game
+     * @param username - String to be saved inside the file
+     */
+    private void saveUsername(String username) throws IOException {
+        try {
+            File file = new File("username.txt");
+            file.createNewFile();
+            FileWriter writer = new FileWriter(file);
+            writer.write(username);
+            writer.close();
+        } catch (IOException e) {
+            throw new IOException();
+        }
+    }
+
+    /**
      * Initialize setup for main controller's showLeaderboard() method.
      */
     public void showLeaderboard() {
         mainCtrl.showLeaderboard();
+    }
+
+    public void retrieveSavedName() {
+        try {
+            File file = new File("username.txt");
+            if(file.exists() && file.canRead()){
+                Scanner scanner = new Scanner(file);
+                String name = scanner.next();
+                if(name != null && name.length() > 0) {
+                    usernameField.setText(name);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

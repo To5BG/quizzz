@@ -87,6 +87,7 @@ public class MainCtrl {
     public void showSplash() {
         primaryStage.setTitle("Main menu");
         primaryStage.setScene(splashScreen);
+        splashCtrl.retrieveSavedName();
     }
 
     /**
