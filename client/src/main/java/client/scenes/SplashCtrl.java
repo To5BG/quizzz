@@ -66,11 +66,7 @@ public class SplashCtrl {
     public void enterMultiplayerGame() {
         GameSession sessionToJoin = server.getAvailableSession();
         String newUserName = usernameField.getText();
-        try {
-            saveUsername(newUserName);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         server.addPlayer(sessionToJoin.id, new Player(newUserName, 0));
         var playerId = server
                 .getPlayers(sessionToJoin.id)
@@ -181,6 +177,11 @@ public class SplashCtrl {
                     .getPlayers(1L)
                     .stream().filter(p -> p.username.equals(newUserName))
                     .findFirst().get().id;
+            try {
+                saveUsername(usernameField.getText());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             mainCtrl.showWaitingArea(playerId);
         }
     }
