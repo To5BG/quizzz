@@ -141,7 +141,6 @@ public class MainCtrl {
     }
 
 
-
     /**
      * Sets the current screen to the single player screen.
      */

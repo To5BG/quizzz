@@ -303,7 +303,7 @@ public abstract class GameCtrl implements Initializable {
         Question q = this.currentQuestion;
         renderAnswerFields(q);
 
-        if(removeOneJoker) {
+        if (removeOneJoker) {
             disableButton(removeOneButton, q.type == Question.QuestionType.RANGE_GUESS);
         }
 
@@ -395,7 +395,7 @@ public abstract class GameCtrl implements Initializable {
      */
     public void updatePoints() {
         int temppoints;
-        switch(this.evaluation.type) {
+        switch (this.evaluation.type) {
             case MULTIPLE_CHOICE:
             case COMPARISON:
             case EQUIVALENCE:
@@ -411,13 +411,12 @@ public abstract class GameCtrl implements Initializable {
                     givenAnswer = 0;
                 }
                 int diff = Math.abs(givenAnswer - actualAnswer);
-                if(diff == 0) {
+                if (diff == 0) {
                     temppoints = (int) (60 * this.evaluation.points * timeFactor) + 40;
-                }
-                else {
-                    if(diff > actualAnswer) diff = actualAnswer;
-                    temppoints = (int) (90 - 90*((double) diff*difficultyFactor*timeFactor/actualAnswer) +
-                            ((diff < actualAnswer) ? 10 - 10*((double) diff*difficultyFactor/actualAnswer) : 0));
+                } else {
+                    if (diff > actualAnswer) diff = actualAnswer;
+                    temppoints = (int) (90 - 90 * ((double) diff * difficultyFactor * timeFactor / actualAnswer) +
+                            ((diff < actualAnswer) ? 10 - 10 * ((double) diff * difficultyFactor / actualAnswer) : 0));
                     if (temppoints <= 0) temppoints = 0;
                 }
                 break;
@@ -511,7 +510,7 @@ public abstract class GameCtrl implements Initializable {
         disableButton(decreaseTimeButton, true);
         disableButton(doublePointsButton, true);
 
-        switch (rounds / 4){
+        switch (rounds / 4) {
             case 0 -> difficultyFactor = 1;
             case 1 -> difficultyFactor = 2;
             case 2 -> difficultyFactor = 3;
@@ -648,7 +647,7 @@ public abstract class GameCtrl implements Initializable {
                 }
                 int randomIndex = new Random().nextInt(incorrectAnswers.size());
                 RadioButton button = multiChoiceAnswers.get(incorrectAnswers.get(randomIndex));
-                if(button.isSelected()) {
+                if (button.isSelected()) {
                     button.setSelected(false);
                 }
                 button.setDisable(true);
@@ -661,6 +660,7 @@ public abstract class GameCtrl implements Initializable {
 
     /**
      * Get number of time Jokers for the current session
+     *
      * @return int representing number of time jokers
      */
     public double getTimeJokers() {
@@ -671,10 +671,11 @@ public abstract class GameCtrl implements Initializable {
      * Reset the number of time Jokers for the current session to default value
      */
     public void resetTimeJokers() {
-        if(getTimeJokers() != 0) {
+        if (getTimeJokers() != 0) {
             server.updateTimeJokers(sessionId, 0);
         }
     }
+
     /**
      * Decrease Time Joker
      * When this joker is used, the timer speeds up
@@ -705,12 +706,11 @@ public abstract class GameCtrl implements Initializable {
 
     /**
      * the method to updateScore
-     * @param playerId the id of the player
-     * @param points the points of the player
+     *
+     * @param playerId    the id of the player
+     * @param points      the points of the player
      * @param isBestScore the flag of the best score of the player
      */
-    public void updateScore(long playerId, int points, boolean isBestScore) {
-        //to be override in Single mode and Multi mode
-    }
+    public abstract void updateScore(long playerId, int points, boolean isBestScore);
 
 }

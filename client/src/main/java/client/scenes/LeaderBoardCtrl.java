@@ -115,7 +115,7 @@ public class LeaderBoardCtrl implements Initializable {
      * Show MultiPlayerLeaderBoard
      */
     public void showMultiLeaderboard() {
-        colPoint.setCellValueFactory(q ->  new SimpleStringProperty(String.valueOf(q.getValue().bestMultiScore)));
+        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestMultiScore)));
         //data.stream().sorted(Comparator.comparing(Player::getBestMultiScore).reversed())
         //.collect(Collectors.toList());
         refreshMulti();
@@ -129,7 +129,7 @@ public class LeaderBoardCtrl implements Initializable {
      * Show SinglePlayerLeaderBoard
      */
     public void showSingleLeaderBoard() {
-        colPoint.setCellValueFactory(q ->  new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
+        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
         //data.stream().sorted(Comparator.comparing(Player::getBestSingleScore).reversed())
         // .collect(Collectors.toList());
         refreshSingle();

@@ -25,11 +25,12 @@ public class LeaderboardController {
     /**
      * Deliver all Player data in the DB
      * sorted by best single mode score, filtered all players with 0 score
+     *
      * @return a list of all data about players in single mode
      */
-    @GetMapping(path = { "/single"})
+    @GetMapping(path = {"/single"})
     public ResponseEntity<List<Player>> getPlayerSingleScores() {
-        var list=repo.findByOrderByBestSingleScoreDesc().stream()
+        var list = repo.findByOrderByBestSingleScoreDesc().stream()
                 .filter(player -> player.getBestSingleScore() != 0)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(list);
@@ -38,11 +39,12 @@ public class LeaderboardController {
     /**
      * Deliver all Player data in the DB
      * sorted by best multi mode score, filtered all players with 0 score
+     *
      * @return a list of all data about players in multi mode
      */
     @GetMapping(path = {"/multi"})
     public ResponseEntity<List<Player>> getPlayerMultiScore() {
-        var list=repo.findByOrderByBestMultiScoreDesc().stream()
+        var list = repo.findByOrderByBestMultiScoreDesc().stream()
                 .filter(player -> player.getBestMultiScore() != 0)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(list);
