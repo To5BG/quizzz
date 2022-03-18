@@ -266,6 +266,7 @@ public class SplashCtrl {
                 if(name != null && name.length() > 0) {
                     usernameField.setText(name);
                 }
+                scanner.close();
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
