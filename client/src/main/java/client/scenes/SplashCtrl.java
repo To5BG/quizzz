@@ -253,6 +253,9 @@ public class SplashCtrl {
         mainCtrl.showLeaderboard();
     }
 
+    /**
+     * Autofill the usernameField with the saved username from the 'username.txt' file, if it exists.g
+     */
     public void retrieveSavedName() {
         try {
             File file = new File("username.txt");
