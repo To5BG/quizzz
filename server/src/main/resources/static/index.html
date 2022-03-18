@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>QUIZZZZ Activity Database</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="index.css">
+    <script src="index.js"></script>
+</head>
+<body>
+<div id="left">
+    <p> Hello there! This is where you add your activities to the QUIZZZ database.</p>
+    <div>
+        <button type="button" id="viewAdd" onclick="toggleContainer('addBtnCont')">Add an activity</button>
+        <button type="button" id="viewRemove" onclick="toggleInputForm('removeOne')">Remove an activity</button>
+        <button type="button" id="refreshDB">Refresh database</button>
+        <button type="button" id="resetDB">Reset database</button>
+    </div>
+    <div id="btnCont">
+        <div id="addBtnCont">
+            <button type="button" id="addOneBtn" onclick="toggleInputForm('addOne')">Add one activity</button>
+            <button type="button" id="addOneJSONBtn" onclick="toggleInputForm('addOneJson')">
+                Add one activity (JSON)
+            </button>
+            <button type="button" id="addJsonFileBtn" onclick="toggleInputForm('addJsonFile')">
+                Add file of activities (JSON)
+            </button>
+        </div>
+    </div>
+    <div id="inputCont">
+        <div id="addOne">
+            <form>
+                <label for="title">Title:</label><br>
+                <input type="text" name="title" id="title"><br><br>
+                <label for="consumption">Consumption (in Wh):</label><br>
+                <input type="text" name="consumption_in_wh" id="consumption"><br><br>
+                <label for="image-source">Image Source (relative link):</label><br>
+                <input type="text" name="image_path" id="image-source"><br><br>
+                <label for="source">Info Source (link):</label><br>
+                <input type="text" name="source" id="source"><br><br>
+                <input type="submit" value="Send">
+            </form>
+        </div>
+        <div id="addOneJson">
+            <form>
+                <label for="ActivityJsonForm">Enter an activity in JSON format:</label>
+                <textarea id="ActivityJsonForm" style="width:200px;height:200px"></textarea><br>
+                <input type="submit" value="Send">
+            </form>
+        </div>
+        <div id="addJsonFile">
+            <form>
+                <label for="ActivityJsonFile">Select a JSON file:</label>
+                <input type="file" id="ActivityJsonFile" accept=".txt,.json"><br>
+                <input type="submit" value="Send">
+            </form>
+        </div>
+        <div id="removeOne">
+            <form>
+                <label for="removeId">Enter an id:</label><br>
+                <input type="text" name="id" id="removeId"><br>
+                <input type="submit" value="Send">
+            </form>
+        </div>
+    </div>
+</div>
+<div id="right">
+    <p class="continuous">Number of entries in database: </p>
+    <p id="entryCounter" class="continuous"></p>
+    <p id="alertMsg" class="continuous"></p>
+    <table>
+        <tr>
+            <th>Id</th>
+            <th>Title</th>
+            <th>Consumption(Wh)</th>
+            <th>ImagePath</th>
+            <th>Source</th>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
