@@ -26,6 +26,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
@@ -88,10 +89,8 @@ public class LeaderBoardCtrl implements Initializable {
      * @param e an event which represents a pressed key
      */
     public void keyPressed(KeyEvent e) {
-        switch (e.getCode()) {
-            case ESCAPE:
-                back();
-                break;
+        if (e.getCode() == KeyCode.ESCAPE) {
+            back();
         }
     }
 
