@@ -68,15 +68,18 @@ public class MultiplayerCtrl extends GameCtrl {
         t.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> {
-                    try {
-                        if (server.getSession(sessionId).sessionStatus
-                                == GameSession.SessionStatus.PAUSED) {
-                            startEvaluation(bestMultiScore);
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (server.getSession(sessionId).sessionStatus
+                                    == GameSession.SessionStatus.PAUSED) {
+                                startEvaluation(bestMultiScore);
+                                cancel();
+                            }
+                        } catch (Exception e) {
                             cancel();
                         }
-                    } catch (Exception e) {
-                        cancel();
                     }
                 });
             }

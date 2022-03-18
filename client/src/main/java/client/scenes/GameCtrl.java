@@ -158,20 +158,22 @@ public abstract class GameCtrl implements Initializable {
      */
     protected void renderAnswerFields(Question q) {
         switch (q.type) {
-            case MULTIPLE_CHOICE, COMPARISON, EQUIVALENCE -> {
+            case MULTIPLE_CHOICE:
+            case COMPARISON:
+            case EQUIVALENCE:
                 renderMultipleChoiceQuestion(q);
                 if (removeOneJoker) {
                     disableButton(removeOneButton, false);
                 }
                 break;
-            }
-            case RANGE_GUESS -> {
+            case RANGE_GUESS:
                 renderEstimationQuestion();
                 break;
-            }
-            default -> throw new UnsupportedOperationException("Unsupported question type when rendering answers");
+            default:
+                throw new UnsupportedOperationException("Unsupported question type when rendering answers");
         }
     }
+
 
     private void renderEstimationQuestion() {
         this.countdown.setText("");
@@ -204,17 +206,16 @@ public abstract class GameCtrl implements Initializable {
      */
     protected void renderCorrectAnswer() {
         switch (this.evaluation.type) {
-            case MULTIPLE_CHOICE, COMPARISON, EQUIVALENCE
-                    -> {
+            case MULTIPLE_CHOICE:
+            case COMPARISON:
+            case EQUIVALENCE:
                 renderMultipleChoiceAnswers(this.evaluation.correctAnswers);
                 break;
-            }
-            case RANGE_GUESS -> {
+            case RANGE_GUESS:
                 renderEstimationAnswers(this.evaluation.correctAnswers);
                 break;
-            }
-            default -> throw new
-                    UnsupportedOperationException("Currently only multiple choice answers can be rendered");
+            default:
+                throw new UnsupportedOperationException("Currently only multiple choice answers can be rendered");
         }
     }
 
@@ -392,16 +393,16 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Updates the point counter in client side, and then updates database entry
      */
-    @SuppressWarnings("checkstyle:Indentation")
     public void updatePoints() {
         int temppoints;
-        switch (this.evaluation.type) {
-            case MULTIPLE_CHOICE, COMPARISON, EQUIVALENCE -> {
+        switch(this.evaluation.type) {
+            case MULTIPLE_CHOICE:
+            case COMPARISON:
+            case EQUIVALENCE:
                 temppoints = (int) ((80 * this.evaluation.points * timeFactor) +
-                    (20 * this.evaluation.points));
+                        (20 * this.evaluation.points));
                 break;
-            }
-            case RANGE_GUESS -> {
+            case RANGE_GUESS:
                 int givenAnswer;
                 int actualAnswer = this.evaluation.correctAnswers.get(0);
                 try {
@@ -410,20 +411,20 @@ public abstract class GameCtrl implements Initializable {
                     givenAnswer = 0;
                 }
                 int diff = Math.abs(givenAnswer - actualAnswer);
-                if (diff == 0) {
+                if(diff == 0) {
                     temppoints = (int) (60 * this.evaluation.points * timeFactor) + 40;
-                } else {
-                    if (diff > actualAnswer) diff = actualAnswer;
-                    temppoints = (int) (90 - 90 * ((double) diff * difficultyFactor * timeFactor / actualAnswer) +
-                            ((diff < actualAnswer) ? 10 - 10 * ((double) diff * difficultyFactor / actualAnswer) : 0));
+                }
+                else {
+                    if(diff > actualAnswer) diff = actualAnswer;
+                    temppoints = (int) (90 - 90*((double) diff*difficultyFactor*timeFactor/actualAnswer) +
+                            ((diff < actualAnswer) ? 10 - 10*((double) diff*difficultyFactor/actualAnswer) : 0));
                     if (temppoints <= 0) temppoints = 0;
                 }
                 break;
-            }
-            default -> {
+            default:
                 throw new UnsupportedOperationException("Unsupported question type when parsing answer");
-            }
         }
+
         if (doublePointsActive) {
             temppoints = temppoints * 2;
             switchStatusOfDoublePoints();
@@ -635,7 +636,9 @@ public abstract class GameCtrl implements Initializable {
         disableButton(removeOneButton, true);
 
         switch (currentQuestion.type) {
-            case COMPARISON, EQUIVALENCE, MULTIPLE_CHOICE -> {
+            case COMPARISON:
+            case EQUIVALENCE:
+            case MULTIPLE_CHOICE:
                 List<Integer> incorrectAnswers = new ArrayList<>();
                 List<Integer> correctAnswers = server.getCorrectAnswers(sessionId);
                 for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
@@ -645,13 +648,13 @@ public abstract class GameCtrl implements Initializable {
                 }
                 int randomIndex = new Random().nextInt(incorrectAnswers.size());
                 RadioButton button = multiChoiceAnswers.get(incorrectAnswers.get(randomIndex));
-                if (button.isSelected()) {
+                if(button.isSelected()) {
                     button.setSelected(false);
                 }
                 button.setDisable(true);
                 break;
-            }
-            default -> disableButton(removeOneButton, false);
+            default:
+                disableButton(removeOneButton, false);
         }
     }
 

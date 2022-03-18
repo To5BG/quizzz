@@ -87,8 +87,10 @@ public class LeaderBoardCtrl implements Initializable {
      * @param e an event which represents a pressed key
      */
     public void keyPressed(KeyEvent e) {
-        if (e.getCode() == KeyCode.ESCAPE) {
-            back();
+        switch (e.getCode()) {
+            case ESCAPE:
+                back();
+                break;
         }
     }
 
