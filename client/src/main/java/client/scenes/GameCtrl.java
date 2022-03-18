@@ -16,8 +16,8 @@ import java.util.*;
 
 public abstract class GameCtrl implements Initializable {
 
-    protected final int GAME_ROUNDS = 20;
-    protected final int GAME_ROUND_TIME = 10;
+    protected final int GAME_ROUNDS = 2;
+    protected final int GAME_ROUND_TIME = 2;
     protected final int MIDGAME_BREAK_TIME = 6;
     protected final int TIMER_UPDATE_INTERVAL_MS = 50;
     protected final int GAME_ROUND_DELAY = 2;
@@ -344,7 +344,7 @@ public abstract class GameCtrl implements Initializable {
     public void shutdown() {
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
         if (sessionId != 0) {
-            server.updateScore(playerId, 0, false);
+            updateScore(playerId, 0, false);
             server.addPlayerAnswer(sessionId, playerId, new Answer(Question.QuestionType.MULTIPLE_CHOICE));
             server.removePlayer(sessionId, playerId);
             setPlayerId(0);
@@ -429,7 +429,7 @@ public abstract class GameCtrl implements Initializable {
         }
         points += temppoints;
         renderPoints();
-        server.updateScore(playerId, points, false);
+        updateScore(playerId, points, false);
     }
 
     /**
@@ -501,7 +501,7 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Gets the user's answer, starts the evaluation and loads a new question or ends the game.
      */
-    public void startSingleEvaluation() {
+    public void startEvaluation(int scoreEvaluation) {
 
         if (this.evaluation == null) return;
 
@@ -532,7 +532,7 @@ public abstract class GameCtrl implements Initializable {
                     resetTimeJokers();
                     if (rounds == GAME_ROUNDS) {
                         // TODO display leaderboard things here
-                        if (points > bestSingleScore) server.updateScore(playerId, points, true);
+                        if (points > scoreEvaluation) updateScore(playerId, points, true);
                         back();
                     } else if (rounds == GAME_ROUNDS / 2 &&
                             server.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
@@ -699,6 +699,16 @@ public abstract class GameCtrl implements Initializable {
      */
     private void switchStatusOfDoublePoints() {
         doublePointsActive = !doublePointsActive;
+    }
+
+    /**
+     * the method to updateScore
+     * @param playerId the id of the player
+     * @param points the points of the player
+     * @param isBestScore the flag of the best score of the player
+     */
+    public void updateScore(long playerId, int points, boolean isBestScore) {
+        //to be override in Single mode and Multi mode
     }
 
 }

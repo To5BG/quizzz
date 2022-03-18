@@ -23,6 +23,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyEvent;
@@ -45,6 +46,10 @@ public class LeaderBoardCtrl implements Initializable {
     private TableColumn<Player, String> colName;
     @FXML
     private TableColumn<Player, String> colPoint;
+    @FXML
+    private Button singleLeaderboard;
+    @FXML
+    private Button multiLeaderboard;
 
     /**
      * constructor of the leaderboard
@@ -115,11 +120,11 @@ public class LeaderBoardCtrl implements Initializable {
         colPoint.setCellValueFactory(q ->  new SimpleStringProperty(String.valueOf(q.getValue().bestMultiScore)));
         data.stream().sorted(Comparator.comparing(Player::getBestMultiScore).reversed())
                 .collect(Collectors.toList());
+        refreshMulti();
         allPlayers.setItems(data);
-        for(Player p : data) {
-            System.out.println(p.toString());
-        }
         allPlayers.refresh();
+        singleLeaderboard.setText("Single");
+        multiLeaderboard.setText("on display");
     }
 
     /**
@@ -129,8 +134,10 @@ public class LeaderBoardCtrl implements Initializable {
         colPoint.setCellValueFactory(q ->  new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
         data.stream().sorted(Comparator.comparing(Player::getBestSingleScore).reversed())
                 .collect(Collectors.toList());
+        refreshSingle();
         allPlayers.setItems(data);
         allPlayers.refresh();
+        multiLeaderboard.setText("Multi");
+        singleLeaderboard.setText("on display");
     }
-
 }
