@@ -364,7 +364,11 @@ public abstract class GameCtrl implements Initializable {
         mainCtrl.showSplash();
     }
 
+    /**
+     * Resets all fields and the screen for a new game.
+     */
     public void reset() {
+        removeLeaderboard();
         this.questionPrompt.setText("[Question]");
         this.answerArea.getChildren().clear();
         this.pointsLabel.setText("Points: 0");

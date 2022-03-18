@@ -125,10 +125,16 @@ public class MultiplayerCtrl extends GameCtrl {
         refresh();
     }
 
+    /**
+     * Method that calls the parent class' back method when the endgame back button is pressed
+     */
     public void leaveGame() {
         super.back();
     }
 
+    /**
+     * Reset method that resets multiplayer only attributes.
+     */
     @Override
     public void reset() {
         playAgain.setText("Play again");
@@ -137,7 +143,10 @@ public class MultiplayerCtrl extends GameCtrl {
         super.reset();
     }
 
-
+    /**
+     * Toggles between want to play again and don't want to play again, modifying playAgain button and stores whether
+     * the player wants to play again.
+     */
     public void playAgain() {
         switch (playAgain.getText()) {
             case "Play again" -> {
@@ -151,6 +160,10 @@ public class MultiplayerCtrl extends GameCtrl {
         }
     }
 
+    /**
+     * Show leaderboard at the end of the game and reveals the back button as well as the playAgain button. Starts timer
+     * and after 20 seconds a new game starts if enough players want to play again.
+     */
     @Override
     public void back() {
         displayLeaderboard();
@@ -192,8 +205,24 @@ public class MultiplayerCtrl extends GameCtrl {
                     if (!(isPlayingAgain())) {
                         leaveGame();
                     }
-                    else if (server.getPlayers(sessionId).size() > 1 && isPlayingAgain()) {
-                        removeLeaderboard();
+                    else {
+                        startGame();
+                    }
+                });
+            }
+        }, 20000);
+    }
+
+    /**
+     * Checks whether there are enough players in the session after the clients had time to remove the players that
+     * quit.
+     */
+    public void startGame() {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    if (server.getPlayers(sessionId).size() >= 2 && isPlayingAgain()) {
                         reset();
                         loadQuestion();
                     }
@@ -202,14 +231,23 @@ public class MultiplayerCtrl extends GameCtrl {
                     }
                 });
             }
-        }, 20000);
-
+        }, 1000);
     }
 
+    /**
+     * Setter for playingAgain field
+     *
+     * @param playingAgain parameter that shows if a player wants to play again.
+     */
     public void setPlayingAgain(boolean playingAgain) {
         this.playingAgain = playingAgain;
     }
 
+    /**
+     * Getter for playingAgain field.
+     *
+     * @return whether the player wants to play again.
+     */
     public boolean isPlayingAgain() {
         return playingAgain;
     }
