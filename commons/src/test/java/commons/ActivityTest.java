@@ -10,8 +10,8 @@ class ActivityTest {
     public void checkEmptyConstructor() {
         Activity a = new Activity();
         assertNull(a.title);
-        assertNull(a.consumption);
-        assertNull(a.imagePath);
+        assertNull(a.consumption_in_wh);
+        assertNull(a.image_path);
         assertNull(a.source);
     }
 
@@ -19,8 +19,8 @@ class ActivityTest {
     public void checkConstructor() {
         var a = new Activity("t", "1", "root", "google.com");
         assertEquals("t", a.title);
-        assertEquals("1", a.consumption);
-        assertEquals("root", a.imagePath);
+        assertEquals("1", a.consumption_in_wh);
+        assertEquals("root", a.image_path);
         assertEquals("google.com", a.source);
     }
 
@@ -37,9 +37,9 @@ class ActivityTest {
         var actual = new Activity("t", "1", "root", "google.com").toString();
         assertTrue(actual.contains(Activity.class.getSimpleName()));
 
-        assertTrue(actual.contains("consumption=1"));
+        assertTrue(actual.contains("consumption_in_wh=1"));
         assertTrue(actual.contains("id=0"));
-        assertTrue(actual.contains("imagePath=root"));
+        assertTrue(actual.contains("image_path=root"));
         assertTrue(actual.contains("source=google.com"));
         assertTrue(actual.contains("title=t"));
     }

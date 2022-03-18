@@ -44,7 +44,7 @@ public class MainCtrl {
     private Scene leaderBoardScreen;
 
     // for now a field will suffice, in case more constants are needed an enum must be created
-    public final long WAITING_AREA_ID = 1L;
+    public final static long WAITING_AREA_ID = 1L;
 
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
