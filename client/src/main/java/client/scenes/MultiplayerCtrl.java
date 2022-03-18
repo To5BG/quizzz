@@ -98,6 +98,8 @@ public class MultiplayerCtrl extends GameCtrl {
      */
     public void submitAnswer(boolean initiatedByTimer) {
         super.submitAnswer(initiatedByTimer);
+        if (!initiatedByTimer && this.evaluation == null) return;
+
         //enable jokers that can be used after submitting an answer
         if(decreaseTimeJoker) {
             disableButton(decreaseTimeButton, false);
@@ -105,7 +107,7 @@ public class MultiplayerCtrl extends GameCtrl {
         if(doublePointsJoker) {
             disableButton(doublePointsButton, false);
         }
-        if (!initiatedByTimer && this.evaluation == null) return;
+
         refresh();
     }
 }

@@ -16,7 +16,7 @@ import java.util.*;
 
 public abstract class GameCtrl implements Initializable {
 
-    protected final int GAME_ROUNDS = 5;
+    protected final int GAME_ROUNDS = 20;
     protected final int GAME_ROUND_TIME = 10;
     protected final int MIDGAME_BREAK_TIME = 6;
     protected final int TIMER_UPDATE_INTERVAL_MS = 50;
@@ -30,6 +30,9 @@ public abstract class GameCtrl implements Initializable {
 
     @FXML
     protected Label pointsLabel;
+
+    @FXML
+    protected Label questionCount;
 
     @FXML
     protected Label countdown;
@@ -73,6 +76,8 @@ public abstract class GameCtrl implements Initializable {
     protected int bestSingleScore = 0;
     protected int bestMultiScore = 0;
     protected int rounds = 0;
+    protected double difficultyFactor = 1;
+    protected double timeFactor;
     protected Thread timerThread;
     protected Evaluation evaluation;
 
@@ -137,6 +142,13 @@ public abstract class GameCtrl implements Initializable {
     protected void renderGeneralInformation(Question q) {
         this.questionPrompt.setText(q.prompt);
         // TODO load image
+    }
+
+    /**
+     * Displays the count of the current question
+     */
+    public void renderQuestionCount() {
+        questionCount.setText(String.format("Question: %d", rounds + 1));
     }
 
     /**
@@ -279,6 +291,7 @@ public abstract class GameCtrl implements Initializable {
         Question q = this.server.fetchOneQuestion(this.sessionId);
         this.currentQuestion = q;
         renderGeneralInformation(q);
+        renderQuestionCount();
         countdown();
     }
 
@@ -298,17 +311,18 @@ public abstract class GameCtrl implements Initializable {
         Task roundTimer = new Task() {
             @Override
             public Object call() {
-                long refreshCounter = 0;
+                double refreshCounter = 0;
                 long gameRoundMs = GAME_ROUND_TIME * 1000;
-                long timeElapsed = 0;
+                double timeElapsed = 0;
                 while (timeElapsed < gameRoundMs) {
                     //the speed on which the timer updates, with default speed 1
-                    long booster = getTimeJokers() + 1;
+                    double booster = getTimeJokers() + 1;
                     updateProgress(gameRoundMs - timeElapsed, gameRoundMs);
                     refreshCounter += booster;
                     try {
                         Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
                         timeElapsed = refreshCounter * TIMER_UPDATE_INTERVAL_MS;
+                        timeFactor = timeProgress.getProgress();
                     } catch (InterruptedException e) {
                         updateProgress(0, 1);
                         return null;
@@ -384,8 +398,8 @@ public abstract class GameCtrl implements Initializable {
             case MULTIPLE_CHOICE:
             case COMPARISON:
             case EQUIVALENCE:
-                temppoints = (int) (80 * this.evaluation.points * timeProgress.getProgress()) +
-                        (20 * this.evaluation.points);
+                temppoints = (int) ((80 * this.evaluation.points * timeFactor) +
+                        (20 * this.evaluation.points));
                 break;
             case RANGE_GUESS:
                 int givenAnswer;
@@ -397,12 +411,13 @@ public abstract class GameCtrl implements Initializable {
                 }
                 int diff = Math.abs(givenAnswer - actualAnswer);
                 if(diff == 0) {
-                    temppoints = (int) (60 * this.evaluation.points * timeProgress.getProgress()) + 40;
+                    temppoints = (int) (60 * this.evaluation.points * timeFactor) + 40;
                 }
                 else {
                     if(diff > actualAnswer) diff = actualAnswer;
-                    temppoints = (int) ((90 * (1 - (double) diff/actualAnswer) * timeProgress.getProgress()) +
-                            ((diff < actualAnswer) ? 10 * (1 - (double) diff/actualAnswer) : 0));
+                    temppoints = (int) (90 - 90*((double) diff*difficultyFactor*timeFactor/actualAnswer) +
+                            ((diff < actualAnswer) ? 10 - 10*((double) diff*difficultyFactor/actualAnswer) : 0));
+                    if (temppoints <= 0) temppoints = 0;
                 }
                 break;
             default:
@@ -493,6 +508,15 @@ public abstract class GameCtrl implements Initializable {
         disableButton(removeOneButton, true);
         disableButton(decreaseTimeButton, true);
         disableButton(doublePointsButton, true);
+
+        switch (rounds / 4){
+            case 0 -> difficultyFactor = 1;
+            case 1 -> difficultyFactor = 2;
+            case 2 -> difficultyFactor = 3;
+            case 3 -> difficultyFactor = 4;
+            case 4 -> difficultyFactor = 5;
+            default -> difficultyFactor = 1;
+        }
 
         updatePoints();
         renderCorrectAnswer();
@@ -637,7 +661,7 @@ public abstract class GameCtrl implements Initializable {
      * Get number of time Jokers for the current session
      * @return int representing number of time jokers
      */
-    public int getTimeJokers() {
+    public double getTimeJokers() {
         return server.getSession(sessionId).getTimeJokers();
     }
 
@@ -652,12 +676,12 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Decrease Time Joker
      * When this joker is used, the timer speeds up
-     * This joker can not be used in single-player
+     * This joker becomes Increase Time Joker in Singleplayer
      */
     public void decreaseTime() {
         decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
-        server.updateTimeJokers(sessionId, getTimeJokers() + 1);
+        server.updateTimeJokers(sessionId, (int) getTimeJokers() + 1);
     }
 
     /**

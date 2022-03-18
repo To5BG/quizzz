@@ -87,6 +87,7 @@ public class MainCtrl {
     public void showSplash() {
         primaryStage.setTitle("Main menu");
         primaryStage.setScene(splashScreen);
+        splashCtrl.retrieveSavedName();
     }
 
     /**
@@ -151,7 +152,6 @@ public class MainCtrl {
         singlePlayerCtrl.setSessionId(sessionId);
         singlePlayerCtrl.setPlayerId(playerId);
         singlePlayerCtrl.setBestSingleScore();
-        singlePlayerCtrl.disableSingleplayerJokers();
         singlePlayerCtrl.loadQuestion();
         singlePlayerCtrl.refresh();
     }
