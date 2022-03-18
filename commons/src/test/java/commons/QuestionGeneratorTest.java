@@ -11,7 +11,8 @@ public class QuestionGeneratorTest {
 
     @Test
     public void testGenerateQuestionInternalRng() {
-        Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion();
+        double difficulty = 1;
+        Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion(difficulty);
         assertNotNull(res.getKey());
         assertNotNull(res.getValue());
         assertTrue(res.getValue().size() >= 1);
@@ -20,7 +21,9 @@ public class QuestionGeneratorTest {
 
     @Test
     public void testGenerateComparison() {
-        Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion(Question.QuestionType.COMPARISON);
+        double difficulty = 1;
+        Pair<Question, List<Integer>> res =
+                QuestionGenerator.generateTypeQuestion(Question.QuestionType.COMPARISON, difficulty);
         Question q = res.getKey();
         assertEquals("Which activity takes the most energy?", q.prompt);
         assertEquals(Question.QuestionType.COMPARISON, q.type);
@@ -30,7 +33,9 @@ public class QuestionGeneratorTest {
 
     @Test
     public void testGenerateMultipleChoice() {
-        Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion(Question.QuestionType.MULTIPLE_CHOICE);
+        double difficulty = 1;
+        Pair<Question, List<Integer>> res =
+                QuestionGenerator.generateTypeQuestion(Question.QuestionType.MULTIPLE_CHOICE, difficulty);
         Question q = res.getKey();
         assertTrue(q.prompt.startsWith("Guess how much energy the following activity takes\n"));
         assertEquals(Question.QuestionType.MULTIPLE_CHOICE, q.type);
@@ -40,7 +45,9 @@ public class QuestionGeneratorTest {
 
     @Test
     public void testGenerateEquivalence() {
-        Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion(Question.QuestionType.EQUIVALENCE);
+        double difficulty = 1;
+        Pair<Question, List<Integer>> res =
+                QuestionGenerator.generateTypeQuestion(Question.QuestionType.EQUIVALENCE, difficulty);
         Question q = res.getKey();
         assertTrue(
                 q.prompt.startsWith("What could you do instead of the following activity to use the same energy?\n"));
@@ -51,7 +58,9 @@ public class QuestionGeneratorTest {
 
     @Test
     public void testGenerateEstimation() {
-        Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion(Question.QuestionType.RANGE_GUESS);
+        double difficulty = 1;
+        Pair<Question, List<Integer>> res =
+                QuestionGenerator.generateTypeQuestion(Question.QuestionType.RANGE_GUESS, difficulty);
         Question q = res.getKey();
         assertTrue(q.prompt.startsWith("Guess how much Wh of energy the following activity takes\n"));
         assertEquals(Question.QuestionType.RANGE_GUESS, q.type);

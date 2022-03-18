@@ -13,6 +13,7 @@
         <Button fx:id="submitButton" layoutX="361.0" layoutY="248.0" mnemonicParsing="false"
                 onAction="#submitAnswerButton" text="Final Answer" />
         <Label fx:id="pointsLabel" layoutX="492.0" layoutY="14.0" text="Points: 0" />
+        <Label fx:id="questionCount" layoutX="14.0" layoutY="1.0" text="Question: 1" />
         <ProgressBar fx:id="timeProgress" layoutX="18.0" layoutY="248.0" prefHeight="20.0" prefWidth="321.0"
                      progress="0.0" />
         <Button layoutX="521.0" layoutY="355.0" mnemonicParsing="false" onAction="#back" text="Go Back" />
