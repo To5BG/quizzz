@@ -23,9 +23,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
@@ -48,6 +46,8 @@ public class LeaderBoardCtrl implements Initializable {
     private Button singleLeaderboard;
     @FXML
     private Button multiLeaderboard;
+    @FXML
+    private Label Leaderboard;
 
     /**
      * constructor of the leaderboard
@@ -100,6 +100,7 @@ public class LeaderBoardCtrl implements Initializable {
         var players = server.getPlayerSingleScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
+        Leaderboard.setText("Leaderboard-Single");
     }
 
     /**
@@ -109,6 +110,7 @@ public class LeaderBoardCtrl implements Initializable {
         var players = server.getPlayerMultiScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
+        Leaderboard.setText("Leaderboard-Multi");
     }
 
     /**
