@@ -80,7 +80,7 @@ public class SplashCtrl {
     public boolean isUsernameValid(String username) {
         if(username.isBlank()) return false;
         for (int i = 0; i < username.length(); i++) {
-            if ((Character.isLetterOrDigit(username.charAt(i)) == false)) {
+            if ((!Character.isLetterOrDigit(username.charAt(i)))) {
                 return false;
             }
         }

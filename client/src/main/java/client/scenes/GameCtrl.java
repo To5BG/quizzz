@@ -9,6 +9,7 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 
@@ -16,8 +17,8 @@ import java.util.*;
 
 public abstract class GameCtrl implements Initializable {
 
-    protected final int GAME_ROUNDS = 2;
-    protected final int GAME_ROUND_TIME = 2;
+    protected final int GAME_ROUNDS = 20;
+    protected final int GAME_ROUND_TIME = 10;
     protected final int MIDGAME_BREAK_TIME = 6;
     protected final int TIMER_UPDATE_INTERVAL_MS = 50;
     protected final int GAME_ROUND_DELAY = 2;
@@ -90,7 +91,7 @@ public abstract class GameCtrl implements Initializable {
     public GameCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
-        this.multiChoiceAnswers = new ArrayList<RadioButton>();
+        this.multiChoiceAnswers = new ArrayList<>();
 
         doublePointsJoker = true;
         doublePointsActive = false;
@@ -105,7 +106,7 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Setter for sessionId.
      *
-     * @param sessionId
+     * @param sessionId the id of the sessions
      */
     public void setSessionId(long sessionId) {
         this.sessionId = sessionId;
@@ -114,7 +115,7 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Setter for playerId.
      *
-     * @param playerId
+     * @param playerId the id of the player
      */
     public void setPlayerId(long playerId) {
         this.playerId = playerId;
@@ -137,7 +138,7 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Load general question information
      *
-     * @param q
+     * @param q the question to be rendered
      */
     protected void renderGeneralInformation(Question q) {
         this.questionPrompt.setText(q.prompt);
@@ -158,19 +159,14 @@ public abstract class GameCtrl implements Initializable {
      */
     protected void renderAnswerFields(Question q) {
         switch (q.type) {
-            case MULTIPLE_CHOICE:
-            case COMPARISON:
-            case EQUIVALENCE:
+            case MULTIPLE_CHOICE, COMPARISON, EQUIVALENCE -> {
                 renderMultipleChoiceQuestion(q);
                 if (removeOneJoker) {
                     disableButton(removeOneButton, false);
                 }
-                break;
-            case RANGE_GUESS:
-                renderEstimationQuestion();
-                break;
-            default:
-                throw new UnsupportedOperationException("Unsupported question type when rendering answers");
+            }
+            case RANGE_GUESS -> renderEstimationQuestion();
+            default -> throw new UnsupportedOperationException("Unsupported question type when rendering answers");
         }
     }
 
@@ -184,7 +180,7 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Render question of the multiple choice question variant
      *
-     * @param q
+     * @param q the question to be rendered
      */
     protected void renderMultipleChoiceQuestion(Question q) {
         double yPosition = 0.0;
@@ -205,21 +201,16 @@ public abstract class GameCtrl implements Initializable {
      */
     protected void renderCorrectAnswer() {
         switch (this.evaluation.type) {
-            case MULTIPLE_CHOICE:
-            case COMPARISON:
-            case EQUIVALENCE:
-                renderMultipleChoiceAnswers(this.evaluation.correctAnswers);
-                break;
-            case RANGE_GUESS:
-                renderEstimationAnswers(this.evaluation.correctAnswers);
-                break;
-            default:
-                throw new UnsupportedOperationException("Currently only multiple choice answers can be rendered");
+            case MULTIPLE_CHOICE, COMPARISON, EQUIVALENCE
+                    -> renderMultipleChoiceAnswers(this.evaluation.correctAnswers);
+            case RANGE_GUESS -> renderEstimationAnswers(this.evaluation.correctAnswers);
+            default -> throw new
+                    UnsupportedOperationException("Currently only multiple choice answers can be rendered");
         }
     }
 
     private void renderEstimationAnswers(List<Integer> correctAnswers) {
-        int givenAnswer = 0;
+        int givenAnswer;
         int actualAnswer = correctAnswers.get(0);
         try {
             givenAnswer = Integer.parseInt(estimationAnswer.getText());
@@ -384,8 +375,8 @@ public abstract class GameCtrl implements Initializable {
      * @param e KeyEvent to be switched
      */
     public void keyPressed(KeyEvent e) {
-        switch (e.getCode()) {
-            case ESCAPE -> back();
+        if (e.getCode() == KeyCode.ESCAPE) {
+            back();
         }
     }
 
@@ -394,14 +385,11 @@ public abstract class GameCtrl implements Initializable {
      */
     public void updatePoints() {
         int temppoints;
-        switch(this.evaluation.type) {
-            case MULTIPLE_CHOICE:
-            case COMPARISON:
-            case EQUIVALENCE:
-                temppoints = (int) ((80 * this.evaluation.points * timeFactor) +
-                        (20 * this.evaluation.points));
-                break;
-            case RANGE_GUESS:
+        switch (this.evaluation.type) {
+            case MULTIPLE_CHOICE, COMPARISON, EQUIVALENCE
+                    -> temppoints = (int) ((80 * this.evaluation.points * timeFactor) +
+                    (20 * this.evaluation.points));
+            case RANGE_GUESS -> {
                 int givenAnswer;
                 int actualAnswer = this.evaluation.correctAnswers.get(0);
                 try {
@@ -410,18 +398,16 @@ public abstract class GameCtrl implements Initializable {
                     givenAnswer = 0;
                 }
                 int diff = Math.abs(givenAnswer - actualAnswer);
-                if(diff == 0) {
+                if (diff == 0) {
                     temppoints = (int) (60 * this.evaluation.points * timeFactor) + 40;
-                }
-                else {
-                    if(diff > actualAnswer) diff = actualAnswer;
-                    temppoints = (int) (90 - 90*((double) diff*difficultyFactor*timeFactor/actualAnswer) +
-                            ((diff < actualAnswer) ? 10 - 10*((double) diff*difficultyFactor/actualAnswer) : 0));
+                } else {
+                    if (diff > actualAnswer) diff = actualAnswer;
+                    temppoints = (int) (90 - 90 * ((double) diff * difficultyFactor * timeFactor / actualAnswer) +
+                            ((diff < actualAnswer) ? 10 - 10 * ((double) diff * difficultyFactor / actualAnswer) : 0));
                     if (temppoints <= 0) temppoints = 0;
                 }
-                break;
-            default:
-                throw new UnsupportedOperationException("Unsupported question type when parsing answer");
+            }
+            default -> throw new UnsupportedOperationException("Unsupported question type when parsing answer");
         }
         if (doublePointsActive) {
             temppoints = temppoints * 2;
@@ -634,9 +620,7 @@ public abstract class GameCtrl implements Initializable {
         disableButton(removeOneButton, true);
 
         switch (currentQuestion.type) {
-            case COMPARISON:
-            case EQUIVALENCE:
-            case MULTIPLE_CHOICE:
+            case COMPARISON, EQUIVALENCE, MULTIPLE_CHOICE -> {
                 List<Integer> incorrectAnswers = new ArrayList<>();
                 List<Integer> correctAnswers = server.getCorrectAnswers(sessionId);
                 for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
@@ -646,13 +630,12 @@ public abstract class GameCtrl implements Initializable {
                 }
                 int randomIndex = new Random().nextInt(incorrectAnswers.size());
                 RadioButton button = multiChoiceAnswers.get(incorrectAnswers.get(randomIndex));
-                if(button.isSelected()) {
+                if (button.isSelected()) {
                     button.setSelected(false);
                 }
                 button.setDisable(true);
-                break;
-            default:
-                disableButton(removeOneButton, false);
+            }
+            default -> disableButton(removeOneButton, false);
         }
     }
 

@@ -121,14 +121,11 @@ public class MainCtrl {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            if (!waitingAreaCtrl.refresh()) cancel();
-                        } catch (Exception e) {
-                            cancel();
-                        }
+                Platform.runLater(() -> {
+                    try {
+                        if (!waitingAreaCtrl.refresh()) cancel();
+                    } catch (Exception e) {
+                        cancel();
                     }
                 });
             }

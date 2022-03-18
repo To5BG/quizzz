@@ -30,9 +30,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
-import java.util.Comparator;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class LeaderBoardCtrl implements Initializable {
 
@@ -117,8 +115,8 @@ public class LeaderBoardCtrl implements Initializable {
      */
     public void showMultiLeaderboard() {
         colPoint.setCellValueFactory(q ->  new SimpleStringProperty(String.valueOf(q.getValue().bestMultiScore)));
-        data.stream().sorted(Comparator.comparing(Player::getBestMultiScore).reversed())
-                .collect(Collectors.toList());
+        //data.stream().sorted(Comparator.comparing(Player::getBestMultiScore).reversed())
+        //.collect(Collectors.toList());
         refreshMulti();
         allPlayers.setItems(data);
         allPlayers.refresh();
@@ -131,8 +129,8 @@ public class LeaderBoardCtrl implements Initializable {
      */
     public void showSingleLeaderBoard() {
         colPoint.setCellValueFactory(q ->  new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
-        data.stream().sorted(Comparator.comparing(Player::getBestSingleScore).reversed())
-                .collect(Collectors.toList());
+        //data.stream().sorted(Comparator.comparing(Player::getBestSingleScore).reversed())
+        // .collect(Collectors.toList());
         refreshSingle();
         allPlayers.setItems(data);
         allPlayers.refresh();
