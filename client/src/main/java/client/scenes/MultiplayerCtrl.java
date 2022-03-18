@@ -156,15 +156,14 @@ public class MultiplayerCtrl extends GameCtrl {
         displayLeaderboard();
         backButton.setOpacity(1);
         playAgain.setOpacity(1);
-        server.toggleReady(sessionId, false);
 
         Task roundTimer = new Task() {
             @Override
             public Object call() {
                 long refreshCounter = 0;
-                long gameRoundMs = 20000;
-                while (refreshCounter * TIMER_UPDATE_INTERVAL_MS < gameRoundMs) {
-                    updateProgress(gameRoundMs - refreshCounter * TIMER_UPDATE_INTERVAL_MS, gameRoundMs);
+                long waitingTime = 20000L;
+                while (refreshCounter * TIMER_UPDATE_INTERVAL_MS < waitingTime) {
+                    updateProgress(waitingTime - refreshCounter * TIMER_UPDATE_INTERVAL_MS, waitingTime);
                     ++refreshCounter;
                     try {
                         Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
@@ -192,17 +191,14 @@ public class MultiplayerCtrl extends GameCtrl {
                 Platform.runLater(() -> {
                     if (!(isPlayingAgain())) {
                         leaveGame();
-                        cancel();
                     }
                     else if (server.getPlayers(sessionId).size() > 1 && isPlayingAgain()) {
                         removeLeaderboard();
                         reset();
                         loadQuestion();
-                        cancel();
                     }
                     else {
                         leaveGame();
-                        cancel();
                     }
                 });
             }
