@@ -151,10 +151,12 @@ public class MultiplayerCtrl extends GameCtrl {
         switch (playAgain.getText()) {
             case "Play again" -> {
                 playAgain.setText("Don't play again");
+                questionCount.setText("Waiting for game to start...");
                 setPlayingAgain(true);
             }
             case "Don't play again" -> {
                 playAgain.setText("Play again");
+                questionCount.setText("End of game! Play again or go back to main.");
                 setPlayingAgain(false);
             }
         }
@@ -169,6 +171,7 @@ public class MultiplayerCtrl extends GameCtrl {
         displayLeaderboard();
         backButton.setOpacity(1);
         playAgain.setOpacity(1);
+        questionCount.setText("End of game! Play again or go back to main.");
 
         Task roundTimer = new Task() {
             @Override
