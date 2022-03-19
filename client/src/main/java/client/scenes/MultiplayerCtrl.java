@@ -49,6 +49,9 @@ public class MultiplayerCtrl extends GameCtrl {
     private Button backButton;
 
     @FXML
+    private Button leaveButton;
+
+    @FXML
     private Button playAgain;
 
     @FXML
@@ -75,7 +78,8 @@ public class MultiplayerCtrl extends GameCtrl {
             }
         });
 
-        backButton.setOpacity(0);
+        leaveButton.setOpacity(0);
+        backButton.setOpacity(1);
         playAgain.setOpacity(0);
         status.setOpacity(0);
     }
@@ -151,7 +155,7 @@ public class MultiplayerCtrl extends GameCtrl {
      * Method that calls the parent class' back method when the endgame back button is pressed and calls reset.
      */
     public void leaveGame() {
-        playAgain();
+        if (playAgain.getText().equals("Don't play again")) playAgain();
         reset();
         super.back();
     }
@@ -163,9 +167,13 @@ public class MultiplayerCtrl extends GameCtrl {
     public void reset() {
         playAgain.setText("Play again");
         playAgain.setOpacity(0);
-        setPlayingAgain(false);
+        leaveButton.setOpacity(0);
+        leaveButton.setDisable(true);
+        backButton.setOpacity(1);
+        backButton.setDisable(false);
         status.setText("[Status]");
         status.setOpacity(0);
+        setPlayingAgain(false);
         WAITING_SKIP = 0;
         super.reset();
     }
@@ -196,9 +204,12 @@ public class MultiplayerCtrl extends GameCtrl {
      * and after 20 seconds a new game starts if enough players want to play again.
      */
     @Override
-    public void back() {
+    public void showEndScreen() {
         displayLeaderboard();
-        backButton.setOpacity(1);
+        backButton.setOpacity(0);
+        backButton.setDisable(true);
+        leaveButton.setOpacity(1);
+        leaveButton.setDisable(false);
         playAgain.setOpacity(1);
         status.setOpacity(1);
         status.setText("");

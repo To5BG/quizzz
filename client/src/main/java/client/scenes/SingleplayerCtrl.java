@@ -59,6 +59,15 @@ public class SingleplayerCtrl extends GameCtrl {
         }
         super.loadAnswer();
     }
+
+    /**
+     * Empty method
+     */
+    @Override
+    public void showEndScreen() {
+        return;
+    }
+
     /**
      * Reverts the player to the splash screen and remove him from the current game session.
      */

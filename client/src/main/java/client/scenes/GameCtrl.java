@@ -356,6 +356,11 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
+     * Abstract method that gets called to show the end game screen for multiplayer sessions.
+     */
+    abstract public void showEndScreen();
+
+    /**
      * Reverts the player to the splash screen and remove him from the current game session.
      */
     public void back() {
@@ -542,7 +547,8 @@ public abstract class GameCtrl implements Initializable {
                     if (rounds == GAME_ROUNDS) {
                         // TODO display leaderboard things here
                         if (points > bestSingleScore) server.updateScore(playerId, points, true);
-                        back();
+                        if (server.getSession(sessionId).players.size() >= 2) showEndScreen();
+                        else back();
                     } else if (rounds == GAME_ROUNDS / 2 &&
                             server.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
                         displayMidGameScreen();
