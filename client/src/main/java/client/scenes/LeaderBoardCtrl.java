@@ -27,6 +27,8 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class LeaderBoardCtrl implements Initializable {
@@ -108,7 +110,8 @@ public class LeaderBoardCtrl implements Initializable {
      */
     public void refreshMulti() {
         var players = server.getPlayerMultiScore();
-        data = FXCollections.observableList(players);
+        List<Player> temp = dealDuplication(players);
+        data = FXCollections.observableList(temp);
         allPlayers.setItems(data);
         Leaderboard.setText("Leaderboard-Multi");
     }
@@ -138,4 +141,25 @@ public class LeaderBoardCtrl implements Initializable {
         allPlayers.refresh();
         multiLeaderboard.setText("Multi");
     }
+
+    /**
+     * deal with the duplicated users
+     * @param playerList a list of users sorted by their scores
+     * @return a list of users with only their best score
+     */
+    public List<Player> dealDuplication(List<Player> playerList) {
+        List<Player> resultList = new ArrayList<>();
+        for(Player p : playerList) {
+            boolean isDuplicated = false;
+            String name = p.username;
+            for (Player x : resultList) {
+                if (x.username.equals(name)) {
+                    isDuplicated = true;
+                }
+            }
+            if (!isDuplicated) resultList.add(p);
+        }
+        return resultList;
+    }
+
 }

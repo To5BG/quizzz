@@ -16,8 +16,8 @@ import java.util.*;
 
 public abstract class GameCtrl implements Initializable {
 
-    protected final int GAME_ROUNDS = 20;
-    protected final int GAME_ROUND_TIME = 10;
+    protected final int GAME_ROUNDS = 1;
+    protected final int GAME_ROUND_TIME = 2;
     protected final int MIDGAME_BREAK_TIME = 6;
     protected final int TIMER_UPDATE_INTERVAL_MS = 50;
     protected final int GAME_ROUND_DELAY = 2;
