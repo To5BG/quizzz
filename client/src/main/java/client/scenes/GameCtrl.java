@@ -19,7 +19,7 @@ import java.util.*;
 
 public abstract class GameCtrl implements Initializable {
 
-    protected final int GAME_ROUNDS = 5;
+    protected final int GAME_ROUNDS = 20;
     protected final int GAME_ROUND_TIME = 10;
     protected final int MIDGAME_BREAK_TIME = 6;
     protected final int TIMER_UPDATE_INTERVAL_MS = 50;
@@ -36,6 +36,9 @@ public abstract class GameCtrl implements Initializable {
 
     @FXML
     protected Label pointsLabel;
+
+    @FXML
+    protected Label questionCount;
 
     @FXML
     protected Label countdown;
@@ -79,6 +82,7 @@ public abstract class GameCtrl implements Initializable {
     protected int bestSingleScore = 0;
     protected int bestMultiScore = 0;
     protected int rounds = 0;
+    protected double difficultyFactor = 1;
     protected double timeFactor;
     protected Thread timerThread;
     protected Evaluation evaluation;
@@ -159,6 +163,13 @@ public abstract class GameCtrl implements Initializable {
                 break;
         }
 
+    }
+
+    /**
+     * Displays the count of the current question
+     */
+    public void renderQuestionCount() {
+        questionCount.setText(String.format("Question: %d", rounds + 1));
     }
 
     /**
@@ -301,6 +312,7 @@ public abstract class GameCtrl implements Initializable {
         Question q = this.server.fetchOneQuestion(this.sessionId);
         this.currentQuestion = q;
         renderGeneralInformation(q);
+        renderQuestionCount();
         countdown();
     }
 
@@ -424,8 +436,9 @@ public abstract class GameCtrl implements Initializable {
                 }
                 else {
                     if(diff > actualAnswer) diff = actualAnswer;
-                    temppoints = (int) ((90 * (1 - (double) diff/actualAnswer) * timeFactor) +
-                            ((diff < actualAnswer) ? 10 * (1 - (double) diff/actualAnswer) : 0));
+                    temppoints = (int) (90 - 90*((double) diff*difficultyFactor*timeFactor/actualAnswer) +
+                            ((diff < actualAnswer) ? 10 - 10*((double) diff*difficultyFactor/actualAnswer) : 0));
+                    if (temppoints <= 0) temppoints = 0;
                 }
                 break;
             default:
@@ -516,6 +529,15 @@ public abstract class GameCtrl implements Initializable {
         disableButton(removeOneButton, true);
         disableButton(decreaseTimeButton, true);
         disableButton(doublePointsButton, true);
+
+        switch (rounds / 4){
+            case 0 -> difficultyFactor = 1;
+            case 1 -> difficultyFactor = 2;
+            case 2 -> difficultyFactor = 3;
+            case 3 -> difficultyFactor = 4;
+            case 4 -> difficultyFactor = 5;
+            default -> difficultyFactor = 1;
+        }
 
         updatePoints();
         renderCorrectAnswer();
