@@ -149,16 +149,16 @@ function postJsonFile(event) {
                             else ++fail;
                         }, err => {
                             console.log("Error! " + err);
-                            alertMsg.textContent = "Could not parse file!";
+                            alertMsg.textContent = "Failed to load some entries!";
                             alertMsg.style.setProperty("color", "red");
                         });
-                    let handler = setInterval(_ => {
-                        if (success + fail === arr.length) {
-                            resolve(success);
-                            clearInterval(handler);
-                        }
-                    }, 100);
                 });
+                let handler = setInterval(_ => {
+                    if (success + fail === arr.length) {
+                        resolve(success);
+                        clearInterval(handler);
+                    }
+                }, 100);
             }).then(res => {
                 refreshTable();
                 alertMsg.textContent = "Bulk addition was successful! Added " + res + " entries.";
