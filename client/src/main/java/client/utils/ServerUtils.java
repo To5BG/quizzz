@@ -417,6 +417,15 @@ public class ServerUtils {
     }
 
     /**
+     * Listen for updates regarding emojis from other players
+     * @param handler The function to call with the emoji sent to the session
+     * @param sessionId The ID of the session in which to listen for emojis
+     */
+    public StompSession.Subscription registerForEmojiUpdates(Consumer<Emoji> handler, long sessionId) {
+        return registerForWebsocketUpdates(handler, Emoji.class, "/emoji/" + sessionId);
+    }
+
+    /**
      * Send a message to the websocket server
      * @param url The destination path of the message (/app is appended by the method)
      * @param body The content of the message
@@ -424,15 +433,6 @@ public class ServerUtils {
      */
     private <T> void sendWebsocketMessage(String url, T body) {
         websocketServer.send("/app/" + url, body);
-    }
-
-    /**
-     * Listen for updates regarding emojis from other players
-     * @param handler The function to call with the emoji sent to the session
-     * @param sessionId The ID of the session in which to listen for emojis
-     */
-    public StompSession.Subscription registerForEmojiUpdates(Consumer<Emoji> handler, long sessionId) {
-        return registerForWebsocketUpdates(handler, Emoji.class, "/emoji/" + sessionId);
     }
 
     /**
@@ -444,4 +444,5 @@ public class ServerUtils {
     public void sendEmoji(long sessionId, long playerId, Emoji.EmojiType emoji) {
         sendWebsocketMessage("/emoji/" + sessionId + "/send/" + playerId, emoji);
     }
+
 }
