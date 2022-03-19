@@ -18,6 +18,9 @@ public class LeaderboardController {
 
     private final PlayerRepository repo;
 
+    /**
+     * @param por the repository of players
+     */
     public LeaderboardController(PlayerRepository por) {
         this.repo = por;
     }
