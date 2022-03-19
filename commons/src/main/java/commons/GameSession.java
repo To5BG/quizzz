@@ -45,7 +45,8 @@ public class GameSession {
         TRANSFERRING,
         ONGOING,
         STARTED,
-        PAUSED
+        PAUSED,
+        PLAY_AGAIN
     }
 
     @SuppressWarnings("unused")
