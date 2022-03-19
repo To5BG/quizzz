@@ -124,7 +124,6 @@ public class LeaderBoardCtrl implements Initializable {
         allPlayers.setItems(data);
         allPlayers.refresh();
         singleLeaderboard.setText("Single");
-        multiLeaderboard.setText("on display");
     }
 
     /**
@@ -138,6 +137,5 @@ public class LeaderBoardCtrl implements Initializable {
         allPlayers.setItems(data);
         allPlayers.refresh();
         multiLeaderboard.setText("Multi");
-        singleLeaderboard.setText("on display");
     }
 }
