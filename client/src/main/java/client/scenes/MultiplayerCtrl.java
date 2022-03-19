@@ -43,7 +43,7 @@ public class MultiplayerCtrl extends GameCtrl {
     }
 
     private boolean playingAgain;
-    private int WAITING_SKIP = 0;
+    private int waitingSkip = 0;
 
     @FXML
     private Button backButton;
@@ -106,9 +106,9 @@ public class MultiplayerCtrl extends GameCtrl {
                                     == GameSession.SessionStatus.PLAY_AGAIN) {
                                 if (server.getSession(sessionId).players.size() ==
                                         server.getSession(sessionId).playersReady) {
-                                    WAITING_SKIP = 4;
+                                    waitingSkip = 4;
                                 } else {
-                                    WAITING_SKIP = 0;
+                                    waitingSkip = 0;
                                 }
                                 status.setText(server.getSession(sessionId).playersReady + " / " +
                                         server.getSession(sessionId).players.size() + " players want to play again");
@@ -179,7 +179,7 @@ public class MultiplayerCtrl extends GameCtrl {
         status.setText("[Status]");
         status.setOpacity(0);
         setPlayingAgain(false);
-        WAITING_SKIP = 0;
+        waitingSkip = 0;
         super.reset();
     }
 
@@ -218,7 +218,7 @@ public class MultiplayerCtrl extends GameCtrl {
         playAgain.setOpacity(1);
         status.setOpacity(1);
         status.setText("");
-        WAITING_SKIP = 0;
+        waitingSkip = 0;
         questionCount.setText("End of game! Play again or go back to main.");
 
         Task roundTimer = new Task() {
@@ -228,7 +228,7 @@ public class MultiplayerCtrl extends GameCtrl {
                 long waitingTime = 60000L;
                 while (refreshCounter * TIMER_UPDATE_INTERVAL_MS < waitingTime) {
                     updateProgress(waitingTime - refreshCounter * TIMER_UPDATE_INTERVAL_MS, waitingTime);
-                    refreshCounter += WAITING_SKIP + 1;
+                    refreshCounter += waitingSkip + 1;
                     try {
                         Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
                     } catch (InterruptedException e) {
