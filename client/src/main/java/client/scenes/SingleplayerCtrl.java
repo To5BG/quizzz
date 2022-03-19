@@ -43,7 +43,7 @@ public class SingleplayerCtrl extends GameCtrl {
     @Override
     public void submitAnswer(boolean initiatedByTimer) {
         super.submitAnswer(initiatedByTimer);
-        startSingleEvaluation();
+        startEvaluation(bestSingleScore);
     }
 
     /**
@@ -104,4 +104,10 @@ public class SingleplayerCtrl extends GameCtrl {
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
     }
+
+    @Override
+    public void updateScore(long playerId, int points, boolean isBestScore) {
+        server.updateSingleScore(playerId, points, isBestScore);
+    }
+
 }
