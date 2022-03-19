@@ -123,7 +123,7 @@ public class ServerUtils {
     /**
      * Sets and unsets a player as being ready for a multiplayer game
      *
-     * @param sessionId
+     * @param sessionId the id of the session
      * @param isReady   True iff a player must be set as ready
      * @return New count of players that are ready
      */
@@ -325,23 +325,6 @@ public class ServerUtils {
     }
 
     /**
-     * Update a player's score in DB
-     *
-     * @param playerId    Id of player
-     * @param points      Updated points
-     * @param isBestScore Is this over the current best score for the player
-     * @return Updated player DB entry reference
-     */
-    public Player updateScore(long playerId, int points, boolean isBestScore) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/" + playerId +
-                        ((isBestScore) ? "/best" : "/") + "score")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(points, APPLICATION_JSON), Player.class);
-    }
-
-    /**
      * Adds a player entry to the database forcibly (without an associated game session)
      *
      * @param player the player to be added
@@ -353,5 +336,39 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(player, APPLICATION_JSON), Player.class);
+    }
+
+    /**
+     * Update a player's score in DB
+     *
+     * @param playerId    Id of player
+     * @param points      Updated points
+     * @param isBestScore Is this over the current best score for the player
+     * @return Updated player DB entry reference
+     */
+    public Player updateSingleScore(long playerId, int points, boolean isBestScore) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/leaderboard/" + playerId +
+                        ((isBestScore) ? "/best" : "/") + "singlescore")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(points, APPLICATION_JSON), Player.class);
+    }
+
+    /**
+     * Update a player's score in DB
+     *
+     * @param playerId    Id of player
+     * @param points      Updated points
+     * @param isBestScore Is this over the current best score for the player
+     * @return Updated player DB entry reference
+     */
+    public Player updateMultiScore(long playerId, int points, boolean isBestScore) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/leaderboard/" + playerId +
+                        ((isBestScore) ? "/best" : "/") + "multiscore")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(points, APPLICATION_JSON), Player.class);
     }
 }

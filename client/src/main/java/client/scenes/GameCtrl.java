@@ -105,7 +105,7 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Setter for sessionId.
      *
-     * @param sessionId
+     * @param sessionId the id of the sessions
      */
     public void setSessionId(long sessionId) {
         this.sessionId = sessionId;
@@ -114,7 +114,7 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Setter for playerId.
      *
-     * @param playerId
+     * @param playerId the id of the player
      */
     public void setPlayerId(long playerId) {
         this.playerId = playerId;
@@ -137,7 +137,7 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Load general question information
      *
-     * @param q
+     * @param q the question to be rendered
      */
     protected void renderGeneralInformation(Question q) {
         this.questionPrompt.setText(q.prompt);
@@ -174,6 +174,7 @@ public abstract class GameCtrl implements Initializable {
         }
     }
 
+
     private void renderEstimationQuestion() {
         this.countdown.setText("");
         this.estimationAnswer = new TextField();
@@ -184,7 +185,7 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Render question of the multiple choice question variant
      *
-     * @param q
+     * @param q the question to be rendered
      */
     protected void renderMultipleChoiceQuestion(Question q) {
         double yPosition = 0.0;
@@ -344,7 +345,7 @@ public abstract class GameCtrl implements Initializable {
     public void shutdown() {
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
         if (sessionId != 0) {
-            server.updateScore(playerId, 0, false);
+            updateScore(playerId, 0, false);
             server.addPlayerAnswer(sessionId, playerId, new Answer(Question.QuestionType.MULTIPLE_CHOICE));
             server.removePlayer(sessionId, playerId);
             setPlayerId(0);
@@ -394,7 +395,7 @@ public abstract class GameCtrl implements Initializable {
      */
     public void updatePoints() {
         int temppoints;
-        switch(this.evaluation.type) {
+        switch (this.evaluation.type) {
             case MULTIPLE_CHOICE:
             case COMPARISON:
             case EQUIVALENCE:
@@ -423,13 +424,14 @@ public abstract class GameCtrl implements Initializable {
             default:
                 throw new UnsupportedOperationException("Unsupported question type when parsing answer");
         }
+
         if (doublePointsActive) {
             temppoints = temppoints * 2;
             switchStatusOfDoublePoints();
         }
         points += temppoints;
         renderPoints();
-        server.updateScore(playerId, points, false);
+        updateScore(playerId, points, false);
     }
 
     /**
@@ -501,7 +503,7 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Gets the user's answer, starts the evaluation and loads a new question or ends the game.
      */
-    public void startSingleEvaluation() {
+    public void startEvaluation(int scoreEvaluation) {
 
         if (this.evaluation == null) return;
 
@@ -532,7 +534,7 @@ public abstract class GameCtrl implements Initializable {
                     resetTimeJokers();
                     if (rounds == GAME_ROUNDS) {
                         // TODO display leaderboard things here
-                        if (points > bestSingleScore) server.updateScore(playerId, points, true);
+                        if (points > scoreEvaluation) updateScore(playerId, points, true);
                         back();
                     } else if (rounds == GAME_ROUNDS / 2 &&
                             server.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
@@ -646,7 +648,7 @@ public abstract class GameCtrl implements Initializable {
                 }
                 int randomIndex = new Random().nextInt(incorrectAnswers.size());
                 RadioButton button = multiChoiceAnswers.get(incorrectAnswers.get(randomIndex));
-                if(button.isSelected()) {
+                if (button.isSelected()) {
                     button.setSelected(false);
                 }
                 button.setDisable(true);
@@ -659,6 +661,7 @@ public abstract class GameCtrl implements Initializable {
 
     /**
      * Get number of time Jokers for the current session
+     *
      * @return int representing number of time jokers
      */
     public double getTimeJokers() {
@@ -700,5 +703,14 @@ public abstract class GameCtrl implements Initializable {
     private void switchStatusOfDoublePoints() {
         doublePointsActive = !doublePointsActive;
     }
+
+    /**
+     * the method to updateScore
+     *
+     * @param playerId    the id of the player
+     * @param points      the points of the player
+     * @param isBestScore the flag of the best score of the player
+     */
+    public abstract void updateScore(long playerId, int points, boolean isBestScore);
 
 }

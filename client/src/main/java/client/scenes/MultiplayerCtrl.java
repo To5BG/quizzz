@@ -74,7 +74,7 @@ public class MultiplayerCtrl extends GameCtrl {
                         try {
                             if (server.getSession(sessionId).sessionStatus
                                     == GameSession.SessionStatus.PAUSED) {
-                                startSingleEvaluation();
+                                startEvaluation(bestMultiScore);
                                 cancel();
                             }
                         } catch (Exception e) {
@@ -109,5 +109,11 @@ public class MultiplayerCtrl extends GameCtrl {
         }
 
         refresh();
+    }
+
+
+    @Override
+    public void updateScore(long playerId, int points, boolean isBestScore) {
+        server.updateMultiScore(playerId, points, isBestScore);
     }
 }
