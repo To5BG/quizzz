@@ -59,14 +59,13 @@ public class Config {
      *
      * @return one of options
      * Options:
-     * "sessions" - reset sessions
-     * "player" - reset players
-     * "all" - both players and game sessions
+     * "default - reset all non-persistent information
+     * "all" - reset all
      * "test" - used for unit testing
      */
     @Bean
     public String updatePlayerDB() {
-        return "sessions";
+        return "default";
     }
 
 }

@@ -81,9 +81,9 @@ public class PlayerTest {
 		Player p = new Player("test", 0);
 		Answer a = new Answer(List.of(1, 2, 3), Question.QuestionType.MULTIPLE_CHOICE);
 		p.setAnswer(a);
-		String expected = "[" + System.lineSeparator() +
-				"  answers=[1, 2, 3]" + System.lineSeparator() +
-				"  type=MULTIPLE_CHOICE" + System.lineSeparator() + "]";
+		String expected = "[" + System.lineSeparator() + "  answers=[1, 2, 3]" +
+				System.lineSeparator() + "  type=MULTIPLE_CHOICE" +
+				System.lineSeparator() + "]";
 		assertEquals(expected, p.ans);
 	}
 

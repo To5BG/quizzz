@@ -3,7 +3,6 @@ package commons;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -79,13 +78,8 @@ public class GameSession {
      * Called when a new player has triggered a ready event
      */
     public void setPlayerReady() {
-        if (sessionType == SessionType.WAITING_AREA) {
-            if (playersReady >= players.size()) return;
-            playersReady++;
-        } else {
-            if (++playersReady != this.players.size()) return;
-            updateQuestion();
-        }
+        if (playersReady >= players.size()) return;
+        playersReady++;
     }
 
     /**
@@ -127,27 +121,6 @@ public class GameSession {
      */
     public void resetQuestionCounter() {
         this.questionCounter = 0;
-    }
-
-    /**
-     * Updates the question of the game session
-     */
-    public void updateQuestion() {
-        switch(questionCounter / 4){
-            case 0 -> difficultyFactor = 1;
-            case 1 -> difficultyFactor = 2;
-            case 2 -> difficultyFactor = 3;
-            case 3 -> difficultyFactor = 4;
-            case 4 -> difficultyFactor = 5;
-            default -> difficultyFactor = 1;
-        }
-        ++questionCounter;
-        Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion(difficultyFactor);
-        this.currentQuestion = res.getKey();
-        System.out.println("Question updated to:");
-        System.out.println(this.currentQuestion);
-        this.expectedAnswers.clear();
-        this.expectedAnswers.addAll(res.getValue());
     }
 
     /**

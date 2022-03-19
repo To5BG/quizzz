@@ -89,8 +89,8 @@ public class MultiplayerCtrl extends GameCtrl {
      * how many players want to play again.
      */
     public void refresh() {
-        Timer t = new Timer();
-        t.scheduleAtFixedRate(new TimerTask() {
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 Platform.runLater(new Runnable() {
