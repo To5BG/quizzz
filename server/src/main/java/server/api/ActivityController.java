@@ -1,9 +1,5 @@
 package server.api;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Random;
 
@@ -54,7 +50,7 @@ public class ActivityController {
         Example<Activity> exampleActivity = Example.of(probe, ExampleMatcher.matchingAny());
         if (repo.exists(exampleActivity)) return true;
 
-        return !(activity.title.matches("(.*)[a-zA-Z]{2,}(.*)") &&
+        return !(activity.title.matches("([a-zA-Z0-9-]+ ){2,}\\w(.*)") &&
                 activity.consumption_in_wh.matches("[0-9]+"));
     }
 
@@ -89,14 +85,9 @@ public class ActivityController {
      * @return The number of removed entries
      */
     @DeleteMapping(path = {"", "/"})
-    public ResponseEntity<Integer> removeAllActivities() {
-        try (Connection CONN = DriverManager.getConnection("jdbc:h2:file:./quizzzz", "sa", "")) {
-            Statement stmt = CONN.createStatement();
-            return ResponseEntity.ok(stmt.executeUpdate("DELETE FROM ACTIVITY"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<HttpStatus> removeAllActivities() {
+        repo.deleteAll();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     /**

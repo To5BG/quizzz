@@ -24,6 +24,9 @@ addEventListener("load", _ => {
     document.querySelector("#removeOne > form")
         .addEventListener('submit', removeActivity)
     refreshTable();
+
+    [...document.querySelectorAll('input[type="text"],input[type="file"],textarea')]
+        .forEach(el => el.setAttribute("required", ''));
 });
 
 /*----------------------- TOGGLE FUNCTIONS --------------------------*/
@@ -92,8 +95,7 @@ function postActivity(event) {
                     alertMsg.textContent = "Addition was successful!";
                     alertMsg.style.setProperty("color", "green");
                     refreshTable();
-                })
-                .catch((err) => {
+                }, err => {
                     console.log("Error! " + err);
                     alertMsg.textContent = "Addition was unsuccessful!";
                     alertMsg.style.setProperty("color", "red");
@@ -106,8 +108,7 @@ function postActivityJson(event) {
 
     const text = document.querySelector("textarea").value;
     let alertMsg = document.querySelector("#alertMsg");
-
-    send(text)
+    send(text.replace(/"id": ".*",/, "\"id\": null,"))
         .then(response => {
             if (response.status === 400) {
                 console.log("Bad request!");
@@ -118,8 +119,7 @@ function postActivityJson(event) {
                     alertMsg.textContent = "Addition was successful! Just added " + data;
                     alertMsg.style.setProperty("color", "green");
                     refreshTable();
-                })
-                .catch((err) => {
+                }, err => {
                     console.log("Error! " + err);
                     alertMsg.textContent = "Addition was unsuccessful!";
                     alertMsg.style.setProperty("color", "red");
@@ -134,27 +134,34 @@ function postJsonFile(event) {
     let alertMsg = document.querySelector("#alertMsg");
     let fileReader = new FileReader();
     let success = 0;
+    let fail = 0;
     fileReader.onload = function () {
         let res = fileReader.result;
         try {
             res = JSON.parse(fileReader.result);
+            let arr = [...res];
             new Promise(function (resolve, reject) {
-                [...res].forEach((activity, _) => {
+                arr.forEach((activity, _) => {
                     if (activity.id) activity.id = null;
                     send(JSON.stringify(activity))
                         .then(res => {
-                            return (res.status === 200) ? ++success : success;
-                        })
-                        .catch((err) => {
+                            if (res.status === 200) ++success;
+                            else ++fail;
+                        }, err => {
                             console.log("Error! " + err);
                             alertMsg.textContent = "Could not parse file!";
                             alertMsg.style.setProperty("color", "red");
                         });
+                    let handler = setInterval(_ => {
+                        if (success + fail === arr.length) {
+                            resolve(success);
+                            clearInterval(handler);
+                        }
+                    }, 100);
                 });
-                setTimeout(() => resolve(success), 500);
-            }).then(_ => {
+            }).then(res => {
                 refreshTable();
-                alertMsg.textContent = "Bulk addition was successful! Added " + success + " entries.";
+                alertMsg.textContent = "Bulk addition was successful! Added " + res + " entries.";
                 alertMsg.style.setProperty("color", "green");
             });
         } catch {
@@ -186,15 +193,18 @@ async function removeActivity(event) {
         .then(response => {
             if (response.status === 400) {
                 console.log("Bad request!");
-                alertMsg.textContent = "Removal was unsuccessful!";
+                alertMsg.textContent = "Removal was unsuccessful! Make sure you enter a valid id.";
+                alertMsg.style.setProperty("color", "red");
+            } else if (response.status === 404) {
+                console.log("Not found!");
+                alertMsg.textContent = "Removal was unsuccessful! An entry with the provided id was not found.";
                 alertMsg.style.setProperty("color", "red");
             } else {
                 alertMsg.textContent = "Removal was successful!";
                 alertMsg.style.setProperty("color", "green");
                 refreshTable();
             }
-        })
-        .catch((err) => {
+        }, err => {
             console.log("Error! " + err);
             alertMsg.textContent = "Removal was unsuccessful!";
             alertMsg.style.setProperty("color", "red");
@@ -240,8 +250,7 @@ function refreshTable() {
                 table.append(tablerow);
             }
             document.querySelector("#entryCounter").textContent = data.length;
-        })
-        .catch((err) => {
+        }, err => {
             console.log("Could not fetch activities!" + err);
             alertMsg.textContent = "Could not connect to the database!";
             alertMsg.style.setProperty("color", "red");
@@ -274,20 +283,19 @@ async function deleteRequest() {
 function resetDatabase() {
     let alertMsg = document.querySelector("#alertMsg");
 
-    deleteRequest().then(response => {
-        if (response.status === 400) {
-            alertMsg.textContent = "Could not connect to the database!";
-            alertMsg.style.setProperty("color", "red");
-        } else return response.json()
-            .then(_ => {
+    deleteRequest()
+        .then(response => {
+            if (response.status === 400) {
+                alertMsg.textContent = "Could not connect to the database!";
+                alertMsg.style.setProperty("color", "red");
+            } else {
                 alertMsg.textContent = "Reset successful!";
                 alertMsg.style.setProperty("color", "green");
                 refreshTable();
-            })
-            .catch((err) => {
-                console.log("Error!" + err)
-            });
-    })
+            }
+        }, err => {
+            console.log("Error!" + err)
+        });
 }
 
 

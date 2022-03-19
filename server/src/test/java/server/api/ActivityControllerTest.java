@@ -55,7 +55,7 @@ public class ActivityControllerTest {
     @Test
     public void updateActivityTest() {
         Activity activity = getActivity("test");
-        Activity other = getActivity("test2");
+        Activity other = getActivity("testtwo");
         sut.addActivity(activity);
         var actual = ResponseEntity.ok(sut.updateActivityById(1L, other)).getBody();
         other.id = 1L;
@@ -104,6 +104,6 @@ public class ActivityControllerTest {
     private static Activity getActivity(String str) {
         return (str == null)
                 ? new Activity(null, null, null, null)
-                : new Activity((" ".concat(str)).repeat(3), "42", str, str);
+                : new Activity(str + " " + str + " " + str, "42", str, str);
     }
 }
