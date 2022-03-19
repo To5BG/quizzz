@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.*;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -14,15 +15,27 @@ import static org.junit.jupiter.api.Assertions.*;
 public class QuestionControllerTest {
     private QuestionController sut;
     private TestGameSessionRepository repo;
-    private SessionController session;
+    private SessionController sessionCtrl;
+    private static ActivityController activityCtrl;
+    private static TestActivityRepository activityRepo;
+
+    @BeforeAll
+    public static void setupAll() {
+        activityRepo = new TestActivityRepository();
+        activityRepo.save(new Activity("test","42","test","test"));
+        activityRepo.save(new Activity("test2","43","test2","test2"));
+        activityRepo.save(new Activity("test3","44","test3","test3"));
+        activityRepo.save(new Activity("test4","45","test4","test4"));
+        activityCtrl = new ActivityController(new Random(), activityRepo);
+    }
 
     @BeforeEach
-    public void setup() {
+    public void setupEach() {
         repo = new TestGameSessionRepository();
-        session = new SessionController(new Random(), repo, "test");
-        ResponseEntity<GameSession> cur = session.addSession(
+        sessionCtrl = new SessionController(new Random(), repo, "test", activityCtrl);
+        ResponseEntity<GameSession> cur = sessionCtrl.addSession(
                 new GameSession(GameSession.SessionType.MULTIPLAYER, List.of(new Player("test",0))));
-        sut = new QuestionController(session);
+        sut = new QuestionController(sessionCtrl);
     }
 
     @Test
@@ -33,11 +46,11 @@ public class QuestionControllerTest {
 
     @Test
     public void testGetQuestion() {
-        GameSession s = session.getAllSessions().get(0);
+        GameSession s = sessionCtrl.getAllSessions().get(0);
         ResponseEntity<Question> resp = sut.getOneQuestion(s.id);
         assertEquals(HttpStatus.OK, resp.getStatusCode());
         Question q = resp.getBody();
-        Question serverQuestion = session.getAllSessions().get(0).currentQuestion;
+        Question serverQuestion = sessionCtrl.getAllSessions().get(0).currentQuestion;
 
         assertEquals(serverQuestion, q);
     }
@@ -52,7 +65,7 @@ public class QuestionControllerTest {
 
     @Test
     public void submitAnswerTest() {
-        GameSession s = session.getAllSessions().get(0);
+        GameSession s = sessionCtrl.getAllSessions().get(0);
         List<Integer> expectedAnswers = List.copyOf(s.expectedAnswers);
         Question q = s.currentQuestion;
 
@@ -68,11 +81,11 @@ public class QuestionControllerTest {
 
     @Test
     public void testGetAnswers() {
-        GameSession s = session.getAllSessions().get(0);
+        GameSession s = sessionCtrl.getAllSessions().get(0);
         ResponseEntity<List<Integer>> resp = sut.getCorrectAnswers(s.id);
         assertEquals(HttpStatus.OK, resp.getStatusCode());
         List<Integer> list = resp.getBody();
-        List<Integer> answers = session.getAllSessions().get(0).expectedAnswers;
+        List<Integer> answers = sessionCtrl.getAllSessions().get(0).expectedAnswers;
         assertEquals(answers, list);
     }
 }

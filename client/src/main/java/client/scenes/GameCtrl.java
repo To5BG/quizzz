@@ -16,11 +16,11 @@ import java.util.*;
 
 public abstract class GameCtrl implements Initializable {
 
-    protected final int GAME_ROUNDS = 20;
-    protected final int GAME_ROUND_TIME = 10;
-    protected final int MIDGAME_BREAK_TIME = 6;
-    protected final int TIMER_UPDATE_INTERVAL_MS = 50;
-    protected final int GAME_ROUND_DELAY = 2;
+    protected final static int GAME_ROUNDS = 20;
+    protected final static int GAME_ROUND_TIME = 10;
+    protected final static int MIDGAME_BREAK_TIME = 6;
+    protected final static int TIMER_UPDATE_INTERVAL_MS = 50;
+    protected final static int GAME_ROUND_DELAY = 2;
 
     @FXML
     protected StackPane answerArea;
@@ -262,17 +262,17 @@ public abstract class GameCtrl implements Initializable {
      */
     public void countdown() {
         new Timer().scheduleAtFixedRate(new TimerTask() {
-            int i = 5;
+            int counter = 5;
 
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    if (i < 0) {
+                    if (counter < 0) {
                         cancel();
                         loadAnswer();
                     } else {
-                        countdown.setText("The answer option will appear in " + i + " seconds.");
-                        i--;
+                        countdown.setText("The answer option will appear in " + counter + " seconds.");
+                        counter--;
                     }
                 });
             }
