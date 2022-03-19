@@ -23,14 +23,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
-import java.util.Comparator;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class LeaderBoardCtrl implements Initializable {
 
@@ -45,6 +42,12 @@ public class LeaderBoardCtrl implements Initializable {
     private TableColumn<Player, String> colName;
     @FXML
     private TableColumn<Player, String> colPoint;
+    @FXML
+    private Button singleLeaderboard;
+    @FXML
+    private Button multiLeaderboard;
+    @FXML
+    private Label leaderboardLabel;
 
     /**
      * constructor of the leaderboard
@@ -97,6 +100,7 @@ public class LeaderBoardCtrl implements Initializable {
         var players = server.getPlayerSingleScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
+        leaderboardLabel.setText("Leaderboard-Single");
     }
 
     /**
@@ -106,31 +110,32 @@ public class LeaderBoardCtrl implements Initializable {
         var players = server.getPlayerMultiScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
+        leaderboardLabel.setText("Leaderboard-Multi");
     }
 
     /**
      * Show MultiPlayerLeaderBoard
      */
     public void showMultiLeaderboard() {
-        colPoint.setCellValueFactory(q ->  new SimpleStringProperty(String.valueOf(q.getValue().bestMultiScore)));
-        data.stream().sorted(Comparator.comparing(Player::getBestMultiScore).reversed())
-                .collect(Collectors.toList());
+        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestMultiScore)));
+        //data.stream().sorted(Comparator.comparing(Player::getBestMultiScore).reversed())
+        //.collect(Collectors.toList());
+        refreshMulti();
         allPlayers.setItems(data);
-        for(Player p : data) {
-            System.out.println(p.toString());
-        }
         allPlayers.refresh();
+        singleLeaderboard.setText("Single");
     }
 
     /**
      * Show SinglePlayerLeaderBoard
      */
     public void showSingleLeaderBoard() {
-        colPoint.setCellValueFactory(q ->  new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
-        data.stream().sorted(Comparator.comparing(Player::getBestSingleScore).reversed())
-                .collect(Collectors.toList());
+        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
+        //data.stream().sorted(Comparator.comparing(Player::getBestSingleScore).reversed())
+        // .collect(Collectors.toList());
+        refreshSingle();
         allPlayers.setItems(data);
         allPlayers.refresh();
+        multiLeaderboard.setText("Multi");
     }
-
 }

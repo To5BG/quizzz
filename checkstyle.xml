@@ -10,13 +10,32 @@
         <!-- the group's additions -->
         <property name="tabWidth" value="4"/>
         <module name="EmptyBlock"/>
-        <module name="ConstantName"/>
-        <module name="ParameterName"/>
         <module name="TypeName"/>
         <module name="ClassTypeParameterName"/>
         <module name="MethodName"/>
         <module name="MethodTypeParameterName"/>
         <module name="InterfaceTypeParameterName"/>
+        <module name="LocalFinalVariableName">
+            <property name="format" value="[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+        </module>
+        <module name="ConstantName">
+            <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+        </module>
+        <module name="ParameterName">
+            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
+        </module>
+        <module name="LambdaParameterName">
+            <property name="format" value="^[a-z](_?[a-zA-z0-9]+)*$"/>
+        </module>
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
+        </module>
+        <module name="MemberName">
+            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
+        </module>
+        <module name="StaticVariableName">
+            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
+        </module>
         <module name="NeedBraces">
             <property name="allowSingleLineStatement" value="true"/>
             <property name="tokens" value="LITERAL_IF, LITERAL_WHILE, LITERAL_DO, LITERAL_FOR"/>
@@ -28,7 +47,7 @@
             <property name="allowSamelineSingleParameterlessAnnotation" value="false"/>
         </module>
         <module name="MissingJavadocMethod">
-            <property name="ignoreMethodNamesRegex" value="^main$|^setup$|.*([tT]est|check).*"/>
+            <property name="ignoreMethodNamesRegex" value="^main$|^setup\w*$|.*([tT]est|check).*"/>
             <property name="allowMissingPropertyJavadoc" value="true"/>
             <property name="tokens" value="METHOD_DEF"/>
         </module>

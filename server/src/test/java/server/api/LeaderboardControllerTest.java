@@ -32,18 +32,6 @@ class LeaderboardControllerTest {
     }
 
     @Test
-    void getPlayerSingleScoreTest() {
-        var players = lbc.getPlayerSingleScores().getBody();
-        assertTrue(players.size() == 0);
-
-        lbc.addPlayerForcibly(new Player("David", 10));
-        assertTrue(lbc.getPlayerSingleScores().getBody().size() == 1);
-
-        lbc.addPlayerForcibly(new Player("Yongcheng", 15));
-        assertTrue(lbc.getPlayerSingleScores().getBody().size() == 2);
-    }
-
-    @Test
     void getPlayerById() {
         Optional<Player> temp = Optional.ofNullable(lbc.addPlayerForcibly(
                 new Player("david", 10)).getBody());

@@ -121,8 +121,8 @@ public class MultiplayerCtrl extends GameCtrl {
      * Refreshes the multiplayer player board to check whether the evaluation can start.
      */
     public void refresh() {
-        Timer t = new Timer();
-        t.scheduleAtFixedRate(new TimerTask() {
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 Platform.runLater(new Runnable() {
@@ -131,7 +131,7 @@ public class MultiplayerCtrl extends GameCtrl {
                         try {
                             if (server.getSession(sessionId).sessionStatus
                                     == GameSession.SessionStatus.PAUSED) {
-                                startSingleEvaluation();
+                                startEvaluation(bestMultiScore);
                                 cancel();
                             }
                         } catch (Exception e) {
@@ -186,5 +186,10 @@ public class MultiplayerCtrl extends GameCtrl {
             sessionEmojis.add(emoji);
             Platform.runLater(() -> emojiList.scrollTo(sessionEmojis.size() - 1));
         }, this.sessionId);
+    }
+
+    @Override
+    public void updateScore(long playerId, int points, boolean isBestScore) {
+        server.updateMultiScore(playerId, points, isBestScore);
     }
 }
