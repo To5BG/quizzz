@@ -83,7 +83,7 @@ public class SplashCtrl {
      * @return true if username is valid, false otherwise
      */
     public boolean isUsernameValid(String username) {
-        if (username.isBlank()) return false;
+        if(username.isBlank()) return false;
         for (int i = 0; i < username.length(); i++) {
             if ((Character.isLetterOrDigit(username.charAt(i)) == false)) {
                 return false;
@@ -99,13 +99,13 @@ public class SplashCtrl {
      * @return true if another Player with the same username exists
      */
     public boolean isDuplInActive(String username) {
-        for (GameSession gs : server.getSessions()) {
+        for(GameSession gs : server.getSessions()) {
             Optional<Player> existing = gs
                     .getPlayers()
                     .stream().filter(p -> p.username.equals(username))
                     .findFirst();
 
-            if (existing.isPresent()) return true;
+            if(existing.isPresent()) return true;
         }
         return false;
     }
@@ -117,8 +117,8 @@ public class SplashCtrl {
      * @return true if another Player with the same username exists
      */
     public boolean isDuplInRepository(String username) {
-        for (Player p : server.getPlayerSingleScore()) {
-            if (p.username.equals(username)) {
+        for(Player p : server.getPlayerSingleScore()) {
+            if(p.username.equals(username)) {
                 return true;
             }
         }
@@ -132,8 +132,8 @@ public class SplashCtrl {
      * @return the player if it exists, null otherwise
      */
     public Player getDuplPlayer(String username) {
-        for (Player p : server.getPlayerSingleScore()) {
-            if (p.username.equals(username)) {
+        for(Player p : server.getPlayerSingleScore()) {
+            if(p.username.equals(username)) {
                 return p;
             }
         }
@@ -150,23 +150,26 @@ public class SplashCtrl {
     public void showWaitingArea() {
         String newUserName = usernameField.getText();
 
-        if (isDuplInActive(newUserName)) {
+        if(isDuplInActive(newUserName)) {
             invalidUserName.setOpacity(0);
             duplUsername.setOpacity(1);
             usernameField.clear();
-        } else if (!isUsernameValid(newUserName)) {
+        }
+        else if(!isUsernameValid(newUserName)) {
             duplUsername.setOpacity(0);
             invalidUserName.setOpacity(1);
             usernameField.clear();
-        } else {
+        }
+        else {
             duplUsername.setOpacity(0);
             invalidUserName.setOpacity(0);
 
-            if (isDuplInRepository(newUserName)) {
+            if(isDuplInRepository(newUserName)) {
                 Player p = getDuplPlayer(newUserName);
                 p.setCurrentPoints(0);
                 server.addPlayer(1L, p);
-            } else {
+            }
+            else {
                 server.addPlayer(1L /*waiting area id*/, new Player(newUserName, 0));
             }
             var playerId = server
@@ -190,11 +193,12 @@ public class SplashCtrl {
     public void showSinglePlayer() {
         String newUserName = usernameField.getText();
 
-        if (!isUsernameValid(newUserName)) {
+        if(!isUsernameValid(newUserName)) {
             invalidUserName.setOpacity(1);
             duplUsername.setOpacity(0);
             usernameField.clear();
-        } else if (isDuplInActive(newUserName)) {
+        }
+        else if(isDuplInActive(newUserName)) {
             invalidUserName.setOpacity(0);
             duplUsername.setOpacity(1);
             usernameField.clear();
@@ -208,7 +212,7 @@ public class SplashCtrl {
             }
             invalidUserName.setOpacity(0);
             duplUsername.setOpacity(0);
-            if (isDuplInRepository(newUserName)) {
+            if(isDuplInRepository(newUserName)) {
                 getDuplPlayer(newUserName).setCurrentPoints(0);
             }
             GameSession newSession = new GameSession(GameSession.SessionType.SINGLEPLAYER);

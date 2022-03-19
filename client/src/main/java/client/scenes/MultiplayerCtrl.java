@@ -101,10 +101,10 @@ public class MultiplayerCtrl extends GameCtrl {
         if (!initiatedByTimer && this.evaluation == null) return;
 
         //enable jokers that can be used after submitting an answer
-        if (decreaseTimeJoker) {
+        if(decreaseTimeJoker) {
             disableButton(decreaseTimeButton, false);
         }
-        if (doublePointsJoker) {
+        if(doublePointsJoker) {
             disableButton(doublePointsButton, false);
         }
 

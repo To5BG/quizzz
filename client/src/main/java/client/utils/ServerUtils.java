@@ -45,7 +45,7 @@ public class ServerUtils {
                 .target(SERVER).path("api/sessions/" + sessionId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<>() {
+                .get(new GenericType<GameSession>() {
                 });
     }
 
@@ -59,7 +59,7 @@ public class ServerUtils {
                 .target(SERVER).path("api/sessions/join")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<>() {
+                .get(new GenericType<GameSession>() {
                 });
     }
 
@@ -73,7 +73,7 @@ public class ServerUtils {
                 .target(SERVER).path("api/sessions")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<>() {
+                .get(new GenericType<List<GameSession>>() {
                 });
     }
 
@@ -132,7 +132,7 @@ public class ServerUtils {
                 .target(SERVER).path("api/sessions/" + sessionId + "/" + ((isReady) ? "" : "not") + "ready")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<>() {
+                .get(new GenericType<GameSession>() {
                 });
     }
 
@@ -177,7 +177,7 @@ public class ServerUtils {
                 .target(SERVER).path("api/sessions/" + sessionId + "/players")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<>() {
+                .get(new GenericType<List<Player>>() {
                 });
     }
 
@@ -211,7 +211,7 @@ public class ServerUtils {
                 .target(SERVER).path("api/questions/" + sessionId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<>() {
+                .get(new GenericType<Question>() {
                 });
     }
 
@@ -258,7 +258,7 @@ public class ServerUtils {
                 .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<>() {
+                .get(new GenericType<Answer>() {
                 });
     }
 
@@ -273,7 +273,7 @@ public class ServerUtils {
                 .target(SERVER).path("api/questions/answers/" + sessionId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<>() {
+                .get(new GenericType<List<Integer>>() {
                 });
     }
 
@@ -291,7 +291,7 @@ public class ServerUtils {
                 .target(SERVER).path("api/leaderboard/single") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .get(new GenericType<>() {
+                .get(new GenericType<List<Player>>() {
                 });
     }
 
@@ -305,7 +305,7 @@ public class ServerUtils {
                 .target(SERVER).path("api/leaderboard/multi") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .get(new GenericType<>() {
+                .get(new GenericType<List<Player>>() {
                 });
     }
 
@@ -320,7 +320,7 @@ public class ServerUtils {
                 .target(SERVER).path("api/leaderboard/" + playerId) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .get(new GenericType<>() {
+                .get(new GenericType<Player>() {
                 });
     }
 

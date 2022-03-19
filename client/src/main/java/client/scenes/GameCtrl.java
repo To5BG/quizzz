@@ -16,8 +16,8 @@ import java.util.*;
 
 public abstract class GameCtrl implements Initializable {
 
-    protected final int GAME_ROUNDS = 1;
-    protected final int GAME_ROUND_TIME = 5;
+    protected final int GAME_ROUNDS = 20;
+    protected final int GAME_ROUND_TIME = 10;
     protected final int MIDGAME_BREAK_TIME = 6;
     protected final int TIMER_UPDATE_INTERVAL_MS = 50;
     protected final int GAME_ROUND_DELAY = 2;
@@ -90,7 +90,7 @@ public abstract class GameCtrl implements Initializable {
     public GameCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
-        this.multiChoiceAnswers = new ArrayList<>();
+        this.multiChoiceAnswers = new ArrayList<RadioButton>();
 
         doublePointsJoker = true;
         doublePointsActive = false;
@@ -303,7 +303,7 @@ public abstract class GameCtrl implements Initializable {
         Question q = this.currentQuestion;
         renderAnswerFields(q);
 
-        if (removeOneJoker) {
+        if(removeOneJoker) {
             disableButton(removeOneButton, q.type == Question.QuestionType.RANGE_GUESS);
         }
 
@@ -411,12 +411,13 @@ public abstract class GameCtrl implements Initializable {
                     givenAnswer = 0;
                 }
                 int diff = Math.abs(givenAnswer - actualAnswer);
-                if (diff == 0) {
+                if(diff == 0) {
                     temppoints = (int) (60 * this.evaluation.points * timeFactor) + 40;
-                } else {
-                    if (diff > actualAnswer) diff = actualAnswer;
-                    temppoints = (int) (90 - 90 * ((double) diff * difficultyFactor * timeFactor / actualAnswer) +
-                            ((diff < actualAnswer) ? 10 - 10 * ((double) diff * difficultyFactor / actualAnswer) : 0));
+                }
+                else {
+                    if(diff > actualAnswer) diff = actualAnswer;
+                    temppoints = (int) (90 - 90*((double) diff*difficultyFactor*timeFactor/actualAnswer) +
+                            ((diff < actualAnswer) ? 10 - 10*((double) diff*difficultyFactor/actualAnswer) : 0));
                     if (temppoints <= 0) temppoints = 0;
                 }
                 break;
@@ -510,7 +511,7 @@ public abstract class GameCtrl implements Initializable {
         disableButton(decreaseTimeButton, true);
         disableButton(doublePointsButton, true);
 
-        switch (rounds / 4) {
+        switch (rounds / 4){
             case 0 -> difficultyFactor = 1;
             case 1 -> difficultyFactor = 2;
             case 2 -> difficultyFactor = 3;
@@ -671,11 +672,10 @@ public abstract class GameCtrl implements Initializable {
      * Reset the number of time Jokers for the current session to default value
      */
     public void resetTimeJokers() {
-        if (getTimeJokers() != 0) {
+        if(getTimeJokers() != 0) {
             server.updateTimeJokers(sessionId, 0);
         }
     }
-
     /**
      * Decrease Time Joker
      * When this joker is used, the timer speeds up
