@@ -14,12 +14,12 @@ import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 @Entity
 public class Activity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     public long id;
 
     public String title;
-    public String consumption;
-    public String imagePath;
+    public String consumption_in_wh;
+    public String image_path;
     public String source;
 
     /**
@@ -32,14 +32,14 @@ public class Activity {
     /**
      * Constructor method for Activity
      * @param title - String representing the name of the activity
-     * @param consumption - String representing the consumption in Wh of the activity
-     * @param imagePath - String representing the path to the image of the activity
+     * @param consumption_in_wh - String representing the consumption in Wh of the activity
+     * @param image_path - String representing the path to the image of the activity
      * @param source  - String representing the source URL where the consumption information was taken from
      */
-    public Activity(String title, String consumption,String imagePath, String source) {
+    public Activity(String title, String consumption_in_wh,String image_path, String source) {
         this.title = title;
-        this.consumption = consumption;
-        this.imagePath = imagePath;
+        this.consumption_in_wh = consumption_in_wh;
+        this.image_path = image_path;
         this.source = source;
     }
 

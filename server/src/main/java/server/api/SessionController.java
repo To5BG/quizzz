@@ -3,10 +3,13 @@ package server.api;
 import commons.Answer;
 import commons.GameSession;
 import commons.Player;
+import commons.Question;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.SessionRepository;
+import server.service.QuestionGenerator;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -26,29 +29,47 @@ public class SessionController {
 
     private final SessionRepository repo;
     private final Random random;
+    private final ActivityController activityCtrl;
 
-    public SessionController(Random random, SessionRepository repo, String controllerConfig) {
+    public SessionController(Random random, SessionRepository repo, String controllerConfig,
+                             ActivityController activityCtrl) {
         this.random = random;
         this.repo = repo;
+        this.activityCtrl = activityCtrl;
         if (!controllerConfig.equals("test")) resetDatabase(controllerConfig.equals("all"));
+    }
+
+    /**
+     * Updates the question of a game session
+     */
+    public void updateQuestion(GameSession session) {
+        session.difficultyFactor = session.questionCounter/4 + 1;
+        session.questionCounter++;
+        Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion(session.difficultyFactor, activityCtrl);
+        session.currentQuestion = res.getKey();
+        System.out.println("Question updated to:");
+        System.out.println(session.currentQuestion);
+        session.expectedAnswers.clear();
+        session.expectedAnswers.addAll(res.getValue());
     }
 
     /**
      * Resets game sessions from previous server runs. Deletes all sessions besides the waiting area
      * and removes all player connections along with them
      *
-     * @param resetPlayers True iff the players' table should also be removed
+     * @param resetPersistentData database reset configuration
      */
-    public void resetDatabase(boolean resetPlayers) {
-        try (Connection conn = DriverManager.getConnection("jdbc:h2:file:./quizzzz", "sa", "")) {
-            Statement stmt = conn.createStatement();
+    public void resetDatabase(boolean resetPersistentData) {
+        try (Connection CONN = DriverManager.getConnection("jdbc:h2:file:./quizzzz", "sa", "")) {
+            Statement stmt = CONN.createStatement();
             stmt.executeUpdate("DELETE FROM QUESTION_ANSWER_OPTIONS");
             stmt.executeUpdate("DELETE FROM GAME_SESSION_EXPECTED_ANSWERS");
             stmt.executeUpdate("DELETE FROM GAME_SESSION_PLAYERS");
             stmt.executeUpdate("DELETE FROM GAME_SESSION WHERE SESSION_TYPE <> 0");
             stmt.executeUpdate("DELETE FROM QUESTION");
-            if (resetPlayers) {
+            if (resetPersistentData) {
                 stmt.executeUpdate("DELETE FROM PLAYER");
+                stmt.executeUpdate("DELETE FROM ACTIVITY");
                 stmt.executeUpdate("ALTER SEQUENCE HIBERNATE_SEQUENCE RESTART WITH 1");
             }
             if (repo.count() == 0) repo.save(new GameSession(GameSession.SessionType.WAITING_AREA));
@@ -90,7 +111,7 @@ public class SessionController {
         for (Player p : session.players) {
             if (isNullOrEmpty(p.username)) return ResponseEntity.badRequest().build();
         }
-        session.updateQuestion();
+        updateQuestion(session);
         GameSession saved = repo.save(session);
         return ResponseEntity.ok(saved);
     }
@@ -153,6 +174,10 @@ public class SessionController {
         if (isInvalid(sessionId,repo)) return ResponseEntity.badRequest().build();
         GameSession session = repo.findById(sessionId).get();
         session.setPlayerReady();
+        if (session.sessionType != GameSession.SessionType.WAITING_AREA &&
+                session.playersReady == session.players.size()) {
+            updateQuestion(session);
+        }
         repo.save(session);
         return ResponseEntity.ok(session);
     }

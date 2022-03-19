@@ -21,10 +21,7 @@ import static org.springframework.http.HttpStatus.OK;
 import java.util.List;
 import java.util.Random;
 
-import commons.Answer;
-import commons.GameSession;
-import commons.Player;
-import commons.Question;
+import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -35,6 +32,7 @@ public class SessionControllerTest {
     public int nextInt;
     private MyRandom random;
     private TestGameSessionRepository repo;
+    private TestActivityRepository activityRepo;
 
     private SessionController sut;
     private GameSession first;
@@ -43,7 +41,14 @@ public class SessionControllerTest {
     public void setup() {
         random = new MyRandom();
         repo = new TestGameSessionRepository();
-        sut = new SessionController(random, repo, "test");
+        activityRepo = new TestActivityRepository();
+        activityRepo.save(new Activity("test","42","test","test"));
+        activityRepo.save(new Activity("test2","43","test2","test2"));
+        activityRepo.save(new Activity("test3","44","test3","test3"));
+        activityRepo.save(new Activity("test4","45","test4","test4"));
+
+        sut = new SessionController(random, repo, "test",
+                new ActivityController(new Random(), activityRepo));
         first = new GameSession(GameSession.SessionType.MULTIPLAYER);
     }
 
@@ -64,6 +69,40 @@ public class SessionControllerTest {
 
         sut.updateSession(next);
         assertEquals(42, repo.findAll().get(0).playersReady);
+    }
+
+    @Test
+    public void testUpdateQuestion() {
+        Question previousQuestion = first.currentQuestion;
+        sut.updateQuestion(first);
+        assertSame(1, first.questionCounter);
+        assertNotNull(first.currentQuestion);
+        assertNotSame(previousQuestion, first.currentQuestion);
+    }
+
+    @Test
+    public void testPlayerAnswerMiddle() {
+        Player p = new Player("test2",0);
+        first.addPlayer(p);
+        sut.updateQuestion(first);
+        Question tmp = first.currentQuestion;
+        first.setPlayerReady();
+        assertSame(1, first.questionCounter);
+        assertSame(1, first.playersReady);
+        assertEquals(tmp, first.currentQuestion);
+    }
+
+    @Test
+    public void testPlayerAnswerFinal() {
+        first.addPlayer(new Player("test",0));
+        sut.addSession(first);
+        Question tmp = first.currentQuestion;
+        sut.setPlayerReady(first.id);
+
+        assertSame(2, first.questionCounter);
+        assertSame(1, first.playersReady);
+        assertNotNull(first.currentQuestion);
+        assertNotSame(tmp, first.currentQuestion);
     }
 
     @Test
