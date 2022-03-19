@@ -103,11 +103,15 @@ public class MultiplayerCtrl extends GameCtrl {
                                 if (server.getSession(sessionId).players.size() ==
                                         server.getSession(sessionId).playersReady) {
                                     WAITING_SKIP = 4;
-                                    cancel();
+                                } else {
+                                    WAITING_SKIP = 0;
                                 }
-
                                 status.setText(server.getSession(sessionId).playersReady + " / " +
                                         server.getSession(sessionId).players.size() + " players want to play again");
+                            }
+                            if (server.getSession(sessionId).sessionStatus
+                                    == GameSession.SessionStatus.TRANSFERRING) {
+                                cancel();
                             }
                         } catch (Exception e) {
                             cancel();
@@ -147,6 +151,7 @@ public class MultiplayerCtrl extends GameCtrl {
      * Method that calls the parent class' back method when the endgame back button is pressed and calls reset.
      */
     public void leaveGame() {
+        playAgain();
         reset();
         super.back();
     }
@@ -216,6 +221,7 @@ public class MultiplayerCtrl extends GameCtrl {
                     }
                 }
                 updateProgress(0, 1);
+                server.updateStatus(server.getSession(sessionId), GameSession.SessionStatus.TRANSFERRING);
                 Platform.runLater(() -> {
                     if (!(isPlayingAgain())) {
                         leaveGame();
