@@ -376,6 +376,7 @@ public abstract class GameCtrl implements Initializable {
         this.points = 0;
         this.rounds = 0;
         this.currentQuestion = null;
+        this.questionCount.setText("Question: 1");
 
         //re-enable jokers
         doublePointsJoker = true;
