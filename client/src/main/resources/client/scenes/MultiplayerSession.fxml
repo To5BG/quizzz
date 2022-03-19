@@ -43,5 +43,6 @@
                 onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points" />
       <Button fx:id="playAgain" layoutX="241.0" layoutY="288.0" mnemonicParsing="false" onAction="#playAgain"
               prefHeight="25.0" prefWidth="103.0" text="Play again" />
+      <Label fx:id="status" layoutX="47.0" layoutY="359.0" text="[Status]" />
     </children>
 </AnchorPane>

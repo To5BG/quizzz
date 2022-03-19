@@ -24,6 +24,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
@@ -42,12 +43,16 @@ public class MultiplayerCtrl extends GameCtrl {
     }
 
     private boolean playingAgain;
+    private int WAITING_SKIP = 0;
 
     @FXML
     private Button backButton;
 
     @FXML
     private Button playAgain;
+
+    @FXML
+    private Label status;
 
     /**
      * {@inheritDoc}
@@ -72,10 +77,12 @@ public class MultiplayerCtrl extends GameCtrl {
 
         backButton.setOpacity(0);
         playAgain.setOpacity(0);
+        status.setOpacity(0);
     }
 
     /**
-     * Refreshes the multiplayer player board to check whether the evaluation can start.
+     * Refreshes the multiplayer player board to check whether the evaluation can start or refreshes the board to check
+     * how many players want to play again.
      */
     public void refresh() {
         Timer t = new Timer();
@@ -90,6 +97,17 @@ public class MultiplayerCtrl extends GameCtrl {
                                     == GameSession.SessionStatus.PAUSED) {
                                 startSingleEvaluation();
                                 cancel();
+                            }
+                            if (server.getSession(sessionId).sessionStatus
+                                    == GameSession.SessionStatus.PLAY_AGAIN) {
+                                if (server.getSession(sessionId).players.size() ==
+                                        server.getSession(sessionId).playersReady) {
+                                    WAITING_SKIP = 4;
+                                    cancel();
+                                }
+
+                                status.setText(server.getSession(sessionId).playersReady + " / " +
+                                        server.getSession(sessionId).players.size() + " players want to play again");
                             }
                         } catch (Exception e) {
                             cancel();
@@ -126,9 +144,10 @@ public class MultiplayerCtrl extends GameCtrl {
     }
 
     /**
-     * Method that calls the parent class' back method when the endgame back button is pressed
+     * Method that calls the parent class' back method when the endgame back button is pressed and calls reset.
      */
     public void leaveGame() {
+        reset();
         super.back();
     }
 
@@ -140,6 +159,9 @@ public class MultiplayerCtrl extends GameCtrl {
         playAgain.setText("Play again");
         playAgain.setOpacity(0);
         setPlayingAgain(false);
+        status.setText("[Status]");
+        status.setOpacity(0);
+        WAITING_SKIP = 0;
         super.reset();
     }
 
@@ -152,11 +174,13 @@ public class MultiplayerCtrl extends GameCtrl {
             case "Play again" -> {
                 playAgain.setText("Don't play again");
                 questionCount.setText("Waiting for game to start...");
+                server.toggleReady(sessionId, true);
                 setPlayingAgain(true);
             }
             case "Don't play again" -> {
                 playAgain.setText("Play again");
                 questionCount.setText("End of game! Play again or go back to main.");
+                server.toggleReady(sessionId, false);
                 setPlayingAgain(false);
             }
         }
@@ -171,16 +195,19 @@ public class MultiplayerCtrl extends GameCtrl {
         displayLeaderboard();
         backButton.setOpacity(1);
         playAgain.setOpacity(1);
+        status.setOpacity(1);
+        status.setText("");
+        WAITING_SKIP = 0;
         questionCount.setText("End of game! Play again or go back to main.");
 
         Task roundTimer = new Task() {
             @Override
             public Object call() {
                 long refreshCounter = 0;
-                long waitingTime = 20000L;
+                long waitingTime = 60000L;
                 while (refreshCounter * TIMER_UPDATE_INTERVAL_MS < waitingTime) {
                     updateProgress(waitingTime - refreshCounter * TIMER_UPDATE_INTERVAL_MS, waitingTime);
-                    ++refreshCounter;
+                    refreshCounter += WAITING_SKIP + 1;
                     try {
                         Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
                     } catch (InterruptedException e) {
@@ -189,21 +216,6 @@ public class MultiplayerCtrl extends GameCtrl {
                     }
                 }
                 updateProgress(0, 1);
-                return null;
-            }
-        };
-        timeProgress.progressProperty().bind(roundTimer.progressProperty());
-        this.timerThread = new Thread(roundTimer);
-        this.timerThread.start();
-
-        GameSession session = server.toggleReady(sessionId, false);
-        if (session.playersReady == 0) {
-            server.updateStatus(session, GameSession.SessionStatus.ONGOING);
-        }
-
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
                 Platform.runLater(() -> {
                     if (!(isPlayingAgain())) {
                         leaveGame();
@@ -212,8 +224,16 @@ public class MultiplayerCtrl extends GameCtrl {
                         startGame();
                     }
                 });
+                return null;
             }
-        }, 20000);
+        };
+        timeProgress.progressProperty().bind(roundTimer.progressProperty());
+        this.timerThread = new Thread(roundTimer);
+        this.timerThread.start();
+
+        GameSession session = server.toggleReady(sessionId, false);
+        server.updateStatus(session, GameSession.SessionStatus.PLAY_AGAIN);
+        refresh();
     }
 
     /**
@@ -226,6 +246,10 @@ public class MultiplayerCtrl extends GameCtrl {
             public void run() {
                 Platform.runLater(() -> {
                     if (server.getPlayers(sessionId).size() >= 2 && isPlayingAgain()) {
+                        GameSession session = server.toggleReady(sessionId, false);
+                        if (session.playersReady == 0) {
+                            server.updateStatus(session, GameSession.SessionStatus.ONGOING);
+                        }
                         reset();
                         loadQuestion();
                     }
