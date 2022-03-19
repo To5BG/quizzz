@@ -249,6 +249,7 @@ public class MultiplayerCtrl extends GameCtrl {
                         GameSession session = server.toggleReady(sessionId, false);
                         if (session.playersReady == 0) {
                             server.updateStatus(session, GameSession.SessionStatus.ONGOING);
+                            server.resetQuestionCounter(sessionId);
                         }
                         reset();
                         loadQuestion();

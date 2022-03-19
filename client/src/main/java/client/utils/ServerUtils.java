@@ -196,6 +196,21 @@ public class ServerUtils {
                 .get(Integer.class);
     }
 
+    /**
+     * Resets a session's questionCounter
+     *
+     * @param sessionId The id of the session
+     * @return          The updated session
+     */
+    public GameSession resetQuestionCounter(long sessionId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId + "/reset")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<GameSession>() {
+                });
+    }
+
     /*-----------------------------------------------------------------------------------------*/
     /*----------------------------- ANSWER AND QUESTION HANDLING ------------------------------*/
     /*-----------------------------------------------------------------------------------------*/

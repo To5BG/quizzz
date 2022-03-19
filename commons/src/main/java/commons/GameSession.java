@@ -123,6 +123,13 @@ public class GameSession {
     }
 
     /**
+     * Resets the questionCounter to zero.
+     */
+    public void resetQuestionCounter() {
+        this.questionCounter = 0;
+    }
+
+    /**
      * Updates the question of the game session
      */
     public void updateQuestion() {
