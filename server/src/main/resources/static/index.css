@@ -1,0 +1,42 @@
+body {
+    display: flex;
+}
+
+#left {
+    flex: 35%;
+    background-color: #dddddd;
+}
+
+#right {
+    flex: 65%;
+    background-color: #f0f0f0;
+}
+
+#btnCont,#inputCont {
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+#btnCont > div, #inputCont > div {
+    opacity: 0;
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+.continuous {
+    display: inline-block;
+}
