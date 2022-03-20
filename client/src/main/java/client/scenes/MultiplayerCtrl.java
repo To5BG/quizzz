@@ -161,8 +161,10 @@ public class MultiplayerCtrl extends GameCtrl {
                                     == GameSession.SessionStatus.PLAY_AGAIN) {
                                 if (server.getSession(sessionId).players.size() ==
                                         server.getSession(sessionId).playersReady) {
+                                    //Speed the timer up
                                     waitingSkip = 4;
                                 } else {
+                                    //Slow the timer down
                                     waitingSkip = 0;
                                 }
                                 status.setText(server.getSession(sessionId).playersReady + " / " +

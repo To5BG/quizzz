@@ -61,7 +61,7 @@ public class SingleplayerCtrl extends GameCtrl {
     }
 
     /**
-     * Empty method
+     * Empty method because singleplayer mode does not have an end screen.
      */
     @Override
     public void showEndScreen() {
