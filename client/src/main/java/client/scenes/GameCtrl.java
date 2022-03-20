@@ -16,7 +16,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 
-
 import java.util.*;
 
 public abstract class GameCtrl implements Initializable {
@@ -414,10 +413,24 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
+     * Abstract method that gets called to show the end game screen for multiplayer sessions.
+     */
+    abstract public void showEndScreen();
+
+    /**
      * Reverts the player to the splash screen and remove him from the current game session.
      */
     public void back() {
         shutdown();
+        reset();
+        mainCtrl.showSplash();
+    }
+
+    /**
+     * Resets all fields and the screen for a new game.
+     */
+    public void reset() {
+        removeLeaderboard();
         this.questionPrompt.setText("[Question]");
         this.answerArea.getChildren().clear();
         this.pointsLabel.setText("Points: 0");
@@ -425,6 +438,7 @@ public abstract class GameCtrl implements Initializable {
         this.points = 0;
         this.rounds = 0;
         this.currentQuestion = null;
+        this.questionCount.setText("Question: 1");
         this.imagePanel.setImage(null);
 
         //re-enable jokers
@@ -434,7 +448,6 @@ public abstract class GameCtrl implements Initializable {
         removeOneJoker = true;
 
         disableButton(submitButton, true);
-        mainCtrl.showSplash();
     }
 
     /**
@@ -593,7 +606,8 @@ public abstract class GameCtrl implements Initializable {
                     if (rounds == GAME_ROUNDS) {
                         // TODO display leaderboard things here
                         if (points > scoreEvaluation) updateScore(playerId, points, true);
-                        back();
+                        if (server.getSession(sessionId).players.size() >= 2) showEndScreen();
+                        else back();
                     } else if (rounds == GAME_ROUNDS / 2 &&
                             server.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
                         multiChoiceAnswers.clear();
@@ -618,9 +632,9 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Display mid-game leaderboard
+     * Displays the current session's leaderboard and hides the question screen attributes
      */
-    public void displayMidGameScreen() {
+    public void displayLeaderboard() {
         var players = server.getPlayers(sessionId);
         var data = FXCollections.observableList(players);
         leaderboard.setItems(data);
@@ -631,6 +645,26 @@ public abstract class GameCtrl implements Initializable {
         decreaseTimeButton.setOpacity(0);
         questionPrompt.setOpacity(0);
         leaderboard.setOpacity(1);
+    }
+
+    /**
+     * Displays the question screen attributes and hides the leaderboard
+     */
+    public void removeLeaderboard() {
+        leaderboard.setOpacity(0);
+        answerArea.setOpacity(1);
+        questionPrompt.setOpacity(1);
+        submitButton.setOpacity(1);
+        removeOneButton.setOpacity(1);
+        doublePointsButton.setOpacity(1);
+        decreaseTimeButton.setOpacity(1);
+    }
+
+    /**
+     * Display mid-game leaderboard
+     */
+    public void displayMidGameScreen() {
+        displayLeaderboard();
 
         Task roundTimer = new Task() {
             @Override
@@ -663,13 +697,7 @@ public abstract class GameCtrl implements Initializable {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    leaderboard.setOpacity(0);
-                    answerArea.setOpacity(1);
-                    questionPrompt.setOpacity(1);
-                    submitButton.setOpacity(1);
-                    removeOneButton.setOpacity(1);
-                    doublePointsButton.setOpacity(1);
-                    decreaseTimeButton.setOpacity(1);
+                    removeLeaderboard();
                     loadQuestion();
                 });
             }
