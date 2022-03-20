@@ -47,7 +47,8 @@ public class GameSession {
         TRANSFERRING,
         ONGOING,
         STARTED,
-        PAUSED
+        PAUSED,
+        PLAY_AGAIN
     }
 
     @SuppressWarnings("unused")
@@ -119,6 +120,13 @@ public class GameSession {
 
     public void setSessionStatus(SessionStatus sessionStatus) {
         this.sessionStatus = sessionStatus;
+    }
+
+    /**
+     * Resets the questionCounter to zero.
+     */
+    public void resetQuestionCounter() {
+        this.questionCounter = 0;
     }
 
     /**
