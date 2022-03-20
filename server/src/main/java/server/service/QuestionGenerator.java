@@ -29,6 +29,7 @@ public class QuestionGenerator {
         for (int i = 0; i < activities.size(); ++i) {
             Activity a = activities.get(i);
             q.addAnswerOption(a.title);
+            q.addActivityPath(a.image_path);
             if (Integer.parseInt(a.consumption_in_wh) > maxUsage) {
                 answerIndex = i;
                 maxUsage = Integer.parseInt(a.consumption_in_wh);
@@ -99,6 +100,7 @@ public class QuestionGenerator {
         for (int i = 0; i < other.size(); ++i) {
             Activity act = other.get(i);
             q.addAnswerOption(act.title);
+            q.addActivityPath(act.image_path);
             int curDiff = Math.abs(Integer.parseInt(a.consumption_in_wh) - Integer.parseInt(act.consumption_in_wh));
             if (curDiff < diff) {
                 diff = curDiff;

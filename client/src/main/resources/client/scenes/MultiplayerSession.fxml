@@ -10,7 +10,9 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MultiplayerCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+            prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.scenes.MultiplayerCtrl">
     <children>
         <Label fx:id="questionPrompt" layoutX="14.0" layoutY="14.0" text="[Question]" />
         <Label fx:id="countdown" layoutX="16.0" layoutY="44.0" text="Options:" />
@@ -22,7 +24,8 @@
             </columns>
         </TableView>
         <StackPane fx:id="answerArea" layoutX="14.0" layoutY="61.0" prefHeight="156.0" prefWidth="321.0" />
-        <Button fx:id="submitButton" layoutX="361.0" layoutY="248.0" mnemonicParsing="false" onAction="#submitAnswerButton"
+        <Button fx:id="submitButton" layoutX="361.0" layoutY="248.0" mnemonicParsing="false"
+                onAction="#submitAnswerButton"
                 text="Final Answer"/>
         <Label fx:id="pointsLabel" layoutX="492.0" layoutY="14.0" text="Points: 0" />
         <Label fx:id="questionCount" layoutX="14.0" layoutY="1.0" text="Question: 1" />
@@ -34,8 +37,11 @@
             <Font size="9.0" />
         </font>
         </Button>
-        <Button fx:id="decreaseTimeButton" layoutX="189.0" layoutY="323.0" mnemonicParsing="false" onAction="#decreaseTime" prefHeight="26.0" prefWidth="103.0" text="Decrease Time" />
-        <Button fx:id="doublePointsButton" layoutX="340.0" layoutY="323.0" mnemonicParsing="false" onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points" />
-      <ImageView fx:id="imagePanel" fitHeight="156.0" fitWidth="200.0" layoutX="361.0" layoutY="61.0" pickOnBounds="true" preserveRatio="true" />
+        <Button fx:id="decreaseTimeButton" layoutX="189.0" layoutY="323.0" mnemonicParsing="false"
+                onAction="#decreaseTime" prefHeight="26.0" prefWidth="103.0" text="Decrease Time" />
+        <Button fx:id="doublePointsButton" layoutX="340.0" layoutY="323.0" mnemonicParsing="false"
+                onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points" />
+      <ImageView fx:id="imagePanel" fitHeight="156.0" fitWidth="200.0" layoutX="361.0" layoutY="61.0"
+                 pickOnBounds="true" preserveRatio="true" />
     </children>
 </AnchorPane>

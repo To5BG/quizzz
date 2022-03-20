@@ -152,7 +152,7 @@ public abstract class GameCtrl implements Initializable {
             case EQUIVALENCE:
             case MULTIPLE_CHOICE:
                 try {
-                    Image image = new Image(q.imagePath);
+                    Image image = new Image("assets/" + q.imagePath);
                     imagePanel.setImage(image);
                     break;
                 }
@@ -219,6 +219,49 @@ public abstract class GameCtrl implements Initializable {
             yPosition += 30;
             multiChoiceAnswers.add(choice);
             answerArea.getChildren().add(choice);
+        }
+    }
+
+    /**
+     * Change the image displayed upon hovering the activity answer options
+     */
+    public void imageHover() {
+        Question q = this.currentQuestion;
+        switch (this.currentQuestion.type) {
+            case COMPARISON:
+                try {
+                    multiChoiceAnswers.get(0).setOnMouseEntered(e ->
+                            imagePanel.setImage(new Image("assets/" + q.activityPath.get(0))));
+                    multiChoiceAnswers.get(1).setOnMouseEntered(e ->
+                            imagePanel.setImage(new Image("assets/" + q.activityPath.get(1))));
+                    multiChoiceAnswers.get(2).setOnMouseEntered(e ->
+                            imagePanel.setImage(new Image("assets/" + q.activityPath.get(2))));
+                    multiChoiceAnswers.get(3).setOnMouseEntered(e ->
+                            imagePanel.setImage(new Image("assets/" + q.activityPath.get(3))));
+                    break;
+                }
+                catch (IllegalArgumentException e) {
+                    break;
+                }
+            case EQUIVALENCE:
+                try {
+                    multiChoiceAnswers.get(0).setOnMouseEntered(e ->
+                            imagePanel.setImage(new Image("assets/" + q.activityPath.get(0))));
+                    multiChoiceAnswers.get(0).setOnMouseExited(e ->
+                            imagePanel.setImage(new Image("assets/" + q.imagePath)));
+                    multiChoiceAnswers.get(1).setOnMouseEntered(e ->
+                            imagePanel.setImage(new Image("assets/" + q.activityPath.get(1))));
+                    multiChoiceAnswers.get(1).setOnMouseExited(e ->
+                            imagePanel.setImage(new Image("assets/" + q.imagePath)));
+                    multiChoiceAnswers.get(2).setOnMouseEntered(e ->
+                            imagePanel.setImage(new Image("assets/" + q.activityPath.get(2))));
+                    multiChoiceAnswers.get(2).setOnMouseExited(e ->
+                            imagePanel.setImage(new Image("assets/" + q.imagePath)));
+                    break;
+                }
+                catch (IllegalArgumentException e) {
+                    break;
+                }
         }
     }
 
@@ -358,6 +401,7 @@ public abstract class GameCtrl implements Initializable {
         timeProgress.progressProperty().bind(roundTimer.progressProperty());
         this.timerThread = new Thread(roundTimer);
         this.timerThread.start();
+        imageHover();
     }
 
     /**
@@ -389,6 +433,7 @@ public abstract class GameCtrl implements Initializable {
         this.points = 0;
         this.rounds = 0;
         this.currentQuestion = null;
+        this.imagePanel.setImage(null);
 
         //re-enable jokers
         doublePointsJoker = true;
@@ -559,6 +604,9 @@ public abstract class GameCtrl implements Initializable {
                         back();
                     } else if (rounds == GAME_ROUNDS / 2 &&
                             server.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
+                        multiChoiceAnswers.clear();
+                        answerArea.getChildren().clear();
+                        imagePanel.setImage(null);
                         displayMidGameScreen();
                     } else {
                         try {
@@ -566,6 +614,7 @@ public abstract class GameCtrl implements Initializable {
                             if (session.playersReady == 0) {
                                 server.updateStatus(session, GameSession.SessionStatus.ONGOING);
                             }
+                            imagePanel.setImage(null);
                             loadQuestion();
                         } catch (BadRequestException e) {
                             System.out.println("takingover");
