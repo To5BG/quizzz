@@ -17,7 +17,10 @@ package client.utils;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import java.lang.reflect.Type;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 import commons.*;
 import org.glassfish.jersey.client.ClientConfig;
@@ -25,6 +28,13 @@ import org.glassfish.jersey.client.ClientConfig;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.stomp.StompFrameHandler;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 public class ServerUtils {
 
@@ -123,7 +133,7 @@ public class ServerUtils {
     /**
      * Sets and unsets a player as being ready for a multiplayer game
      *
-     * @param sessionId
+     * @param sessionId the id of the session
      * @param isReady   True iff a player must be set as ready
      * @return New count of players that are ready
      */
@@ -325,23 +335,6 @@ public class ServerUtils {
     }
 
     /**
-     * Update a player's score in DB
-     *
-     * @param playerId    Id of player
-     * @param points      Updated points
-     * @param isBestScore Is this over the current best score for the player
-     * @return Updated player DB entry reference
-     */
-    public Player updateScore(long playerId, int points, boolean isBestScore) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/" + playerId +
-                        ((isBestScore) ? "/best" : "/") + "score")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(points, APPLICATION_JSON), Player.class);
-    }
-
-    /**
      * Adds a player entry to the database forcibly (without an associated game session)
      *
      * @param player the player to be added
@@ -353,5 +346,119 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(player, APPLICATION_JSON), Player.class);
+    }
+
+    /*-----------------------------------------------------------------------------------------*/
+    /*----------------------------- PLAYER INTERACTION AND WEBSOCKET --------------------------*/
+    /*-----------------------------------------------------------------------------------------*/
+    private StompSession websocketServer = connect("ws://localhost:8080/websocket");
+
+    /**
+     * Create a new websocket connection
+     * @param destination URL where a protocol switch to websocket can happen
+     * @return The established StompSession
+     */
+    private StompSession connect(String destination) {
+        var client = new StandardWebSocketClient();
+        var stomp = new WebSocketStompClient(client);
+
+        // Setup magic passing of objects through the network
+        stomp.setMessageConverter(new MappingJackson2MessageConverter());
+
+        try {
+            return stomp.connect(destination, new StompSessionHandlerAdapter() { }).get();
+        } catch (InterruptedException e) {
+            System.err.println("Websocket connection timed out");
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        throw new IllegalStateException("Failed to connect to websocket server");
+    }
+
+    /**
+     * Register for updates from the websocket server
+     * @param callback Function to call when a message is received
+     * @param type The class of the type of object that is expected
+     * @param updateUrl The URL from which to receive updates
+     * @param <T> The type of the object that is expected
+     * @return A Subscription which can be used to unsubscribe from the updates
+     */
+    private <T> StompSession.Subscription registerForWebsocketUpdates(Consumer<T> callback,
+                                                                      Class<T> type, String updateUrl) {
+        return websocketServer.subscribe("/updates" + updateUrl, new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return type;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                callback.accept((T) payload);
+            }
+        });
+    }
+
+    /**
+     * Listen for updates regarding emojis from other players
+     * @param handler The function to call with the emoji sent to the session
+     * @param sessionId The ID of the session in which to listen for emojis
+     */
+    public StompSession.Subscription registerForEmojiUpdates(Consumer<Emoji> handler, long sessionId) {
+        return registerForWebsocketUpdates(handler, Emoji.class, "/emoji/" + sessionId);
+    }
+
+    /**
+     * Send a message to the websocket server
+     * @param url The destination path of the message (/app is appended by the method)
+     * @param body The content of the message
+     * @param <T> The type of the message to send
+     */
+    private <T> void sendWebsocketMessage(String url, T body) {
+        websocketServer.send("/app/" + url, body);
+    }
+
+    /**
+     * Send an emoji to a given session
+     * @param sessionId The ID of the session where the emoji is sent to
+     * @param playerId The ID of the player sending the emoji
+     * @param emoji The type of emoji to send
+     */
+    public void sendEmoji(long sessionId, long playerId, Emoji.EmojiType emoji) {
+        sendWebsocketMessage("/emoji/" + sessionId + "/send/" + playerId, emoji);
+    }
+
+    /**
+     * Update a player's score in DB
+     *
+     * @param playerId    Id of player
+     * @param points      Updated points
+     * @param isBestScore Is this over the current best score for the player
+     * @return Updated player DB entry reference
+     */
+    public Player updateSingleScore(long playerId, int points, boolean isBestScore) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/leaderboard/" + playerId +
+                        ((isBestScore) ? "/best" : "/") + "singlescore")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(points, APPLICATION_JSON), Player.class);
+    }
+
+    /**
+     * Update a player's score in DB
+     *
+     * @param playerId    Id of player
+     * @param points      Updated points
+     * @param isBestScore Is this over the current best score for the player
+     * @return Updated player DB entry reference
+     */
+    public Player updateMultiScore(long playerId, int points, boolean isBestScore) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/leaderboard/" + playerId +
+                        ((isBestScore) ? "/best" : "/") + "multiscore")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(points, APPLICATION_JSON), Player.class);
     }
 }

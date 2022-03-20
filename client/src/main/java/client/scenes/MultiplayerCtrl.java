@@ -20,22 +20,60 @@ import client.utils.ServerUtils;
 import commons.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.util.Callback;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.nio.file.Path;
+import java.util.*;
 
 public class MultiplayerCtrl extends GameCtrl {
 
+    @FXML
+    private TableView<Emoji> emojiList;
+
+    @FXML
+    private TableColumn<Emoji, String> emojiUsername;
+
+    @FXML
+    private TableColumn<Emoji, ImageView> emojiImage;
+
+    @FXML
+    private ImageView emojiFunny;
+
+    @FXML
+    private ImageView emojiSad;
+
+    @FXML
+    private ImageView emojiAngry;
+
+    private final ObservableList<Emoji> sessionEmojis;
+    private final List<Image> emojiImages;
+    private StompSession.Subscription channel;
 
     @Inject
     public MultiplayerCtrl(ServerUtils server, MainCtrl mainCtrl) {
         super(server, mainCtrl);
+        sessionEmojis = FXCollections.observableArrayList();
+        emojiImages = new ArrayList<Image>();
+        String[] emojiFileNames = {"funny", "sad", "angry"};
+        ClassLoader cl = getClass().getClassLoader();
+        for (String fileName : emojiFileNames) {
+            URL location = cl.getResource(
+                    Path.of("", "client", "scenes", "emojis", fileName + ".png").toString());
+
+            emojiImages.add(new Image(location.toString()));
+        }
     }
 
     /**
@@ -58,14 +96,33 @@ public class MultiplayerCtrl extends GameCtrl {
                 };
             }
         });
+
+        emojiUsername.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().username));
+        emojiImage.setCellValueFactory(e -> {
+            Image picture;
+            switch (e.getValue().emoji) {
+                case FUNNY -> picture = emojiImages.get(0);
+                case SAD -> picture = emojiImages.get(1);
+                default -> picture = emojiImages.get(2);
+            }
+
+            ImageView iv = new ImageView(picture);
+            iv.setFitHeight(30);
+            iv.setFitWidth(30);
+            return new SimpleObjectProperty<ImageView>(iv);
+        });
+
+        emojiFunny.setImage(emojiImages.get(0));
+        emojiSad.setImage(emojiImages.get(1));
+        emojiAngry.setImage(emojiImages.get(2));
     }
 
     /**
      * Refreshes the multiplayer player board to check whether the evaluation can start.
      */
     public void refresh() {
-        Timer t = new Timer();
-        t.scheduleAtFixedRate(new TimerTask() {
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 Platform.runLater(new Runnable() {
@@ -74,7 +131,7 @@ public class MultiplayerCtrl extends GameCtrl {
                         try {
                             if (server.getSession(sessionId).sessionStatus
                                     == GameSession.SessionStatus.PAUSED) {
-                                startSingleEvaluation();
+                                startEvaluation(bestMultiScore);
                                 cancel();
                             }
                         } catch (Exception e) {
@@ -109,5 +166,30 @@ public class MultiplayerCtrl extends GameCtrl {
         }
 
         refresh();
+    }
+
+    @Override
+    public void shutdown() {
+        channel.unsubscribe();
+        super.shutdown();
+    }
+
+    /**
+     * Register the client to receive emoji reactions from other players
+     */
+    public void registerForEmojiUpdates() {
+        sessionEmojis.clear();
+        emojiList.setItems(sessionEmojis);
+
+        channel = this.server.registerForEmojiUpdates(emoji -> {
+            System.out.println("Emoji received for the current room: " + emoji);
+            sessionEmojis.add(emoji);
+            Platform.runLater(() -> emojiList.scrollTo(sessionEmojis.size() - 1));
+        }, this.sessionId);
+    }
+
+    @Override
+    public void updateScore(long playerId, int points, boolean isBestScore) {
+        server.updateMultiScore(playerId, points, isBestScore);
     }
 }
