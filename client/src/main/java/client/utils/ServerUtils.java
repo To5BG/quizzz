@@ -192,6 +192,22 @@ public class ServerUtils {
     }
 
     /**
+     * Retrieve all removed players from a session in the DB.
+     *
+     * @param sessionId the id of the session
+     * @return List of all removed players from a session
+     */
+    public List<Player> getRemovedPlayers(long sessionId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/sessions/" + sessionId + "/removedPlayers")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Player>>() {
+                });
+    }
+
+
+    /**
      * Updates a session's number of time jokers
      *
      * @param sessionID  Session to update

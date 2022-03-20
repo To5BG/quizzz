@@ -66,6 +66,7 @@ public class SessionController {
             stmt.executeUpdate("DELETE FROM QUESTION_ACTIVITY_PATH");
             stmt.executeUpdate("DELETE FROM GAME_SESSION_EXPECTED_ANSWERS");
             stmt.executeUpdate("DELETE FROM GAME_SESSION_PLAYERS");
+            stmt.executeUpdate("DELETE FROM GAME_SESSION_REMOVED_PLAYERS");
             stmt.executeUpdate("DELETE FROM GAME_SESSION WHERE SESSION_TYPE <> 0");
             stmt.executeUpdate("DELETE FROM QUESTION");
             if (resetPersistentData) {
@@ -245,6 +246,19 @@ public class SessionController {
         return ResponseEntity.ok(repo.findById(id).get().players
                 .stream().sorted(Comparator.comparing(Player::getCurrentPoints).reversed())
                 .collect(Collectors.toList()));
+    }
+
+    /**
+     * Retrieves all the removed players from the game session
+     *
+     * @param id id of session
+     * @return ResponseEntity that contains the list of all removed players
+     */
+    @GetMapping("/{id}/removedPlayers")
+    public ResponseEntity<List<Player>> getRemovedPlayers(@PathVariable("id") long id) {
+
+        if (isInvalid(id,repo)) return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(repo.findById(id).get().removedPlayers);
     }
 
     /**

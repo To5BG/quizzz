@@ -25,9 +25,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.concurrent.Task;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -72,6 +72,12 @@ public class MultiplayerCtrl extends GameCtrl {
     @FXML
     private Label status;
 
+    @FXML
+    private Label removedPlayers;
+
+
+    private int lastDisconnectIndex;
+    private Timer disconnectTimer;
     private final ObservableList<Emoji> sessionEmojis;
     private final List<Image> emojiImages;
     private StompSession.Subscription channel;
@@ -137,6 +143,47 @@ public class MultiplayerCtrl extends GameCtrl {
         emojiFunny.setImage(emojiImages.get(0));
         emojiSad.setImage(emojiImages.get(1));
         emojiAngry.setImage(emojiImages.get(2));
+    }
+
+    /**
+     * Checks the server periodically for players who disconnected. If so, displays text on the game screen
+     */
+    public void scanForDisconnect() {
+        lastDisconnectIndex = -1;
+        disconnectTimer = new Timer();
+        disconnectTimer.scheduleAtFixedRate(new TimerTask() {
+
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    List<Player> allRemoved = server.getRemovedPlayers(sessionId);
+                    List<Player> newRemoved = new ArrayList<Player>();
+                    for (int i = lastDisconnectIndex + 1; i < allRemoved.size(); i++) {
+                        newRemoved.add(allRemoved.get(i));
+                    }
+                    disconnectedText(newRemoved);
+                    lastDisconnectIndex = allRemoved.size() - 1;
+                });
+            }
+        }, 0, 2000);
+    }
+
+    /**
+     * Displays the player(s) who got disconnected
+     * @param players Players who got disconnected
+     */
+    public void disconnectedText(List<Player> players) {
+        if (players.size() == 0) {
+            removedPlayers.setOpacity(0.0);
+            return;
+        }
+        String req = "";
+        for (int i = 0; i < players.size() ; i++) {
+            req += players.get(i).username + ", ";
+        }
+        req = req.substring(0, req.length() - 2);
+        removedPlayers.setText(String.format("%s" + ": DISCONNECTED...", req));
+        removedPlayers.setOpacity(1.0);
     }
 
     /**
@@ -212,6 +259,8 @@ public class MultiplayerCtrl extends GameCtrl {
     public void shutdown() {
         channel.unsubscribe();
         super.shutdown();
+        disconnectTimer.cancel();
+        lastDisconnectIndex = -1;
     }
 
     /**

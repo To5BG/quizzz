@@ -109,6 +109,7 @@ public class MainCtrl {
         multiplayerCtrl.setBestMultiScore();
         multiplayerCtrl.registerForEmojiUpdates();
         multiplayerCtrl.loadQuestion();
+        multiplayerCtrl.scanForDisconnect();
     }
 
     /**
