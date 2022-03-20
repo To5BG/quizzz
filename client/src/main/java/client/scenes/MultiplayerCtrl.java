@@ -20,30 +20,45 @@ import client.utils.ServerUtils;
 import commons.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.concurrent.Task;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.concurrent.Task;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.util.Callback;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.nio.file.Path;
+import java.util.*;
 
 public class MultiplayerCtrl extends GameCtrl {
 
+    @FXML
+    private TableView<Emoji> emojiList;
 
-    @Inject
-    public MultiplayerCtrl(ServerUtils server, MainCtrl mainCtrl) {
-        super(server, mainCtrl);
-    }
+    @FXML
+    private TableColumn<Emoji, String> emojiUsername;
 
-    private boolean playingAgain;
-    private int waitingSkip = 0;
+    @FXML
+    private TableColumn<Emoji, ImageView> emojiImage;
+
+    @FXML
+    private ImageView emojiFunny;
+
+    @FXML
+    private ImageView emojiSad;
+
+    @FXML
+    private ImageView emojiAngry;
 
     @FXML
     private Button backButton;
@@ -56,6 +71,27 @@ public class MultiplayerCtrl extends GameCtrl {
 
     @FXML
     private Label status;
+
+    private final ObservableList<Emoji> sessionEmojis;
+    private final List<Image> emojiImages;
+    private StompSession.Subscription channel;
+    private boolean playingAgain;
+    private int waitingSkip = 0;
+
+    @Inject
+    public MultiplayerCtrl(ServerUtils server, MainCtrl mainCtrl) {
+        super(server, mainCtrl);
+        sessionEmojis = FXCollections.observableArrayList();
+        emojiImages = new ArrayList<Image>();
+        String[] emojiFileNames = {"funny", "sad", "angry"};
+        ClassLoader cl = getClass().getClassLoader();
+        for (String fileName : emojiFileNames) {
+            URL location = cl.getResource(
+                    Path.of("", "client", "scenes", "emojis", fileName + ".png").toString());
+
+            emojiImages.add(new Image(location.toString()));
+        }
+    }
 
     /**
      * {@inheritDoc}
@@ -82,6 +118,25 @@ public class MultiplayerCtrl extends GameCtrl {
         backButton.setOpacity(1);
         playAgain.setOpacity(0);
         status.setOpacity(0);
+
+        emojiUsername.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().username));
+        emojiImage.setCellValueFactory(e -> {
+            Image picture;
+            switch (e.getValue().emoji) {
+                case FUNNY -> picture = emojiImages.get(0);
+                case SAD -> picture = emojiImages.get(1);
+                default -> picture = emojiImages.get(2);
+            }
+
+            ImageView iv = new ImageView(picture);
+            iv.setFitHeight(30);
+            iv.setFitWidth(30);
+            return new SimpleObjectProperty<ImageView>(iv);
+        });
+
+        emojiFunny.setImage(emojiImages.get(0));
+        emojiSad.setImage(emojiImages.get(1));
+        emojiAngry.setImage(emojiImages.get(2));
     }
 
     /**
@@ -149,6 +204,26 @@ public class MultiplayerCtrl extends GameCtrl {
         }
 
         refresh();
+    }
+
+    @Override
+    public void shutdown() {
+        channel.unsubscribe();
+        super.shutdown();
+    }
+
+    /**
+     * Register the client to receive emoji reactions from other players
+     */
+    public void registerForEmojiUpdates() {
+        sessionEmojis.clear();
+        emojiList.setItems(sessionEmojis);
+
+        channel = this.server.registerForEmojiUpdates(emoji -> {
+            System.out.println("Emoji received for the current room: " + emoji);
+            sessionEmojis.add(emoji);
+            Platform.runLater(() -> emojiList.scrollTo(sessionEmojis.size() - 1));
+        }, this.sessionId);
     }
 
     @Override

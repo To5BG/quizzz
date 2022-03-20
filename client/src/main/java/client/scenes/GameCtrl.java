@@ -6,8 +6,10 @@ import jakarta.ws.rs.BadRequestException;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
@@ -734,6 +736,30 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
+     * Generic event handler for clicking on an emoji
+     * @param ev The event information
+     */
+    public void emojiEventHandler(Event ev) {
+        Node source = (Node) ev.getSource();
+        String nodeId = source.getId();
+        Emoji.EmojiType type;
+        switch (nodeId) {
+            case "emojiFunny":
+                type = Emoji.EmojiType.FUNNY;
+                break;
+            case "emojiSad":
+                type = Emoji.EmojiType.SAD;
+                break;
+            case "emojiAngry":
+                type = Emoji.EmojiType.ANGRY;
+                break;
+            default:
+                return;
+        }
+        server.sendEmoji(sessionId, playerId, type);
+    }
+
+    /**
      * the method to updateScore
      *
      * @param playerId    the id of the player
@@ -741,5 +767,4 @@ public abstract class GameCtrl implements Initializable {
      * @param isBestScore the flag of the best score of the player
      */
     public abstract void updateScore(long playerId, int points, boolean isBestScore);
-
 }

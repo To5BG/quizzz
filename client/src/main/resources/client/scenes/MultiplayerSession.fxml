@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
@@ -32,20 +33,32 @@
         <Label fx:id="questionCount" layoutX="14.0" layoutY="1.0" text="Question: 1" />
         <ProgressBar fx:id="timeProgress" layoutX="18.0" layoutY="248.0" prefHeight="20.0" prefWidth="321.0"
                      progress="0.0" />
-        <Button fx:id="removeOneButton" layoutX="29.0" layoutY="323.0" mnemonicParsing="false"
+        <Button fx:id="removeOneButton" layoutX="29.0" layoutY="304.0" mnemonicParsing="false"
                 onAction="#removeOneAnswer" prefHeight="26.0" prefWidth="103.0" text="Remove One Answer">
         <font>
             <Font size="9.0" />
         </font>
         </Button>
-        <Button fx:id="decreaseTimeButton" layoutX="189.0" layoutY="323.0" mnemonicParsing="false"
+        <Button fx:id="decreaseTimeButton" layoutX="189.0" layoutY="304.0" mnemonicParsing="false"
                 onAction="#decreaseTime" prefHeight="26.0" prefWidth="103.0" text="Decrease Time" />
-        <Button fx:id="doublePointsButton" layoutX="340.0" layoutY="323.0" mnemonicParsing="false"
+        <Button fx:id="doublePointsButton" layoutX="340.0" layoutY="304.0" mnemonicParsing="false"
                 onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points" />
       <Button fx:id="playAgain" layoutX="241.0" layoutY="288.0" mnemonicParsing="false" onAction="#playAgain"
               prefHeight="25.0" prefWidth="103.0" text="Play again" />
       <Label fx:id="status" layoutX="47.0" layoutY="359.0" text="[Status]" />
       <Button fx:id="backButton" layoutX="521.0" layoutY="355.0" mnemonicParsing="false" onAction="#back"
               text="Go Back" />
+      <ImageView fx:id="emojiFunny" fitHeight="60.0" fitWidth="60.0" layoutX="38.0" layoutY="332.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
+      </ImageView>
+      <ImageView fx:id="emojiSad" fitHeight="60.0" fitWidth="60.0" layoutX="116.0" layoutY="332.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
+      </ImageView>
+      <ImageView fx:id="emojiAngry" fitHeight="60.0" fitWidth="60.0" layoutX="194.0" layoutY="332.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
+      </ImageView>
+      <TableView fx:id="emojiList" layoutX="446.0" layoutY="39.0" prefHeight="200.0" prefWidth="151.0">
+        <columns>
+          <TableColumn fx:id="emojiUsername" prefWidth="75.0" sortable="false" text="Username" />
+          <TableColumn fx:id="emojiImage" prefWidth="75.0" sortable="false" text="Emoji" />
+        </columns>
+      </TableView>
     </children>
 </AnchorPane>
