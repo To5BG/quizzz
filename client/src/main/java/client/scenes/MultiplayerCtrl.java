@@ -28,7 +28,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.concurrent.Task;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -76,7 +75,7 @@ public class MultiplayerCtrl extends GameCtrl {
     @FXML
     private Label removedPlayers;
 
-    private List<Player> newRemoved;
+
     private Player lastDisconnect;
     private int lastDisconnectIndex;
     private Timer disconnectTimer;
