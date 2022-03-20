@@ -229,9 +229,9 @@ public abstract class GameCtrl implements Initializable {
             case COMPARISON:
                 try {
                     for (int i = 0; i < multiChoiceAnswers.size(); i++) {
-                        int count = i;
-                        multiChoiceAnswers.get(count).setOnMouseEntered(e ->
-                                imagePanel.setImage(new Image("assets/" + q.activityPath.get(count))));
+                        Image image = new Image("assets/" + q.activityPath.get(i));
+                        multiChoiceAnswers.get(i).setOnMouseEntered(e ->
+                                imagePanel.setImage(image));
                     }
                     break;
                 }
@@ -241,10 +241,10 @@ public abstract class GameCtrl implements Initializable {
             case EQUIVALENCE:
                 try {
                     for (int i = 0; i < multiChoiceAnswers.size(); i++) {
-                        int count = i;
-                        multiChoiceAnswers.get(count).setOnMouseEntered(e ->
-                                imagePanel.setImage(new Image("assets/" + q.activityPath.get(count))));
-                        multiChoiceAnswers.get(count).setOnMouseExited(e ->
+                        Image image = new Image("assets/" + q.activityPath.get(i));
+                        multiChoiceAnswers.get(i).setOnMouseEntered(e ->
+                                imagePanel.setImage(image));
+                        multiChoiceAnswers.get(i).setOnMouseExited(e ->
                                 imagePanel.setImage(new Image("assets/" + q.imagePath)));
                     }
                     break;
