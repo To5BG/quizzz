@@ -76,7 +76,9 @@ public class MultiplayerCtrl extends GameCtrl {
     @FXML
     private Label removedPlayers;
 
-    private List<Player> prevDisconnects;
+    private List<Player> newRemoved;
+    private Player lastDisconnect;
+    private int lastDisconnectIndex;
     private Timer disconnectTimer;
     private final ObservableList<Emoji> sessionEmojis;
     private final List<Image> emojiImages;
@@ -149,7 +151,6 @@ public class MultiplayerCtrl extends GameCtrl {
      * Checks the server periodically for players who disconnected. If so, displays text on the game screen
      */
     public void scanForDisconnect() {
-        prevDisconnects = new ArrayList<Player>();
         disconnectTimer = new Timer();
         disconnectTimer.scheduleAtFixedRate(new TimerTask() {
 
@@ -157,9 +158,12 @@ public class MultiplayerCtrl extends GameCtrl {
             public void run() {
                 Platform.runLater(() -> {
                     List<Player> allRemoved = server.getRemovedPlayers(sessionId);
-                    allRemoved.removeAll(prevDisconnects);
-                    disconnectedText(allRemoved);
-                    prevDisconnects.addAll(allRemoved);
+                    lastDisconnectIndex = allRemoved.indexOf(lastDisconnect);
+                    List<Player> newRemoved = new ArrayList<Player>();
+                    for (int i = lastDisconnectIndex + 1; i < allRemoved.size(); i++) {
+                        newRemoved.add(allRemoved.get(i));
+                    }
+                    disconnectedText(newRemoved);
                 });
             }
         }, 0, 2000);
@@ -175,11 +179,12 @@ public class MultiplayerCtrl extends GameCtrl {
             return;
         }
         String req = "";
-        for (int i = 0; i < players.size(); i++) {
+        for (int i = 0; i < players.size() ; i++) {
             req = String.join(", ", players.get(i).username);
         }
         removedPlayers.setText(String.format("%s" + ": DISCONNECTED...", req));
         removedPlayers.setOpacity(1.0);
+        lastDisconnect = players.get(players.size() - 1);
     }
 
     /**
