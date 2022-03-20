@@ -26,6 +26,16 @@ public class LeaderboardController {
     }
 
     /**
+     * An API to return all players in the DB
+     * @return a list of all players in the DB
+     */
+    @GetMapping(path = {"/"})
+    public ResponseEntity<List<Player>> getAllPlayers() {
+        var list = repo.findAll();
+        return ResponseEntity.ok(list);
+    }
+
+    /**
      * Deliver all Player data in the DB
      * sorted by best single mode score, filtered all players with 0 score
      *

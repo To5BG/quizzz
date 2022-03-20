@@ -111,7 +111,7 @@ public class LeaderBoardCtrl implements Initializable {
     public void refreshMulti() {
         var players = server.getPlayerMultiScore();
         List<Player> temp = dealDuplication(players);
-        data = FXCollections.observableList(temp);
+        data = FXCollections.observableList(players);
         allPlayers.setItems(data);
         Leaderboard.setText("Leaderboard-Multi");
     }
