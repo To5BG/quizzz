@@ -18,8 +18,21 @@ public class LeaderboardController {
 
     private final PlayerRepository repo;
 
+    /**
+     * @param por the repository of players
+     */
     public LeaderboardController(PlayerRepository por) {
         this.repo = por;
+    }
+
+    /**
+     * An API to return all players in the DB
+     * @return a list of all players in the DB
+     */
+    @GetMapping(path = {"/"})
+    public ResponseEntity<List<Player>> getAllPlayers() {
+        var list = repo.findAll();
+        return ResponseEntity.ok(list);
     }
 
     /**

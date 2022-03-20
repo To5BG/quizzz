@@ -322,6 +322,15 @@ public class ServerUtils {
     /*----------------------------- PLAYER HANDLING ------------------------------*/
     /*----------------------------------------------------------------------------*/
 
+    public List<Player> getAllPlayers() {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(SERVER).path("api/leaderboard/") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<List<Player>>() {
+                });
+    }
+
     /**
      * Get all player object entries from the database
      * for single mode
