@@ -260,6 +260,7 @@ public class MultiplayerCtrl extends GameCtrl {
         channel.unsubscribe();
         super.shutdown();
         disconnectTimer.cancel();
+        lastDisconnectIndex = -1;
     }
 
     /**
