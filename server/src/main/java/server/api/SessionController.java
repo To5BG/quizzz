@@ -328,4 +328,19 @@ public class SessionController {
         repo.save(session);
         return ResponseEntity.ok(ans);
     }
+
+    /**
+     * Sets the questionCounter of a session to zero.
+     *
+     * @param sessionId The current session.
+     * @return          The updated session.
+     */
+    @GetMapping("/{id}/reset")
+    public ResponseEntity<GameSession> resetQuestionCounter(@PathVariable("id") long sessionId) {
+        if (isInvalid(sessionId, repo)) return ResponseEntity.badRequest().build();
+        GameSession session = repo.findById(sessionId).get();
+        session.resetQuestionCounter();
+        repo.save(session);
+        return ResponseEntity.ok(session);
+    }
 }
