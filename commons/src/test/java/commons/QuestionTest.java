@@ -59,7 +59,7 @@ public class QuestionTest {
         Question q = new Question("Question 1", "test.png",
                 Question.QuestionType.RANGE_GUESS);
 
-        assertThrows(UnsupportedOperationException.class, () -> q.addAnswerOption("opt1"));
+        assertThrows(UnsupportedOperationException.class, () -> q.addActivityPath("path1"));
         assertSame(0, q.activityPath.size());
     }
 

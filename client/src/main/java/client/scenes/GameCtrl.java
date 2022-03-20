@@ -159,8 +159,6 @@ public abstract class GameCtrl implements Initializable {
                 catch (Exception e) {
                     break;
                 }
-            case COMPARISON:
-                break;
         }
 
     }
@@ -230,14 +228,11 @@ public abstract class GameCtrl implements Initializable {
         switch (this.currentQuestion.type) {
             case COMPARISON:
                 try {
-                    multiChoiceAnswers.get(0).setOnMouseEntered(e ->
-                            imagePanel.setImage(new Image("assets/" + q.activityPath.get(0))));
-                    multiChoiceAnswers.get(1).setOnMouseEntered(e ->
-                            imagePanel.setImage(new Image("assets/" + q.activityPath.get(1))));
-                    multiChoiceAnswers.get(2).setOnMouseEntered(e ->
-                            imagePanel.setImage(new Image("assets/" + q.activityPath.get(2))));
-                    multiChoiceAnswers.get(3).setOnMouseEntered(e ->
-                            imagePanel.setImage(new Image("assets/" + q.activityPath.get(3))));
+                    for (int i = 0; i < multiChoiceAnswers.size(); i++) {
+                        int count = i;
+                        multiChoiceAnswers.get(count).setOnMouseEntered(e ->
+                                imagePanel.setImage(new Image("assets/" + q.activityPath.get(count))));
+                    }
                     break;
                 }
                 catch (IllegalArgumentException e) {
@@ -245,18 +240,13 @@ public abstract class GameCtrl implements Initializable {
                 }
             case EQUIVALENCE:
                 try {
-                    multiChoiceAnswers.get(0).setOnMouseEntered(e ->
-                            imagePanel.setImage(new Image("assets/" + q.activityPath.get(0))));
-                    multiChoiceAnswers.get(0).setOnMouseExited(e ->
-                            imagePanel.setImage(new Image("assets/" + q.imagePath)));
-                    multiChoiceAnswers.get(1).setOnMouseEntered(e ->
-                            imagePanel.setImage(new Image("assets/" + q.activityPath.get(1))));
-                    multiChoiceAnswers.get(1).setOnMouseExited(e ->
-                            imagePanel.setImage(new Image("assets/" + q.imagePath)));
-                    multiChoiceAnswers.get(2).setOnMouseEntered(e ->
-                            imagePanel.setImage(new Image("assets/" + q.activityPath.get(2))));
-                    multiChoiceAnswers.get(2).setOnMouseExited(e ->
-                            imagePanel.setImage(new Image("assets/" + q.imagePath)));
+                    for (int i = 0; i < multiChoiceAnswers.size(); i++) {
+                        int count = i;
+                        multiChoiceAnswers.get(count).setOnMouseEntered(e ->
+                                imagePanel.setImage(new Image("assets/" + q.activityPath.get(count))));
+                        multiChoiceAnswers.get(count).setOnMouseExited(e ->
+                                imagePanel.setImage(new Image("assets/" + q.imagePath)));
+                    }
                     break;
                 }
                 catch (IllegalArgumentException e) {
