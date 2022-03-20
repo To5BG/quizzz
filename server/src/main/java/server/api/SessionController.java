@@ -40,8 +40,8 @@ public class SessionController {
      * @param resetPlayers True iff the players' table should also be removed
      */
     public void resetDatabase(boolean resetPlayers) {
-        try (Connection conn = DriverManager.getConnection("jdbc:h2:file:./quizzzz", "sa", "")) {
-            Statement stmt = conn.createStatement();
+        try (Connection CONN = DriverManager.getConnection("jdbc:h2:file:./quizzzz", "sa", "")) {
+            Statement stmt = CONN.createStatement();
             stmt.executeUpdate("DELETE FROM QUESTION_ANSWER_OPTIONS");
             stmt.executeUpdate("DELETE FROM GAME_SESSION_EXPECTED_ANSWERS");
             stmt.executeUpdate("DELETE FROM GAME_SESSION_PLAYERS");

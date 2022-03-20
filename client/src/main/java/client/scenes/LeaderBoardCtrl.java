@@ -47,7 +47,7 @@ public class LeaderBoardCtrl implements Initializable {
     @FXML
     private Button multiLeaderboard;
     @FXML
-    private Label Leaderboard;
+    private Label leaderboardLabel;
 
     /**
      * constructor of the leaderboard
@@ -100,7 +100,7 @@ public class LeaderBoardCtrl implements Initializable {
         var players = server.getPlayerSingleScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
-        Leaderboard.setText("Leaderboard-Single");
+        leaderboardLabel.setText("Leaderboard-Single");
     }
 
     /**
@@ -110,7 +110,7 @@ public class LeaderBoardCtrl implements Initializable {
         var players = server.getPlayerMultiScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
-        Leaderboard.setText("Leaderboard-Multi");
+        leaderboardLabel.setText("Leaderboard-Multi");
     }
 
     /**
