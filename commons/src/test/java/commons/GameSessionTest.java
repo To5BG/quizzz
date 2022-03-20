@@ -100,6 +100,7 @@ public class GameSessionTest {
     public void testRemovePlayer() {
         s.removePlayer(SOME_PLAYER);
         assertSame(0, s.players.size());
+        assertSame(1, s.removedPlayers.size());
     }
 
     @Test
@@ -114,38 +115,6 @@ public class GameSessionTest {
         assertSame(3, players.size());
         assertEquals(a, players.get(1));
         assertEquals(b, players.get(2));
-    }
-
-    @Test
-    public void testUpdateQuestion() {
-        Question previousQuestion = s.currentQuestion;
-        s.updateQuestion();
-        assertSame(1, s.questionCounter);
-        assertNotNull(s.currentQuestion);
-        assertNotSame(previousQuestion, s.currentQuestion);
-    }
-
-    @Test
-    public void testPlayerAnswerMiddle() {
-        Player p = new Player("test2",0);
-        s.addPlayer(p);
-        s.updateQuestion();
-        Question tmp = s.currentQuestion;
-        s.setPlayerReady();
-        assertSame(1, s.questionCounter);
-        assertSame(1, s.playersReady);
-        assertEquals(tmp, s.currentQuestion);
-    }
-
-    @Test
-    public void testPlayerAnswerFinal() {
-        s.updateQuestion();
-        Question tmp = s.currentQuestion;
-        s.setPlayerReady();
-        assertSame(2, s.questionCounter);
-        assertSame(1, s.playersReady);
-        assertNotNull(s.currentQuestion);
-        assertNotSame(tmp, s.currentQuestion);
     }
 
     @Test

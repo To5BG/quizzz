@@ -18,7 +18,7 @@
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
             </columnResizePolicy>
         </TableView>
-        <Label layoutX="154.0" layoutY="14.0" prefHeight="71.0" prefWidth="291.0" text="LeaderBoard">
+        <Label fx:id="leaderboardLabel" layoutX="89.0" layoutY="14.0" prefHeight="71.0" prefWidth="421.0" text="LeaderBoard">
             <font>
                 <Font size="49.0" />
             </font>

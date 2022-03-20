@@ -6,9 +6,13 @@ import jakarta.ws.rs.BadRequestException;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 
@@ -16,17 +20,20 @@ import java.util.*;
 
 public abstract class GameCtrl implements Initializable {
 
-    protected final int GAME_ROUNDS = 20;
-    protected final int GAME_ROUND_TIME = 10;
-    protected final int MIDGAME_BREAK_TIME = 6;
-    protected final int TIMER_UPDATE_INTERVAL_MS = 50;
-    protected final int GAME_ROUND_DELAY = 2;
+    protected final static int GAME_ROUNDS = 20;
+    protected final static int GAME_ROUND_TIME = 10;
+    protected final static int MIDGAME_BREAK_TIME = 6;
+    protected final static int TIMER_UPDATE_INTERVAL_MS = 50;
+    protected final static int GAME_ROUND_DELAY = 2;
 
     @FXML
     protected StackPane answerArea;
 
     @FXML
     protected Label questionPrompt;
+
+    @FXML
+    protected ImageView imagePanel;
 
     @FXML
     protected Label pointsLabel;
@@ -105,7 +112,7 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Setter for sessionId.
      *
-     * @param sessionId
+     * @param sessionId the id of the sessions
      */
     public void setSessionId(long sessionId) {
         this.sessionId = sessionId;
@@ -114,7 +121,7 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Setter for playerId.
      *
-     * @param playerId
+     * @param playerId the id of the player
      */
     public void setPlayerId(long playerId) {
         this.playerId = playerId;
@@ -137,11 +144,24 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Load general question information
      *
-     * @param q
+     * @param q the question to be rendered
      */
     protected void renderGeneralInformation(Question q) {
         this.questionPrompt.setText(q.prompt);
-        // TODO load image
+        switch (q.type) {
+            case RANGE_GUESS:
+            case EQUIVALENCE:
+            case MULTIPLE_CHOICE:
+                try {
+                    Image image = new Image("assets/" + q.imagePath);
+                    imagePanel.setImage(image);
+                    break;
+                }
+                catch (Exception e) {
+                    break;
+                }
+        }
+
     }
 
     /**
@@ -174,6 +194,7 @@ public abstract class GameCtrl implements Initializable {
         }
     }
 
+
     private void renderEstimationQuestion() {
         this.countdown.setText("");
         this.estimationAnswer = new TextField();
@@ -184,7 +205,7 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Render question of the multiple choice question variant
      *
-     * @param q
+     * @param q the question to be rendered
      */
     protected void renderMultipleChoiceQuestion(Question q) {
         double yPosition = 0.0;
@@ -197,6 +218,41 @@ public abstract class GameCtrl implements Initializable {
             yPosition += 30;
             multiChoiceAnswers.add(choice);
             answerArea.getChildren().add(choice);
+        }
+    }
+
+    /**
+     * Change the image displayed upon hovering the activity answer options
+     */
+    public void imageHover() {
+        Question q = this.currentQuestion;
+        switch (this.currentQuestion.type) {
+            case COMPARISON:
+                try {
+                    for (int i = 0; i < multiChoiceAnswers.size(); i++) {
+                        Image image = new Image("assets/" + q.activityPath.get(i));
+                        multiChoiceAnswers.get(i).setOnMouseEntered(e ->
+                                imagePanel.setImage(image));
+                    }
+                    break;
+                }
+                catch (IllegalArgumentException e) {
+                    break;
+                }
+            case EQUIVALENCE:
+                try {
+                    for (int i = 0; i < multiChoiceAnswers.size(); i++) {
+                        Image image = new Image("assets/" + q.activityPath.get(i));
+                        multiChoiceAnswers.get(i).setOnMouseEntered(e ->
+                                imagePanel.setImage(image));
+                        multiChoiceAnswers.get(i).setOnMouseExited(e ->
+                                imagePanel.setImage(new Image("assets/" + q.imagePath)));
+                    }
+                    break;
+                }
+                catch (IllegalArgumentException e) {
+                    break;
+                }
         }
     }
 
@@ -261,17 +317,17 @@ public abstract class GameCtrl implements Initializable {
      */
     public void countdown() {
         new Timer().scheduleAtFixedRate(new TimerTask() {
-            int i = 5;
+            int counter = 5;
 
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    if (i < 0) {
+                    if (counter < 0) {
                         cancel();
                         loadAnswer();
                     } else {
-                        countdown.setText("The answer option will appear in " + i + " seconds.");
-                        i--;
+                        countdown.setText("The answer option will appear in " + counter + " seconds.");
+                        counter--;
                     }
                 });
             }
@@ -336,6 +392,7 @@ public abstract class GameCtrl implements Initializable {
         timeProgress.progressProperty().bind(roundTimer.progressProperty());
         this.timerThread = new Thread(roundTimer);
         this.timerThread.start();
+        imageHover();
     }
 
     /**
@@ -344,7 +401,7 @@ public abstract class GameCtrl implements Initializable {
     public void shutdown() {
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
         if (sessionId != 0) {
-            server.updateScore(playerId, 0, false);
+            updateScore(playerId, 0, false);
             server.addPlayerAnswer(sessionId, playerId, new Answer(Question.QuestionType.MULTIPLE_CHOICE));
             server.removePlayer(sessionId, playerId);
             setPlayerId(0);
@@ -356,10 +413,24 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
+     * Abstract method that gets called to show the end game screen for multiplayer sessions.
+     */
+    abstract public void showEndScreen();
+
+    /**
      * Reverts the player to the splash screen and remove him from the current game session.
      */
     public void back() {
         shutdown();
+        reset();
+        mainCtrl.showSplash();
+    }
+
+    /**
+     * Resets all fields and the screen for a new game.
+     */
+    public void reset() {
+        removeLeaderboard();
         this.questionPrompt.setText("[Question]");
         this.answerArea.getChildren().clear();
         this.pointsLabel.setText("Points: 0");
@@ -367,6 +438,8 @@ public abstract class GameCtrl implements Initializable {
         this.points = 0;
         this.rounds = 0;
         this.currentQuestion = null;
+        this.questionCount.setText("Question: 1");
+        this.imagePanel.setImage(null);
 
         //re-enable jokers
         doublePointsJoker = true;
@@ -375,7 +448,6 @@ public abstract class GameCtrl implements Initializable {
         removeOneJoker = true;
 
         disableButton(submitButton, true);
-        mainCtrl.showSplash();
     }
 
     /**
@@ -394,7 +466,7 @@ public abstract class GameCtrl implements Initializable {
      */
     public void updatePoints() {
         int temppoints;
-        switch(this.evaluation.type) {
+        switch (this.evaluation.type) {
             case MULTIPLE_CHOICE:
             case COMPARISON:
             case EQUIVALENCE:
@@ -423,13 +495,14 @@ public abstract class GameCtrl implements Initializable {
             default:
                 throw new UnsupportedOperationException("Unsupported question type when parsing answer");
         }
+
         if (doublePointsActive) {
             temppoints = temppoints * 2;
             switchStatusOfDoublePoints();
         }
         points += temppoints;
         renderPoints();
-        server.updateScore(playerId, points, false);
+        updateScore(playerId, points, false);
     }
 
     /**
@@ -501,7 +574,7 @@ public abstract class GameCtrl implements Initializable {
     /**
      * Gets the user's answer, starts the evaluation and loads a new question or ends the game.
      */
-    public void startSingleEvaluation() {
+    public void startEvaluation(int scoreEvaluation) {
 
         if (this.evaluation == null) return;
 
@@ -532,8 +605,9 @@ public abstract class GameCtrl implements Initializable {
                     resetTimeJokers();
                     if (rounds == GAME_ROUNDS) {
                         // TODO display leaderboard things here
-                        if (points > bestSingleScore) server.updateScore(playerId, points, true);
-                        back();
+                        if (points > scoreEvaluation) updateScore(playerId, points, true);
+                        if (server.getSession(sessionId).players.size() >= 2) showEndScreen();
+                        else back();
                     } else if (rounds == GAME_ROUNDS / 2 &&
                             server.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
                         displayMidGameScreen();
@@ -543,6 +617,7 @@ public abstract class GameCtrl implements Initializable {
                             if (session.playersReady == 0) {
                                 server.updateStatus(session, GameSession.SessionStatus.ONGOING);
                             }
+                            imagePanel.setImage(null);
                             loadQuestion();
                         } catch (BadRequestException e) {
                             System.out.println("takingover");
@@ -554,9 +629,9 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Display mid-game leaderboard
+     * Displays the current session's leaderboard and hides the question screen attributes
      */
-    public void displayMidGameScreen() {
+    public void displayLeaderboard() {
         var players = server.getPlayers(sessionId);
         var data = FXCollections.observableList(players);
         leaderboard.setItems(data);
@@ -566,7 +641,30 @@ public abstract class GameCtrl implements Initializable {
         doublePointsButton.setOpacity(0);
         decreaseTimeButton.setOpacity(0);
         questionPrompt.setOpacity(0);
+        multiChoiceAnswers.clear();
+        answerArea.getChildren().clear();
+        imagePanel.setImage(null);
         leaderboard.setOpacity(1);
+    }
+
+    /**
+     * Displays the question screen attributes and hides the leaderboard
+     */
+    public void removeLeaderboard() {
+        leaderboard.setOpacity(0);
+        answerArea.setOpacity(1);
+        questionPrompt.setOpacity(1);
+        submitButton.setOpacity(1);
+        removeOneButton.setOpacity(1);
+        doublePointsButton.setOpacity(1);
+        decreaseTimeButton.setOpacity(1);
+    }
+
+    /**
+     * Display mid-game leaderboard
+     */
+    public void displayMidGameScreen() {
+        displayLeaderboard();
 
         Task roundTimer = new Task() {
             @Override
@@ -599,13 +697,7 @@ public abstract class GameCtrl implements Initializable {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    leaderboard.setOpacity(0);
-                    answerArea.setOpacity(1);
-                    questionPrompt.setOpacity(1);
-                    submitButton.setOpacity(1);
-                    removeOneButton.setOpacity(1);
-                    doublePointsButton.setOpacity(1);
-                    decreaseTimeButton.setOpacity(1);
+                    removeLeaderboard();
                     loadQuestion();
                 });
             }
@@ -646,7 +738,7 @@ public abstract class GameCtrl implements Initializable {
                 }
                 int randomIndex = new Random().nextInt(incorrectAnswers.size());
                 RadioButton button = multiChoiceAnswers.get(incorrectAnswers.get(randomIndex));
-                if(button.isSelected()) {
+                if (button.isSelected()) {
                     button.setSelected(false);
                 }
                 button.setDisable(true);
@@ -659,6 +751,7 @@ public abstract class GameCtrl implements Initializable {
 
     /**
      * Get number of time Jokers for the current session
+     *
      * @return int representing number of time jokers
      */
     public double getTimeJokers() {
@@ -701,4 +794,36 @@ public abstract class GameCtrl implements Initializable {
         doublePointsActive = !doublePointsActive;
     }
 
+    /**
+     * Generic event handler for clicking on an emoji
+     * @param ev The event information
+     */
+    public void emojiEventHandler(Event ev) {
+        Node source = (Node) ev.getSource();
+        String nodeId = source.getId();
+        Emoji.EmojiType type;
+        switch (nodeId) {
+            case "emojiFunny":
+                type = Emoji.EmojiType.FUNNY;
+                break;
+            case "emojiSad":
+                type = Emoji.EmojiType.SAD;
+                break;
+            case "emojiAngry":
+                type = Emoji.EmojiType.ANGRY;
+                break;
+            default:
+                return;
+        }
+        server.sendEmoji(sessionId, playerId, type);
+    }
+
+    /**
+     * the method to updateScore
+     *
+     * @param playerId    the id of the player
+     * @param points      the points of the player
+     * @param isBestScore the flag of the best score of the player
+     */
+    public abstract void updateScore(long playerId, int points, boolean isBestScore);
 }

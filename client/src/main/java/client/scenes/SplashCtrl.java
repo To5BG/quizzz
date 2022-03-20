@@ -117,7 +117,7 @@ public class SplashCtrl {
      * @return true if another Player with the same username exists
      */
     public boolean isDuplInRepository(String username) {
-        for(Player p : server.getPlayerSingleScore()) {
+        for(Player p : server.getAllPlayers()) {
             if(p.username.equals(username)) {
                 return true;
             }
@@ -127,11 +127,12 @@ public class SplashCtrl {
 
     /**
      * Gets the player with the same username (if exists) from the player repository
+     *
      * @param username username of the player to be obtained
      * @return the player if it exists, null otherwise
      */
     public Player getDuplPlayer(String username) {
-        for(Player p : server.getPlayerSingleScore()) {
+        for(Player p : server.getAllPlayers()) {
             if(p.username.equals(username)) {
                 return p;
             }
@@ -154,13 +155,11 @@ public class SplashCtrl {
             duplUsername.setOpacity(1);
             usernameField.clear();
         }
-
         else if(!isUsernameValid(newUserName)) {
             duplUsername.setOpacity(0);
             invalidUserName.setOpacity(1);
             usernameField.clear();
         }
-
         else {
             duplUsername.setOpacity(0);
             invalidUserName.setOpacity(0);
@@ -199,7 +198,6 @@ public class SplashCtrl {
             duplUsername.setOpacity(0);
             usernameField.clear();
         }
-
         else if(isDuplInActive(newUserName)) {
             invalidUserName.setOpacity(0);
             duplUsername.setOpacity(1);

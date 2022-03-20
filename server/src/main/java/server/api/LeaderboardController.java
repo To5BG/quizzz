@@ -1,6 +1,5 @@
 package server.api;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,27 +18,49 @@ public class LeaderboardController {
 
     private final PlayerRepository repo;
 
+    /**
+     * @param por the repository of players
+     */
     public LeaderboardController(PlayerRepository por) {
         this.repo = por;
     }
 
     /**
-     * Deliver all Player data in the DB
-     *
-     * @return a list of all data about past players
+     * An API to return all players in the DB
+     * @return a list of all players in the DB
      */
-    @GetMapping(path = { "/single"})
-    public ResponseEntity<List<Player>> getPlayerSingleScores() {
-        return ResponseEntity.ok(repo.findAll()
-                .stream().sorted(Comparator.comparing(Player::getBestSingleScore).reversed())
-                .collect(Collectors.toList()));
+    @GetMapping(path = {"/"})
+    public ResponseEntity<List<Player>> getAllPlayers() {
+        var list = repo.findAll();
+        return ResponseEntity.ok(list);
     }
 
+    /**
+     * Deliver all Player data in the DB
+     * sorted by best single mode score, filtered all players with 0 score
+     *
+     * @return a list of all data about players in single mode
+     */
+    @GetMapping(path = {"/single"})
+    public ResponseEntity<List<Player>> getPlayerSingleScores() {
+        var list = repo.findByOrderByBestSingleScoreDesc().stream()
+                .filter(player -> player.getBestSingleScore() != 0)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(list);
+    }
+
+    /**
+     * Deliver all Player data in the DB
+     * sorted by best multi mode score, filtered all players with 0 score
+     *
+     * @return a list of all data about players in multi mode
+     */
     @GetMapping(path = {"/multi"})
     public ResponseEntity<List<Player>> getPlayerMultiScore() {
-        return ResponseEntity.ok(repo.findAll()
-                .stream().sorted(Comparator.comparing(Player::getBestMultiScore).reversed())
-                .collect(Collectors.toList()));
+        var list = repo.findByOrderByBestMultiScoreDesc().stream()
+                .filter(player -> player.getBestMultiScore() != 0)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(list);
     }
 
     /**
@@ -80,9 +101,26 @@ public class LeaderboardController {
      * @param points   Point count to be updated with
      * @return Updated player entity
      */
-    @PutMapping("/{id}/score")
-    public ResponseEntity<Player> updateCurrentPoints(@PathVariable("id") long playerId,
-                                                      @RequestBody int points) {
+    @PutMapping("/{id}/singlescore")
+    public ResponseEntity<Player> updateCurrentSinglePoints(@PathVariable("id") long playerId,
+                                                            @RequestBody int points) {
+        if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
+        Player updatedPlayer = repo.findById(playerId).get();
+        updatedPlayer.setCurrentPoints(points);
+        repo.save(updatedPlayer);
+        return ResponseEntity.ok(updatedPlayer);
+    }
+
+    /**
+     * Updates current points of a player entry
+     *
+     * @param playerId Id of player
+     * @param points   Point count to be updated with
+     * @return Updated player entity
+     */
+    @PutMapping("/{id}/multiscore")
+    public ResponseEntity<Player> updateCurrentMultiPoints(@PathVariable("id") long playerId,
+                                                           @RequestBody int points) {
         if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
         Player updatedPlayer = repo.findById(playerId).get();
         updatedPlayer.setCurrentPoints(points);
@@ -97,16 +135,29 @@ public class LeaderboardController {
      * @param points   Point count to be updated with
      * @return Updated player entity
      */
-    @PutMapping("/{id}/bestscore")
+    @PutMapping("/{id}/bestsinglescore")
     public ResponseEntity<Player> updateBestSingleScore(@PathVariable("id") long playerId,
-                                                  @RequestBody int points) {
+                                                        @RequestBody int points) {
         if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
         Player updatedPlayer = repo.findById(playerId).get();
         updatedPlayer.setBestSingleScore(points);
+        repo.save(updatedPlayer);
+        return ResponseEntity.ok(updatedPlayer);
+    }
 
-        /* assumption that best score is updated only at the end of a game */
-        // updatedPlayer.setCurrentPoints(0);
-
+    /**
+     * Updates best points of a player entry
+     *
+     * @param playerId Id of player
+     * @param points   Point count to be updated with
+     * @return Updated player entity
+     */
+    @PutMapping("/{id}/bestmultiscore")
+    public ResponseEntity<Player> updateBestMultiScore(@PathVariable("id") long playerId,
+                                                       @RequestBody int points) {
+        if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
+        Player updatedPlayer = repo.findById(playerId).get();
+        updatedPlayer.setBestMultiScore(points);
         repo.save(updatedPlayer);
         return ResponseEntity.ok(updatedPlayer);
     }

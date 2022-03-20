@@ -18,6 +18,8 @@ package client.scenes;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -44,7 +46,7 @@ public class MainCtrl {
     private Scene leaderBoardScreen;
 
     // for now a field will suffice, in case more constants are needed an enum must be created
-    public final long WAITING_AREA_ID = 1L;
+    public final static long WAITING_AREA_ID = 1L;
 
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
@@ -76,6 +78,7 @@ public class MainCtrl {
         this.leaderBoardCtrl = leaderboard.getKey();
         this.leaderBoardScreen = new Scene(leaderboard.getValue());
 
+        confirmClose();
         showSplash();
         primaryStage.show();
 
@@ -104,7 +107,9 @@ public class MainCtrl {
         multiplayerCtrl.setSessionId(sessionId);
         multiplayerCtrl.setPlayerId(playerId);
         multiplayerCtrl.setBestMultiScore();
+        multiplayerCtrl.registerForEmojiUpdates();
         multiplayerCtrl.loadQuestion();
+        multiplayerCtrl.scanForDisconnect();
     }
 
     /**
@@ -165,5 +170,17 @@ public class MainCtrl {
         leaderBoardCtrl.refreshSingle();
         leaderBoardScreen.setOnKeyPressed(e -> leaderBoardCtrl.keyPressed(e));
 
+    }
+
+    /**
+     * Ask the user for confirmation before closing the app
+     */
+    public void confirmClose() {
+        primaryStage.setOnCloseRequest(evt -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirm Close");
+            alert.setHeaderText("Close the program?");
+            alert.showAndWait().filter(r -> r != ButtonType.OK).ifPresent(r->evt.consume());
+        });
     }
 }

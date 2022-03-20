@@ -43,7 +43,7 @@ public class SingleplayerCtrl extends GameCtrl {
     @Override
     public void submitAnswer(boolean initiatedByTimer) {
         super.submitAnswer(initiatedByTimer);
-        startSingleEvaluation();
+        startEvaluation(bestSingleScore);
     }
 
     /**
@@ -59,6 +59,15 @@ public class SingleplayerCtrl extends GameCtrl {
         }
         super.loadAnswer();
     }
+
+    /**
+     * Empty method because singleplayer mode does not have an end screen.
+     */
+    @Override
+    public void showEndScreen() {
+        return;
+    }
+
     /**
      * Reverts the player to the splash screen and remove him from the current game session.
      */
@@ -95,4 +104,10 @@ public class SingleplayerCtrl extends GameCtrl {
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
     }
+
+    @Override
+    public void updateScore(long playerId, int points, boolean isBestScore) {
+        server.updateSingleScore(playerId, points, isBestScore);
+    }
+
 }

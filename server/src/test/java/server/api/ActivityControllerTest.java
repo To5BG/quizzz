@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 
 
 import java.util.List;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.*;
@@ -20,7 +21,7 @@ public class ActivityControllerTest {
     @BeforeEach
     public void setup() {
         repo = new TestActivityRepository();
-        sut = new ActivityController(repo);
+        sut = new ActivityController(new Random(), repo);
     }
 
     @Test
@@ -31,30 +32,30 @@ public class ActivityControllerTest {
 
     @Test
     public void getAllActivitiesTest() {
-        Activity a = getActivity("a1");
+        Activity a = getActivity("test");
         sut.addActivity(a);
-        var actual = ResponseEntity.ok(sut.getAllActivities());
-        assertTrue(List.of(a).equals(actual.getBody()));
+        var actual = sut.getAllActivities();
+        assertEquals(List.of(a), actual);
     }
 
     @Test
     public void getOneActivityTest() {
-        Activity activity = getActivity("a1");
+        Activity activity = getActivity("test");
         sut.addActivity(activity);
         assertEquals(sut.getActivityById(1L).getBody(), activity);
     }
 
     @Test
     public void getInvalidActivityTest() {
-        //sut.addActivity(getActivity("a1"));
+        //sut.addActivity(getActivity("test"));
         var actual = sut.getActivityById(0L);
         assertEquals(actual.getStatusCode(), BAD_REQUEST);
     }
 
     @Test
     public void updateActivityTest() {
-        Activity activity = getActivity("a1");
-        Activity other = getActivity("a2");
+        Activity activity = getActivity("test");
+        Activity other = getActivity("testtwo");
         sut.addActivity(activity);
         var actual = ResponseEntity.ok(sut.updateActivityById(1L, other)).getBody();
         other.id = 1L;
@@ -63,8 +64,8 @@ public class ActivityControllerTest {
 
     @Test
     public void updateInvalidIdActivityTest() {
-        Activity activity = getActivity("a1");
-        Activity other = getActivity("a2");
+        Activity activity = getActivity("test");
+        Activity other = getActivity("test2");
         sut.addActivity(activity);
         var actual = ResponseEntity.ok(sut.updateActivityById(42L, other)).getBody();
         assertEquals(BAD_REQUEST, actual.getStatusCode());
@@ -72,7 +73,7 @@ public class ActivityControllerTest {
 
     @Test
     public void updateInvalidUpdateActivityTest() {
-        Activity activity = getActivity("a1");
+        Activity activity = getActivity("test");
         Activity other = getActivity("");
         sut.addActivity(activity);
         var actual = ResponseEntity.ok(sut.updateActivityById(0L, other)).getBody();
@@ -81,7 +82,7 @@ public class ActivityControllerTest {
 
     @Test
     public void deleteActivityTest() {
-        Activity activity = getActivity("a1");
+        Activity activity = getActivity("test");
         sut.addActivity(activity);
         var actual = ResponseEntity.ok(sut.removeActivityById(1L)).getBody();
         assertEquals(NO_CONTENT, actual.getStatusCode());
@@ -89,18 +90,20 @@ public class ActivityControllerTest {
 
     @Test
     public void deleteInvalidActivityTest() {
-        sut.addActivity(getActivity("a1"));
+        sut.addActivity(getActivity("test"));
         var actual = sut.removeActivityById(2L);
         assertEquals(actual.getStatusCode(), NOT_FOUND);
     }
 
     @Test
     public void databaseIsUsedTest() {
-        sut.addActivity(getActivity("a1"));
+        sut.addActivity(getActivity("test"));
         repo.calledMethods.contains("save");
     }
 
     private static Activity getActivity(String str) {
-        return new Activity(str, str, str, str);
+        return (str == null)
+                ? new Activity(null, null, null, null)
+                : new Activity(str + " " + str + " " + str, "42", str, str);
     }
 }
