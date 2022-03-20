@@ -181,7 +181,7 @@ public class MultiplayerCtrl extends GameCtrl {
         for (int i = 0; i < players.size() ; i++) {
             req += players.get(i).username + ", ";
         }
-        req.substring(0, req.length() - 2);
+        req = req.substring(0, req.length() - 2);
         removedPlayers.setText(String.format("%s" + ": DISCONNECTED...", req));
         removedPlayers.setOpacity(1.0);
     }
