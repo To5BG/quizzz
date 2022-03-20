@@ -25,7 +25,7 @@
                 <TableColumn fx:id="colPoints" prefWidth="61.0" text="points" />
             </columns>
         </TableView>
-        <StackPane fx:id="answerArea" layoutX="14.0" layoutY="61.0" prefHeight="156.0" prefWidth="407.0" />
+        <StackPane fx:id="answerArea" layoutX="14.0" layoutY="61.0" prefHeight="156.0" prefWidth="235.0" />
         <Button fx:id="submitButton" layoutX="361.0" layoutY="248.0" mnemonicParsing="false"
                 onAction="#submitAnswerButton" text="Final Answer" />
         <Label fx:id="pointsLabel" layoutX="492.0" layoutY="14.0" text="Points: 0" />
@@ -42,6 +42,11 @@
                 onAction="#decreaseTime" prefHeight="26.0" prefWidth="103.0" text="Decrease Time" />
         <Button fx:id="doublePointsButton" layoutX="340.0" layoutY="304.0" mnemonicParsing="false"
                 onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points" />
+      <ImageView fx:id="imagePanel" fitHeight="156.0" fitWidth="177.0" layoutX="257.0" layoutY="62.0"
+                 pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="emojiFunny" fitHeight="60.0" fitWidth="60.0" layoutX="38.0" layoutY="332.0"
+                 onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
+      </ImageView>
       <Button fx:id="playAgain" layoutX="241.0" layoutY="288.0" mnemonicParsing="false" onAction="#playAgain"
               prefHeight="25.0" prefWidth="103.0" text="Play again" />
       <Label fx:id="status" layoutX="280.0" layoutY="359.0" text="[Status]" />
@@ -51,9 +56,6 @@
                  onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
       </ImageView>
       <ImageView fx:id="emojiAngry" fitHeight="60.0" fitWidth="60.0" layoutX="194.0" layoutY="332.0"
-                 onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
-      </ImageView>
-      <ImageView fx:id="emojiFunny" fitHeight="60.0" fitWidth="60.0" layoutX="38.0" layoutY="332.0"
                  onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
       </ImageView>
       <TableView fx:id="emojiList" layoutX="446.0" layoutY="39.0" prefHeight="200.0" prefWidth="151.0">
