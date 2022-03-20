@@ -610,9 +610,6 @@ public abstract class GameCtrl implements Initializable {
                         else back();
                     } else if (rounds == GAME_ROUNDS / 2 &&
                             server.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
-                        multiChoiceAnswers.clear();
-                        answerArea.getChildren().clear();
-                        imagePanel.setImage(null);
                         displayMidGameScreen();
                     } else {
                         try {
@@ -644,6 +641,9 @@ public abstract class GameCtrl implements Initializable {
         doublePointsButton.setOpacity(0);
         decreaseTimeButton.setOpacity(0);
         questionPrompt.setOpacity(0);
+        multiChoiceAnswers.clear();
+        answerArea.getChildren().clear();
+        imagePanel.setImage(null);
         leaderboard.setOpacity(1);
     }
 
