@@ -107,6 +107,7 @@ public class MainCtrl {
         multiplayerCtrl.setSessionId(sessionId);
         multiplayerCtrl.setPlayerId(playerId);
         multiplayerCtrl.setBestMultiScore();
+        multiplayerCtrl.registerForEmojiUpdates();
         multiplayerCtrl.loadQuestion();
     }
 

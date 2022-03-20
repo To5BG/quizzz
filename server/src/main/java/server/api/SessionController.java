@@ -63,6 +63,7 @@ public class SessionController {
         try (Connection CONN = DriverManager.getConnection("jdbc:h2:file:./quizzzz", "sa", "")) {
             Statement stmt = CONN.createStatement();
             stmt.executeUpdate("DELETE FROM QUESTION_ANSWER_OPTIONS");
+            stmt.executeUpdate("DELETE FROM QUESTION_ACTIVITY_PATH");
             stmt.executeUpdate("DELETE FROM GAME_SESSION_EXPECTED_ANSWERS");
             stmt.executeUpdate("DELETE FROM GAME_SESSION_PLAYERS");
             stmt.executeUpdate("DELETE FROM GAME_SESSION WHERE SESSION_TYPE <> 0");
@@ -327,5 +328,20 @@ public class SessionController {
         player.setAnswer(ans);
         repo.save(session);
         return ResponseEntity.ok(ans);
+    }
+
+    /**
+     * Sets the questionCounter of a session to zero.
+     *
+     * @param sessionId The current session.
+     * @return          The updated session.
+     */
+    @GetMapping("/{id}/reset")
+    public ResponseEntity<GameSession> resetQuestionCounter(@PathVariable("id") long sessionId) {
+        if (isInvalid(sessionId, repo)) return ResponseEntity.badRequest().build();
+        GameSession session = repo.findById(sessionId).get();
+        session.resetQuestionCounter();
+        repo.save(session);
+        return ResponseEntity.ok(session);
     }
 }
