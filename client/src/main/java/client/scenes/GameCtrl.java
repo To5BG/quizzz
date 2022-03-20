@@ -11,6 +11,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 
@@ -29,6 +31,9 @@ public abstract class GameCtrl implements Initializable {
 
     @FXML
     protected Label questionPrompt;
+
+    @FXML
+    protected ImageView imagePanel;
 
     @FXML
     protected Label pointsLabel;
@@ -143,7 +148,20 @@ public abstract class GameCtrl implements Initializable {
      */
     protected void renderGeneralInformation(Question q) {
         this.questionPrompt.setText(q.prompt);
-        // TODO load image
+        switch (q.type) {
+            case RANGE_GUESS:
+            case EQUIVALENCE:
+            case MULTIPLE_CHOICE:
+                try {
+                    Image image = new Image("assets/" + q.imagePath);
+                    imagePanel.setImage(image);
+                    break;
+                }
+                catch (Exception e) {
+                    break;
+                }
+        }
+
     }
 
     /**
@@ -200,6 +218,41 @@ public abstract class GameCtrl implements Initializable {
             yPosition += 30;
             multiChoiceAnswers.add(choice);
             answerArea.getChildren().add(choice);
+        }
+    }
+
+    /**
+     * Change the image displayed upon hovering the activity answer options
+     */
+    public void imageHover() {
+        Question q = this.currentQuestion;
+        switch (this.currentQuestion.type) {
+            case COMPARISON:
+                try {
+                    for (int i = 0; i < multiChoiceAnswers.size(); i++) {
+                        Image image = new Image("assets/" + q.activityPath.get(i));
+                        multiChoiceAnswers.get(i).setOnMouseEntered(e ->
+                                imagePanel.setImage(image));
+                    }
+                    break;
+                }
+                catch (IllegalArgumentException e) {
+                    break;
+                }
+            case EQUIVALENCE:
+                try {
+                    for (int i = 0; i < multiChoiceAnswers.size(); i++) {
+                        Image image = new Image("assets/" + q.activityPath.get(i));
+                        multiChoiceAnswers.get(i).setOnMouseEntered(e ->
+                                imagePanel.setImage(image));
+                        multiChoiceAnswers.get(i).setOnMouseExited(e ->
+                                imagePanel.setImage(new Image("assets/" + q.imagePath)));
+                    }
+                    break;
+                }
+                catch (IllegalArgumentException e) {
+                    break;
+                }
         }
     }
 
@@ -339,6 +392,7 @@ public abstract class GameCtrl implements Initializable {
         timeProgress.progressProperty().bind(roundTimer.progressProperty());
         this.timerThread = new Thread(roundTimer);
         this.timerThread.start();
+        imageHover();
     }
 
     /**
@@ -385,6 +439,7 @@ public abstract class GameCtrl implements Initializable {
         this.rounds = 0;
         this.currentQuestion = null;
         this.questionCount.setText("Question: 1");
+        this.imagePanel.setImage(null);
 
         //re-enable jokers
         doublePointsJoker = true;
@@ -562,6 +617,7 @@ public abstract class GameCtrl implements Initializable {
                             if (session.playersReady == 0) {
                                 server.updateStatus(session, GameSession.SessionStatus.ONGOING);
                             }
+                            imagePanel.setImage(null);
                             loadQuestion();
                         } catch (BadRequestException e) {
                             System.out.println("takingover");
@@ -585,6 +641,9 @@ public abstract class GameCtrl implements Initializable {
         doublePointsButton.setOpacity(0);
         decreaseTimeButton.setOpacity(0);
         questionPrompt.setOpacity(0);
+        multiChoiceAnswers.clear();
+        answerArea.getChildren().clear();
+        imagePanel.setImage(null);
         leaderboard.setOpacity(1);
     }
 

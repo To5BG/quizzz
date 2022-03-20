@@ -23,6 +23,9 @@ public class Question {
     @ElementCollection
     public List<String> answerOptions;
 
+    @ElementCollection
+    public List<String> activityPath;
+
     public enum QuestionType {
         MULTIPLE_CHOICE,
         RANGE_GUESS,
@@ -42,6 +45,7 @@ public class Question {
         this.imagePath = imagePath;
         this.type = type;
         this.answerOptions = new ArrayList<String>();
+        this.activityPath = new ArrayList<String>();
     }
 
     /**
@@ -55,6 +59,19 @@ public class Question {
                     "Answer options are only allowed for Multiple Choice, comparison and equivalence type questions");
         }
         this.answerOptions.add(answerOption);
+    }
+
+    /**
+     * Add an activityPath to the list
+     *
+     * @param activityPath  Image path of the corresponding activity in string form
+     */
+    public void addActivityPath(String activityPath) {
+        if (type != QuestionType.COMPARISON && type != QuestionType.EQUIVALENCE) {
+            throw new UnsupportedOperationException(
+                    "There are no extra paths for multiple choice and range questions");
+        }
+        this.activityPath.add(activityPath);
     }
 
     /**

@@ -44,6 +44,26 @@ public class QuestionTest {
     }
 
     @Test
+    public void testAddActivityPathEquivalence() {
+        Activity activity = new Activity("title1", "1000", "path1", "source1");
+
+        Question q = new Question("Question 1", "test.png",
+                Question.QuestionType.EQUIVALENCE);
+
+        assertDoesNotThrow(() -> q.addActivityPath(activity.image_path));
+        assertSame("path1", q.activityPath.get(0));
+    }
+
+    @Test
+    public void testAddActivityPathBad() {
+        Question q = new Question("Question 1", "test.png",
+                Question.QuestionType.RANGE_GUESS);
+
+        assertThrows(UnsupportedOperationException.class, () -> q.addActivityPath("path1"));
+        assertSame(0, q.activityPath.size());
+    }
+
+    @Test
     public void testEquals() {
         Question q1 = new Question("Question 1", "test.png",
                 Question.QuestionType.RANGE_GUESS);
