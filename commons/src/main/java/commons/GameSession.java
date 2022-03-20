@@ -20,6 +20,9 @@ public class GameSession {
     @OneToMany(cascade = CascadeType.ALL)
     public List<Player> players;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    public List<Player> removedPlayers;
+
     @OneToOne(cascade = CascadeType.ALL)
     public Question currentQuestion;
 
@@ -61,6 +64,7 @@ public class GameSession {
     }
 
     public GameSession(SessionType sessionType, List<Player> players, List<Integer> expectedAnswers) {
+        this.removedPlayers = new ArrayList<Player>();
         this.players = players;
         this.sessionType = sessionType;
         this.expectedAnswers = expectedAnswers;
@@ -105,6 +109,8 @@ public class GameSession {
      */
     public void removePlayer(Player player) {
         players.remove(player);
+        if(sessionType == SessionType.WAITING_AREA) return;
+        removedPlayers.add(player);
     }
 
     public void setCurrentQuestion(Question question) {

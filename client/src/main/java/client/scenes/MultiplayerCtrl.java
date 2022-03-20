@@ -25,6 +25,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -57,6 +58,11 @@ public class MultiplayerCtrl extends GameCtrl {
     @FXML
     private ImageView emojiAngry;
 
+    @FXML
+    private Label removedPlayers;
+
+    private List<Player> prevDisconnects;
+    private Timer disconnectTimer;
     private final ObservableList<Emoji> sessionEmojis;
     private final List<Image> emojiImages;
     private StompSession.Subscription channel;
@@ -118,6 +124,43 @@ public class MultiplayerCtrl extends GameCtrl {
     }
 
     /**
+     * Checks the server periodically for players who disconnected. If so, displays text on the game screen
+     */
+    public void scanForDisconnect() {
+        prevDisconnects = new ArrayList<Player>();
+        disconnectTimer = new Timer();
+        disconnectTimer.scheduleAtFixedRate(new TimerTask() {
+
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    List<Player> allRemoved = server.getRemovedPlayers(sessionId);
+                    allRemoved.removeAll(prevDisconnects);
+                    disconnectedText(allRemoved);
+                    prevDisconnects.addAll(allRemoved);
+                });
+            }
+        }, 0, 2000);
+    }
+
+    /**
+     * Displays the player(s) who got disconnected
+     * @param players Players who got disconnected
+     */
+    public void disconnectedText(List<Player> players) {
+        if (players.size() == 0) {
+            removedPlayers.setOpacity(0.0);
+            return;
+        }
+        String req = "";
+        for (int i = 0; i < players.size(); i++) {
+            req = String.join(", ", players.get(i).username);
+        }
+        removedPlayers.setText(String.format("%s" + ": DISCONNECTED...", req));
+        removedPlayers.setOpacity(1.0);
+    }
+
+    /**
      * Refreshes the multiplayer player board to check whether the evaluation can start.
      */
     public void refresh() {
@@ -172,6 +215,7 @@ public class MultiplayerCtrl extends GameCtrl {
     public void shutdown() {
         channel.unsubscribe();
         super.shutdown();
+        disconnectTimer.cancel();
     }
 
     /**

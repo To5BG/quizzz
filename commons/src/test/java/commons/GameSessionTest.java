@@ -100,6 +100,7 @@ public class GameSessionTest {
     public void testRemovePlayer() {
         s.removePlayer(SOME_PLAYER);
         assertSame(0, s.players.size());
+        assertSame(1, s.removedPlayers.size());
     }
 
     @Test
