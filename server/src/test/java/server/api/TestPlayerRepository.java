@@ -17,10 +17,10 @@ public class TestPlayerRepository extends StubRepository<Player, Long> implement
      * @return a list of players sorted by the best Single Score
      */
     @Override
-    public List<Player> findByOrderByBestSingleScoreDesc() {
-       var returnList =  findAll().stream().sorted(Comparator
+     public List<Player> findByOrderByBestSingleScoreDesc() {
+        var returnList =  findAll().stream().sorted(Comparator
                        .comparing(Player::getBestSingleScore).reversed()).collect(Collectors.toList());
-       return returnList;
+        return returnList;
     }
 
     /**
@@ -28,7 +28,7 @@ public class TestPlayerRepository extends StubRepository<Player, Long> implement
      * @return a list of players sorted by the best Multi Score
      */
     @Override
-    public List<Player> findByOrderByBestMultiScoreDesc() {
+     public List<Player> findByOrderByBestMultiScoreDesc() {
         var returnList =  findAll().stream().sorted(Comparator
                 .comparing(Player::getBestMultiScore).reversed()).collect(Collectors.toList());
         return returnList;
