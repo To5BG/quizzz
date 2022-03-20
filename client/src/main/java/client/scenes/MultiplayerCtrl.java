@@ -161,7 +161,6 @@ public class MultiplayerCtrl extends GameCtrl {
      */
     public void leaveGame() {
         if (playAgain.getText().equals("Don't play again")) playAgain();
-        reset();
         super.back();
     }
 
@@ -239,11 +238,10 @@ public class MultiplayerCtrl extends GameCtrl {
                 updateProgress(0, 1);
                 server.updateStatus(server.getSession(sessionId), GameSession.SessionStatus.TRANSFERRING);
                 Platform.runLater(() -> {
-                    if (!(isPlayingAgain())) {
-                        leaveGame();
-                    }
-                    else {
+                    if (isPlayingAgain()) {
                         startGame();
+                    } else {
+                        leaveGame();
                     }
                 });
                 return null;
