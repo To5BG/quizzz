@@ -257,6 +257,9 @@ public class MultiplayerCtrl extends GameCtrl {
 
     @Override
     public void shutdown() {
+        if (server.getSession(sessionId).sessionStatus == GameSession.SessionStatus.PLAY_AGAIN) {
+            if (playAgain.getText().equals("Don't play again")) playAgain();
+        }
         channel.unsubscribe();
         super.shutdown();
         disconnectTimer.cancel();
