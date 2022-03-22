@@ -1,6 +1,9 @@
 package client.scenes;
 
-import client.utils.ServerUtils;
+import client.utils.GameSessionUtils;
+import client.utils.LeaderboardUtils;
+import client.utils.QuestionUtils;
+import client.utils.WebSocketsUtils;
 import commons.Player;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -8,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+
 import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -15,8 +19,9 @@ import java.util.ResourceBundle;
 public class SingleplayerCtrl extends GameCtrl {
 
     @Inject
-    public SingleplayerCtrl(ServerUtils server, MainCtrl mainCtrl) {
-        super(server, mainCtrl);
+    public SingleplayerCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
+                            LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
+        super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
     }
 
     private ObservableList<Player> data;
@@ -51,10 +56,10 @@ public class SingleplayerCtrl extends GameCtrl {
      */
     @Override
     public void loadAnswer() {
-        if(decreaseTimeJoker) {
+        if (decreaseTimeJoker) {
             disableButton(decreaseTimeButton, false);
         }
-        if(doublePointsJoker) {
+        if (doublePointsJoker) {
             disableButton(doublePointsButton, false);
         }
         super.loadAnswer();
@@ -79,11 +84,12 @@ public class SingleplayerCtrl extends GameCtrl {
     /**
      * If the joker is active make the time joker -0.5 so the booster will work at half the normal speed
      * for a singleplayer game
+     *
      * @return -0.5 if the joker has been used, or 0 otherwise
      */
     @Override
     public double getTimeJokers() {
-        int number = server.getSession(sessionId).getTimeJokers();
+        int number = gameSessionUtils.getSession(sessionId).getTimeJokers();
         return (number == 1) ? -0.5 : 0;
     }
 
@@ -93,21 +99,21 @@ public class SingleplayerCtrl extends GameCtrl {
     public void increaseTime() {
         decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
-        server.updateTimeJokers(sessionId, 1);
+        gameSessionUtils.updateTimeJokers(sessionId, 1);
     }
 
     /**
      * refresh the screen to show the leaderboards
      */
     public void refresh() {
-        var players = server.getPlayerSingleScore();
+        var players = leaderboardUtils.getPlayerSingleScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
     }
 
     @Override
     public void updateScore(long playerId, int points, boolean isBestScore) {
-        server.updateSingleScore(playerId, points, isBestScore);
+        leaderboardUtils.updateSingleScore(playerId, points, isBestScore);
     }
 
 }

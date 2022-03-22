@@ -15,8 +15,9 @@
  */
 package client.scenes;
 
+import client.utils.GameSessionUtils;
+import client.utils.LeaderboardUtils;
 import com.google.inject.Inject;
-import client.utils.ServerUtils;
 import commons.GameSession;
 import commons.Player;
 import javafx.fxml.FXML;
@@ -32,7 +33,8 @@ import java.util.Scanner;
 
 public class SplashCtrl {
 
-    private final ServerUtils server;
+    private final GameSessionUtils gameSessionUtils;
+    private final LeaderboardUtils leaderboardUtils;
     private final MainCtrl mainCtrl;
 
     @FXML
@@ -45,8 +47,9 @@ public class SplashCtrl {
     private Text invalidUserName;
 
     @Inject
-    public SplashCtrl(ServerUtils server, MainCtrl mainCtrl) {
-        this.server = server;
+    public SplashCtrl(GameSessionUtils gameSessionUtils, LeaderboardUtils leaderboardUtils, MainCtrl mainCtrl) {
+        this.gameSessionUtils = gameSessionUtils;
+        this.leaderboardUtils = leaderboardUtils;
         this.mainCtrl = mainCtrl;
     }
 
@@ -64,11 +67,11 @@ public class SplashCtrl {
      * available and adds the player to the session.
      */
     public void enterMultiplayerGame() {
-        GameSession sessionToJoin = server.getAvailableSession();
+        GameSession sessionToJoin = gameSessionUtils.getAvailableSession();
         String newUserName = usernameField.getText();
 
-        server.addPlayer(sessionToJoin.id, new Player(newUserName, 0));
-        var playerId = server
+        gameSessionUtils.addPlayer(sessionToJoin.id, new Player(newUserName, 0));
+        var playerId = gameSessionUtils
                 .getPlayers(sessionToJoin.id)
                 .stream().filter(p -> p.username.equals(newUserName))
                 .findFirst().get().id;
@@ -99,7 +102,7 @@ public class SplashCtrl {
      * @return true if another Player with the same username exists
      */
     public boolean isDuplInActive(String username) {
-        for(GameSession gs : server.getSessions()) {
+        for(GameSession gs : gameSessionUtils.getSessions()) {
             Optional<Player> existing = gs
                     .getPlayers()
                     .stream().filter(p -> p.username.equals(username))
@@ -117,7 +120,7 @@ public class SplashCtrl {
      * @return true if another Player with the same username exists
      */
     public boolean isDuplInRepository(String username) {
-        for(Player p : server.getAllPlayers()) {
+        for(Player p : leaderboardUtils.getAllLeaderBoardPlayers()) {
             if(p.username.equals(username)) {
                 return true;
             }
@@ -132,7 +135,7 @@ public class SplashCtrl {
      * @return the player if it exists, null otherwise
      */
     public Player getDuplPlayer(String username) {
-        for(Player p : server.getAllPlayers()) {
+        for(Player p : leaderboardUtils.getAllLeaderBoardPlayers()) {
             if(p.username.equals(username)) {
                 return p;
             }
@@ -167,12 +170,12 @@ public class SplashCtrl {
             if(isDuplInRepository(newUserName)) {
                 Player p = getDuplPlayer(newUserName);
                 p.setCurrentPoints(0);
-                server.addPlayer(1L, p);
+                gameSessionUtils.addPlayer(1L, p);
             }
             else {
-                server.addPlayer(1L /*waiting area id*/, new Player(newUserName, 0));
+                gameSessionUtils.addPlayer(1L /*waiting area id*/, new Player(newUserName, 0));
             }
-            var playerId = server
+            var playerId = gameSessionUtils
                     .getPlayers(1L)
                     .stream().filter(p -> p.username.equals(newUserName))
                     .findFirst().get().id;
@@ -216,11 +219,11 @@ public class SplashCtrl {
                 getDuplPlayer(newUserName).setCurrentPoints(0);
             }
             GameSession newSession = new GameSession(GameSession.SessionType.SINGLEPLAYER);
-            newSession = server.addSession(newSession);
-            server.addPlayer(newSession.id, isDuplInRepository(newUserName) ?
+            newSession = gameSessionUtils.addSession(newSession);
+            gameSessionUtils.addPlayer(newSession.id, isDuplInRepository(newUserName) ?
                     getDuplPlayer(newUserName) : new Player(newUserName, 0));
 
-            var playerId = server
+            var playerId = gameSessionUtils
                     .getPlayers(newSession.id)
                     .stream().filter(p -> p.username.equals(newUserName))
                     .findFirst().get().id;
