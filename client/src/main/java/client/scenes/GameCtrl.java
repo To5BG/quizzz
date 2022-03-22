@@ -167,8 +167,7 @@ public abstract class GameCtrl implements Initializable {
                     Image image = new Image("assets/" + q.imagePath);
                     imagePanel.setImage(image);
                     break;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     break;
                 }
         }
@@ -246,8 +245,7 @@ public abstract class GameCtrl implements Initializable {
                                 imagePanel.setImage(image));
                     }
                     break;
-                }
-                catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                     break;
                 }
             case EQUIVALENCE:
@@ -260,8 +258,7 @@ public abstract class GameCtrl implements Initializable {
                                 imagePanel.setImage(new Image("assets/" + q.imagePath)));
                     }
                     break;
-                }
-                catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                     break;
                 }
         }
@@ -369,7 +366,7 @@ public abstract class GameCtrl implements Initializable {
         Question q = this.currentQuestion;
         renderAnswerFields(q);
 
-        if(removeOneJoker) {
+        if (removeOneJoker) {
             disableButton(removeOneButton, q.type == Question.QuestionType.RANGE_GUESS);
         }
 
@@ -493,13 +490,12 @@ public abstract class GameCtrl implements Initializable {
                     givenAnswer = 0;
                 }
                 int diff = Math.abs(givenAnswer - actualAnswer);
-                if(diff == 0) {
+                if (diff == 0) {
                     temppoints = (int) (60 * this.evaluation.points * timeFactor) + 40;
-                }
-                else {
-                    if(diff > actualAnswer) diff = actualAnswer;
-                    temppoints = (int) (90 - 90*((double) diff*difficultyFactor*timeFactor/actualAnswer) +
-                            ((diff < actualAnswer) ? 10 - 10*((double) diff*difficultyFactor/actualAnswer) : 0));
+                } else {
+                    if (diff > actualAnswer) diff = actualAnswer;
+                    temppoints = (int) (90 - 90 * ((double) diff * difficultyFactor * timeFactor / actualAnswer) +
+                            ((diff < actualAnswer) ? 10 - 10 * ((double) diff * difficultyFactor / actualAnswer) : 0));
                     if (temppoints <= 0) temppoints = 0;
                 }
                 break;
@@ -593,7 +589,7 @@ public abstract class GameCtrl implements Initializable {
         disableButton(decreaseTimeButton, true);
         disableButton(doublePointsButton, true);
 
-        switch (rounds / 4){
+        switch (rounds / 4) {
             case 0 -> difficultyFactor = 1;
             case 1 -> difficultyFactor = 2;
             case 2 -> difficultyFactor = 3;
@@ -773,10 +769,11 @@ public abstract class GameCtrl implements Initializable {
      * Reset the number of time Jokers for the current session to default value
      */
     public void resetTimeJokers() {
-        if(getTimeJokers() != 0) {
+        if (getTimeJokers() != 0) {
             gameSessionUtils.updateTimeJokers(sessionId, 0);
         }
     }
+
     /**
      * Decrease Time Joker
      * When this joker is used, the timer speeds up
@@ -807,6 +804,7 @@ public abstract class GameCtrl implements Initializable {
 
     /**
      * Generic event handler for clicking on an emoji
+     *
      * @param ev The event information
      */
     public void emojiEventHandler(Event ev) {

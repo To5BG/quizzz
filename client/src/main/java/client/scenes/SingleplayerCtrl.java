@@ -18,20 +18,19 @@ import java.util.ResourceBundle;
 
 public class SingleplayerCtrl extends GameCtrl {
 
-    @Inject
-    public SingleplayerCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
-                            LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
-        super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
-    }
-
     private ObservableList<Player> data;
-
     @FXML
     private TableView<Player> allPlayers;
     @FXML
     private TableColumn<Player, String> colName;
     @FXML
     private TableColumn<Player, String> colPoint;
+
+    @Inject
+    public SingleplayerCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
+                            LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
+        super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
+    }
 
     /**
      * {@inheritDoc}

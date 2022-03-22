@@ -68,8 +68,8 @@ public class WaitingAreaCtrl implements Initializable {
      * Removes player from session. Also called if controller is closed forcibly
      */
     public void shutdown() {
-        if (readyButton.getText().equals("Not Ready")) gameSessionUtils.toggleReady(mainCtrl.WAITING_AREA_ID, false);
-        gameSessionUtils.removePlayer(mainCtrl.WAITING_AREA_ID, playerId);
+        if (readyButton.getText().equals("Not Ready")) gameSessionUtils.toggleReady(MainCtrl.WAITING_AREA_ID, false);
+        gameSessionUtils.removePlayer(MainCtrl.WAITING_AREA_ID, playerId);
         setPlayerId(0L);
     }
 
@@ -89,11 +89,11 @@ public class WaitingAreaCtrl implements Initializable {
         switch (readyButton.getText()) {
             case "Ready" -> {
                 readyButton.setText("Not Ready");
-                gameSessionUtils.toggleReady(mainCtrl.WAITING_AREA_ID, true);
+                gameSessionUtils.toggleReady(MainCtrl.WAITING_AREA_ID, true);
             }
             case "Not Ready" -> {
                 readyButton.setText("Ready");
-                gameSessionUtils.toggleReady(mainCtrl.WAITING_AREA_ID, false);
+                gameSessionUtils.toggleReady(MainCtrl.WAITING_AREA_ID, false);
             }
         }
     }
@@ -116,7 +116,7 @@ public class WaitingAreaCtrl implements Initializable {
      * @return True iff the refresh should continue
      */
     public boolean refresh() {
-        GameSession waitingArea = gameSessionUtils.getSession(mainCtrl.WAITING_AREA_ID);
+        GameSession waitingArea = gameSessionUtils.getSession(MainCtrl.WAITING_AREA_ID);
         ObservableList<Player> data = FXCollections.observableList(waitingArea.players);
         currentPlayers.setItems(data);
 
@@ -125,7 +125,7 @@ public class WaitingAreaCtrl implements Initializable {
 
         if (waitingArea.sessionStatus == GameSession.SessionStatus.TRANSFERRING) {
 
-            gameSessionUtils.toggleReady(mainCtrl.WAITING_AREA_ID, false);
+            gameSessionUtils.toggleReady(MainCtrl.WAITING_AREA_ID, false);
             GameSession sessionToJoin = gameSessionUtils.getAvailableSession();
             if (sessionToJoin == null) return true;
 
@@ -133,8 +133,8 @@ public class WaitingAreaCtrl implements Initializable {
             readyButton.setVisible(false);
 
             gameSessionUtils.addPlayer(sessionToJoin.id,
-                    gameSessionUtils.removePlayer(mainCtrl.WAITING_AREA_ID, playerId));
-            if (gameSessionUtils.getPlayers(mainCtrl.WAITING_AREA_ID).size() == 0) {
+                    gameSessionUtils.removePlayer(MainCtrl.WAITING_AREA_ID, playerId));
+            if (gameSessionUtils.getPlayers(MainCtrl.WAITING_AREA_ID).size() == 0) {
                 sessionToJoin = gameSessionUtils.updateStatus(sessionToJoin, GameSession.SessionStatus.ONGOING);
                 gameSessionUtils.updateStatus(waitingArea, GameSession.SessionStatus.WAITING_AREA);
             }
@@ -146,7 +146,7 @@ public class WaitingAreaCtrl implements Initializable {
             var sessionToJoin = gameSessionUtils.addSession(
                     new GameSession(GameSession.SessionType.MULTIPLAYER));
             gameSessionUtils.addPlayer(sessionToJoin.id,
-                    gameSessionUtils.removePlayer(mainCtrl.WAITING_AREA_ID, playerId));
+                    gameSessionUtils.removePlayer(MainCtrl.WAITING_AREA_ID, playerId));
             mainCtrl.showMultiplayer(sessionToJoin.id, playerId);
             return false;
         }

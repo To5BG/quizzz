@@ -43,44 +43,32 @@ import java.util.*;
 
 public class MultiplayerCtrl extends GameCtrl {
 
-    @FXML
-    private TableView<Emoji> emojiList;
-
-    @FXML
-    private TableColumn<Emoji, String> emojiUsername;
-
-    @FXML
-    private TableColumn<Emoji, ImageView> emojiImage;
-
-    @FXML
-    private ImageView emojiFunny;
-
-    @FXML
-    private ImageView emojiSad;
-
-    @FXML
-    private ImageView emojiAngry;
-
-    @FXML
-    private Button backButton;
-
-    @FXML
-    private Button leaveButton;
-
-    @FXML
-    private Button playAgain;
-
-    @FXML
-    private Label status;
-
-    @FXML
-    private Label removedPlayers;
-
-
-    private int lastDisconnectIndex;
-    private Timer disconnectTimer;
     private final ObservableList<Emoji> sessionEmojis;
     private final List<Image> emojiImages;
+    @FXML
+    private TableView<Emoji> emojiList;
+    @FXML
+    private TableColumn<Emoji, String> emojiUsername;
+    @FXML
+    private TableColumn<Emoji, ImageView> emojiImage;
+    @FXML
+    private ImageView emojiFunny;
+    @FXML
+    private ImageView emojiSad;
+    @FXML
+    private ImageView emojiAngry;
+    @FXML
+    private Button backButton;
+    @FXML
+    private Button leaveButton;
+    @FXML
+    private Button playAgain;
+    @FXML
+    private Label status;
+    @FXML
+    private Label removedPlayers;
+    private int lastDisconnectIndex;
+    private Timer disconnectTimer;
     private StompSession.Subscription channel;
     private boolean playingAgain;
     private int waitingSkip = 0;
@@ -172,6 +160,7 @@ public class MultiplayerCtrl extends GameCtrl {
 
     /**
      * Displays the player(s) who got disconnected
+     *
      * @param players Players who got disconnected
      */
     public void disconnectedText(List<Player> players) {
@@ -180,7 +169,7 @@ public class MultiplayerCtrl extends GameCtrl {
             return;
         }
         String req = "";
-        for (int i = 0; i < players.size() ; i++) {
+        for (int i = 0; i < players.size(); i++) {
             req += players.get(i).username + ", ";
         }
         req = req.substring(0, req.length() - 2);
@@ -248,10 +237,10 @@ public class MultiplayerCtrl extends GameCtrl {
         if (!initiatedByTimer && this.evaluation == null) return;
 
         //enable jokers that can be used after submitting an answer
-        if(decreaseTimeJoker) {
+        if (decreaseTimeJoker) {
             disableButton(decreaseTimeButton, false);
         }
-        if(doublePointsJoker) {
+        if (doublePointsJoker) {
             disableButton(doublePointsButton, false);
         }
 
@@ -406,22 +395,12 @@ public class MultiplayerCtrl extends GameCtrl {
                         }
                         reset();
                         loadQuestion();
-                    }
-                    else {
+                    } else {
                         leaveGame();
                     }
                 });
             }
         }, 1000);
-    }
-
-    /**
-     * Setter for playingAgain field
-     *
-     * @param playingAgain parameter that shows if a player wants to play again.
-     */
-    public void setPlayingAgain(boolean playingAgain) {
-        this.playingAgain = playingAgain;
     }
 
     /**
@@ -431,5 +410,14 @@ public class MultiplayerCtrl extends GameCtrl {
      */
     public boolean isPlayingAgain() {
         return playingAgain;
+    }
+
+    /**
+     * Setter for playingAgain field
+     *
+     * @param playingAgain parameter that shows if a player wants to play again.
+     */
+    public void setPlayingAgain(boolean playingAgain) {
+        this.playingAgain = playingAgain;
     }
 }
