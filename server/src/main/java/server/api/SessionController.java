@@ -40,10 +40,7 @@ public class SessionController {
         if (!controllerConfig.equals("test")) resetDatabase(controllerConfig.equals("all"));
     }
 
-    /**
-     * Updates the question of a game session
-     */
-    public void updateQuestion(GameSession session) {
+    public GameSession updateQuestion(GameSession session) {
         session.difficultyFactor = session.questionCounter/4 + 1;
         session.questionCounter++;
         Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion(session.difficultyFactor, activityCtrl);
@@ -52,6 +49,36 @@ public class SessionController {
         System.out.println(session.currentQuestion);
         session.expectedAnswers.clear();
         session.expectedAnswers.addAll(res.getValue());
+        return updateSession(session);
+    }
+
+    public GameSession endSession(GameSession session) {
+        if (session.sessionType == GameSession.SessionType.SINGLEPLAYER) {
+            Player p = session.getPlayers().get(0);
+            p.bestSingleScore = Math.max(p.bestSingleScore, p.currentPoints);
+            updateSession(session);
+            System.out.println("removing session");
+            return removeSession(session.id).getBody();
+        } else {
+            for (Player p : session.players) {
+                p.bestMultiScore = Math.max(p.bestMultiScore, p.currentPoints);
+            }
+            session.setSessionStatus(GameSession.SessionStatus.PLAY_AGAIN);
+            return updateSession(session);
+        }
+    }
+
+    /**
+     * Updates the question of a game session
+     */
+    public GameSession advanceRounds(GameSession session) {
+        if (session.questionCounter == GameSession.GAME_ROUNDS) {
+            return endSession(session);
+        } else {
+            session.setSessionStatus(GameSession.SessionStatus.PAUSED);
+            updateTimeJokers(session.id, 0);
+            return updateQuestion(session);
+        }
     }
 
     /**
@@ -86,9 +113,9 @@ public class SessionController {
      *
      * @param session Session to update
      */
-    public void updateSession(GameSession session) {
-        if (isInvalid(session.id,repo)) return;
-        this.repo.save(session);
+    public GameSession updateSession(GameSession session) {
+        if (isInvalid(session.id,repo)) return session;
+        return this.repo.save(session);
     }
 
     /**
@@ -114,7 +141,7 @@ public class SessionController {
         for (Player p : session.players) {
             if (isNullOrEmpty(p.username)) return ResponseEntity.badRequest().build();
         }
-        updateQuestion(session);
+        advanceRounds(session);
         GameSession saved = repo.save(session);
         return ResponseEntity.ok(saved);
     }
@@ -179,9 +206,9 @@ public class SessionController {
         session.setPlayerReady();
         if (session.sessionType != GameSession.SessionType.WAITING_AREA &&
                 session.playersReady == session.players.size()) {
-            updateQuestion(session);
+            advanceRounds(session);
         }
-        repo.save(session);
+        //repo.save(session);
         return ResponseEntity.ok(session);
     }
 
@@ -196,6 +223,7 @@ public class SessionController {
         if (isInvalid(sessionId,repo)) return ResponseEntity.badRequest().build();
         GameSession session = repo.findById(sessionId).get();
         session.unsetPlayerReady();
+        if (session.playersReady == 0) session.setSessionStatus(GameSession.SessionStatus.ONGOING);
         repo.save(session);
         return ResponseEntity.ok(session);
     }
@@ -298,7 +326,12 @@ public class SessionController {
         if (player == null) return ResponseEntity.badRequest().build();
 
         session.removePlayer(player);
-        repo.save(session);
+        if (session.players.isEmpty()) {
+            repo.delete(session);
+        } else {
+            repo.save(session);
+        }
+
         return ResponseEntity.ok(player);
     }
 

@@ -23,7 +23,6 @@ import java.util.*;
 
 public abstract class GameCtrl implements Initializable {
 
-    protected final static int GAME_ROUNDS = 2;
     protected final static int GAME_ROUND_TIME = 10;
     protected final static int MIDGAME_BREAK_TIME = 6;
     protected final static int TIMER_UPDATE_INTERVAL_MS = 50;
@@ -409,15 +408,11 @@ public abstract class GameCtrl implements Initializable {
     public void shutdown() {
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
         if (sessionId != 0) {
-            updateScore(playerId, 0, false);
             questionUtils.addPlayerAnswer(sessionId, playerId, new Answer(Question.QuestionType.MULTIPLE_CHOICE));
             gameSessionUtils.removePlayer(sessionId, playerId);
             setPlayerId(0);
         }
-        if (gameSessionUtils.getPlayers(sessionId).size() == 0) {
-            gameSessionUtils.removeSession(sessionId);
-            setSessionId(0);
-        }
+        setSessionId(0);
     }
 
     /**
@@ -473,43 +468,12 @@ public abstract class GameCtrl implements Initializable {
      * Updates the point counter in client side, and then updates database entry
      */
     public void updatePoints() {
-        int temppoints;
-        switch (this.evaluation.type) {
-            case MULTIPLE_CHOICE:
-            case COMPARISON:
-            case EQUIVALENCE:
-                temppoints = (int) ((80 * this.evaluation.points * timeFactor) +
-                        (20 * this.evaluation.points));
-                break;
-            case RANGE_GUESS:
-                int givenAnswer;
-                int actualAnswer = this.evaluation.correctAnswers.get(0);
-                try {
-                    givenAnswer = Integer.parseInt(estimationAnswer.getText());
-                } catch (NumberFormatException ex) {
-                    givenAnswer = 0;
-                }
-                int diff = Math.abs(givenAnswer - actualAnswer);
-                if (diff == 0) {
-                    temppoints = (int) (60 * this.evaluation.points * timeFactor) + 40;
-                } else {
-                    if (diff > actualAnswer) diff = actualAnswer;
-                    temppoints = (int) (90 - 90 * ((double) diff * difficultyFactor * timeFactor / actualAnswer) +
-                            ((diff < actualAnswer) ? 10 - 10 * ((double) diff * difficultyFactor / actualAnswer) : 0));
-                    if (temppoints <= 0) temppoints = 0;
-                }
-                break;
-            default:
-                throw new UnsupportedOperationException("Unsupported question type when parsing answer");
-        }
-
         if (doublePointsActive) {
-            temppoints = temppoints * 2;
+            evaluation.points *= 2;
             switchStatusOfDoublePoints();
         }
-        points += temppoints;
+        points += evaluation.points;
         renderPoints();
-        updateScore(playerId, points, false);
     }
 
     /**
@@ -531,6 +495,7 @@ public abstract class GameCtrl implements Initializable {
      */
     public void submitAnswer(boolean initiatedByTimer) {
         Answer ans = new Answer(currentQuestion.type);
+        ans.timeFactor = timeFactor;
 
         switch (currentQuestion.type) {
             case MULTIPLE_CHOICE:
@@ -568,14 +533,14 @@ public abstract class GameCtrl implements Initializable {
         disableButton(submitButton, true);
         disableButton(removeOneButton, true);
 
-        this.evaluation = questionUtils.submitAnswer(sessionId, ans);
+        this.evaluation = questionUtils.submitAnswer(sessionId, playerId, ans);
 
         gameSessionUtils.toggleReady(sessionId, true);
 
-        var session = gameSessionUtils.getSession(sessionId);
-        if (session.playersReady == session.players.size()) {
-            gameSessionUtils.updateStatus(session, GameSession.SessionStatus.PAUSED);
-        }
+//        var session = gameSessionUtils.getSession(sessionId);
+//        if (session.playersReady == session.players.size()) {
+//            gameSessionUtils.updateStatus(session, GameSession.SessionStatus.PAUSED);
+//        }
     }
 
     /**
@@ -609,21 +574,25 @@ public abstract class GameCtrl implements Initializable {
             public void run() {
                 Platform.runLater(() -> {
                     rounds++;
-                    resetTimeJokers();
-                    if (rounds == GAME_ROUNDS) {
-                        // TODO display leaderboard things here
-                        if (points > scoreEvaluation) updateScore(playerId, points, true);
-                        if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showEndScreen();
-                        else back();
-                    } else if (rounds == GAME_ROUNDS / 2 &&
+                    if (rounds == GameSession.GAME_ROUNDS) {
+                        //if (points > scoreEvaluation) updateScore(playerId, points, true);
+                        try {
+                            if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showEndScreen();
+                            else back();
+                        } catch (BadRequestException ex) {
+                            setPlayerId(0);
+                            setSessionId(0);
+                            back();
+                        }
+                    } else if (rounds == GameSession.GAME_ROUNDS / 2 &&
                             gameSessionUtils.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
                         displayMidGameScreen();
                     } else {
                         try {
                             GameSession session = gameSessionUtils.toggleReady(sessionId, false);
-                            if (session.playersReady == 0) {
-                                gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
-                            }
+//                            if (session.playersReady == 0) {
+//                                gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
+//                            }
                             imagePanel.setImage(null);
                             loadQuestion();
                         } catch (BadRequestException e) {
@@ -763,15 +732,6 @@ public abstract class GameCtrl implements Initializable {
      */
     public double getTimeJokers() {
         return gameSessionUtils.getSession(sessionId).getTimeJokers();
-    }
-
-    /**
-     * Reset the number of time Jokers for the current session to default value
-     */
-    public void resetTimeJokers() {
-        if (getTimeJokers() != 0) {
-            gameSessionUtils.updateTimeJokers(sessionId, 0);
-        }
     }
 
     /**

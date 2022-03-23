@@ -12,6 +12,7 @@ import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
 public class GameSession {
+    public final static int GAME_ROUNDS = 2;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

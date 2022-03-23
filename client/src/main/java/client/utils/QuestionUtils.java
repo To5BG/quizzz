@@ -38,9 +38,9 @@ public class QuestionUtils {
      * @param answer    Answer object to be sent
      * @return Evaluation object to check the provided answers
      */
-    public Evaluation submitAnswer(long sessionId, Answer answer) {
+    public Evaluation submitAnswer(long sessionId, long playerId, Answer answer) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/questions/" + sessionId)
+                .target(SERVER).path("api/questions/" + sessionId + "/" + playerId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(answer, APPLICATION_JSON), Evaluation.class);
