@@ -10,14 +10,11 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MultiplayerCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MultiplayerCtrl">
     <children>
         <Label fx:id="questionPrompt" layoutX="14.0" layoutY="14.0" text="[Question]" />
         <Label fx:id="countdown" layoutX="16.0" layoutY="44.0" text="Options:" />
-        <Button fx:id="leaveButton" layoutX="521.0" layoutY="355.0" mnemonicParsing="false" onAction="#leaveGame"
-                text="Leave" />
+        <Button fx:id="leaveButton" layoutX="521.0" layoutY="355.0" mnemonicParsing="false" onAction="#leaveGame" text="Leave" />
         <TableView fx:id="leaderboard" layoutX="14.0" layoutY="40.0" opacity="0.0" prefHeight="198.0" prefWidth="432.0">
             <columns>
                 <TableColumn fx:id="colRank" prefWidth="35.0" text="rank" />
@@ -25,38 +22,27 @@
                 <TableColumn fx:id="colPoints" prefWidth="61.0" text="points" />
             </columns>
         </TableView>
-        <StackPane fx:id="answerArea" layoutX="14.0" layoutY="61.0" prefHeight="156.0" prefWidth="235.0" />
-        <Button fx:id="submitButton" layoutX="361.0" layoutY="248.0" mnemonicParsing="false"
-                onAction="#submitAnswerButton" text="Final Answer" />
+        <StackPane fx:id="answerArea" alignment="BASELINE_LEFT" layoutX="14.0" layoutY="61.0" prefHeight="156.0" prefWidth="235.0" />
+        <Button fx:id="submitButton" layoutX="361.0" layoutY="248.0" mnemonicParsing="false" onAction="#submitAnswerButton" text="Final Answer" />
         <Label fx:id="pointsLabel" layoutX="492.0" layoutY="14.0" text="Points: 0" />
         <Label fx:id="questionCount" layoutX="14.0" layoutY="1.0" text="Question: 1" />
-        <ProgressBar fx:id="timeProgress" layoutX="18.0" layoutY="248.0" prefHeight="20.0" prefWidth="321.0"
-                     progress="0.0" />
-        <Button fx:id="removeOneButton" layoutX="29.0" layoutY="304.0" mnemonicParsing="false"
-                onAction="#removeOneAnswer" prefHeight="26.0" prefWidth="103.0" text="Remove One Answer">
+        <ProgressBar fx:id="timeProgress" layoutX="18.0" layoutY="248.0" prefHeight="20.0" prefWidth="321.0" progress="0.0" />
+        <Button fx:id="removeOneButton" layoutX="29.0" layoutY="304.0" mnemonicParsing="false" onAction="#removeOneAnswer" prefHeight="26.0" prefWidth="103.0" text="Remove One Answer">
         <font>
             <Font size="9.0" />
         </font>
         </Button>
-        <Button fx:id="decreaseTimeButton" layoutX="189.0" layoutY="304.0" mnemonicParsing="false"
-                onAction="#decreaseTime" prefHeight="26.0" prefWidth="103.0" text="Decrease Time" />
-        <Button fx:id="doublePointsButton" layoutX="340.0" layoutY="304.0" mnemonicParsing="false"
-                onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points" />
-      <ImageView fx:id="imagePanel" fitHeight="156.0" fitWidth="177.0" layoutX="257.0" layoutY="62.0"
-                 pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="emojiFunny" fitHeight="60.0" fitWidth="60.0" layoutX="38.0" layoutY="332.0"
-                 onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
+        <Button fx:id="decreaseTimeButton" layoutX="189.0" layoutY="304.0" mnemonicParsing="false" onAction="#decreaseTime" prefHeight="26.0" prefWidth="103.0" text="Decrease Time" />
+        <Button fx:id="doublePointsButton" layoutX="340.0" layoutY="304.0" mnemonicParsing="false" onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points" />
+      <ImageView fx:id="imagePanel" fitHeight="156.0" fitWidth="177.0" layoutX="257.0" layoutY="62.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="emojiFunny" fitHeight="60.0" fitWidth="60.0" layoutX="38.0" layoutY="332.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
       </ImageView>
-      <Button fx:id="playAgain" layoutX="241.0" layoutY="288.0" mnemonicParsing="false" onAction="#playAgain"
-              prefHeight="25.0" prefWidth="103.0" text="Play again" />
+      <Button fx:id="playAgain" layoutX="241.0" layoutY="288.0" mnemonicParsing="false" onAction="#playAgain" prefHeight="25.0" prefWidth="103.0" text="Play again" />
       <Label fx:id="status" layoutX="280.0" layoutY="359.0" text="[Status]" />
-      <Button fx:id="backButton" layoutX="521.0" layoutY="355.0" mnemonicParsing="false" onAction="#back"
-              text="Go Back" />
-      <ImageView fx:id="emojiSad" fitHeight="60.0" fitWidth="60.0" layoutX="116.0" layoutY="332.0"
-                 onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
+      <Button fx:id="backButton" layoutX="521.0" layoutY="355.0" mnemonicParsing="false" onAction="#back" text="Go Back" />
+      <ImageView fx:id="emojiSad" fitHeight="60.0" fitWidth="60.0" layoutX="116.0" layoutY="332.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
       </ImageView>
-      <ImageView fx:id="emojiAngry" fitHeight="60.0" fitWidth="60.0" layoutX="194.0" layoutY="332.0"
-                 onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="emojiAngry" fitHeight="60.0" fitWidth="60.0" layoutX="194.0" layoutY="332.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
       </ImageView>
       <TableView fx:id="emojiList" layoutX="446.0" layoutY="39.0" prefHeight="200.0" prefWidth="151.0">
         <columns>
@@ -64,6 +50,6 @@
           <TableColumn fx:id="emojiImage" prefWidth="75.0" sortable="false" text="Emoji" />
         </columns>
       </TableView>
-        <Label fx:id="removedPlayers" layoutX="382.0" layoutY="285.0" text="Player : DISCONNECTED..." opacity="0.0"/>
+        <Label fx:id="removedPlayers" layoutX="382.0" layoutY="285.0" opacity="0.0" text="Player : DISCONNECTED..." />
     </children>
 </AnchorPane>
