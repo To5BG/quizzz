@@ -15,22 +15,23 @@
  */
 package client.scenes;
 
+import client.utils.GameSessionUtils;
+import client.utils.LeaderboardUtils;
+import client.utils.QuestionUtils;
+import client.utils.WebSocketsUtils;
 import com.google.inject.Inject;
-import client.utils.ServerUtils;
-import commons.*;
+import commons.Emoji;
+import commons.GameSession;
+import commons.Player;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.concurrent.Task;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
@@ -42,51 +43,40 @@ import java.util.*;
 
 public class MultiplayerCtrl extends GameCtrl {
 
-    @FXML
-    private TableView<Emoji> emojiList;
-
-    @FXML
-    private TableColumn<Emoji, String> emojiUsername;
-
-    @FXML
-    private TableColumn<Emoji, ImageView> emojiImage;
-
-    @FXML
-    private ImageView emojiFunny;
-
-    @FXML
-    private ImageView emojiSad;
-
-    @FXML
-    private ImageView emojiAngry;
-
-    @FXML
-    private Button backButton;
-
-    @FXML
-    private Button leaveButton;
-
-    @FXML
-    private Button playAgain;
-
-    @FXML
-    private Label status;
-
-    @FXML
-    private Label removedPlayers;
-
-
-    private int lastDisconnectIndex;
-    private Timer disconnectTimer;
     private final ObservableList<Emoji> sessionEmojis;
     private final List<Image> emojiImages;
+    @FXML
+    private TableView<Emoji> emojiList;
+    @FXML
+    private TableColumn<Emoji, String> emojiUsername;
+    @FXML
+    private TableColumn<Emoji, ImageView> emojiImage;
+    @FXML
+    private ImageView emojiFunny;
+    @FXML
+    private ImageView emojiSad;
+    @FXML
+    private ImageView emojiAngry;
+    @FXML
+    private Button backButton;
+    @FXML
+    private Button leaveButton;
+    @FXML
+    private Button playAgain;
+    @FXML
+    private Label status;
+    @FXML
+    private Label removedPlayers;
+    private int lastDisconnectIndex;
+    private Timer disconnectTimer;
     private StompSession.Subscription channel;
     private boolean playingAgain;
     private int waitingSkip = 0;
 
     @Inject
-    public MultiplayerCtrl(ServerUtils server, MainCtrl mainCtrl) {
-        super(server, mainCtrl);
+    public MultiplayerCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
+                           LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
+        super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
         sessionEmojis = FXCollections.observableArrayList();
         emojiImages = new ArrayList<Image>();
         String[] emojiFileNames = {"funny", "sad", "angry"};
@@ -156,7 +146,7 @@ public class MultiplayerCtrl extends GameCtrl {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    List<Player> allRemoved = server.getRemovedPlayers(sessionId);
+                    List<Player> allRemoved = gameSessionUtils.getRemovedPlayers(sessionId);
                     List<Player> newRemoved = new ArrayList<Player>();
                     for (int i = lastDisconnectIndex + 1; i < allRemoved.size(); i++) {
                         newRemoved.add(allRemoved.get(i));
@@ -170,6 +160,7 @@ public class MultiplayerCtrl extends GameCtrl {
 
     /**
      * Displays the player(s) who got disconnected
+     *
      * @param players Players who got disconnected
      */
     public void disconnectedText(List<Player> players) {
@@ -178,7 +169,7 @@ public class MultiplayerCtrl extends GameCtrl {
             return;
         }
         String req = "";
-        for (int i = 0; i < players.size() ; i++) {
+        for (int i = 0; i < players.size(); i++) {
             req += players.get(i).username + ", ";
         }
         req = req.substring(0, req.length() - 2);
@@ -199,25 +190,26 @@ public class MultiplayerCtrl extends GameCtrl {
                     @Override
                     public void run() {
                         try {
-                            if (server.getSession(sessionId).sessionStatus
+                            if (gameSessionUtils.getSession(sessionId).sessionStatus
                                     == GameSession.SessionStatus.PAUSED) {
                                 startEvaluation(bestMultiScore);
                                 cancel();
                             }
-                            if (server.getSession(sessionId).sessionStatus
+                            if (gameSessionUtils.getSession(sessionId).sessionStatus
                                     == GameSession.SessionStatus.PLAY_AGAIN) {
-                                if (server.getSession(sessionId).players.size() ==
-                                        server.getSession(sessionId).playersReady) {
+                                if (gameSessionUtils.getSession(sessionId).players.size() ==
+                                        gameSessionUtils.getSession(sessionId).playersReady) {
                                     //Speed the timer up
                                     waitingSkip = 4;
                                 } else {
                                     //Slow the timer down
                                     waitingSkip = 0;
                                 }
-                                status.setText(server.getSession(sessionId).playersReady + " / " +
-                                        server.getSession(sessionId).players.size() + " players want to play again");
+                                status.setText(gameSessionUtils.getSession(sessionId).playersReady + " / " +
+                                        gameSessionUtils.getSession(sessionId).players.size()
+                                        + " players want to play again");
                             }
-                            if (server.getSession(sessionId).sessionStatus
+                            if (gameSessionUtils.getSession(sessionId).sessionStatus
                                     == GameSession.SessionStatus.TRANSFERRING) {
                                 cancel();
                             }
@@ -245,10 +237,10 @@ public class MultiplayerCtrl extends GameCtrl {
         if (!initiatedByTimer && this.evaluation == null) return;
 
         //enable jokers that can be used after submitting an answer
-        if(decreaseTimeJoker) {
+        if (decreaseTimeJoker) {
             disableButton(decreaseTimeButton, false);
         }
-        if(doublePointsJoker) {
+        if (doublePointsJoker) {
             disableButton(doublePointsButton, false);
         }
 
@@ -257,7 +249,7 @@ public class MultiplayerCtrl extends GameCtrl {
 
     @Override
     public void shutdown() {
-        if (server.getSession(sessionId).sessionStatus == GameSession.SessionStatus.PLAY_AGAIN) {
+        if (gameSessionUtils.getSession(sessionId).sessionStatus == GameSession.SessionStatus.PLAY_AGAIN) {
             if (playAgain.getText().equals("Don't play again")) playAgain();
         }
         channel.unsubscribe();
@@ -273,7 +265,7 @@ public class MultiplayerCtrl extends GameCtrl {
         sessionEmojis.clear();
         emojiList.setItems(sessionEmojis);
 
-        channel = this.server.registerForEmojiUpdates(emoji -> {
+        channel = this.webSocketsUtils.registerForEmojiUpdates(emoji -> {
             System.out.println("Emoji received for the current room: " + emoji);
             sessionEmojis.add(emoji);
             Platform.runLater(() -> emojiList.scrollTo(sessionEmojis.size() - 1));
@@ -282,7 +274,7 @@ public class MultiplayerCtrl extends GameCtrl {
 
     @Override
     public void updateScore(long playerId, int points, boolean isBestScore) {
-        server.updateMultiScore(playerId, points, isBestScore);
+        leaderboardUtils.updateMultiScore(playerId, points, isBestScore);
     }
 
     /**
@@ -320,13 +312,13 @@ public class MultiplayerCtrl extends GameCtrl {
             case "Play again" -> {
                 playAgain.setText("Don't play again");
                 questionCount.setText("Waiting for game to start...");
-                server.toggleReady(sessionId, true);
+                gameSessionUtils.toggleReady(sessionId, true);
                 setPlayingAgain(true);
             }
             case "Don't play again" -> {
                 playAgain.setText("Play again");
                 questionCount.setText("End of game! Play again or go back to main.");
-                server.toggleReady(sessionId, false);
+                gameSessionUtils.toggleReady(sessionId, false);
                 setPlayingAgain(false);
             }
         }
@@ -365,7 +357,8 @@ public class MultiplayerCtrl extends GameCtrl {
                     }
                 }
                 updateProgress(0, 1);
-                server.updateStatus(server.getSession(sessionId), GameSession.SessionStatus.TRANSFERRING);
+                gameSessionUtils.updateStatus(gameSessionUtils.getSession(sessionId),
+                        GameSession.SessionStatus.TRANSFERRING);
                 Platform.runLater(() -> {
                     if (isPlayingAgain()) {
                         startGame();
@@ -380,8 +373,8 @@ public class MultiplayerCtrl extends GameCtrl {
         this.timerThread = new Thread(roundTimer);
         this.timerThread.start();
 
-        GameSession session = server.toggleReady(sessionId, false);
-        server.updateStatus(session, GameSession.SessionStatus.PLAY_AGAIN);
+        GameSession session = gameSessionUtils.toggleReady(sessionId, false);
+        gameSessionUtils.updateStatus(session, GameSession.SessionStatus.PLAY_AGAIN);
         refresh();
     }
 
@@ -394,30 +387,20 @@ public class MultiplayerCtrl extends GameCtrl {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    if (server.getPlayers(sessionId).size() >= 2 && isPlayingAgain()) {
-                        GameSession session = server.toggleReady(sessionId, false);
+                    if (gameSessionUtils.getPlayers(sessionId).size() >= 2 && isPlayingAgain()) {
+                        GameSession session = gameSessionUtils.toggleReady(sessionId, false);
                         if (session.playersReady == 0) {
-                            server.updateStatus(session, GameSession.SessionStatus.ONGOING);
-                            server.resetQuestionCounter(sessionId);
+                            gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
+                            gameSessionUtils.resetQuestionCounter(sessionId);
                         }
                         reset();
                         loadQuestion();
-                    }
-                    else {
+                    } else {
                         leaveGame();
                     }
                 });
             }
         }, 1000);
-    }
-
-    /**
-     * Setter for playingAgain field
-     *
-     * @param playingAgain parameter that shows if a player wants to play again.
-     */
-    public void setPlayingAgain(boolean playingAgain) {
-        this.playingAgain = playingAgain;
     }
 
     /**
@@ -427,5 +410,14 @@ public class MultiplayerCtrl extends GameCtrl {
      */
     public boolean isPlayingAgain() {
         return playingAgain;
+    }
+
+    /**
+     * Setter for playingAgain field
+     *
+     * @param playingAgain parameter that shows if a player wants to play again.
+     */
+    public void setPlayingAgain(boolean playingAgain) {
+        this.playingAgain = playingAgain;
     }
 }
