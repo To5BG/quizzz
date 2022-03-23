@@ -88,7 +88,7 @@ public class SplashCtrl {
     public boolean isUsernameValid(String username) {
         if (username.isBlank()) return false;
         for (int i = 0; i < username.length(); i++) {
-            if ((Character.isLetterOrDigit(username.charAt(i)) == false)) {
+            if (!Character.isLetterOrDigit(username.charAt(i))) {
                 return false;
             }
         }
@@ -96,53 +96,39 @@ public class SplashCtrl {
     }
 
     /**
-     * Checks active sessions in the DB if another Player entry with the same username is present.
-     *
-     * @param username username of the player to be checked
-     * @return true if another Player with the same username exists
+     * Generate the player object corresponding to the username
+     * @param username The username of the player
+     * @return Optional of Player that is set when the username can be used
      */
-    public boolean isDuplInActive(String username) {
-        for (GameSession gs : gameSessionUtils.getSessions()) {
-            Optional<Player> existing = gs
-                    .getPlayers()
-                    .stream().filter(p -> p.username.equals(username))
-                    .findFirst();
+    private Optional<Player> generatePlayer(String username) {
+        Player result = null;
+        if (!isUsernameValid(username)) {
+            invalidUserName.setOpacity(1);
+            duplUsername.setOpacity(0);
+            usernameField.clear();
+        } else if (gameSessionUtils.isDuplInActive(username)) {
+            invalidUserName.setOpacity(0);
+            duplUsername.setOpacity(1);
+            usernameField.clear();
+        } else {
+            try {
+                saveUsername(usernameField.getText());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            invalidUserName.setOpacity(0);
+            duplUsername.setOpacity(0);
+            result = leaderboardUtils.getPlayerByUsername(username);
 
-            if (existing.isPresent()) return true;
-        }
-        return false;
-    }
-
-    /**
-     * Checks the player repository if another Player entry with the same username is present.
-     *
-     * @param username username of the player to be checked
-     * @return true if another Player with the same username exists
-     */
-    public boolean isDuplInRepository(String username) {
-        for (Player p : leaderboardUtils.getAllLeaderBoardPlayers()) {
-            if (p.username.equals(username)) {
-                return true;
+            if (result != null) {
+                result.setCurrentPoints(0);
+            } else {
+                result = new Player(username, 0);
             }
         }
-        return false;
-    }
 
-    /**
-     * Gets the player with the same username (if exists) from the player repository
-     *
-     * @param username username of the player to be obtained
-     * @return the player if it exists, null otherwise
-     */
-    public Player getDuplPlayer(String username) {
-        for (Player p : leaderboardUtils.getAllLeaderBoardPlayers()) {
-            if (p.username.equals(username)) {
-                return p;
-            }
-        }
-        return null;
+        return Optional.ofNullable(result);
     }
-
 
     /**
      * Initialize setup for main controller's showMultiplayer() method. Creates a new session if no free session is
@@ -152,37 +138,20 @@ public class SplashCtrl {
      */
     public void showWaitingArea() {
         String newUserName = usernameField.getText();
+        Optional<Player> playerResult = generatePlayer(newUserName);
+        if (playerResult.isEmpty()) return;
 
-        if (isDuplInActive(newUserName)) {
-            invalidUserName.setOpacity(0);
-            duplUsername.setOpacity(1);
-            usernameField.clear();
-        } else if (!isUsernameValid(newUserName)) {
-            duplUsername.setOpacity(0);
-            invalidUserName.setOpacity(1);
-            usernameField.clear();
-        } else {
-            duplUsername.setOpacity(0);
-            invalidUserName.setOpacity(0);
+        gameSessionUtils.addPlayer(MainCtrl.WAITING_AREA_ID, playerResult.get());
+        long playerId = playerResult.get().id;
 
-            if (isDuplInRepository(newUserName)) {
-                Player p = getDuplPlayer(newUserName);
-                p.setCurrentPoints(0);
-                gameSessionUtils.addPlayer(1L, p);
-            } else {
-                gameSessionUtils.addPlayer(1L /*waiting area id*/, new Player(newUserName, 0));
-            }
-            var playerId = gameSessionUtils
-                    .getPlayers(1L)
+        if (playerId == 0L) {
+            playerId = gameSessionUtils
+                    .getPlayers(MainCtrl.WAITING_AREA_ID)
                     .stream().filter(p -> p.username.equals(newUserName))
                     .findFirst().get().id;
-            try {
-                saveUsername(usernameField.getText());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            mainCtrl.showWaitingArea(playerId);
         }
+
+        mainCtrl.showWaitingArea(playerId);
     }
 
     /**
@@ -192,38 +161,21 @@ public class SplashCtrl {
      */
     public void showSinglePlayer() {
         String newUserName = usernameField.getText();
+        Optional<Player> playerResult = generatePlayer(newUserName);
+        if (playerResult.isEmpty()) return;
 
-        if (!isUsernameValid(newUserName)) {
-            invalidUserName.setOpacity(1);
-            duplUsername.setOpacity(0);
-            usernameField.clear();
-        } else if (isDuplInActive(newUserName)) {
-            invalidUserName.setOpacity(0);
-            duplUsername.setOpacity(1);
-            usernameField.clear();
-        } else {
-            try {
-                saveUsername(usernameField.getText());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            invalidUserName.setOpacity(0);
-            duplUsername.setOpacity(0);
-            if (isDuplInRepository(newUserName)) {
-                getDuplPlayer(newUserName).setCurrentPoints(0);
-            }
-            GameSession newSession = new GameSession(GameSession.SessionType.SINGLEPLAYER);
-            newSession = gameSessionUtils.addSession(newSession);
-            gameSessionUtils.addPlayer(newSession.id, isDuplInRepository(newUserName) ?
-                    getDuplPlayer(newUserName) : new Player(newUserName, 0));
+        GameSession newSession = new GameSession(GameSession.SessionType.SINGLEPLAYER);
+        newSession = gameSessionUtils.addSession(newSession);
+        gameSessionUtils.addPlayer(newSession.id, playerResult.get());
 
-            var playerId = gameSessionUtils
-                    .getPlayers(newSession.id)
-                    .stream().filter(p -> p.username.equals(newUserName))
-                    .findFirst().get().id;
+        long playerId = playerResult.get().id;
 
-            mainCtrl.showSinglePlayer(newSession.id, playerId);
+        if (playerId == 0L) {
+            playerId = gameSessionUtils
+                    .getPlayers(newSession.id).get(0).id;
         }
+
+        mainCtrl.showSinglePlayer(newSession.id, playerId);
     }
 
     /**

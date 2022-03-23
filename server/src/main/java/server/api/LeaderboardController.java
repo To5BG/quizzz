@@ -1,6 +1,7 @@
 package server.api;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import commons.Player;
@@ -75,6 +76,17 @@ public class LeaderboardController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(repo.findById(id).get());
+    }
+
+    /**
+     * Get a player object with the specified username
+     * @param username The username of the player to check
+     * @return The player object if the username is found, otherwise null
+     */
+    @GetMapping("/getByUsername/{username}")
+    public ResponseEntity<Player> getPlayerByUsername(@PathVariable("username") String username) {
+        Optional<Player> result = repo.findAll().stream().filter(p -> p.username.equals(username)).findFirst();
+        return ResponseEntity.ok(result.orElse(null));
     }
 
     /**

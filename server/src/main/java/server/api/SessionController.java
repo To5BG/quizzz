@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -357,5 +358,23 @@ public class SessionController {
         session.resetQuestionCounter();
         repo.save(session);
         return ResponseEntity.ok(session);
+    }
+
+    /**
+     * Check if the given username is active in a session
+     * @param username The username to check
+     * @return True if the username is used in an active session, otherwise false
+     */
+    @GetMapping("/checkUsername/{username}")
+    public Boolean isUsernameActive(@PathVariable("username") String username) {
+        for (GameSession gs : getAllSessions()) {
+            Optional<Player> existing = gs
+                    .getPlayers()
+                    .stream().filter(p -> p.username.equals(username))
+                    .findFirst();
+
+            if (existing.isPresent()) return true;
+        }
+        return false;
     }
 }

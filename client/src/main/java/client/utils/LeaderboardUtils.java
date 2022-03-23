@@ -116,4 +116,17 @@ public class LeaderboardUtils {
                 .put(Entity.entity(points, APPLICATION_JSON), Player.class);
     }
 
+    /**
+     * Get the player object with the specified username
+     * @param username The username of the player
+     * @return The player object is the username if found, otherwise false
+     */
+    public Player getPlayerByUsername(String username) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(SERVER).path("api/leaderboard/getByUsername/" + username)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Player>() {
+                });
+    }
 }
