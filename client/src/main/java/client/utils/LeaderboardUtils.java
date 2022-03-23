@@ -12,11 +12,11 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class LeaderboardUtils {
 
-    private static final String SERVER = "http://localhost:8080/";
+    public String serverConnection = "http://localhost:8080/";
 
     public List<Player> getAllLeaderBoardPlayers() {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/")
+                .target(serverConnection).path("api/leaderboard/")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Player>>() {
@@ -31,7 +31,7 @@ public class LeaderboardUtils {
      */
     public List<Player> getPlayerSingleScore() {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/single")
+                .target(serverConnection).path("api/leaderboard/single")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Player>>() {
@@ -46,7 +46,7 @@ public class LeaderboardUtils {
      */
     public List<Player> getPlayerMultiScore() {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/multi")
+                .target(serverConnection).path("api/leaderboard/multi")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Player>>() {
@@ -61,7 +61,7 @@ public class LeaderboardUtils {
      */
     public Player getPlayerByIdInLeaderboard(long playerId) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/" + playerId)
+                .target(serverConnection).path("api/leaderboard/" + playerId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<Player>() {
@@ -76,7 +76,7 @@ public class LeaderboardUtils {
      */
     public Player addPlayerForcibly(Player player) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard")
+                .target(serverConnection).path("api/leaderboard")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(player, APPLICATION_JSON), Player.class);
@@ -92,7 +92,7 @@ public class LeaderboardUtils {
      */
     public Player updateSingleScore(long playerId, int points, boolean isBestScore) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/" + playerId +
+                .target(serverConnection).path("api/leaderboard/" + playerId +
                         ((isBestScore) ? "/best" : "/") + "singlescore")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
@@ -109,7 +109,7 @@ public class LeaderboardUtils {
      */
     public Player updateMultiScore(long playerId, int points, boolean isBestScore) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/" + playerId +
+                .target(serverConnection).path("api/leaderboard/" + playerId +
                         ((isBestScore) ? "/best" : "/") + "multiscore")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)

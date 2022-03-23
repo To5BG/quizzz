@@ -14,7 +14,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class QuestionUtils {
 
-    private static final String SERVER = "http://localhost:8080/";
+    public String serverConnection = "http://localhost:8080/";
 
     /**
      * Fetches a question from the server database
@@ -24,7 +24,7 @@ public class QuestionUtils {
      */
     public Question fetchOneQuestion(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/questions/" + sessionId)
+                .target(serverConnection).path("api/questions/" + sessionId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<Question>() {
@@ -40,7 +40,7 @@ public class QuestionUtils {
      */
     public Evaluation submitAnswer(long sessionId, Answer answer) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/questions/" + sessionId)
+                .target(serverConnection).path("api/questions/" + sessionId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(answer, APPLICATION_JSON), Evaluation.class);
@@ -56,7 +56,7 @@ public class QuestionUtils {
      */
     public Answer addPlayerAnswer(long sessionId, long playerId, Answer answer) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
+                .target(serverConnection).path("api/sessions/" + sessionId + "/players/" + playerId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(answer, APPLICATION_JSON), Answer.class);
@@ -71,7 +71,7 @@ public class QuestionUtils {
      */
     public Answer getPlayerAnswer(long sessionId, long playerId) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
+                .target(serverConnection).path("api/sessions/" + sessionId + "/players/" + playerId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<Answer>() {
@@ -86,7 +86,7 @@ public class QuestionUtils {
      */
     public List<Integer> getCorrectAnswers(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/questions/answers/" + sessionId)
+                .target(serverConnection).path("api/questions/answers/" + sessionId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Integer>>() {
