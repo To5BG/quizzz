@@ -225,6 +225,7 @@ public abstract class GameCtrl implements Initializable {
         for (String opt : q.answerOptions) {
             RadioButton choice = new RadioButton(opt);
             choice.setWrapText(true);
+            choice.lineSpacingProperty();
             choice.setTranslateY(yPosition);
             yPosition += 30;
             multiChoiceAnswers.add(choice);
