@@ -14,7 +14,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class QuestionUtils {
 
-    public String serverConnection = "http://localhost:8080/";
+    public static String serverConnection = "http://localhost:8080/";
 
     /**
      * Fetches a question from the server database

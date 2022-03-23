@@ -22,10 +22,10 @@ public class WebSocketsUtils {
      * Public method for accessing the connect method.
      * Creates a new StompSession associated to the websocket.
      *
-     * @param destination
+     * @param destination URL to connect to
      */
     public void updateConnection(String destination) {
-        connect(destination.replaceFirst("http", "ws").concat("/websocket"));
+        websocketServer = connect(destination.replaceFirst("http", "ws").concat("/websocket"));
     }
 
     /**

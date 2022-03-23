@@ -13,7 +13,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class GameSessionUtils {
 
-    public String serverConnection = "http://localhost:8080/";
+    public static String serverConnection = "http://localhost:8080/";
 
     /**
      * Retrieves a game session from the DB.

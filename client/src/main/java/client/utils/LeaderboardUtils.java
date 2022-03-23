@@ -12,7 +12,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class LeaderboardUtils {
 
-    public String serverConnection = "http://localhost:8080/";
+    public static String serverConnection = "http://localhost:8080/";
 
     public List<Player> getAllLeaderBoardPlayers() {
         return ClientBuilder.newClient(new ClientConfig())

@@ -127,6 +127,7 @@ public class MainCtrl {
                         try {
                             if (!waitingAreaCtrl.refresh()) cancel();
                         } catch (Exception e) {
+                            e.printStackTrace();
                             cancel();
                         }
                     }
