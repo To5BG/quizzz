@@ -487,7 +487,8 @@ public abstract class GameCtrl implements Initializable {
                 try {
                     givenAnswer = Integer.parseInt(estimationAnswer.getText());
                 } catch (NumberFormatException ex) {
-                    givenAnswer = 0;
+                    temppoints = 0;
+                    break;
                 }
                 // diff : magnitude of difference between the entered answer and the actual answer
                 double diff = Math.abs(givenAnswer - actualAnswer);
