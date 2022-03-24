@@ -180,12 +180,12 @@ function postJsonFile(event) {
 async function editActivity(event) {
     event.preventDefault();
 
-    const id = document.querySelector("#editId");
+    const id = document.querySelector("#editId").value;
     const data = new FormData(event.target);
     const values = Object.fromEntries(data.entries());
     let alertMsg = document.querySelector("#alertMsg");
 
-    updateEditedActivity(values, id)
+    updateEditedActivity(id, JSON.stringify(values))
         .then(response => {
             if (response.status === 400) {
                 console.log("Bad request!");
@@ -204,14 +204,14 @@ async function editActivity(event) {
         });
 }
 
-async function updateEditedActivity(activityData, id) {
+async function updateEditedActivity(id, activityDetails) {
     let url = basePath + "/" + id;
     return await fetch(url, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: activityData
+        body: activityDetails
     });
 }
 

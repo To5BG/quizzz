@@ -45,13 +45,21 @@ public class ActivityController {
             return true;
         }
 
+        return !(activity.title.matches("([a-zA-Z0-9-]+ ){2,}\\w(.*)") &&
+                activity.consumption_in_wh.matches("[0-9]+"));
+    }
+
+    /**
+     * Check if another activity with the same title exists in the repository
+     *
+     * @param activity - Activity to be checked
+     * @return true iff another activity with the same title exists in the repository
+     */
+    private boolean duplicateTitle(Activity activity) {
         Activity probe = new Activity();
         probe.title = activity.title;
         Example<Activity> exampleActivity = Example.of(probe, ExampleMatcher.matchingAny());
-        if (repo.exists(exampleActivity)) return true;
-
-        return !(activity.title.matches("([a-zA-Z0-9-]+ ){2,}\\w(.*)") &&
-                activity.consumption_in_wh.matches("[0-9]+"));
+        return (repo.exists(exampleActivity));
     }
 
     /**
@@ -72,7 +80,7 @@ public class ActivityController {
      */
     @PostMapping(path = {"", "/"})
     public ResponseEntity<Activity> addActivity(@RequestBody Activity activity) {
-        if (invalidActivity(activity)) {
+        if (invalidActivity(activity) || duplicateTitle(activity)) {
             return ResponseEntity.badRequest().build();
         }
         Activity saved = repo.save(activity);
