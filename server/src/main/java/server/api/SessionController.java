@@ -98,7 +98,6 @@ public class SessionController {
             return endSession(session);
         } else if (session.questionCounter == 0) {
             session.playersReady = 0;
-            session.setSessionStatus(GameSession.SessionStatus.ONGOING);
             return updateQuestion(session);
         } else {
             System.out.println("Server paused session");
@@ -229,7 +228,6 @@ public class SessionController {
         GameSession newSession = new GameSession(GameSession.SessionType.MULTIPLAYER, List.copyOf(waitingArea.players));
         waitingArea.players.clear();
         advanceRounds(newSession);
-        newSession.setSessionStatus(GameSession.SessionStatus.STARTED);
         repo.save(waitingArea);
         repo.save(newSession);
 
@@ -251,8 +249,6 @@ public class SessionController {
         session.setPlayerReady();
         if (session.sessionType != GameSession.SessionType.WAITING_AREA &&
                 session.playersReady == session.players.size()) {
-            System.out.println("All players ready");
-            System.out.println(session);
             advanceRounds(session);
         } else if (session.sessionType == GameSession.SessionType.WAITING_AREA &&
                 session.playersReady == session.players.size()) {
@@ -311,7 +307,6 @@ public class SessionController {
                 session.sessionType != GameSession.SessionType.WAITING_AREA &&
                 session.questionCounter == 0) {
             advanceRounds(session);
-            session.setSessionStatus(GameSession.SessionStatus.TRANSFERRING);
         }
         repo.save(session);
         return ResponseEntity.ok(session);
