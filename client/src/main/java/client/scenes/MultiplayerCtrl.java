@@ -373,8 +373,7 @@ public class MultiplayerCtrl extends GameCtrl {
         this.timerThread = new Thread(roundTimer);
         this.timerThread.start();
 
-        GameSession session = gameSessionUtils.toggleReady(sessionId, false);
-//        gameSessionUtils.updateStatus(session, GameSession.SessionStatus.PLAY_AGAIN);
+        gameSessionUtils.toggleReady(sessionId, false);
         refresh();
     }
 
@@ -391,7 +390,6 @@ public class MultiplayerCtrl extends GameCtrl {
                         GameSession session = gameSessionUtils.toggleReady(sessionId, false);
                         if (session.playersReady == 0) {
                             gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
-//                            gameSessionUtils.resetQuestionCounter(sessionId);
                         }
                         reset();
                         loadQuestion();

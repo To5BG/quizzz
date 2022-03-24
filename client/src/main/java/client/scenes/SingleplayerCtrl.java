@@ -4,7 +4,6 @@ import client.utils.GameSessionUtils;
 import client.utils.LeaderboardUtils;
 import client.utils.QuestionUtils;
 import client.utils.WebSocketsUtils;
-import commons.GameSession;
 import commons.Player;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;

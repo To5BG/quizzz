@@ -536,11 +536,6 @@ public abstract class GameCtrl implements Initializable {
         this.evaluation = questionUtils.submitAnswer(sessionId, playerId, ans);
 
         gameSessionUtils.toggleReady(sessionId, true);
-
-//        var session = gameSessionUtils.getSession(sessionId);
-//        if (session.playersReady == session.players.size()) {
-//            gameSessionUtils.updateStatus(session, GameSession.SessionStatus.PAUSED);
-//        }
     }
 
     /**
@@ -589,10 +584,7 @@ public abstract class GameCtrl implements Initializable {
                         displayMidGameScreen();
                     } else {
                         try {
-                            GameSession session = gameSessionUtils.toggleReady(sessionId, false);
-//                            if (session.playersReady == 0) {
-//                                gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
-//                            }
+                            gameSessionUtils.toggleReady(sessionId, false);
                             imagePanel.setImage(null);
                             loadQuestion();
                         } catch (BadRequestException e) {
@@ -665,10 +657,8 @@ public abstract class GameCtrl implements Initializable {
         this.timerThread = new Thread(roundTimer);
         this.timerThread.start();
 
-        GameSession session = gameSessionUtils.toggleReady(sessionId, false);
-//        if (session.playersReady == 0) {
-//            gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
-//        }
+        gameSessionUtils.toggleReady(sessionId, false);
+
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {

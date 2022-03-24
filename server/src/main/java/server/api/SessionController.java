@@ -40,18 +40,26 @@ public class SessionController {
         if (!controllerConfig.equals("test")) resetDatabase(controllerConfig.equals("all"));
     }
 
+    /**
+     * Update the current question of a session
+     * @param session The session to update the question of
+     * @return The session with the updated question
+     */
     public GameSession updateQuestion(GameSession session) {
         session.difficultyFactor = session.questionCounter/4 + 1;
         session.questionCounter++;
         Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion(session.difficultyFactor, activityCtrl);
         session.currentQuestion = res.getKey();
-//        System.out.println("Question updated to:");
-//        System.out.println(session.currentQuestion);
         session.expectedAnswers.clear();
         session.expectedAnswers.addAll(res.getValue());
         return updateSession(session);
     }
 
+    /**
+     * End the specified session
+     * @param session The session to end
+     * @return The ended session
+     */
     public GameSession endSession(GameSession session) {
         session.playersReady = 0;
         if (session.sessionType == GameSession.SessionType.SINGLEPLAYER) {
@@ -212,6 +220,10 @@ public class SessionController {
         return ResponseEntity.ok(session);
     }
 
+    /**
+     * Start a new multiplayer game with the players of the waiting area
+     * @param waitingArea The waiting area
+     */
     public void startNewMultiplayerSession(GameSession waitingArea) {
         // Create new session and transfer all players
         GameSession newSession = new GameSession(GameSession.SessionType.MULTIPLAYER, List.copyOf(waitingArea.players));
