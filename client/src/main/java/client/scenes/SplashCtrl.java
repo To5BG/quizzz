@@ -53,31 +53,6 @@ public class SplashCtrl {
         this.mainCtrl = mainCtrl;
     }
 
-    /*
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        colFirstName.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().person.firstName));
-        colLastName.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().person.lastName));
-        colQuote.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().quote));
-    }
-    */
-
-    /**
-     * Initialize setup for main controller's showMultiplayer() method. Creates a new session if no free session is
-     * available and adds the player to the session.
-     */
-    public void enterMultiplayerGame() {
-        GameSession sessionToJoin = gameSessionUtils.getAvailableSession();
-        String newUserName = usernameField.getText();
-
-        gameSessionUtils.addPlayer(sessionToJoin.id, new Player(newUserName, 0));
-        var playerId = gameSessionUtils
-                .getPlayers(sessionToJoin.id)
-                .stream().filter(p -> p.username.equals(newUserName))
-                .findFirst().get().id;
-        mainCtrl.showMultiplayer(sessionToJoin.id, playerId);
-    }
-
     /**
      * Check whether a given username is valid or not. Valid usernames are non-empty and contain only letters and/or
      * numbers
@@ -111,11 +86,8 @@ public class SplashCtrl {
             duplUsername.setOpacity(1);
             usernameField.clear();
         } else {
-            try {
-                saveUsername(usernameField.getText());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            saveUsername(usernameField.getText());
+
             invalidUserName.setOpacity(0);
             duplUsername.setOpacity(0);
             result = leaderboardUtils.getPlayerByUsername(username);
@@ -183,7 +155,7 @@ public class SplashCtrl {
      *
      * @param username - String to be saved inside the file
      */
-    private void saveUsername(String username) throws IOException {
+    private void saveUsername(String username) {
         try {
             File file = new File("username.txt");
             file.createNewFile();
@@ -191,7 +163,7 @@ public class SplashCtrl {
             writer.write(username);
             writer.close();
         } catch (IOException e) {
-            throw new IOException();
+            e.printStackTrace();
         }
     }
 

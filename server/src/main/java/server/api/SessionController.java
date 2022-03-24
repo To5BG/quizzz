@@ -402,49 +402,6 @@ public class SessionController {
     }
 
     /**
-     * Fetches the player's answer in parsed form.
-     *
-     * @param   sessionId The current session.
-     * @param   playerId The player who answered.
-     * @return  The player's answer in answer form.
-     */
-    @GetMapping("/{id}/players/{playerId}")
-    public ResponseEntity<Answer> getPlayerAnswer(@PathVariable("id") long sessionId,
-                                                  @PathVariable("playerId") long playerId) {
-
-        if (isInvalid(sessionId, repo)) return ResponseEntity.badRequest().build();
-        GameSession session = repo.findById(sessionId).get();
-
-        Player player = session.players.stream().filter(p -> p.id == playerId).findFirst().orElse(null);
-        if (player == null) return ResponseEntity.badRequest().build();
-
-        return ResponseEntity.ok(player.parsedAnswer());
-    }
-
-    /**
-     * Converts the player's answer to a string and stores it with the player.
-     *
-     * @param id        The current session.
-     * @param playerId  The player who answered.
-     * @param ans       The player's answer.
-     * @return          The player's answer.
-     */
-    @PostMapping("/{id}/players/{playerId}")
-    public ResponseEntity<Answer> setAnswer(@PathVariable("id") long id, @PathVariable long playerId,
-                                            @RequestBody Answer ans) {
-
-        if (isInvalid(id, repo)) return ResponseEntity.badRequest().build();
-        GameSession session = repo.findById(id).get();
-
-        Player player = session.players.stream().filter(p -> p.id == playerId).findFirst().orElse(null);
-        if (player == null) return ResponseEntity.badRequest().build();
-
-        player.setAnswer(ans);
-        repo.save(session);
-        return ResponseEntity.ok(ans);
-    }
-
-    /**
      * Sets the questionCounter of a session to zero.
      *
      * @param sessionId The current session.

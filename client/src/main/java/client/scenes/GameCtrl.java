@@ -86,10 +86,7 @@ public abstract class GameCtrl implements Initializable {
     protected long playerId;
     protected Question currentQuestion;
     protected int points = 0;
-    protected int bestSingleScore = 0;
-    protected int bestMultiScore = 0;
     protected int rounds = 0;
-    protected double difficultyFactor = 1;
     protected double timeFactor;
     protected Thread timerThread;
     protected Evaluation evaluation;
@@ -138,39 +135,19 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Setter for bestScore in single mode.
-     */
-    public void setBestSingleScore() {
-        this.bestSingleScore = leaderboardUtils.getPlayerByIdInLeaderboard(playerId).bestSingleScore;
-    }
-
-    /**
-     * Setter for bestScore in multiplayer mode.
-     */
-    public void setBestMultiScore() {
-        this.bestMultiScore = leaderboardUtils.getPlayerByIdInLeaderboard(playerId).bestMultiScore;
-    }
-
-    /**
      * Load general question information
      *
      * @param q the question to be rendered
      */
     protected void renderGeneralInformation(Question q) {
         this.questionPrompt.setText(q.prompt);
-        switch (q.type) {
-            case RANGE_GUESS:
-            case EQUIVALENCE:
-            case MULTIPLE_CHOICE:
-                try {
-                    Image image = new Image("assets/" + q.imagePath);
-                    imagePanel.setImage(image);
-                    break;
-                } catch (Exception e) {
-                    break;
-                }
-        }
+        if (q.type != Question.QuestionType.RANGE_GUESS && q.type != Question.QuestionType.EQUIVALENCE &&
+            q.type != Question.QuestionType.MULTIPLE_CHOICE) return;
 
+        try {
+            Image image = new Image("assets/" + q.imagePath);
+            imagePanel.setImage(image);
+        } catch (Exception ignore) { }
     }
 
     /**
@@ -191,9 +168,7 @@ public abstract class GameCtrl implements Initializable {
             case COMPARISON:
             case EQUIVALENCE:
                 renderMultipleChoiceQuestion(q);
-                if (removeOneJoker) {
-                    disableButton(removeOneButton, false);
-                }
+                disableButton(removeOneButton, !removeOneJoker);
                 break;
             case RANGE_GUESS:
                 renderEstimationQuestion();
@@ -235,31 +210,19 @@ public abstract class GameCtrl implements Initializable {
      */
     public void imageHover() {
         Question q = this.currentQuestion;
-        switch (this.currentQuestion.type) {
-            case COMPARISON:
-                try {
-                    for (int i = 0; i < multiChoiceAnswers.size(); i++) {
-                        Image image = new Image("assets/" + q.activityPath.get(i));
-                        multiChoiceAnswers.get(i).setOnMouseEntered(e ->
-                                imagePanel.setImage(image));
-                    }
-                    break;
-                } catch (IllegalArgumentException e) {
-                    break;
-                }
-            case EQUIVALENCE:
-                try {
-                    for (int i = 0; i < multiChoiceAnswers.size(); i++) {
-                        Image image = new Image("assets/" + q.activityPath.get(i));
-                        multiChoiceAnswers.get(i).setOnMouseEntered(e ->
-                                imagePanel.setImage(image));
-                        multiChoiceAnswers.get(i).setOnMouseExited(e ->
-                                imagePanel.setImage(new Image("assets/" + q.imagePath)));
-                    }
-                    break;
-                } catch (IllegalArgumentException e) {
-                    break;
-                }
+        if (q.type != Question.QuestionType.COMPARISON && q.type != Question.QuestionType.EQUIVALENCE) return;
+        try {
+            Image defaultImage = new Image("assets/" + q.imagePath);
+            for (int i = 0; i < multiChoiceAnswers.size(); i++) {
+                RadioButton rb = multiChoiceAnswers.get(0);
+                Image image = new Image("assets/" + q.activityPath.get(i));
+
+                rb.setOnMouseEntered(e -> imagePanel.setImage(image));
+                if (q.type == Question.QuestionType.EQUIVALENCE) rb.setOnMouseExited(e ->
+                        imagePanel.setImage(defaultImage));
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
         }
     }
 
@@ -365,10 +328,7 @@ public abstract class GameCtrl implements Initializable {
         Question q = this.currentQuestion;
         renderAnswerFields(q);
 
-        if (removeOneJoker) {
-            disableButton(removeOneButton, q.type == Question.QuestionType.RANGE_GUESS);
-        }
-
+        disableButton(removeOneButton, q.type == Question.QuestionType.RANGE_GUESS || !removeOneJoker);
         disableButton(submitButton, false);
 
         Task roundTimer = new Task() {
@@ -508,7 +468,6 @@ public abstract class GameCtrl implements Initializable {
                 }
                 break;
             case RANGE_GUESS:
-                // TODO disallow non-numeric answer
                 try {
                     ans.addAnswer(Integer.parseInt(estimationAnswer.getText()));
                 } catch (NumberFormatException ex) {
@@ -538,25 +497,37 @@ public abstract class GameCtrl implements Initializable {
         gameSessionUtils.toggleReady(sessionId, true);
     }
 
+    private void handleGameEnd() {
+        try {
+            if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showEndScreen();
+            else back();
+        } catch (BadRequestException ex) {
+            setPlayerId(0);
+            setSessionId(0);
+            back();
+        }
+    }
+
+    private void handleNextRound() {
+        try {
+            gameSessionUtils.toggleReady(sessionId, false);
+            imagePanel.setImage(null);
+            loadQuestion();
+        } catch (BadRequestException e) {
+            System.out.println("takingover");
+        }
+    }
+
     /**
      * Gets the user's answer, starts the evaluation and loads a new question or ends the game.
      */
-    public void startEvaluation(int scoreEvaluation) {
+    public void startEvaluation() {
 
         if (this.evaluation == null) return;
 
         disableButton(removeOneButton, true);
         disableButton(decreaseTimeButton, true);
         disableButton(doublePointsButton, true);
-
-        switch (rounds / 4) {
-            case 0 -> difficultyFactor = 1;
-            case 1 -> difficultyFactor = 2;
-            case 2 -> difficultyFactor = 3;
-            case 3 -> difficultyFactor = 4;
-            case 4 -> difficultyFactor = 5;
-            default -> difficultyFactor = 1;
-        }
 
         updatePoints();
         renderCorrectAnswer();
@@ -570,26 +541,12 @@ public abstract class GameCtrl implements Initializable {
                 Platform.runLater(() -> {
                     rounds++;
                     if (rounds == GameSession.GAME_ROUNDS) {
-                        //if (points > scoreEvaluation) updateScore(playerId, points, true);
-                        try {
-                            if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showEndScreen();
-                            else back();
-                        } catch (BadRequestException ex) {
-                            setPlayerId(0);
-                            setSessionId(0);
-                            back();
-                        }
+                        handleGameEnd();
                     } else if (rounds == GameSession.GAME_ROUNDS / 2 &&
                             gameSessionUtils.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
                         displayMidGameScreen();
                     } else {
-                        try {
-                            gameSessionUtils.toggleReady(sessionId, false);
-                            imagePanel.setImage(null);
-                            loadQuestion();
-                        } catch (BadRequestException e) {
-                            System.out.println("takingover");
-                        }
+                        handleNextRound();
                     }
                 });
             }
@@ -678,8 +635,7 @@ public abstract class GameCtrl implements Initializable {
      */
     public void disableButton(Button button, boolean disable) {
         if (button == null) return;
-        if (disable) button.setOpacity(0.5);
-        if (!disable) button.setOpacity(1);
+        button.setOpacity(disable ? 0.5 : 1);
         button.setDisable(disable);
     }
 
@@ -776,13 +732,4 @@ public abstract class GameCtrl implements Initializable {
         }
         webSocketsUtils.sendEmoji(sessionId, playerId, type);
     }
-
-    /**
-     * the method to updateScore
-     *
-     * @param playerId    the id of the player
-     * @param points      the points of the player
-     * @param isBestScore the flag of the best score of the player
-     */
-    public abstract void updateScore(long playerId, int points, boolean isBestScore);
 }

@@ -69,54 +69,6 @@ public class LeaderboardUtils {
     }
 
     /**
-     * Adds a player entry to the database forcibly (without an associated game session)
-     *
-     * @param player the player to be added
-     * @return a message to show whether the adding is successful or not
-     */
-    public Player addPlayerForcibly(Player player) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .post(Entity.entity(player, APPLICATION_JSON), Player.class);
-    }
-
-    /**
-     * Update a player's score in DB
-     *
-     * @param playerId    Id of player
-     * @param points      Updated points
-     * @param isBestScore Is this over the current best score for the player
-     * @return Updated player DB entry reference
-     */
-    public Player updateSingleScore(long playerId, int points, boolean isBestScore) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/" + playerId +
-                        ((isBestScore) ? "/best" : "/") + "singlescore")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(points, APPLICATION_JSON), Player.class);
-    }
-
-    /**
-     * Update a player's score in DB
-     *
-     * @param playerId    Id of player
-     * @param points      Updated points
-     * @param isBestScore Is this over the current best score for the player
-     * @return Updated player DB entry reference
-     */
-    public Player updateMultiScore(long playerId, int points, boolean isBestScore) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/" + playerId +
-                        ((isBestScore) ? "/best" : "/") + "multiscore")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(points, APPLICATION_JSON), Player.class);
-    }
-
-    /**
      * Get the player object with the specified username
      * @param username The username of the player
      * @return The player object is the username if found, otherwise false
