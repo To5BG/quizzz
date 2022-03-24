@@ -4,29 +4,19 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
-@Entity
 public class GameSession {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     public long id;
 
-    @OneToMany(cascade = CascadeType.ALL)
     public List<Player> players;
-
-    @OneToMany(cascade = CascadeType.ALL)
     public List<Player> removedPlayers;
 
-    @OneToOne(cascade = CascadeType.ALL)
     public Question currentQuestion;
-
-    @ElementCollection
     public List<Integer> expectedAnswers;
 
     public int playersReady;
