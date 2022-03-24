@@ -62,7 +62,7 @@ public class QuestionControllerTest {
     @Test
     public void submitAnswerNoSessionTest() {
         ResponseEntity<Evaluation> resp = sut.submitAnswer(42L,
-                42L, new Answer(Question.QuestionType.MULTIPLE_CHOICE));
+                42L, new Answer(List.of(0), Question.QuestionType.MULTIPLE_CHOICE));
 
         assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
     }
@@ -74,7 +74,7 @@ public class QuestionControllerTest {
         Question q = s.currentQuestion;
 
         ResponseEntity<Evaluation> resp = sut.submitAnswer(s.id,
-                s.getPlayers().get(0).id, new Answer(Question.QuestionType.MULTIPLE_CHOICE));
+                s.getPlayers().get(0).id, new Answer(List.of(0), Question.QuestionType.MULTIPLE_CHOICE));
 
         Evaluation eval = resp.getBody();
 

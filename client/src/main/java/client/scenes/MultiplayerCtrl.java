@@ -15,10 +15,7 @@
  */
 package client.scenes;
 
-import client.utils.GameSessionUtils;
-import client.utils.LeaderboardUtils;
-import client.utils.QuestionUtils;
-import client.utils.WebSocketsUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Emoji;
 import commons.GameSession;
@@ -29,7 +26,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -327,34 +323,20 @@ public class MultiplayerCtrl extends GameCtrl {
         waitingSkip = 0;
         questionCount.setText("End of game! Play again or go back to main.");
 
-        Task roundTimer = new Task() {
-            @Override
-            public Object call() {
-                long refreshCounter = 0;
-                long waitingTime = 60000L;
-                while (refreshCounter * TIMER_UPDATE_INTERVAL_MS < waitingTime) {
-                    updateProgress(waitingTime - refreshCounter * TIMER_UPDATE_INTERVAL_MS, waitingTime);
-                    refreshCounter += waitingSkip + 1;
-                    try {
-                        Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
-                    } catch (InterruptedException e) {
-                        updateProgress(0, 1);
-                        return null;
-                    }
+        TimeUtils roundTimer = new TimeUtils(60L, TIMER_UPDATE_INTERVAL_MS);
+        roundTimer.setTimeBooster(() -> (double)waitingSkip);
+        roundTimer.setOnSucceeded((event) -> {
+            gameSessionUtils.updateStatus(gameSessionUtils.getSession(sessionId),
+                    GameSession.SessionStatus.TRANSFERRING);
+            Platform.runLater(() -> {
+                if (isPlayingAgain()) {
+                    startGame();
+                } else {
+                    leaveGame();
                 }
-                updateProgress(0, 1);
-                gameSessionUtils.updateStatus(gameSessionUtils.getSession(sessionId),
-                        GameSession.SessionStatus.TRANSFERRING);
-                Platform.runLater(() -> {
-                    if (isPlayingAgain()) {
-                        startGame();
-                    } else {
-                        leaveGame();
-                    }
-                });
-                return null;
-            }
-        };
+            });
+        });
+
         timeProgress.progressProperty().bind(roundTimer.progressProperty());
         this.timerThread = new Thread(roundTimer);
         this.timerThread.start();

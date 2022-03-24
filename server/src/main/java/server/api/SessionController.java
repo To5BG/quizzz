@@ -1,6 +1,5 @@
 package server.api;
 
-import commons.Answer;
 import commons.GameSession;
 import commons.Player;
 import commons.Question;

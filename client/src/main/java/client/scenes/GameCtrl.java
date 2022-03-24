@@ -1,14 +1,10 @@
 package client.scenes;
 
-import client.utils.GameSessionUtils;
-import client.utils.LeaderboardUtils;
-import client.utils.QuestionUtils;
-import client.utils.WebSocketsUtils;
+import client.utils.*;
 import commons.*;
 import jakarta.ws.rs.BadRequestException;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -87,7 +83,6 @@ public abstract class GameCtrl implements Initializable {
     protected Question currentQuestion;
     protected int points = 0;
     protected int rounds = 0;
-    protected double timeFactor;
     protected Thread timerThread;
     protected Evaluation evaluation;
 
@@ -142,7 +137,9 @@ public abstract class GameCtrl implements Initializable {
     protected void renderGeneralInformation(Question q) {
         this.questionPrompt.setText(q.prompt);
         if (q.type != Question.QuestionType.RANGE_GUESS && q.type != Question.QuestionType.EQUIVALENCE &&
-            q.type != Question.QuestionType.MULTIPLE_CHOICE) return;
+            q.type != Question.QuestionType.MULTIPLE_CHOICE) {
+            return;
+        }
 
         try {
             Image image = new Image("assets/" + q.imagePath);
@@ -218,12 +215,11 @@ public abstract class GameCtrl implements Initializable {
                 Image image = new Image("assets/" + q.activityPath.get(i));
 
                 rb.setOnMouseEntered(e -> imagePanel.setImage(image));
-                if (q.type == Question.QuestionType.EQUIVALENCE) rb.setOnMouseExited(e ->
-                        imagePanel.setImage(defaultImage));
+                if (q.type == Question.QuestionType.EQUIVALENCE) {
+                    rb.setOnMouseExited(e -> imagePanel.setImage(defaultImage));
+                }
             }
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
+        } catch (IllegalArgumentException ignore) { }
     }
 
     /**
@@ -331,31 +327,13 @@ public abstract class GameCtrl implements Initializable {
         disableButton(removeOneButton, q.type == Question.QuestionType.RANGE_GUESS || !removeOneJoker);
         disableButton(submitButton, false);
 
-        Task roundTimer = new Task() {
-            @Override
-            public Object call() {
-                double refreshCounter = 0;
-                long gameRoundMs = GAME_ROUND_TIME * 1000;
-                double timeElapsed = 0;
-                while (timeElapsed < gameRoundMs) {
-                    //the speed on which the timer updates, with default speed 1
-                    double booster = getTimeJokers() + 1;
-                    updateProgress(gameRoundMs - timeElapsed, gameRoundMs);
-                    refreshCounter += booster;
-                    try {
-                        Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
-                        timeElapsed = refreshCounter * TIMER_UPDATE_INTERVAL_MS;
-                        timeFactor = timeProgress.getProgress();
-                    } catch (InterruptedException e) {
-                        updateProgress(0, 1);
-                        return null;
-                    }
-                }
-                updateProgress(0, 1);
-                Platform.runLater(() -> submitAnswer(true));
-                return null;
-            }
-        };
+        TimeUtils roundTimer = new TimeUtils(GAME_ROUND_TIME, TIMER_UPDATE_INTERVAL_MS);
+        roundTimer.setTimeBooster(this::getTimeJokers);
+        roundTimer.setOnSucceeded((event) -> Platform.runLater(() -> {
+            System.out.println("roundTimer is done");
+            submitAnswer(true);
+        }));
+
         timeProgress.progressProperty().bind(roundTimer.progressProperty());
         this.timerThread = new Thread(roundTimer);
         this.timerThread.start();
@@ -455,7 +433,7 @@ public abstract class GameCtrl implements Initializable {
      */
     public void submitAnswer(boolean initiatedByTimer) {
         Answer ans = new Answer(currentQuestion.type);
-        ans.timeFactor = timeFactor;
+        ans.timeFactor = timeProgress.getProgress();
 
         switch (currentQuestion.type) {
             case MULTIPLE_CHOICE:
@@ -591,40 +569,17 @@ public abstract class GameCtrl implements Initializable {
     public void displayMidGameScreen() {
         displayLeaderboard();
 
-        Task roundTimer = new Task() {
-            @Override
-            public Object call() {
-                long refreshCounter = 0;
-                long gameRoundMs = MIDGAME_BREAK_TIME * 1000;
-                while (refreshCounter * TIMER_UPDATE_INTERVAL_MS < gameRoundMs) {
-                    updateProgress(gameRoundMs - refreshCounter * TIMER_UPDATE_INTERVAL_MS, gameRoundMs);
-                    ++refreshCounter;
-                    try {
-                        Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
-                    } catch (InterruptedException e) {
-                        updateProgress(0, 1);
-                        return null;
-                    }
-                }
-                updateProgress(0, 1);
-                return null;
-            }
-        };
+        TimeUtils roundTimer = new TimeUtils(MIDGAME_BREAK_TIME, TIMER_UPDATE_INTERVAL_MS);
+        roundTimer.setOnSucceeded((event) -> Platform.runLater(() -> {
+            removeLeaderboard();
+            loadQuestion();
+        }));
+
         timeProgress.progressProperty().bind(roundTimer.progressProperty());
         this.timerThread = new Thread(roundTimer);
         this.timerThread.start();
 
         gameSessionUtils.toggleReady(sessionId, false);
-
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    removeLeaderboard();
-                    loadQuestion();
-                });
-            }
-        }, MIDGAME_BREAK_TIME * 1000);
     }
 
     /**
