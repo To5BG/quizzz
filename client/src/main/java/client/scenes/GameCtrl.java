@@ -666,9 +666,9 @@ public abstract class GameCtrl implements Initializable {
         this.timerThread.start();
 
         GameSession session = gameSessionUtils.toggleReady(sessionId, false);
-        if (session.playersReady == 0) {
-            gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
-        }
+//        if (session.playersReady == 0) {
+//            gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
+//        }
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {

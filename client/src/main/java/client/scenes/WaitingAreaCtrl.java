@@ -125,30 +125,30 @@ public class WaitingAreaCtrl implements Initializable {
 
         if (waitingArea.sessionStatus == GameSession.SessionStatus.TRANSFERRING) {
 
-            gameSessionUtils.toggleReady(MainCtrl.WAITING_AREA_ID, false);
             GameSession sessionToJoin = gameSessionUtils.getAvailableSession();
+            gameSessionUtils.toggleReady(MainCtrl.WAITING_AREA_ID, false);
             if (sessionToJoin == null) return true;
 
             readyButton.setText("Ready");
             readyButton.setVisible(false);
 
-            gameSessionUtils.addPlayer(sessionToJoin.id,
-                    gameSessionUtils.removePlayer(MainCtrl.WAITING_AREA_ID, playerId));
-            if (gameSessionUtils.getPlayers(MainCtrl.WAITING_AREA_ID).size() == 0) {
-                sessionToJoin = gameSessionUtils.updateStatus(sessionToJoin, GameSession.SessionStatus.ONGOING);
-                gameSessionUtils.updateStatus(waitingArea, GameSession.SessionStatus.WAITING_AREA);
-            }
+//            gameSessionUtils.addPlayer(sessionToJoin.id,
+//                    gameSessionUtils.removePlayer(MainCtrl.WAITING_AREA_ID, playerId));
+//            if (gameSessionUtils.getPlayers(MainCtrl.WAITING_AREA_ID).size() == 0) {
+//                sessionToJoin = gameSessionUtils.updateStatus(sessionToJoin, GameSession.SessionStatus.ONGOING);
+//                gameSessionUtils.updateStatus(waitingArea, GameSession.SessionStatus.WAITING_AREA);
+//            }
             mainCtrl.showMultiplayer(sessionToJoin.id, playerId);
             return false;
         } else if (playersReady == playersCount && playersReady >= 2) {
-            toggleReady();
-            gameSessionUtils.updateStatus(waitingArea, GameSession.SessionStatus.TRANSFERRING);
-            var sessionToJoin = gameSessionUtils.addSession(
-                    new GameSession(GameSession.SessionType.MULTIPLAYER));
-            gameSessionUtils.addPlayer(sessionToJoin.id,
-                    gameSessionUtils.removePlayer(MainCtrl.WAITING_AREA_ID, playerId));
-            mainCtrl.showMultiplayer(sessionToJoin.id, playerId);
-            return false;
+//            toggleReady();
+//            gameSessionUtils.updateStatus(waitingArea, GameSession.SessionStatus.TRANSFERRING);
+//            var sessionToJoin = gameSessionUtils.addSession(
+//                    new GameSession(GameSession.SessionType.MULTIPLAYER));
+//            gameSessionUtils.addPlayer(sessionToJoin.id,
+//                    gameSessionUtils.removePlayer(MainCtrl.WAITING_AREA_ID, playerId));
+//            mainCtrl.showMultiplayer(sessionToJoin.id, playerId);
+            return true;
         }
         readyButton.setVisible(playersCount >= 2);
         playerText.setText("Ready: " + playersReady + "/" + playersCount);

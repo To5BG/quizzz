@@ -45,14 +45,15 @@ public class SessionController {
         session.questionCounter++;
         Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion(session.difficultyFactor, activityCtrl);
         session.currentQuestion = res.getKey();
-        System.out.println("Question updated to:");
-        System.out.println(session.currentQuestion);
+//        System.out.println("Question updated to:");
+//        System.out.println(session.currentQuestion);
         session.expectedAnswers.clear();
         session.expectedAnswers.addAll(res.getValue());
         return updateSession(session);
     }
 
     public GameSession endSession(GameSession session) {
+        session.playersReady = 0;
         if (session.sessionType == GameSession.SessionType.SINGLEPLAYER) {
             Player p = session.getPlayers().get(0);
             p.bestSingleScore = Math.max(p.bestSingleScore, p.currentPoints);
@@ -63,7 +64,17 @@ public class SessionController {
             for (Player p : session.players) {
                 p.bestMultiScore = Math.max(p.bestMultiScore, p.currentPoints);
             }
-            session.setSessionStatus(GameSession.SessionStatus.PLAY_AGAIN);
+            session.setSessionStatus(GameSession.SessionStatus.PAUSED);
+            Thread t = new Thread(() -> {
+                try {
+                    Thread.sleep(5000L);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+                session.setSessionStatus(GameSession.SessionStatus.PLAY_AGAIN);
+                repo.save(session);
+            });
+            t.start();
             return updateSession(session);
         }
     }
@@ -72,9 +83,17 @@ public class SessionController {
      * Updates the question of a game session
      */
     public GameSession advanceRounds(GameSession session) {
-        if (session.questionCounter == GameSession.GAME_ROUNDS) {
+        if (session.sessionStatus == GameSession.SessionStatus.PLAY_AGAIN) {
+            session.resetQuestionCounter();
+            return repo.save(session);
+        } else if (session.questionCounter == GameSession.GAME_ROUNDS) {
             return endSession(session);
+        } else if (session.questionCounter == 0) {
+            session.playersReady = 0;
+            session.setSessionStatus(GameSession.SessionStatus.ONGOING);
+            return updateQuestion(session);
         } else {
+            System.out.println("Server paused session");
             session.setSessionStatus(GameSession.SessionStatus.PAUSED);
             updateTimeJokers(session.id, 0);
             return updateQuestion(session);
@@ -193,6 +212,20 @@ public class SessionController {
         return ResponseEntity.ok(session);
     }
 
+    public void startNewMultiplayerSession(GameSession waitingArea) {
+        // Create new session and transfer all players
+        GameSession newSession = new GameSession(GameSession.SessionType.MULTIPLAYER, List.copyOf(waitingArea.players));
+        waitingArea.players.clear();
+        advanceRounds(newSession);
+        newSession.setSessionStatus(GameSession.SessionStatus.STARTED);
+        repo.save(waitingArea);
+        repo.save(newSession);
+
+        // Signal the transfer to the clients
+        waitingArea.setSessionStatus(GameSession.SessionStatus.TRANSFERRING);
+        repo.save(waitingArea);
+    }
+
     /**
      * Sets an additional player as ready for a multiplayer game
      *
@@ -206,9 +239,15 @@ public class SessionController {
         session.setPlayerReady();
         if (session.sessionType != GameSession.SessionType.WAITING_AREA &&
                 session.playersReady == session.players.size()) {
+            System.out.println("All players ready");
+            System.out.println(session);
             advanceRounds(session);
+        } else if (session.sessionType == GameSession.SessionType.WAITING_AREA &&
+                session.playersReady == session.players.size()) {
+            startNewMultiplayerSession(session);
+        } else {
+            repo.save(session);
         }
-        //repo.save(session);
         return ResponseEntity.ok(session);
     }
 
@@ -223,7 +262,21 @@ public class SessionController {
         if (isInvalid(sessionId,repo)) return ResponseEntity.badRequest().build();
         GameSession session = repo.findById(sessionId).get();
         session.unsetPlayerReady();
-        if (session.playersReady == 0) session.setSessionStatus(GameSession.SessionStatus.ONGOING);
+        if (session.playersReady == 0) {
+            if (session.sessionType == GameSession.SessionType.WAITING_AREA) {
+                session.setSessionStatus(GameSession.SessionStatus.WAITING_AREA);
+                GameSession newMultiSession = getAvailableSession().getBody();
+                if (newMultiSession != null) {
+                    newMultiSession.setSessionStatus(GameSession.SessionStatus.ONGOING);
+                    repo.save(newMultiSession);
+                }
+            } else {
+                if (session.sessionStatus != GameSession.SessionStatus.PLAY_AGAIN) {
+                    session.setSessionStatus(GameSession.SessionStatus.ONGOING);
+                }
+            }
+        }
+
         repo.save(session);
         return ResponseEntity.ok(session);
     }
@@ -242,6 +295,12 @@ public class SessionController {
         if (isInvalid(sessionId,repo)) return ResponseEntity.badRequest().build();
         GameSession session = repo.findById(sessionId).get();
         session.setSessionStatus(status);
+        if (session.sessionStatus == GameSession.SessionStatus.TRANSFERRING &&
+                session.sessionType != GameSession.SessionType.WAITING_AREA &&
+                session.questionCounter == 0) {
+            advanceRounds(session);
+            session.setSessionStatus(GameSession.SessionStatus.TRANSFERRING);
+        }
         repo.save(session);
         return ResponseEntity.ok(session);
     }

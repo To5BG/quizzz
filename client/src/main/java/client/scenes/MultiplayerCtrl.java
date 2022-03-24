@@ -374,7 +374,7 @@ public class MultiplayerCtrl extends GameCtrl {
         this.timerThread.start();
 
         GameSession session = gameSessionUtils.toggleReady(sessionId, false);
-        gameSessionUtils.updateStatus(session, GameSession.SessionStatus.PLAY_AGAIN);
+//        gameSessionUtils.updateStatus(session, GameSession.SessionStatus.PLAY_AGAIN);
         refresh();
     }
 
@@ -391,7 +391,7 @@ public class MultiplayerCtrl extends GameCtrl {
                         GameSession session = gameSessionUtils.toggleReady(sessionId, false);
                         if (session.playersReady == 0) {
                             gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
-                            gameSessionUtils.resetQuestionCounter(sessionId);
+//                            gameSessionUtils.resetQuestionCounter(sessionId);
                         }
                         reset();
                         loadQuestion();
