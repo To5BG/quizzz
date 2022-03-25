@@ -92,6 +92,7 @@ public class SessionController {
      * Updates the question of a game session
      */
     public void advanceRounds(GameSession session) {
+        updateTimeJokers(session.id, 0);
         if (session.sessionStatus == GameSession.SessionStatus.PLAY_AGAIN) {
             session.resetQuestionCounter();
             for (Player p : session.players) {
@@ -106,7 +107,6 @@ public class SessionController {
         } else {
             System.out.println("Server paused session");
             session.setSessionStatus(GameSession.SessionStatus.PAUSED);
-            updateTimeJokers(session.id, 0);
             updateQuestion(session);
         }
     }
