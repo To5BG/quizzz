@@ -76,7 +76,7 @@ public class SessionController {
             session.setSessionStatus(GameSession.SessionStatus.PAUSED);
             Thread t = new Thread(() -> {
                 try {
-                    Thread.sleep(5000L);
+                    Thread.sleep(1000L);
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
