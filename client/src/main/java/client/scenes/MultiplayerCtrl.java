@@ -68,6 +68,7 @@ public class MultiplayerCtrl extends GameCtrl {
     private StompSession.Subscription channel;
     private boolean playingAgain;
     private int waitingSkip = 0;
+    private final static long END_GAME_TIME = 60L;
 
     @Inject
     public MultiplayerCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
@@ -323,7 +324,7 @@ public class MultiplayerCtrl extends GameCtrl {
         waitingSkip = 0;
         questionCount.setText("End of game! Play again or go back to main.");
 
-        TimeUtils roundTimer = new TimeUtils(60L, TIMER_UPDATE_INTERVAL_MS);
+        TimeUtils roundTimer = new TimeUtils(END_GAME_TIME, TIMER_UPDATE_INTERVAL_MS);
         roundTimer.setTimeBooster(() -> (double)waitingSkip);
         roundTimer.setOnSucceeded((event) -> {
             gameSessionUtils.updateStatus(gameSessionUtils.getSession(sessionId),

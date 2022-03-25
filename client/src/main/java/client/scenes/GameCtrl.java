@@ -211,7 +211,7 @@ public abstract class GameCtrl implements Initializable {
         try {
             Image defaultImage = new Image("assets/" + q.imagePath);
             for (int i = 0; i < multiChoiceAnswers.size(); i++) {
-                RadioButton rb = multiChoiceAnswers.get(0);
+                RadioButton rb = multiChoiceAnswers.get(i);
                 Image image = new Image("assets/" + q.activityPath.get(i));
 
                 rb.setOnMouseEntered(e -> imagePanel.setImage(image));
