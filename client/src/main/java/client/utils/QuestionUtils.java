@@ -47,38 +47,6 @@ public class QuestionUtils {
     }
 
     /**
-     * Stores the player's answer with that particular player.
-     *
-     * @param sessionId The current session.
-     * @param playerId  The player who answered.
-     * @param answer    The player's answer.
-     * @return The player's answer.
-     */
-    public Answer addPlayerAnswer(long sessionId, long playerId, Answer answer) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .post(Entity.entity(answer, APPLICATION_JSON), Answer.class);
-    }
-
-    /**
-     * Fetches the last answer of the player.
-     *
-     * @param sessionId The current session.
-     * @param playerId  The player who answered.
-     * @return The player's answer.
-     */
-    public Answer getPlayerAnswer(long sessionId, long playerId) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .get(new GenericType<Answer>() {
-                });
-    }
-
-    /**
      * Gets the list of positions of correct answers for a question from the server
      *
      * @param sessionId - long representing the current session

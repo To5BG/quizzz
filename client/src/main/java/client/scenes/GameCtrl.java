@@ -310,11 +310,13 @@ public abstract class GameCtrl implements Initializable {
         disableButton(submitButton, true);
         this.answerArea.getChildren().clear();
 
-        Question q = this.questionUtils.fetchOneQuestion(this.sessionId);
-        this.currentQuestion = q;
-        renderGeneralInformation(q);
-        renderQuestionCount();
-        countdown();
+        try {
+            Question q = this.questionUtils.fetchOneQuestion(this.sessionId);
+            this.currentQuestion = q;
+            renderGeneralInformation(q);
+            renderQuestionCount();
+            countdown();
+        } catch (BadRequestException ignore) { /* happens when session is removed before question is loaded */ }
     }
 
     /**
@@ -322,6 +324,7 @@ public abstract class GameCtrl implements Initializable {
      */
     public void loadAnswer() {
         Question q = this.currentQuestion;
+        if (q == null) return;
         renderAnswerFields(q);
 
         disableButton(removeOneButton, q.type == Question.QuestionType.RANGE_GUESS || !removeOneJoker);
@@ -346,8 +349,9 @@ public abstract class GameCtrl implements Initializable {
     public void shutdown() {
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
         if (sessionId != 0) {
-            questionUtils.addPlayerAnswer(sessionId, playerId, new Answer(Question.QuestionType.MULTIPLE_CHOICE));
-            gameSessionUtils.removePlayer(sessionId, playerId);
+            try {
+                gameSessionUtils.removePlayer(sessionId, playerId);
+            } catch (BadRequestException ignore) { /* session might be removed at this point */ }
             setPlayerId(0);
         }
         setSessionId(0);
@@ -517,6 +521,7 @@ public abstract class GameCtrl implements Initializable {
             @Override
             public void run() {
                 Platform.runLater(() -> {
+                    if (currentQuestion == null) return; // happens if shutdown is called before triggering
                     rounds++;
                     if (rounds == GameSession.GAME_ROUNDS) {
                         handleGameEnd();
