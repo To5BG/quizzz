@@ -25,7 +25,7 @@ public class WebSocketsUtils {
      * @param destination URL to connect to
      */
     public void updateConnection(String destination) {
-        websocketServer = connect(destination.replaceFirst("http", "ws").concat("/websocket"));
+        websocketServer = connect(destination.replaceFirst("http", "ws").concat("websocket"));
     }
 
     /**

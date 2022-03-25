@@ -38,6 +38,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SplashCtrl {
 
@@ -86,10 +88,16 @@ public class SplashCtrl {
      * @return True iff the connection is successful
      */
     public boolean establishConnection() {
-        String connURL = connectionField.getText();
+        String connURL = connectionField.getText().strip();
+
         if (connURL.isEmpty()) connURL = "http://localhost:8080/";
+        if (!connURL.endsWith("/")) connURL = connURL.concat("/");
+
+        Pattern connPattern = Pattern.compile("\\w+\\w+://[\\w.]+:\\d+/");
+        Matcher matcher = connPattern.matcher(connURL);
 
         try {
+            if (matcher.find()) connURL = matcher.group();
             URL url = new URL(connURL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");

@@ -18,7 +18,7 @@
    <Button layoutX="143.0" layoutY="276.0" mnemonicParsing="false" onAction="#showSinglePlayer" text="Singleplayer" />
    <Button layoutX="145.0" layoutY="334.0" mnemonicParsing="false" onAction="#showWaitingArea" text="Multiplayer" />
    <Button layoutX="141.0" layoutY="396.0" mnemonicParsing="false" onAction="#showLeaderboard" text="Leaderboard" />
-   <Text fx:id="duplUsername" layoutX="316.0" layoutY="203.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username already exists. Change to continue" wrappingWidth="270.13665771484375" />
-   <Text fx:id="invalidUserName" layoutX="57.0" layoutY="229.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username should be non-empty, and only contain letters and/or numbers." />
+   <Text fx:id="duplUsername" layoutX="286.0" layoutY="183.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username already exists. Change to continue" wrappingWidth="270.13665771484375" />
+   <Text fx:id="invalidUserName" layoutX="286.0" layoutY="183.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username should be non-empty, and only contain letters and/or numbers." />
    <Text fx:id="failedConnectionAlert" layoutX="286.0" layoutY="229.0" opacity="0.0" text="Could not connect!" />
 </AnchorPane>
