@@ -65,12 +65,13 @@ public class SessionController {
         if (session.sessionType == GameSession.SessionType.SINGLEPLAYER) {
             Player p = session.getPlayers().get(0);
             p.bestSingleScore = Math.max(p.bestSingleScore, p.currentPoints);
-            updateSession(session);
+            repo.save(p);
             System.out.println("removing session");
             removeSession(session.id);
         } else {
             for (Player p : session.players) {
                 p.bestMultiScore = Math.max(p.bestMultiScore, p.currentPoints);
+                repo.save(p);
             }
             session.setSessionStatus(GameSession.SessionStatus.PAUSED);
             Thread t = new Thread(() -> {
@@ -93,6 +94,9 @@ public class SessionController {
     public void advanceRounds(GameSession session) {
         if (session.sessionStatus == GameSession.SessionStatus.PLAY_AGAIN) {
             session.resetQuestionCounter();
+            for (Player p : session.players) {
+                p.currentPoints = 0;
+            }
             updateSession(session);
         } else if (session.questionCounter == GameSession.GAME_ROUNDS) {
             endSession(session);
@@ -153,6 +157,7 @@ public class SessionController {
         if (session.players == null) return ResponseEntity.badRequest().build();
         for (Player p : session.players) {
             if (isNullOrEmpty(p.username)) return ResponseEntity.badRequest().build();
+            repo.save(p);
         }
         advanceRounds(session);
         GameSession saved = sm.save(session);
@@ -202,14 +207,13 @@ public class SessionController {
      * @param waitingArea The waiting area
      */
     public void startNewMultiplayerSession(GameSession waitingArea) {
-        // Create new session and transfer all players
-        GameSession newSession = new GameSession(GameSession.SessionType.MULTIPLAYER, List.copyOf(waitingArea.players));
-        waitingArea.players.clear();
-        advanceRounds(newSession);
-        updateSession(waitingArea);
-        updateSession(newSession);
+        // Create new session with all waiting players
+        GameSession newSession = new GameSession(GameSession.SessionType.MULTIPLAYER);
+        newSession.players.addAll(waitingArea.players);
+        addSession(newSession);
 
-        // Signal the transfer to the clients
+        // Signal the transfer to the clients and remove them from waiting area
+        waitingArea.players.clear();
         waitingArea.setSessionStatus(GameSession.SessionStatus.TRANSFERRING);
         updateSession(waitingArea);
     }

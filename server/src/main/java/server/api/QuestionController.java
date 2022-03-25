@@ -1,9 +1,6 @@
 package server.api;
 
-import commons.Answer;
-import commons.Evaluation;
-import commons.GameSession;
-import commons.Question;
+import commons.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -93,6 +90,12 @@ public class QuestionController {
         }
 
         GameSession s = session.getBody();
+        Player player = s.getPlayers().stream().filter(p -> p.id == playerId).findFirst().orElse(null);
+
+        if (player == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         Evaluation eval = new Evaluation((answer.answers.equals(s.expectedAnswers)) ? 1 : 0,
                 s.currentQuestion.type, List.copyOf(s.expectedAnswers));
 
@@ -105,10 +108,7 @@ public class QuestionController {
         will already have knowledge of who has what jokers active, for know this break the double points joker
         */
 
-        switch (s.sessionType) {
-            case MULTIPLAYER -> leaderboard.updateCurrentMultiPoints(playerId, actual.points);
-            case SINGLEPLAYER -> leaderboard.updateCurrentSinglePoints(playerId, actual.points);
-        }
+        player.currentPoints += actual.points;
 
         return ResponseEntity.ok(actual);
     }
