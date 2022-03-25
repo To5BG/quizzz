@@ -98,7 +98,6 @@ public class QuestionTest {
         assertTrue(result.contains("prompt=Question 1"));
         assertTrue(result.contains("imagePath=test.png"));
         assertTrue(result.contains("type=RANGE_GUESS"));
-        assertTrue(result.contains("id=0"));
         assertTrue(result.contains("answerOptions=[]"));
     }
 }

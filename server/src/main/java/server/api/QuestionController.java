@@ -52,15 +52,20 @@ public class QuestionController {
                 try {
                     givenAnswer = ans.answers.get(0);
                 } catch (NumberFormatException ex) {
-                    givenAnswer = 0;
+                    temppoints = 0;
+                    break;
                 }
-                int diff = Math.abs(givenAnswer - actualAnswer);
+                // diff : magnitude of difference between the entered answer and the actual answer
+                double diff = Math.abs(givenAnswer - actualAnswer);
                 if (diff == 0) {
                     temppoints = (int) (60 * eval.points * ans.timeFactor) + 40;
                 } else {
                     if (diff > actualAnswer) diff = actualAnswer;
-                    temppoints = (int) (90 - 90 * ((double) diff * difficultyFactor * ans.timeFactor / actualAnswer) +
-                            ((diff < actualAnswer) ? 10 - 10 * ((double) diff * difficultyFactor / actualAnswer) : 0));
+                    // timeDependent : the part of the points that depends on time and accuracy - between 0 and 90
+                    double timeDependent = (90 - 90 * (diff * difficultyFactor / actualAnswer)) * ans.timeFactor;
+                    // constant : the part of the points that depends on accuracy and not time - between 0 and 10
+                    double constant = (diff < actualAnswer) ? 10 - 10 * (diff * difficultyFactor / actualAnswer) : 0;
+                    temppoints = (int) (timeDependent + constant);
                     if (temppoints <= 0) temppoints = 0;
                 }
                 break;

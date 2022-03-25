@@ -20,6 +20,7 @@ import java.util.Random;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.JpaRepository;
+import server.service.SessionManager;
 
 @Configuration
 public class Config {
@@ -45,9 +46,16 @@ public class Config {
     }
 
     /**
-     * Configure a random object for the game session
+     * Configure new session manager instance used for controllers autowiring.
+     * @return a new SessionManager
+     */
+    @Bean
+    public SessionManager createSessionManager() { return new SessionManager(); }
+
+    /**
+     * Configure a random object used for controllers autowiring.
      *
-     * @return Return a new object Random
+     * @return a new Random
      */
     @Bean
     public Random getRandom() {
