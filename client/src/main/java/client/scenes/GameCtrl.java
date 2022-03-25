@@ -1,6 +1,9 @@
 package client.scenes;
 
-import client.utils.ServerUtils;
+import client.utils.GameSessionUtils;
+import client.utils.LeaderboardUtils;
+import client.utils.QuestionUtils;
+import client.utils.WebSocketsUtils;
 import commons.*;
 import jakarta.ws.rs.BadRequestException;
 import javafx.application.Platform;
@@ -71,7 +74,11 @@ public abstract class GameCtrl implements Initializable {
     @FXML
     protected TableColumn<Player, Integer> colPoints;
 
-    protected ServerUtils server;
+    protected WebSocketsUtils webSocketsUtils;
+    protected GameSessionUtils gameSessionUtils;
+    protected LeaderboardUtils leaderboardUtils;
+    protected QuestionUtils questionUtils;
+
     protected MainCtrl mainCtrl;
 
     protected List<RadioButton> multiChoiceAnswers;
@@ -93,9 +100,13 @@ public abstract class GameCtrl implements Initializable {
     protected boolean decreaseTimeJoker;
     protected boolean removeOneJoker;
 
+    public GameCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
+                    LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
+        this.webSocketsUtils = webSocketsUtils;
+        this.gameSessionUtils = gameSessionUtils;
+        this.leaderboardUtils = leaderboardUtils;
+        this.questionUtils = questionUtils;
 
-    public GameCtrl(ServerUtils server, MainCtrl mainCtrl) {
-        this.server = server;
         this.mainCtrl = mainCtrl;
         this.multiChoiceAnswers = new ArrayList<RadioButton>();
 
@@ -131,14 +142,14 @@ public abstract class GameCtrl implements Initializable {
      * Setter for bestScore in single mode.
      */
     public void setBestSingleScore() {
-        this.bestSingleScore = server.getPlayerById(playerId).bestSingleScore;
+        this.bestSingleScore = leaderboardUtils.getPlayerByIdInLeaderboard(playerId).bestSingleScore;
     }
 
     /**
      * Setter for bestScore in multiplayer mode.
      */
     public void setBestMultiScore() {
-        this.bestMultiScore = server.getPlayerById(playerId).bestMultiScore;
+        this.bestMultiScore = leaderboardUtils.getPlayerByIdInLeaderboard(playerId).bestMultiScore;
     }
 
     /**
@@ -156,8 +167,7 @@ public abstract class GameCtrl implements Initializable {
                     Image image = new Image("assets/" + q.imagePath);
                     imagePanel.setImage(image);
                     break;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     break;
                 }
         }
@@ -235,8 +245,7 @@ public abstract class GameCtrl implements Initializable {
                                 imagePanel.setImage(image));
                     }
                     break;
-                }
-                catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                     break;
                 }
             case EQUIVALENCE:
@@ -249,8 +258,7 @@ public abstract class GameCtrl implements Initializable {
                                 imagePanel.setImage(new Image("assets/" + q.imagePath)));
                     }
                     break;
-                }
-                catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                     break;
                 }
         }
@@ -344,7 +352,7 @@ public abstract class GameCtrl implements Initializable {
         disableButton(submitButton, true);
         this.answerArea.getChildren().clear();
 
-        Question q = this.server.fetchOneQuestion(this.sessionId);
+        Question q = this.questionUtils.fetchOneQuestion(this.sessionId);
         this.currentQuestion = q;
         renderGeneralInformation(q);
         renderQuestionCount();
@@ -358,7 +366,7 @@ public abstract class GameCtrl implements Initializable {
         Question q = this.currentQuestion;
         renderAnswerFields(q);
 
-        if(removeOneJoker) {
+        if (removeOneJoker) {
             disableButton(removeOneButton, q.type == Question.QuestionType.RANGE_GUESS);
         }
 
@@ -402,12 +410,12 @@ public abstract class GameCtrl implements Initializable {
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
         if (sessionId != 0) {
             updateScore(playerId, 0, false);
-            server.addPlayerAnswer(sessionId, playerId, new Answer(Question.QuestionType.MULTIPLE_CHOICE));
-            server.removePlayer(sessionId, playerId);
+            questionUtils.addPlayerAnswer(sessionId, playerId, new Answer(Question.QuestionType.MULTIPLE_CHOICE));
+            gameSessionUtils.removePlayer(sessionId, playerId);
             setPlayerId(0);
         }
-        if (server.getPlayers(sessionId).size() == 0) {
-            server.removeSession(sessionId);
+        if (gameSessionUtils.getPlayers(sessionId).size() == 0) {
+            gameSessionUtils.removeSession(sessionId);
             setSessionId(0);
         }
     }
@@ -479,16 +487,20 @@ public abstract class GameCtrl implements Initializable {
                 try {
                     givenAnswer = Integer.parseInt(estimationAnswer.getText());
                 } catch (NumberFormatException ex) {
-                    givenAnswer = 0;
+                    temppoints = 0;
+                    break;
                 }
-                int diff = Math.abs(givenAnswer - actualAnswer);
-                if(diff == 0) {
+                // diff : magnitude of difference between the entered answer and the actual answer
+                double diff = Math.abs(givenAnswer - actualAnswer);
+                if (diff == 0) {
                     temppoints = (int) (60 * this.evaluation.points * timeFactor) + 40;
-                }
-                else {
-                    if(diff > actualAnswer) diff = actualAnswer;
-                    temppoints = (int) (90 - 90*((double) diff*difficultyFactor*timeFactor/actualAnswer) +
-                            ((diff < actualAnswer) ? 10 - 10*((double) diff*difficultyFactor/actualAnswer) : 0));
+                } else {
+                    if (diff > actualAnswer) diff = actualAnswer;
+                    // timeDependent : the part of the points that depends on time and accuracy - between 0 and 90
+                    double timeDependent = (90 - 90 * (diff * difficultyFactor / actualAnswer)) * timeFactor;
+                    // constant : the part of the points that depends on accuracy and not time - between 0 and 10
+                    double constant = (diff < actualAnswer) ? 10 - 10 * (diff * difficultyFactor / actualAnswer) : 0;
+                    temppoints = (int) (timeDependent + constant);
                     if (temppoints <= 0) temppoints = 0;
                 }
                 break;
@@ -561,13 +573,13 @@ public abstract class GameCtrl implements Initializable {
         disableButton(submitButton, true);
         disableButton(removeOneButton, true);
 
-        this.evaluation = server.submitAnswer(sessionId, ans);
+        this.evaluation = questionUtils.submitAnswer(sessionId, ans);
 
-        server.toggleReady(sessionId, true);
+        gameSessionUtils.toggleReady(sessionId, true);
 
-        var session = server.getSession(sessionId);
+        var session = gameSessionUtils.getSession(sessionId);
         if (session.playersReady == session.players.size()) {
-            server.updateStatus(session, GameSession.SessionStatus.PAUSED);
+            gameSessionUtils.updateStatus(session, GameSession.SessionStatus.PAUSED);
         }
     }
 
@@ -582,7 +594,7 @@ public abstract class GameCtrl implements Initializable {
         disableButton(decreaseTimeButton, true);
         disableButton(doublePointsButton, true);
 
-        switch (rounds / 4){
+        switch (rounds / 4) {
             case 0 -> difficultyFactor = 1;
             case 1 -> difficultyFactor = 2;
             case 2 -> difficultyFactor = 3;
@@ -606,16 +618,16 @@ public abstract class GameCtrl implements Initializable {
                     if (rounds == GAME_ROUNDS) {
                         // TODO display leaderboard things here
                         if (points > scoreEvaluation) updateScore(playerId, points, true);
-                        if (server.getSession(sessionId).players.size() >= 2) showEndScreen();
+                        if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showEndScreen();
                         else back();
                     } else if (rounds == GAME_ROUNDS / 2 &&
-                            server.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
+                            gameSessionUtils.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
                         displayMidGameScreen();
                     } else {
                         try {
-                            GameSession session = server.toggleReady(sessionId, false);
+                            GameSession session = gameSessionUtils.toggleReady(sessionId, false);
                             if (session.playersReady == 0) {
-                                server.updateStatus(session, GameSession.SessionStatus.ONGOING);
+                                gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
                             }
                             imagePanel.setImage(null);
                             loadQuestion();
@@ -632,7 +644,7 @@ public abstract class GameCtrl implements Initializable {
      * Displays the current session's leaderboard and hides the question screen attributes
      */
     public void displayLeaderboard() {
-        var players = server.getPlayers(sessionId);
+        var players = gameSessionUtils.getPlayers(sessionId);
         var data = FXCollections.observableList(players);
         leaderboard.setItems(data);
         answerArea.setOpacity(0);
@@ -689,9 +701,9 @@ public abstract class GameCtrl implements Initializable {
         this.timerThread = new Thread(roundTimer);
         this.timerThread.start();
 
-        GameSession session = server.toggleReady(sessionId, false);
+        GameSession session = gameSessionUtils.toggleReady(sessionId, false);
         if (session.playersReady == 0) {
-            server.updateStatus(session, GameSession.SessionStatus.ONGOING);
+            gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
         }
         new Timer().schedule(new TimerTask() {
             @Override
@@ -730,7 +742,7 @@ public abstract class GameCtrl implements Initializable {
             case EQUIVALENCE:
             case MULTIPLE_CHOICE:
                 List<Integer> incorrectAnswers = new ArrayList<>();
-                List<Integer> correctAnswers = server.getCorrectAnswers(sessionId);
+                List<Integer> correctAnswers = questionUtils.getCorrectAnswers(sessionId);
                 for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
                     if (!correctAnswers.contains(i)) {
                         incorrectAnswers.add(i);
@@ -755,17 +767,18 @@ public abstract class GameCtrl implements Initializable {
      * @return int representing number of time jokers
      */
     public double getTimeJokers() {
-        return server.getSession(sessionId).getTimeJokers();
+        return gameSessionUtils.getSession(sessionId).getTimeJokers();
     }
 
     /**
      * Reset the number of time Jokers for the current session to default value
      */
     public void resetTimeJokers() {
-        if(getTimeJokers() != 0) {
-            server.updateTimeJokers(sessionId, 0);
+        if (getTimeJokers() != 0) {
+            gameSessionUtils.updateTimeJokers(sessionId, 0);
         }
     }
+
     /**
      * Decrease Time Joker
      * When this joker is used, the timer speeds up
@@ -774,7 +787,7 @@ public abstract class GameCtrl implements Initializable {
     public void decreaseTime() {
         decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
-        server.updateTimeJokers(sessionId, (int) getTimeJokers() + 1);
+        gameSessionUtils.updateTimeJokers(sessionId, (int) getTimeJokers() + 1);
     }
 
     /**
@@ -796,6 +809,7 @@ public abstract class GameCtrl implements Initializable {
 
     /**
      * Generic event handler for clicking on an emoji
+     *
      * @param ev The event information
      */
     public void emojiEventHandler(Event ev) {
@@ -815,7 +829,7 @@ public abstract class GameCtrl implements Initializable {
             default:
                 return;
         }
-        server.sendEmoji(sessionId, playerId, type);
+        webSocketsUtils.sendEmoji(sessionId, playerId, type);
     }
 
     /**

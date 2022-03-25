@@ -28,25 +28,19 @@ import java.util.TimerTask;
 
 public class MainCtrl {
 
-    private Stage primaryStage;
-
-    private SplashCtrl splashCtrl;
-    private Scene splashScreen;
-
-    private MultiplayerCtrl multiplayerCtrl;
-    private Scene multiPlayerScreen;
-
-    private SingleplayerCtrl singlePlayerCtrl;
-    private Scene singlePlayerScreen;
-
-    private WaitingAreaCtrl waitingAreaCtrl;
-    private Scene waitingAreaScreen;
-
-    private LeaderBoardCtrl leaderBoardCtrl;
-    private Scene leaderBoardScreen;
-
     // for now a field will suffice, in case more constants are needed an enum must be created
     public final static long WAITING_AREA_ID = 1L;
+    private Stage primaryStage;
+    private SplashCtrl splashCtrl;
+    private Scene splashScreen;
+    private MultiplayerCtrl multiplayerCtrl;
+    private Scene multiPlayerScreen;
+    private SingleplayerCtrl singlePlayerCtrl;
+    private Scene singlePlayerScreen;
+    private WaitingAreaCtrl waitingAreaCtrl;
+    private Scene waitingAreaScreen;
+    private LeaderBoardCtrl leaderBoardCtrl;
+    private Scene leaderBoardScreen;
 
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
@@ -180,7 +174,7 @@ public class MainCtrl {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirm Close");
             alert.setHeaderText("Close the program?");
-            alert.showAndWait().filter(r -> r != ButtonType.OK).ifPresent(r->evt.consume());
+            alert.showAndWait().filter(r -> r != ButtonType.OK).ifPresent(r -> evt.consume());
         });
     }
 }

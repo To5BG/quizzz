@@ -15,15 +15,18 @@
  */
 package client.scenes;
 
+import client.utils.LeaderboardUtils;
 import com.google.inject.Inject;
-import client.utils.ServerUtils;
 import commons.Player;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
@@ -31,7 +34,7 @@ import java.util.ResourceBundle;
 
 public class LeaderBoardCtrl implements Initializable {
 
-    private final ServerUtils server;
+    private final LeaderboardUtils leaderboardUtils;
     private final MainCtrl mainCtrl;
 
     private ObservableList<Player> data;
@@ -52,12 +55,12 @@ public class LeaderBoardCtrl implements Initializable {
     /**
      * constructor of the leaderboard
      *
-     * @param server   the server of the leaderboard
-     * @param mainCtrl the mainCtrl of the leaderboard
+     * @param leaderboardUtils the utils that retrieves information about leaderboard form the server
+     * @param mainCtrl         the mainCtrl of the leaderboard
      */
     @Inject
-    public LeaderBoardCtrl(ServerUtils server, MainCtrl mainCtrl) {
-        this.server = server;
+    public LeaderBoardCtrl(LeaderboardUtils leaderboardUtils, MainCtrl mainCtrl) {
+        this.leaderboardUtils = leaderboardUtils;
         this.mainCtrl = mainCtrl;
     }
 
@@ -97,7 +100,7 @@ public class LeaderBoardCtrl implements Initializable {
      * refresh the screen to show the leaderboards
      */
     public void refreshSingle() {
-        var players = server.getPlayerSingleScore();
+        var players = leaderboardUtils.getPlayerSingleScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
         leaderboardLabel.setText("Leaderboard-Single");
@@ -107,7 +110,7 @@ public class LeaderBoardCtrl implements Initializable {
      * refresh the screen to show the leaderboards
      */
     public void refreshMulti() {
-        var players = server.getPlayerMultiScore();
+        var players = leaderboardUtils.getPlayerMultiScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
         leaderboardLabel.setText("Leaderboard-Multi");

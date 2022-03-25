@@ -15,19 +15,18 @@
  */
 package client;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-
 import com.google.inject.Injector;
-
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.util.Builder;
 import javafx.util.BuilderFactory;
 import javafx.util.Callback;
 import javafx.util.Pair;
+
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 public class MyFXML {
 
@@ -39,7 +38,8 @@ public class MyFXML {
 
     /**
      * FXML wrapper for pairing an fxml file with its controller
-     * @param c controller to pair with
+     *
+     * @param c     controller to pair with
      * @param parts string parts of overall FXML path
      * @param <T>
      * @return Controller and FXML pair
