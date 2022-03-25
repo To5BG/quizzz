@@ -118,7 +118,7 @@ public class LeaderboardController {
                                                             @RequestBody int points) {
         if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
         Player updatedPlayer = repo.findById(playerId).get();
-        updatedPlayer.setCurrentPoints(points);
+        updatedPlayer.currentPoints += points;
         repo.save(updatedPlayer);
         return ResponseEntity.ok(updatedPlayer);
     }
@@ -135,7 +135,7 @@ public class LeaderboardController {
                                                            @RequestBody int points) {
         if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
         Player updatedPlayer = repo.findById(playerId).get();
-        updatedPlayer.setCurrentPoints(points);
+        updatedPlayer.currentPoints += points;
         repo.save(updatedPlayer);
         return ResponseEntity.ok(updatedPlayer);
     }
