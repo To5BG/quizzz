@@ -230,7 +230,6 @@ public abstract class GameCtrl implements Initializable {
             multiChoiceAnswers.add(choice);
             answerArea.getChildren().add(choice);
         }
-        answerArea.alignmentProperty();
     }
 
     /**
