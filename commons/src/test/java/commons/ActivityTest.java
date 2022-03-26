@@ -19,7 +19,7 @@ class ActivityTest {
     public void checkConstructor() {
         var a = new Activity("t", 1L, "root", "google.com");
         assertEquals("t", a.title);
-        assertEquals("1", a.consumption_in_wh);
+        assertEquals(1L, a.consumption_in_wh);
         assertEquals("root", a.image_path);
         assertEquals("google.com", a.source);
     }
