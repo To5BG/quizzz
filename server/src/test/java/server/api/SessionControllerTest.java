@@ -66,10 +66,10 @@ public class SessionControllerTest {
 
         GameSession next = new GameSession(GameSession.SessionType.MULTIPLAYER);
         next.id = s.id;
-        next.playersReady = 42;
+        next.playersReady.set(42);
 
         sut.updateSession(next);
-        assertEquals(42, sut.getAllSessions().get(0).playersReady);
+        assertEquals(42, sut.getAllSessions().get(0).playersReady.get());
     }
 
     @Test
@@ -89,7 +89,7 @@ public class SessionControllerTest {
         Question tmp = first.currentQuestion;
         first.setPlayerReady();
         assertSame(1, first.questionCounter);
-        assertSame(1, first.playersReady);
+        assertSame(1, first.playersReady.get());
         assertEquals(tmp, first.currentQuestion);
     }
 
@@ -101,7 +101,7 @@ public class SessionControllerTest {
         sut.setPlayerReady(first.id);
 
         assertSame(2, first.questionCounter);
-        assertSame(1, first.playersReady);
+        assertSame(1, first.playersReady.get());
         assertNotNull(first.currentQuestion);
         assertNotSame(tmp, first.currentQuestion);
     }
@@ -218,7 +218,7 @@ public class SessionControllerTest {
         sut.addSession(first);
         sut.addPlayer(first.id, new Player("test", 0));
         sut.setPlayerReady(first.id);
-        assertSame(1, sut.getSessionById(first.id).getBody().playersReady);
+        assertSame(1, sut.getSessionById(first.id).getBody().playersReady.get());
 
         ResponseEntity<GameSession> resp = sut.setPlayerReady(42L);
         assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
@@ -230,7 +230,7 @@ public class SessionControllerTest {
         sut.addPlayer(first.id, new Player("test", 0));
         sut.setPlayerReady(first.id);
         sut.unsetPlayerReady(first.id);
-        assertSame(0, sut.getSessionById(first.id).getBody().playersReady);
+        assertSame(0, sut.getSessionById(first.id).getBody().playersReady.get());
 
         ResponseEntity<GameSession> resp = sut.unsetPlayerReady(42L);
         assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());

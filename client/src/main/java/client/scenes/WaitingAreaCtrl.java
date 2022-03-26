@@ -120,7 +120,7 @@ public class WaitingAreaCtrl implements Initializable {
         ObservableList<Player> data = FXCollections.observableList(waitingArea.players);
         currentPlayers.setItems(data);
 
-        int playersReady = waitingArea.playersReady;
+        int playersReady = waitingArea.playersReady.get();
         int playersCount = waitingArea.players.size();
 
         if (waitingArea.sessionStatus == GameSession.SessionStatus.TRANSFERRING) {

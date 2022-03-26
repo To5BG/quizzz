@@ -191,14 +191,14 @@ public class MultiplayerCtrl extends GameCtrl {
                         if (gameSessionUtils.getSession(sessionId).sessionStatus
                                 == GameSession.SessionStatus.PLAY_AGAIN) {
                             if (gameSessionUtils.getSession(sessionId).players.size() ==
-                                    gameSessionUtils.getSession(sessionId).playersReady) {
+                                    gameSessionUtils.getSession(sessionId).playersReady.get()) {
                                 //Speed the timer up
                                 waitingSkip = 4;
                             } else {
                                 //Slow the timer down
                                 waitingSkip = 0;
                             }
-                            status.setText(gameSessionUtils.getSession(sessionId).playersReady + " / " +
+                            status.setText(gameSessionUtils.getSession(sessionId).playersReady.get() + " / " +
                                     gameSessionUtils.getSession(sessionId).players.size()
                                     + " players want to play again");
                         }
@@ -361,7 +361,7 @@ public class MultiplayerCtrl extends GameCtrl {
                 Platform.runLater(() -> {
                     if (gameSessionUtils.getPlayers(sessionId).size() >= 2 && isPlayingAgain()) {
                         GameSession session = gameSessionUtils.toggleReady(sessionId, false);
-                        if (session.playersReady == 0) {
+                        if (session.playersReady.get() == 0) {
                             gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
                         }
                         reset();
