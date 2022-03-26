@@ -44,8 +44,8 @@ public class QuestionController {
                         (20 * eval.points));
                 break;
             case RANGE_GUESS:
-                int givenAnswer;
-                int actualAnswer = eval.correctAnswers.get(0);
+                long givenAnswer;
+                long actualAnswer = eval.correctAnswers.get(0);
                 try {
                     givenAnswer = ans.answers.get(0);
                 } catch (NumberFormatException ex) {
@@ -120,7 +120,7 @@ public class QuestionController {
      * for the current question in the session
      */
     @GetMapping(path = "/answers/{sessionId}")
-    public ResponseEntity<List<Integer>> getCorrectAnswers(@PathVariable("sessionId") long sessionId) {
+    public ResponseEntity<List<Long>> getCorrectAnswers(@PathVariable("sessionId") long sessionId) {
         ResponseEntity<GameSession> session = sessions.getSessionById(sessionId);
         if (session.getStatusCode() == HttpStatus.BAD_REQUEST) {
             return ResponseEntity.badRequest().build();

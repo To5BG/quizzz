@@ -42,10 +42,10 @@ public class SessionControllerTest {
         random = new MyRandom();
         playerRepo = new TestPlayerRepository();
         activityRepo = new TestActivityRepository();
-        activityRepo.save(new Activity("test","42","test","test"));
-        activityRepo.save(new Activity("test2","43","test2","test2"));
-        activityRepo.save(new Activity("test3","44","test3","test3"));
-        activityRepo.save(new Activity("test4","45","test4","test4"));
+        activityRepo.save(new Activity("test",42L,"test","test"));
+        activityRepo.save(new Activity("test2",43L,"test2","test2"));
+        activityRepo.save(new Activity("test3",44L,"test3","test3"));
+        activityRepo.save(new Activity("test4",45L,"test4","test4"));
 
         stubSessionManager = new StubSessionManager();
         sut = new SessionController(random, playerRepo, "test", stubSessionManager,

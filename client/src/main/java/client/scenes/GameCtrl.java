@@ -240,16 +240,16 @@ public abstract class GameCtrl implements Initializable {
         }
     }
 
-    private void renderEstimationAnswers(List<Integer> correctAnswers) {
-        int givenAnswer = 0;
-        int actualAnswer = correctAnswers.get(0);
+    private void renderEstimationAnswers(List<Long> correctAnswers) {
+        long givenAnswer = 0L;
+        long actualAnswer = correctAnswers.get(0);
         try {
             givenAnswer = Integer.parseInt(estimationAnswer.getText());
         } catch (NumberFormatException ex) {
             givenAnswer = actualAnswer;
         }
 
-        int diff = givenAnswer - actualAnswer;
+        long diff = givenAnswer - actualAnswer;
         String correctAnswer = "Correct Answer: " + actualAnswer;
 
         if (diff > 0) {
@@ -268,7 +268,7 @@ public abstract class GameCtrl implements Initializable {
      *
      * @param correctIndices Indexes of the correct answer(s)
      */
-    protected void renderMultipleChoiceAnswers(List<Integer> correctIndices) {
+    protected void renderMultipleChoiceAnswers(List<Long> correctIndices) {
         for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
             if (correctIndices.contains(i)) {
                 multiChoiceAnswers.get(i).setStyle("-fx-background-color: green");

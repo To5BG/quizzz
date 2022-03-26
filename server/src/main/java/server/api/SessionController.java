@@ -49,7 +49,7 @@ public class SessionController {
     public void updateQuestion(GameSession session) {
         session.difficultyFactor = session.questionCounter / 4 + 1;
         session.questionCounter++;
-        Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion(session.difficultyFactor, activityCtrl);
+        Pair<Question, List<Long>> res = QuestionGenerator.generateQuestion(session.difficultyFactor, activityCtrl);
         session.currentQuestion = res.getKey();
         session.expectedAnswers.clear();
         session.expectedAnswers.addAll(res.getValue());

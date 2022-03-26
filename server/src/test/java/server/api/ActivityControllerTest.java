@@ -103,7 +103,7 @@ public class ActivityControllerTest {
 
     private static Activity getActivity(String str) {
         return (str == null)
-                ? new Activity(null, null, null, null)
-                : new Activity(str + " " + str + " " + str, "42", str, str);
+                ? new Activity(null, 0L, null, null)
+                : new Activity(str + " " + str + " " + str, 42L, str, str);
     }
 }

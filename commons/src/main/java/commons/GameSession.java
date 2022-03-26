@@ -18,7 +18,7 @@ public class GameSession {
     public List<Player> removedPlayers;
 
     public Question currentQuestion;
-    public List<Integer> expectedAnswers;
+    public List<Long> expectedAnswers;
 
     public AtomicInteger playersReady;
     public int questionCounter;
@@ -50,14 +50,14 @@ public class GameSession {
     }
 
     public GameSession(SessionType sessionType) {
-        this(sessionType, new ArrayList<Player>(), new ArrayList<Integer>());
+        this(sessionType, new ArrayList<Player>(), new ArrayList<Long>());
     }
 
     public GameSession(SessionType sessionType, List<Player> players) {
-        this(sessionType, players, new ArrayList<Integer>());
+        this(sessionType, players, new ArrayList<Long>());
     }
 
-    public GameSession(SessionType sessionType, List<Player> players, List<Integer> expectedAnswers) {
+    public GameSession(SessionType sessionType, List<Player> players, List<Long> expectedAnswers) {
         this.removedPlayers = new ArrayList<Player>();
         this.players = players;
         this.sessionType = sessionType;
