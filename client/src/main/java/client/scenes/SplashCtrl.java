@@ -195,6 +195,20 @@ public class SplashCtrl {
     }
 
     /**
+     * Initialize setup for main controller's showRoomSelection() method.
+     * In case a player enters an invalid/blank username, or if the username is used in an active game session, they are
+     * being prompted to change their username.
+     */
+    public void showRoomSelection() {
+        if (!establishConnection()) return;
+        String newUserName = usernameField.getText();
+        Optional<Player> playerResult = generatePlayer(newUserName);
+        if (playerResult.isEmpty()) return;
+
+        mainCtrl.showRoomSelection();
+    }
+
+    /**
      * Initialize setup for main controller's showSinglePlayer() method.
      * In case a player enters an invalid/blank username, or if the username is used in an active game session, they are
      * not added to the session, instead being prompted to change their username.

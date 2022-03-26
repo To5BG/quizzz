@@ -35,6 +35,8 @@ public class MainCtrl {
     private Scene splashScreen;
     private MultiplayerCtrl multiplayerCtrl;
     private Scene multiPlayerScreen;
+    private RoomSelectionCtrl roomSelectionCtrl;
+    private Scene roomSelectionScreen;
     private SingleplayerCtrl singlePlayerCtrl;
     private Scene singlePlayerScreen;
     private WaitingAreaCtrl waitingAreaCtrl;
@@ -52,6 +54,7 @@ public class MainCtrl {
      */
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
                            Pair<MultiplayerCtrl, Parent> multi,
+                           Pair<RoomSelectionCtrl, Parent> rooms,
                            Pair<WaitingAreaCtrl, Parent> wait,
                            Pair<SingleplayerCtrl, Parent> single,
                            Pair<LeaderBoardCtrl, Parent> leaderboard) {
@@ -62,6 +65,9 @@ public class MainCtrl {
 
         this.multiplayerCtrl = multi.getKey();
         this.multiPlayerScreen = new Scene(multi.getValue());
+
+        this.roomSelectionCtrl = rooms.getKey();
+        this.roomSelectionScreen = new Scene(rooms.getValue());
 
         this.waitingAreaCtrl = wait.getKey();
         this.waitingAreaScreen = new Scene(wait.getValue());
@@ -103,6 +109,34 @@ public class MainCtrl {
         multiplayerCtrl.registerForEmojiUpdates();
         multiplayerCtrl.loadQuestion();
         multiplayerCtrl.scanForDisconnect();
+    }
+
+    /**
+     * Sets the current screen to the room selection area.
+     * Contains a scheduled task to refresh the available waiting rooms.
+     */
+    public void showRoomSelection() {
+        primaryStage.setTitle("Room Selection");
+        primaryStage.setScene(roomSelectionScreen);
+        roomSelectionScreen.setOnKeyPressed(e -> roomSelectionCtrl.keyPressed(e));
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    try {
+                        if (!roomSelectionCtrl.refresh()) cancel();
+                    } catch (Exception e) {
+                        cancel();
+                    }
+                });
+            }
+
+            @Override
+            public boolean cancel() {
+                return super.cancel();
+            }
+        }, 0, 500);
     }
 
     /**
