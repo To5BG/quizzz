@@ -11,11 +11,11 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class LeaderboardUtils {
 
-    private static final String SERVER = "http://localhost:8080/";
+    public static String serverConnection = "http://localhost:8080/";
 
     public List<Player> getAllLeaderBoardPlayers() {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/")
+                .target(serverConnection).path("api/leaderboard/")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Player>>() {
@@ -30,7 +30,7 @@ public class LeaderboardUtils {
      */
     public List<Player> getPlayerSingleScore() {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/single")
+                .target(serverConnection).path("api/leaderboard/single")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Player>>() {
@@ -45,7 +45,7 @@ public class LeaderboardUtils {
      */
     public List<Player> getPlayerMultiScore() {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/multi")
+                .target(serverConnection).path("api/leaderboard/multi")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Player>>() {
@@ -60,7 +60,7 @@ public class LeaderboardUtils {
      */
     public Player getPlayerByIdInLeaderboard(long playerId) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/" + playerId)
+                .target(serverConnection).path("api/leaderboard/" + playerId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<Player>() {
@@ -74,7 +74,7 @@ public class LeaderboardUtils {
      */
     public Player getPlayerByUsername(String username) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/getByUsername/" + username)
+                .target(serverConnection).path("api/leaderboard/getByUsername/" + username)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<Player>() {

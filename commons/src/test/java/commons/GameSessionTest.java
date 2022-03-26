@@ -43,7 +43,7 @@ public class GameSessionTest {
         assertNull(session.players);
         assertNull(session.sessionStatus);
         assertNull(session.sessionType);
-        assertSame(0, session.playersReady);
+        assertNull(session.playersReady);
         assertSame(0, session.questionCounter);
         assertSame(0L, session.id);
     }
@@ -53,18 +53,18 @@ public class GameSessionTest {
         GameSession waitingArea = new GameSession(GameSession.SessionType.WAITING_AREA);
         waitingArea.addPlayer(SOME_PLAYER);
         waitingArea.setPlayerReady();
-        assertSame(1, waitingArea.playersReady);
+        assertSame(1, waitingArea.playersReady.get());
         waitingArea.setPlayerReady();
-        assertSame(1, waitingArea.playersReady);
+        assertSame(1, waitingArea.playersReady.get());
     }
 
     @Test
     public void testUnsetReady() {
         s.unsetPlayerReady();
-        assertSame(0, s.playersReady);
+        assertSame(0, s.playersReady.get());
         s.setPlayerReady();
         s.unsetPlayerReady();
-        assertSame(0, s.playersReady);
+        assertSame(0, s.playersReady.get());
     }
 
     @Test
@@ -85,7 +85,7 @@ public class GameSessionTest {
         assertEquals(SOME_PLAYER, s.players.get(0));
         assertNotNull(s.expectedAnswers);
         assertSame(0, s.questionCounter);
-        assertSame(0, s.playersReady);
+        assertSame(0, s.playersReady.get());
     }
 
     @Test

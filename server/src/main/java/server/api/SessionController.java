@@ -61,7 +61,7 @@ public class SessionController {
      * @param session The session to end
      */
     public void endSession(GameSession session) {
-        session.playersReady = 0;
+        session.playersReady.set(0);
         if (session.sessionType == GameSession.SessionType.SINGLEPLAYER) {
             Player p = session.getPlayers().get(0);
             p.bestSingleScore = Math.max(p.bestSingleScore, p.currentPoints);
@@ -102,7 +102,7 @@ public class SessionController {
         } else if (session.questionCounter == GameSession.GAME_ROUNDS) {
             endSession(session);
         } else if (session.questionCounter == 0) {
-            session.playersReady = 0;
+            session.playersReady.set(0);
             updateQuestion(session);
         } else {
             System.out.println("Server paused session");
@@ -230,10 +230,10 @@ public class SessionController {
         GameSession session = sm.getById(sessionId);
         session.setPlayerReady();
         if (session.sessionType != GameSession.SessionType.WAITING_AREA &&
-                session.playersReady == session.players.size()) {
+                session.playersReady.get() == session.players.size()) {
             advanceRounds(session);
         } else if (session.sessionType == GameSession.SessionType.WAITING_AREA &&
-                session.playersReady == session.players.size()) {
+                session.playersReady.get() == session.players.size()) {
             startNewMultiplayerSession(session);
         } else {
             updateSession(session);
@@ -252,7 +252,7 @@ public class SessionController {
         if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = sm.getById(sessionId);
         session.unsetPlayerReady();
-        if (session.playersReady == 0) {
+        if (session.playersReady.get() == 0) {
             if (session.sessionType == GameSession.SessionType.WAITING_AREA) {
                 session.setSessionStatus(GameSession.SessionStatus.WAITING_AREA);
                 GameSession newMultiSession = getAvailableSession().getBody();

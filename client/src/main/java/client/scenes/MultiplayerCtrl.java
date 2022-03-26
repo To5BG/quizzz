@@ -191,14 +191,14 @@ public class MultiplayerCtrl extends GameCtrl {
                         if (gameSessionUtils.getSession(sessionId).sessionStatus
                                 == GameSession.SessionStatus.PLAY_AGAIN) {
                             if (gameSessionUtils.getSession(sessionId).players.size() ==
-                                    gameSessionUtils.getSession(sessionId).playersReady) {
+                                    gameSessionUtils.getSession(sessionId).playersReady.get()) {
                                 //Speed the timer up
                                 waitingSkip = 4;
                             } else {
                                 //Slow the timer down
                                 waitingSkip = 0;
                             }
-                            status.setText(gameSessionUtils.getSession(sessionId).playersReady + " / " +
+                            status.setText(gameSessionUtils.getSession(sessionId).playersReady.get() + " / " +
                                     gameSessionUtils.getSession(sessionId).players.size()
                                     + " players want to play again");
                         }
@@ -237,6 +237,10 @@ public class MultiplayerCtrl extends GameCtrl {
 
     @Override
     public void shutdown() {
+        if (submitButton.isDisabled() &&
+                gameSessionUtils.getSession(sessionId).sessionStatus != GameSession.SessionStatus.PLAY_AGAIN ) {
+            gameSessionUtils.toggleReady(sessionId, false);
+        }
         if (gameSessionUtils.getSession(sessionId).sessionStatus == GameSession.SessionStatus.PLAY_AGAIN &&
                 playAgain.getText().equals("Don't play again")) {
             playAgain();
@@ -357,13 +361,18 @@ public class MultiplayerCtrl extends GameCtrl {
                 Platform.runLater(() -> {
                     if (gameSessionUtils.getPlayers(sessionId).size() >= 2 && isPlayingAgain()) {
                         GameSession session = gameSessionUtils.toggleReady(sessionId, false);
-                        if (session.playersReady == 0) {
+                        if (session.playersReady.get() == 0) {
                             gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
                         }
                         reset();
                         loadQuestion();
                     } else {
                         leaveGame();
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Unable to start new game!");
+                        alert.setHeaderText("There are too few people to play again:");
+                        alert.setContentText("Please join a fresh game to play with more people!");
+                        alert.showAndWait();
                     }
                 });
             }
