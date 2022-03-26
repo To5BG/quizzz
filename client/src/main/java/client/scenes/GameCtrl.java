@@ -578,7 +578,7 @@ public abstract class GameCtrl implements Initializable {
         gameSessionUtils.toggleReady(sessionId, true);
 
         var session = gameSessionUtils.getSession(sessionId);
-        if (session.playersReady == session.players.size()) {
+        if (session.playersReady.get() == session.players.size()) {
             gameSessionUtils.updateStatus(session, GameSession.SessionStatus.PAUSED);
         }
     }
@@ -626,7 +626,7 @@ public abstract class GameCtrl implements Initializable {
                     } else {
                         try {
                             GameSession session = gameSessionUtils.toggleReady(sessionId, false);
-                            if (session.playersReady == 0) {
+                            if (session.playersReady.get() == 0) {
                                 gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
                             }
                             imagePanel.setImage(null);
@@ -702,7 +702,7 @@ public abstract class GameCtrl implements Initializable {
         this.timerThread.start();
 
         GameSession session = gameSessionUtils.toggleReady(sessionId, false);
-        if (session.playersReady == 0) {
+        if (session.playersReady.get() == 0) {
             gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
         }
         new Timer().schedule(new TimerTask() {

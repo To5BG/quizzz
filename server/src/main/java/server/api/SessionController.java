@@ -158,7 +158,7 @@ public class SessionController {
         GameSession session = sm.getById(sessionId);
         session.setPlayerReady();
         if (session.sessionType != GameSession.SessionType.WAITING_AREA &&
-                session.playersReady == session.players.size()) {
+                session.playersReady.get() == session.players.size()) {
             updateQuestion(session);
         }
         return ResponseEntity.ok(session);
