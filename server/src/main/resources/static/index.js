@@ -177,6 +177,17 @@ function postJsonFile(event) {
 
 /*------------------------ EDIT ACTIVITY --------------------------*/
 
+async function updateEditedActivity(id, activityDetails) {
+    let url = basePath + "/" + id;
+    return await fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: activityDetails
+    });
+}
+
 async function editActivity(event) {
     event.preventDefault();
 
@@ -189,30 +200,19 @@ async function editActivity(event) {
         .then(response => {
             if (response.status === 400) {
                 console.log("Bad request!");
-                alertMsg.textContent = "Addition was unsuccessful!";
+                alertMsg.textContent = "Edit was unsuccessful!";
                 alertMsg.style.setProperty("color", "red");
             } else return response.json()
                 .then(_ => {
-                    alertMsg.textContent = "Addition was successful!";
+                    alertMsg.textContent = "Edit was successful!";
                     alertMsg.style.setProperty("color", "green");
                     refreshTable();
                 }, err => {
                     console.log("Error! " + err);
-                    alertMsg.textContent = "Addition was unsuccessful!";
+                    alertMsg.textContent = "Edit was unsuccessful!";
                     alertMsg.style.setProperty("color", "red");
                 });
         });
-}
-
-async function updateEditedActivity(id, activityDetails) {
-    let url = basePath + "/" + id;
-    return await fetch(url, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: activityDetails
-    });
 }
 
 /*------------------------ REMOVE ACTIVITY --------------------------*/
