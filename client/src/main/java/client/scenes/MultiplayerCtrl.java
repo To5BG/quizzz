@@ -249,7 +249,10 @@ public class MultiplayerCtrl extends GameCtrl {
 
     @Override
     public void shutdown() {
-        if (submitButton.isDisabled()) gameSessionUtils.toggleReady(sessionId, false);
+        if (submitButton.isDisabled() &&
+                gameSessionUtils.getSession(sessionId).sessionStatus != GameSession.SessionStatus.PLAY_AGAIN ) {
+            gameSessionUtils.toggleReady(sessionId, false);
+        }
         if (gameSessionUtils.getSession(sessionId).sessionStatus == GameSession.SessionStatus.PLAY_AGAIN) {
             if (playAgain.getText().equals("Don't play again")) playAgain();
         }
