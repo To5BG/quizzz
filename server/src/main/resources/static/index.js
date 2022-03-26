@@ -51,7 +51,7 @@ function toggleInputForm(contName) {
     let children = document.getElementById("inputCont").children;
     for (let container of children) {
         if (container.id === contName) {
-            let newOpacity = 1 - parseInt(container.style.getPropertyValue("opacity"));
+            let newOpacity = 1 - container.style.getPropertyValue("opacity");
             container.style.setProperty("opacity", newOpacity.toString());
 
             for (let input of container.querySelectorAll("input,textarea")) {
