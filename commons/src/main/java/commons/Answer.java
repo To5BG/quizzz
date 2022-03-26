@@ -13,6 +13,7 @@ public class Answer {
 
     public Question.QuestionType type;
     public List<Integer> answers;
+    public double timeFactor;
 
     public Answer() {
         this.type = Question.QuestionType.UNKNOWN;

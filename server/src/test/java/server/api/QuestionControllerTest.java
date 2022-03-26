@@ -17,6 +17,7 @@ public class QuestionControllerTest {
     private QuestionController sut;
     private TestPlayerRepository repo;
     private SessionController sessionCtrl;
+    private LeaderboardController leaderboardController;
     private static ActivityController activityCtrl;
     private static TestActivityRepository activityRepo;
 
@@ -33,11 +34,13 @@ public class QuestionControllerTest {
     @BeforeEach
     public void setupEach() {
         repo = new TestPlayerRepository();
+        leaderboardController = new LeaderboardController(repo);
         sessionCtrl = new SessionController(new Random(), repo, "test", new SessionManager(),
                 activityCtrl);
+
         ResponseEntity<GameSession> cur = sessionCtrl.addSession(
                 new GameSession(GameSession.SessionType.MULTIPLAYER, List.of(new Player("test",0))));
-        sut = new QuestionController(sessionCtrl);
+        sut = new QuestionController(sessionCtrl, leaderboardController);
     }
 
     @Test
@@ -60,7 +63,7 @@ public class QuestionControllerTest {
     @Test
     public void submitAnswerNoSessionTest() {
         ResponseEntity<Evaluation> resp = sut.submitAnswer(42L,
-                new Answer(Question.QuestionType.MULTIPLE_CHOICE));
+                42L, new Answer(List.of(0), Question.QuestionType.MULTIPLE_CHOICE));
 
         assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
     }
@@ -72,7 +75,7 @@ public class QuestionControllerTest {
         Question q = s.currentQuestion;
 
         ResponseEntity<Evaluation> resp = sut.submitAnswer(s.id,
-                new Answer(Question.QuestionType.MULTIPLE_CHOICE));
+                s.getPlayers().get(0).id, new Answer(List.of(0), Question.QuestionType.MULTIPLE_CHOICE));
 
         Evaluation eval = resp.getBody();
 
