@@ -90,9 +90,7 @@ public class LeaderBoardCtrl implements Initializable {
      */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
-            case ESCAPE:
-                back();
-                break;
+            case ESCAPE -> back();
         }
     }
 
@@ -121,8 +119,6 @@ public class LeaderBoardCtrl implements Initializable {
      */
     public void showMultiLeaderboard() {
         colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestMultiScore)));
-        //data.stream().sorted(Comparator.comparing(Player::getBestMultiScore).reversed())
-        //.collect(Collectors.toList());
         refreshMulti();
         allPlayers.setItems(data);
         allPlayers.refresh();
@@ -134,8 +130,6 @@ public class LeaderBoardCtrl implements Initializable {
      */
     public void showSingleLeaderBoard() {
         colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
-        //data.stream().sorted(Comparator.comparing(Player::getBestSingleScore).reversed())
-        // .collect(Collectors.toList());
         refreshSingle();
         allPlayers.setItems(data);
         allPlayers.refresh();

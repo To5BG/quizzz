@@ -17,8 +17,6 @@ package commons;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerTest {
@@ -74,32 +72,5 @@ public class PlayerTest {
 		assertTrue(str.contains("\n"));
 		assertTrue(str.contains("username"));
 		assertTrue(str.contains("0"));
-	}
-
-	@Test
-	public void setAnswerTest() {
-		Player p = new Player("test", 0);
-		Answer a = new Answer(List.of(1, 2, 3), Question.QuestionType.MULTIPLE_CHOICE);
-		p.setAnswer(a);
-		String expected = "[" + System.lineSeparator() + "  answers=[1, 2, 3]" +
-				System.lineSeparator() + "  type=MULTIPLE_CHOICE" +
-				System.lineSeparator() + "]";
-		assertEquals(expected, p.ans);
-	}
-
-	@Test
-	public void parseAnswerTest() {
-		Player p = new Player("test", 0);
-		Answer a = new Answer(List.of(1, 2, 3), Question.QuestionType.MULTIPLE_CHOICE);
-		p.setAnswer(a);
-		assertEquals(a, p.parsedAnswer());
-
-		Answer b = new Answer(List.of(1), Question.QuestionType.UNKNOWN);
-		p.setAnswer(b);
-		assertEquals(b, p.parsedAnswer());
-
-		Answer c = new Answer(List.of(), Question.QuestionType.UNKNOWN);
-		p.setAnswer(c);
-		assertEquals(c, p.parsedAnswer());
 	}
 }
