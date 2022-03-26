@@ -397,6 +397,11 @@ public class MultiplayerCtrl extends GameCtrl {
                         loadQuestion();
                     } else {
                         leaveGame();
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Unable to start new game!");
+                        alert.setHeaderText("There are too few people to play again:");
+                        alert.setContentText("Please join a fresh game to play with more people!");
+                        alert.showAndWait();
                     }
                 });
             }
