@@ -15,10 +15,7 @@
  */
 package client.scenes;
 
-import client.utils.GameSessionUtils;
-import client.utils.LeaderboardUtils;
-import client.utils.QuestionUtils;
-import client.utils.WebSocketsUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Emoji;
 import commons.GameSession;
@@ -29,7 +26,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -72,6 +68,7 @@ public class MultiplayerCtrl extends GameCtrl {
     private StompSession.Subscription channel;
     private boolean playingAgain;
     private int waitingSkip = 0;
+    private final static long END_GAME_TIME = 60L;
 
     @Inject
     public MultiplayerCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
@@ -145,15 +142,13 @@ public class MultiplayerCtrl extends GameCtrl {
 
             @Override
             public void run() {
-                Platform.runLater(() -> {
-                    List<Player> allRemoved = gameSessionUtils.getRemovedPlayers(sessionId);
-                    List<Player> newRemoved = new ArrayList<Player>();
-                    for (int i = lastDisconnectIndex + 1; i < allRemoved.size(); i++) {
-                        newRemoved.add(allRemoved.get(i));
-                    }
-                    disconnectedText(newRemoved);
-                    lastDisconnectIndex = allRemoved.size() - 1;
-                });
+                List<Player> allRemoved = gameSessionUtils.getRemovedPlayers(sessionId);
+                List<Player> newRemoved = new ArrayList<Player>();
+                for (int i = lastDisconnectIndex + 1; i < allRemoved.size(); i++) {
+                    newRemoved.add(allRemoved.get(i));
+                }
+                Platform.runLater(() -> disconnectedText(newRemoved));
+                lastDisconnectIndex = allRemoved.size() - 1;
             }
         }, 0, 2000);
     }
@@ -186,36 +181,33 @@ public class MultiplayerCtrl extends GameCtrl {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            if (gameSessionUtils.getSession(sessionId).sessionStatus
-                                    == GameSession.SessionStatus.PAUSED) {
-                                startEvaluation(bestMultiScore);
-                                cancel();
-                            }
-                            if (gameSessionUtils.getSession(sessionId).sessionStatus
-                                    == GameSession.SessionStatus.PLAY_AGAIN) {
-                                if (gameSessionUtils.getSession(sessionId).players.size() ==
-                                        gameSessionUtils.getSession(sessionId).playersReady.get()) {
-                                    //Speed the timer up
-                                    waitingSkip = 4;
-                                } else {
-                                    //Slow the timer down
-                                    waitingSkip = 0;
-                                }
-                                status.setText(gameSessionUtils.getSession(sessionId).playersReady.get() + " / " +
-                                        gameSessionUtils.getSession(sessionId).players.size()
-                                        + " players want to play again");
-                            }
-                            if (gameSessionUtils.getSession(sessionId).sessionStatus
-                                    == GameSession.SessionStatus.TRANSFERRING) {
-                                cancel();
-                            }
-                        } catch (Exception e) {
+                Platform.runLater(() -> {
+                    try {
+                        if (gameSessionUtils.getSession(sessionId).sessionStatus
+                                == GameSession.SessionStatus.PAUSED) {
+                            startEvaluation();
                             cancel();
                         }
+                        if (gameSessionUtils.getSession(sessionId).sessionStatus
+                                == GameSession.SessionStatus.PLAY_AGAIN) {
+                            if (gameSessionUtils.getSession(sessionId).players.size() ==
+                                    gameSessionUtils.getSession(sessionId).playersReady.get()) {
+                                //Speed the timer up
+                                waitingSkip = 4;
+                            } else {
+                                //Slow the timer down
+                                waitingSkip = 0;
+                            }
+                            status.setText(gameSessionUtils.getSession(sessionId).playersReady.get() + " / " +
+                                    gameSessionUtils.getSession(sessionId).players.size()
+                                    + " players want to play again");
+                        }
+                        if (gameSessionUtils.getSession(sessionId).sessionStatus
+                                == GameSession.SessionStatus.TRANSFERRING) {
+                            cancel();
+                        }
+                    } catch (Exception e) {
+                        cancel();
                     }
                 });
             }
@@ -237,20 +229,17 @@ public class MultiplayerCtrl extends GameCtrl {
         if (!initiatedByTimer && this.evaluation == null) return;
 
         //enable jokers that can be used after submitting an answer
-        if (decreaseTimeJoker) {
-            disableButton(decreaseTimeButton, false);
-        }
-        if (doublePointsJoker) {
-            disableButton(doublePointsButton, false);
-        }
+        disableButton(decreaseTimeButton, !decreaseTimeJoker);
+        disableButton(doublePointsButton, !doublePointsJoker);
 
         refresh();
     }
 
     @Override
     public void shutdown() {
-        if (gameSessionUtils.getSession(sessionId).sessionStatus == GameSession.SessionStatus.PLAY_AGAIN) {
-            if (playAgain.getText().equals("Don't play again")) playAgain();
+        if (gameSessionUtils.getSession(sessionId).sessionStatus == GameSession.SessionStatus.PLAY_AGAIN &&
+                playAgain.getText().equals("Don't play again")) {
+            playAgain();
         }
         channel.unsubscribe();
         super.shutdown();
@@ -266,15 +255,9 @@ public class MultiplayerCtrl extends GameCtrl {
         emojiList.setItems(sessionEmojis);
 
         channel = this.webSocketsUtils.registerForEmojiUpdates(emoji -> {
-            System.out.println("Emoji received for the current room: " + emoji);
             sessionEmojis.add(emoji);
             Platform.runLater(() -> emojiList.scrollTo(sessionEmojis.size() - 1));
         }, this.sessionId);
-    }
-
-    @Override
-    public void updateScore(long playerId, int points, boolean isBestScore) {
-        leaderboardUtils.updateMultiScore(playerId, points, isBestScore);
     }
 
     /**
@@ -341,40 +324,25 @@ public class MultiplayerCtrl extends GameCtrl {
         waitingSkip = 0;
         questionCount.setText("End of game! Play again or go back to main.");
 
-        Task roundTimer = new Task() {
-            @Override
-            public Object call() {
-                long refreshCounter = 0;
-                long waitingTime = 60000L;
-                while (refreshCounter * TIMER_UPDATE_INTERVAL_MS < waitingTime) {
-                    updateProgress(waitingTime - refreshCounter * TIMER_UPDATE_INTERVAL_MS, waitingTime);
-                    refreshCounter += waitingSkip + 1;
-                    try {
-                        Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
-                    } catch (InterruptedException e) {
-                        updateProgress(0, 1);
-                        return null;
-                    }
+        TimeUtils roundTimer = new TimeUtils(END_GAME_TIME, TIMER_UPDATE_INTERVAL_MS);
+        roundTimer.setTimeBooster(() -> (double)waitingSkip);
+        roundTimer.setOnSucceeded((event) -> {
+            gameSessionUtils.updateStatus(gameSessionUtils.getSession(sessionId),
+                    GameSession.SessionStatus.TRANSFERRING);
+            Platform.runLater(() -> {
+                if (isPlayingAgain()) {
+                    startGame();
+                } else {
+                    leaveGame();
                 }
-                updateProgress(0, 1);
-                gameSessionUtils.updateStatus(gameSessionUtils.getSession(sessionId),
-                        GameSession.SessionStatus.TRANSFERRING);
-                Platform.runLater(() -> {
-                    if (isPlayingAgain()) {
-                        startGame();
-                    } else {
-                        leaveGame();
-                    }
-                });
-                return null;
-            }
-        };
+            });
+        });
+
         timeProgress.progressProperty().bind(roundTimer.progressProperty());
         this.timerThread = new Thread(roundTimer);
         this.timerThread.start();
 
-        GameSession session = gameSessionUtils.toggleReady(sessionId, false);
-        gameSessionUtils.updateStatus(session, GameSession.SessionStatus.PLAY_AGAIN);
+        gameSessionUtils.toggleReady(sessionId, false);
         refresh();
     }
 
@@ -391,7 +359,6 @@ public class MultiplayerCtrl extends GameCtrl {
                         GameSession session = gameSessionUtils.toggleReady(sessionId, false);
                         if (session.playersReady.get() == 0) {
                             gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
-                            gameSessionUtils.resetQuestionCounter(sessionId);
                         }
                         reset();
                         loadQuestion();

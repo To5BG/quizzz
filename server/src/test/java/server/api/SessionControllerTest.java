@@ -18,7 +18,6 @@ package server.api;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.OK;
 
-import java.util.List;
 import java.util.Random;
 
 import commons.*;
@@ -244,45 +243,6 @@ public class SessionControllerTest {
         assertEquals(GameSession.SessionStatus.ONGOING, sut.getSessionById(first.id).getBody().sessionStatus);
 
         ResponseEntity<GameSession> resp = sut.updateStatus(42L, GameSession.SessionStatus.ONGOING);
-        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
-    }
-
-    @Test
-    public void setAnswerTest() {
-        sut.addSession(first);
-        ResponseEntity<Player> p = sut.addPlayer(first.id, new Player("test", 0));
-        assertNotNull(p.getBody());
-        Answer a = new Answer(List.of(1, 2, 3), Question.QuestionType.MULTIPLE_CHOICE);
-        sut.setAnswer(first.id, p.getBody().id, a);
-
-        ResponseEntity<GameSession> sess = sut.getSessionById(first.id);
-        assertNotNull(sess.getBody());
-        Player player = sess.getBody().players.get(0);
-        assertEquals(a, player.parsedAnswer());
-
-        ResponseEntity<Answer> resp = sut.setAnswer(first.id, 42L, a);
-        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
-
-        resp = sut.setAnswer(42L, 42L, a);
-        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
-    }
-
-    @Test
-    public void getPlayerAnswerTest() {
-        sut.addSession(first);
-        ResponseEntity<Player> p = sut.addPlayer(first.id, new Player("test", 0));
-        assertNotNull(p.getBody());
-        Answer a = new Answer(List.of(1, 2, 3), Question.QuestionType.MULTIPLE_CHOICE);
-        sut.setAnswer(first.id, p.getBody().id, a);
-
-        ResponseEntity<Answer> ans = sut.getPlayerAnswer(first.id, p.getBody().id);
-        assertNotNull(ans.getBody());
-        assertEquals(a, ans.getBody());
-
-        ResponseEntity<Answer> resp = sut.getPlayerAnswer(first.id, 42L);
-        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
-
-        resp = sut.getPlayerAnswer(42L, 42L);
         assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
     }
 
