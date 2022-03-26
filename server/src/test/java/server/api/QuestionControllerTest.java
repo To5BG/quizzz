@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import server.service.SessionManager;
 
 import java.util.List;
 import java.util.Random;
@@ -14,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class QuestionControllerTest {
     private QuestionController sut;
-    private TestGameSessionRepository repo;
+    private TestPlayerRepository repo;
     private SessionController sessionCtrl;
     private static ActivityController activityCtrl;
     private static TestActivityRepository activityRepo;
@@ -31,8 +32,9 @@ public class QuestionControllerTest {
 
     @BeforeEach
     public void setupEach() {
-        repo = new TestGameSessionRepository();
-        sessionCtrl = new SessionController(new Random(), repo, "test", activityCtrl);
+        repo = new TestPlayerRepository();
+        sessionCtrl = new SessionController(new Random(), repo, "test", new SessionManager(),
+                activityCtrl);
         ResponseEntity<GameSession> cur = sessionCtrl.addSession(
                 new GameSession(GameSession.SessionType.MULTIPLAYER, List.of(new Player("test",0))));
         sut = new QuestionController(sessionCtrl);
