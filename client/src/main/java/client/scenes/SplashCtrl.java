@@ -169,30 +169,30 @@ public class SplashCtrl {
         return Optional.ofNullable(result);
     }
 
-    /**
-     * Initialize setup for main controller's showMultiplayer() method. Creates a new session if no free session is
-     * available and adds the player to the session.
-     * In case a player enters a username already present in an active game session, or an invalid/blank username, they
-     * are not added to the session, instead being prompted to change their username.
-     */
-    public void showWaitingArea() {
-        if (!establishConnection()) return;
-        String newUserName = usernameField.getText();
-        Optional<Player> playerResult = generatePlayer(newUserName);
-        if (playerResult.isEmpty()) return;
-
-        gameSessionUtils.addPlayer(MainCtrl.WAITING_AREA_ID, playerResult.get());
-        long playerId = playerResult.get().id;
-
-        if (playerId == 0L) {
-            playerId = gameSessionUtils
-                    .getPlayers(MainCtrl.WAITING_AREA_ID)
-                    .stream().filter(p -> p.username.equals(newUserName))
-                    .findFirst().get().id;
-        }
-
-        mainCtrl.showWaitingArea(playerId);
-    }
+//    /**
+//     * Initialize setup for main controller's showMultiplayer() method. Creates a new session if no free session is
+//     * available and adds the player to the session.
+//     * In case a player enters a username already present in an active game session, or an invalid/blank username, they
+//     * are not added to the session, instead being prompted to change their username.
+//     */
+//    public void showWaitingArea() {
+//        if (!establishConnection()) return;
+//        String newUserName = usernameField.getText();
+//        Optional<Player> playerResult = generatePlayer(newUserName);
+//        if (playerResult.isEmpty()) return;
+//
+//        gameSessionUtils.addPlayer(MainCtrl.WAITING_AREA_ID, playerResult.get());
+//        long playerId = playerResult.get().id;
+//
+//        if (playerId == 0L) {
+//            playerId = gameSessionUtils
+//                    .getPlayers(MainCtrl.WAITING_AREA_ID)
+//                    .stream().filter(p -> p.username.equals(newUserName))
+//                    .findFirst().get().id;
+//        }
+//
+//        mainCtrl.showWaitingArea(playerid);
+//    }
 
     /**
      * Initialize setup for main controller's showRoomSelection() method.
@@ -205,7 +205,17 @@ public class SplashCtrl {
         Optional<Player> playerResult = generatePlayer(newUserName);
         if (playerResult.isEmpty()) return;
 
-        mainCtrl.showRoomSelection();
+        gameSessionUtils.addPlayer(MainCtrl.SELECTION_ID, playerResult.get());
+        long playerId = playerResult.get().id;
+
+        if (playerId == 0L) {
+            playerId = gameSessionUtils
+                    .getPlayers(MainCtrl.SELECTION_ID)
+                    .stream().filter(p -> p.username.equals(newUserName))
+                    .findFirst().get().id;
+        }
+
+        mainCtrl.showRoomSelection(playerId);
     }
 
     /**

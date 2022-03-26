@@ -15,6 +15,8 @@
  */
 package client.scenes;
 
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
+import commons.Player;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -29,7 +31,8 @@ import java.util.TimerTask;
 public class MainCtrl {
 
     // for now a field will suffice, in case more constants are needed an enum must be created
-    public final static long WAITING_AREA_ID = 1L;
+    public final static long SELECTION_ID = 1L;
+    public final static long WAITING_AREA_ID = 2L;
     private Stage primaryStage;
     private SplashCtrl splashCtrl;
     private Scene splashScreen;
@@ -114,18 +117,19 @@ public class MainCtrl {
     /**
      * Sets the current screen to the room selection area.
      * Contains a scheduled task to refresh the available waiting rooms.
+     * @param playerId - The id of the player that's joining
      */
-    public void showRoomSelection() {
+    public void showRoomSelection(long playerId) {
         primaryStage.setTitle("Room Selection");
         primaryStage.setScene(roomSelectionScreen);
         roomSelectionScreen.setOnKeyPressed(e -> roomSelectionCtrl.keyPressed(e));
-
+        roomSelectionCtrl.setPlayerId(playerId);
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 Platform.runLater(() -> {
                     try {
-                        if (!roomSelectionCtrl.refresh()) cancel();
+                       roomSelectionCtrl.refresh();
                     } catch (Exception e) {
                         cancel();
                     }
@@ -143,13 +147,14 @@ public class MainCtrl {
      * Sets the current screen to the waiting area and adds the player to it. Contains a
      * scheduled task to refresh the waiting area player board.
      *
-     * @param playerId Id of player that's about to join
+     * @param playerId - new Id for the player that's about to join
      */
     public void showWaitingArea(long playerId) {
         primaryStage.setTitle("Waiting area");
         primaryStage.setScene(waitingAreaScreen);
         waitingAreaScreen.setOnKeyPressed(e -> waitingAreaCtrl.keyPressed(e));
         waitingAreaCtrl.setPlayerId(playerId);
+
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override

@@ -38,7 +38,11 @@ public class SessionController {
         this.repo = repo;
         this.sm = sm;
         this.activityCtrl = activityCtrl;
-        if (!controllerConfig.equals("test")) sm.save(new GameSession(GameSession.SessionType.WAITING_AREA));
+        if (!controllerConfig.equals("test")) {
+            sm.save(new GameSession(GameSession.SessionType.SELECTING));
+            sm.save(new GameSession(GameSession.SessionType.WAITING_AREA));
+            sm.save(new GameSession(GameSession.SessionType.WAITING_AREA));
+        }
         if (controllerConfig.equals("all")) resetDatabase();
     }
 
@@ -165,18 +169,16 @@ public class SessionController {
     }
 
     /**
-     * Retrieves an available game session from the DB.
+     * Retrieves all available waiting areas from the DB.
      *
      * @return Available game session
      */
-    @GetMapping({"/join"})
-    public ResponseEntity<GameSession> getAvailableSession() {
-        var session = sm.getValues().stream()
-                .filter(s -> s.sessionType == GameSession.SessionType.MULTIPLAYER &&
-                        s.sessionStatus == GameSession.SessionStatus.STARTED)
-                .findFirst();
-        if (session.isEmpty()) return ResponseEntity.ok(null);
-        else return ResponseEntity.ok(session.get());
+    @GetMapping({"/available"})
+    public ResponseEntity<List<GameSession>> getAvailableSessions() {
+        var sessions = sm.getValues().stream()
+                .filter(s -> s.sessionType == GameSession.SessionType.WAITING_AREA).toList();
+        if (sessions.isEmpty()) return ResponseEntity.ok(null);
+        else return ResponseEntity.ok(sessions);
     }
 
     /**
@@ -255,11 +257,11 @@ public class SessionController {
         if (session.playersReady.get() == 0) {
             if (session.sessionType == GameSession.SessionType.WAITING_AREA) {
                 session.setSessionStatus(GameSession.SessionStatus.WAITING_AREA);
-                GameSession newMultiSession = getAvailableSession().getBody();
-                if (newMultiSession != null) {
-                    newMultiSession.setSessionStatus(GameSession.SessionStatus.ONGOING);
-                    updateSession(newMultiSession);
-                }
+              //  GameSession newMultiSession = getAvailableSession().getBody();
+              //  if (newMultiSession != null) {
+              //      newMultiSession.setSessionStatus(GameSession.SessionStatus.ONGOING);
+              //      updateSession(newMultiSession);
+              //  }
             } else {
                 if (session.sessionStatus != GameSession.SessionStatus.PLAY_AGAIN) {
                     session.setSessionStatus(GameSession.SessionStatus.ONGOING);

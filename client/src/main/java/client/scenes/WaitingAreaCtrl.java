@@ -69,7 +69,8 @@ public class WaitingAreaCtrl implements Initializable {
      */
     public void shutdown() {
         if (readyButton.getText().equals("Not Ready")) gameSessionUtils.toggleReady(MainCtrl.WAITING_AREA_ID, false);
-        gameSessionUtils.removePlayer(MainCtrl.WAITING_AREA_ID, playerId);
+        Player player = gameSessionUtils.removePlayer(MainCtrl.WAITING_AREA_ID, playerId);
+        gameSessionUtils.addPlayer(MainCtrl.SELECTION_ID, player);
         setPlayerId(0L);
     }
 
@@ -77,9 +78,10 @@ public class WaitingAreaCtrl implements Initializable {
      * Reverts the player to the splash screen and remove him from the current game session.
      */
     public void back() {
+        long id = playerId;
         shutdown();
         readyButton.setText("Ready");
-        mainCtrl.showSplash();
+        mainCtrl.showRoomSelection(id);
     }
 
     /**
@@ -124,14 +126,14 @@ public class WaitingAreaCtrl implements Initializable {
         int playersCount = waitingArea.players.size();
 
         if (waitingArea.sessionStatus == GameSession.SessionStatus.TRANSFERRING) {
-            GameSession sessionToJoin = gameSessionUtils.getAvailableSession();
+          //  GameSession sessionToJoin = gameSessionUtils.getAvailableSession();
             gameSessionUtils.toggleReady(MainCtrl.WAITING_AREA_ID, false);
-            if (sessionToJoin == null) return true;
+        //    if (sessionToJoin == null) return true;
 
             readyButton.setText("Ready");
             readyButton.setVisible(false);
 
-            mainCtrl.showMultiplayer(sessionToJoin.id, playerId);
+           // mainCtrl.showMultiplayer(sessionToJoin.id, playerId);
             return false;
         }
         readyButton.setVisible(playersCount >= 2);

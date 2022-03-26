@@ -28,6 +28,7 @@ public class GameSession {
     public SessionType sessionType;
 
     public enum SessionType {
+        SELECTING,
         WAITING_AREA,
         MULTIPLAYER,
         SINGLEPLAYER
@@ -36,6 +37,7 @@ public class GameSession {
     public SessionStatus sessionStatus;
 
     public enum SessionStatus {
+        SELECTING,
         WAITING_AREA,
         TRANSFERRING,
         ONGOING,
@@ -68,7 +70,7 @@ public class GameSession {
         this.timeJokers = 0;
 
         this.sessionStatus = SessionStatus.STARTED;
-        if (sessionType == SessionType.WAITING_AREA) this.sessionStatus = SessionStatus.WAITING_AREA;
+        if (sessionType == SessionType.SELECTING) this.sessionStatus = SessionStatus.SELECTING;
     }
 
     /**

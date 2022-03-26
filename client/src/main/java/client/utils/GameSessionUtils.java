@@ -31,16 +31,16 @@ public class GameSessionUtils {
     }
 
     /**
-     * Retrieves an available game session from the DB.
+     * Retrieves all available waiting rooms from the DB.
      *
      * @return Available game session
      */
-    public GameSession getAvailableSession() {
+    public List<GameSession> getAvailableSessions() {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(serverConnection).path("api/sessions/join")
+                .target(serverConnection).path("api/sessions/available")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<GameSession>() {
+                .get(new GenericType<List<GameSession>>() {
                 });
     }
 

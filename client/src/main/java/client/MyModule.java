@@ -32,7 +32,7 @@ public class MyModule implements Module {
         binder.bind(WaitingAreaCtrl.class).in(Scopes.SINGLETON);
         binder.bind(SingleplayerCtrl.class).in(Scopes.SINGLETON);
         binder.bind(LeaderBoardCtrl.class).in(Scopes.SINGLETON);
-
+        binder.bind(RoomSelectionCtrl.class).in(Scopes.SINGLETON);
         binder.bind(WebSocketsUtils.class).in(Scopes.SINGLETON);
     }
 }
