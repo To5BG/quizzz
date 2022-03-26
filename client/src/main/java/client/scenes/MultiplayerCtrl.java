@@ -107,6 +107,10 @@ public class MultiplayerCtrl extends GameCtrl {
             }
         });
 
+        leaderboard.setPrefWidth(188);
+        colUserName.setPrefWidth(92);
+        leaderboard.setOpacity(1);
+
         leaveButton.setOpacity(0);
         backButton.setOpacity(1);
         playAgain.setOpacity(0);

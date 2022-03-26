@@ -135,6 +135,8 @@ public abstract class GameCtrl implements Initializable {
      * @param q the question to be rendered
      */
     protected void renderGeneralInformation(Question q) {
+        if (this.leaderboard != null) renderLeaderboard();
+
         this.questionPrompt.setText(q.prompt);
         if (q.type != Question.QuestionType.RANGE_GUESS && q.type != Question.QuestionType.EQUIVALENCE &&
             q.type != Question.QuestionType.MULTIPLE_CHOICE) {
@@ -238,6 +240,8 @@ public abstract class GameCtrl implements Initializable {
             default:
                 throw new UnsupportedOperationException("Currently only multiple choice answers can be rendered");
         }
+
+        if (this.leaderboard != null) renderLeaderboard();
     }
 
     private void renderEstimationAnswers(List<Integer> correctAnswers) {
@@ -375,7 +379,8 @@ public abstract class GameCtrl implements Initializable {
      * Resets all fields and the screen for a new game.
      */
     public void reset() {
-        removeLeaderboard();
+        if (leaderboard != null) leaderboard.setOpacity(0);
+        removeMidGameLeaderboard();
         this.questionPrompt.setText("[Question]");
         this.answerArea.getChildren().clear();
         this.pointsLabel.setText("Points: 0");
@@ -537,12 +542,22 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Displays the current session's leaderboard and hides the question screen attributes
+     * Updates the items in the leaderboard and makes sure the leaderboard remains visible
      */
-    public void displayLeaderboard() {
+    public void renderLeaderboard() {
         var players = gameSessionUtils.getPlayers(sessionId);
         var data = FXCollections.observableList(players);
         leaderboard.setItems(data);
+        leaderboard.setOpacity(1);
+    }
+
+    /**
+     * Displays the current session's leaderboard and hides the question screen attributes
+     */
+    public void displayLeaderboard() {
+        renderLeaderboard();
+        leaderboard.setPrefWidth(644);
+        colUserName.setPrefWidth(548);
         answerArea.setOpacity(0);
         submitButton.setOpacity(0);
         removeOneButton.setOpacity(0);
@@ -556,10 +571,13 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Displays the question screen attributes and hides the leaderboard
+     * Displays the question screen attributes and resizes the leaderboard
      */
-    public void removeLeaderboard() {
-        if (leaderboard != null) leaderboard.setOpacity(0);
+    public void removeMidGameLeaderboard() {
+        if (this.leaderboard != null) {
+            leaderboard.setPrefWidth(188);
+            colUserName.setPrefWidth(92);
+        }
         answerArea.setOpacity(1);
         questionPrompt.setOpacity(1);
         submitButton.setOpacity(1);
@@ -576,7 +594,7 @@ public abstract class GameCtrl implements Initializable {
 
         TimeUtils roundTimer = new TimeUtils(MIDGAME_BREAK_TIME, TIMER_UPDATE_INTERVAL_MS);
         roundTimer.setOnSucceeded((event) -> Platform.runLater(() -> {
-            removeLeaderboard();
+            removeMidGameLeaderboard();
             loadQuestion();
         }));
 
