@@ -100,7 +100,6 @@ public class MainCtrl {
         multiPlayerScreen.setOnKeyPressed(e -> multiplayerCtrl.keyPressed(e));
         multiplayerCtrl.setSessionId(sessionId);
         multiplayerCtrl.setPlayerId(playerId);
-        multiplayerCtrl.setBestMultiScore();
         multiplayerCtrl.registerForEmojiUpdates();
         multiplayerCtrl.loadQuestion();
         multiplayerCtrl.scanForDisconnect();
@@ -121,15 +120,11 @@ public class MainCtrl {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            if (!waitingAreaCtrl.refresh()) cancel();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            cancel();
-                        }
+                Platform.runLater(() -> {
+                    try {
+                        if (!waitingAreaCtrl.refresh()) cancel();
+                    } catch (Exception e) {
+                        cancel();
                     }
                 });
             }
@@ -151,7 +146,6 @@ public class MainCtrl {
         singlePlayerScreen.setOnKeyPressed(e -> singlePlayerCtrl.keyPressed(e));
         singlePlayerCtrl.setSessionId(sessionId);
         singlePlayerCtrl.setPlayerId(playerId);
-        singlePlayerCtrl.setBestSingleScore();
         singlePlayerCtrl.loadQuestion();
         singlePlayerCtrl.refresh();
     }

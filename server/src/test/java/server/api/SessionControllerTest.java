@@ -18,7 +18,6 @@ package server.api;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.OK;
 
-import java.util.List;
 import java.util.Random;
 
 import commons.*;
@@ -31,8 +30,9 @@ public class SessionControllerTest {
 
     public int nextInt;
     private MyRandom random;
-    private TestGameSessionRepository repo;
+    private TestPlayerRepository playerRepo;
     private TestActivityRepository activityRepo;
+    private StubSessionManager stubSessionManager;
 
     private SessionController sut;
     private GameSession first;
@@ -40,14 +40,15 @@ public class SessionControllerTest {
     @BeforeEach
     public void setup() {
         random = new MyRandom();
-        repo = new TestGameSessionRepository();
+        playerRepo = new TestPlayerRepository();
         activityRepo = new TestActivityRepository();
         activityRepo.save(new Activity("test","42","test","test"));
         activityRepo.save(new Activity("test2","43","test2","test2"));
         activityRepo.save(new Activity("test3","44","test3","test3"));
         activityRepo.save(new Activity("test4","45","test4","test4"));
 
-        sut = new SessionController(random, repo, "test",
+        stubSessionManager = new StubSessionManager();
+        sut = new SessionController(random, playerRepo, "test", stubSessionManager,
                 new ActivityController(new Random(), activityRepo));
         first = new GameSession(GameSession.SessionType.MULTIPLAYER);
     }
@@ -68,7 +69,7 @@ public class SessionControllerTest {
         next.playersReady = 42;
 
         sut.updateSession(next);
-        assertEquals(42, repo.findAll().get(0).playersReady);
+        assertEquals(42, sut.getAllSessions().get(0).playersReady);
     }
 
     @Test
@@ -154,16 +155,17 @@ public class SessionControllerTest {
     @Test
     public void addSessionTest() {
         sut.addSession(first);
-        assertTrue(repo.calledMethods.contains("save"));
-        assertEquals(first, repo.findAll().get(0));
+        assertTrue(stubSessionManager.calledMethods.contains("save"));
+        assertEquals(first, stubSessionManager.getValues().get(0));
     }
 
     @Test
     public void deleteSessionTest() {
         sut.addSession(first);
         var deletedSession = sut.removeSession(1);
-        assertTrue(repo.calledMethods.contains("delete"));
-        assertFalse(repo.existsById(deletedSession.getBody().id));
+        assertTrue(stubSessionManager.calledMethods.contains("delete"));
+        assertEquals(0,
+                stubSessionManager.getValues().stream().filter(e -> e.id == deletedSession.getBody().id).count());
     }
 
     @Test
@@ -198,7 +200,7 @@ public class SessionControllerTest {
         assertTrue(first.players.size() == 2);
         assertEquals(ResponseEntity.badRequest().build(), sut.removePlayer(10, 5));
         assertEquals(ResponseEntity.badRequest().build(), sut.removePlayer(0, 10));
-        assertEquals(firstPlayer, sut.removePlayer(first.id, 0).getBody());
+        assertEquals(firstPlayer, sut.removePlayer(first.id, 1).getBody());
     }
 
     @Test
@@ -241,45 +243,6 @@ public class SessionControllerTest {
         assertEquals(GameSession.SessionStatus.ONGOING, sut.getSessionById(first.id).getBody().sessionStatus);
 
         ResponseEntity<GameSession> resp = sut.updateStatus(42L, GameSession.SessionStatus.ONGOING);
-        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
-    }
-
-    @Test
-    public void setAnswerTest() {
-        sut.addSession(first);
-        ResponseEntity<Player> p = sut.addPlayer(first.id, new Player("test", 0));
-        assertNotNull(p.getBody());
-        Answer a = new Answer(List.of(1, 2, 3), Question.QuestionType.MULTIPLE_CHOICE);
-        sut.setAnswer(first.id, p.getBody().id, a);
-
-        ResponseEntity<GameSession> sess = sut.getSessionById(first.id);
-        assertNotNull(sess.getBody());
-        Player player = sess.getBody().players.get(0);
-        assertEquals(a, player.parsedAnswer());
-
-        ResponseEntity<Answer> resp = sut.setAnswer(first.id, 42L, a);
-        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
-
-        resp = sut.setAnswer(42L, 42L, a);
-        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
-    }
-
-    @Test
-    public void getPlayerAnswerTest() {
-        sut.addSession(first);
-        ResponseEntity<Player> p = sut.addPlayer(first.id, new Player("test", 0));
-        assertNotNull(p.getBody());
-        Answer a = new Answer(List.of(1, 2, 3), Question.QuestionType.MULTIPLE_CHOICE);
-        sut.setAnswer(first.id, p.getBody().id, a);
-
-        ResponseEntity<Answer> ans = sut.getPlayerAnswer(first.id, p.getBody().id);
-        assertNotNull(ans.getBody());
-        assertEquals(a, ans.getBody());
-
-        ResponseEntity<Answer> resp = sut.getPlayerAnswer(first.id, 42L);
-        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
-
-        resp = sut.getPlayerAnswer(42L, 42L);
         assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
     }
 

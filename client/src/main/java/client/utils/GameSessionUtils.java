@@ -208,4 +208,17 @@ public class GameSessionUtils {
                 });
     }
 
+    /**
+     * Check if the given username is used in an active session
+     * @param username The username to check
+     * @return True if the username is used, otherwise false
+     */
+    public Boolean isDuplInActive(String username) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(serverConnection).path("api/sessions/checkUsername/" + username)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Boolean>() {
+                });
+    }
 }
