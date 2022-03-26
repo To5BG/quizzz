@@ -16,7 +16,17 @@ import java.util.function.Consumer;
 
 public class WebSocketsUtils {
 
-    private final StompSession websocketServer = connect("ws://localhost:8080/websocket");
+    private StompSession websocketServer;
+
+    /**
+     * Public method for accessing the connect method.
+     * Creates a new StompSession associated to the websocket.
+     *
+     * @param destination URL to connect to
+     */
+    public void updateConnection(String destination) {
+        websocketServer = connect(destination.replaceFirst("http", "ws").concat("websocket"));
+    }
 
     /**
      * Create a new websocket connection
