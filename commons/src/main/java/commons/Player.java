@@ -6,11 +6,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
@@ -22,12 +17,6 @@ public class Player {
     public int currentPoints;
     public int bestSingleScore;
     public int bestMultiScore;
-
-    /*
-    @ManyToOne
-    @JoinColumn(name = "session_id")
-    private GameSession session;
-    */
 
     public String username;
     public String ans;
@@ -91,39 +80,6 @@ public class Player {
      */
     public Integer getCurrentPoints() {
         return this.currentPoints;
-    }
-
-    /**
-     * Converts the answer to a string.
-     *
-     * @param ans The player's answer.
-     */
-    public void setAnswer(Answer ans) {
-        this.ans = ans.toString().substring(ans.toString().indexOf("["));
-    }
-
-    /**
-     * Parses the answer that has been turned into a string back into and answer object.
-     *
-     * @return The answer in answer form.
-     */
-    public Answer parsedAnswer() {
-        String[] splitAnswer = this.ans.split("=");
-        String answer = splitAnswer[1].substring(1, splitAnswer[1].indexOf("]"));
-        List<Integer> answers;
-        if (answer.equals("")) answers = new ArrayList<>();
-        else {
-            answers = new ArrayList<>(
-                    Arrays.stream(answer.split(", "))
-                            .map(Integer::valueOf)
-                            .collect(Collectors.toList()));
-        }
-        Question.QuestionType type;
-        switch (splitAnswer[2].substring(0, splitAnswer[2].indexOf("]")).trim()) {
-            case "MULTIPLE_CHOICE" -> type = Question.QuestionType.MULTIPLE_CHOICE;
-            default -> type = Question.QuestionType.UNKNOWN;
-        }
-        return new Answer(answers, type);
     }
 
     /**
