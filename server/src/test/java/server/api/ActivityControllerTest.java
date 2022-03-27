@@ -40,6 +40,18 @@ public class ActivityControllerTest {
     }
 
     @Test
+    public void cannotReplaceWithDuplTitleTest() {
+        Activity activity = new Activity("test", "7", "ab", "cd");
+        Activity activity2 = new Activity("test2", "100", "abc", "cde");
+        sut.addActivity(activity);
+        sut.addActivity(activity2);
+        long id = activity2.id;
+        Activity replaceDetails = new Activity("test", "8", "abo", "cdg");
+        var actual = sut.updateActivityById(id, replaceDetails);
+        assertEquals(BAD_REQUEST, actual.getStatusCode());
+    }
+
+    @Test
     public void getAllActivitiesTest() {
         Activity a = getActivity("test");
         sut.addActivity(a);

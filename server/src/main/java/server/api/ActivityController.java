@@ -1,6 +1,7 @@
 package server.api;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import org.springframework.data.domain.Example;
@@ -60,6 +61,22 @@ public class ActivityController {
         probe.title = activity.title;
         Example<Activity> exampleActivity = Example.of(probe, ExampleMatcher.matchingAny());
         return (repo.exists(exampleActivity));
+    }
+
+    /**
+     * Check if the repository contains another activity with the same title but different ID
+     *
+     * @param id - id of the activity to be excluded in the search
+     * @param activity - activity whose title is to be compared
+     * @return true iff another activity with same title but different ID exists
+     */
+    private boolean sameTitleDiffActivity(long id, Activity activity) {
+        Optional<Activity> required = getAllActivities()
+                .stream()
+                .filter(a -> a.id != id)
+                .filter(a -> a.title.equals(activity.title))
+                .findFirst();
+        return required.isPresent();
     }
 
     /**
@@ -123,7 +140,7 @@ public class ActivityController {
     public ResponseEntity<Activity> updateActivityById(@PathVariable("id") long id,
                                                        @RequestBody Activity activityDetails) {
 
-        if (isInvalid(id, repo) || invalidActivity(activityDetails)) {
+        if (isInvalid(id, repo) || invalidActivity(activityDetails) || sameTitleDiffActivity(id, activityDetails)) {
             return ResponseEntity.badRequest().build();
         }
 
