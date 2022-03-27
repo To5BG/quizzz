@@ -17,24 +17,36 @@ package client.scenes;
 
 import client.utils.GameSessionUtils;
 import client.utils.LeaderboardUtils;
+import client.utils.QuestionUtils;
+import client.utils.WebSocketsUtils;
 import com.google.inject.Inject;
 import commons.GameSession;
 import commons.Player;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SplashCtrl {
 
     private final GameSessionUtils gameSessionUtils;
     private final LeaderboardUtils leaderboardUtils;
+    private final QuestionUtils questionUtils;
+    private final WebSocketsUtils webSocketsUtils;
     private final MainCtrl mainCtrl;
 
     @FXML
@@ -46,11 +58,66 @@ public class SplashCtrl {
     @FXML
     private Text invalidUserName;
 
+    @FXML
+    private TextField connectionField;
+
+    @FXML
+    private Text failedConnectionAlert;
+
     @Inject
-    public SplashCtrl(GameSessionUtils gameSessionUtils, LeaderboardUtils leaderboardUtils, MainCtrl mainCtrl) {
+    public SplashCtrl(GameSessionUtils gameSessionUtils, LeaderboardUtils leaderboardUtils,
+                      QuestionUtils questionUtils, WebSocketsUtils webSocketsUtils, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
         this.leaderboardUtils = leaderboardUtils;
+        this.webSocketsUtils = webSocketsUtils;
+        this.questionUtils = questionUtils;
         this.mainCtrl = mainCtrl;
+    }
+
+    /**
+     * Sets the server path for all server utils to the provided url
+     * @return True iff the connection is successful
+     */
+    public boolean establishConnection() {
+        String connURL = connectionField.getText().strip();
+
+        if (connURL.isEmpty()) connURL = "http://localhost:8080/";
+        if (!connURL.endsWith("/")) connURL = connURL.concat("/");
+
+        Pattern connPattern = Pattern.compile("\\w+\\w+://[\\w.]+:\\d+/");
+        Matcher matcher = connPattern.matcher(connURL);
+
+        try {
+            if (matcher.find()) connURL = matcher.group();
+            URL url = new URL(connURL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            int respCode = connection.getResponseCode();
+            if (respCode != 200) {
+                alertFailedConnection();
+                return false;
+            }
+
+            gameSessionUtils.serverConnection = connURL;
+            leaderboardUtils.serverConnection = connURL;
+            questionUtils.serverConnection = connURL;
+            webSocketsUtils.updateConnection(connURL);
+            return true;
+        } catch (Exception e) {
+            alertFailedConnection();
+            return false;
+        }
+    }
+
+    /**
+     * Displays an alert for a failed attempt at connecting to the server.
+     */
+    public void alertFailedConnection() {
+        connectionField.clear();
+        failedConnectionAlert.setOpacity(1);
+        Platform.runLater(() -> new Timeline(
+                new KeyFrame(Duration.seconds(2), e -> failedConnectionAlert.setOpacity(0))).play());
     }
 
     /**
@@ -103,27 +170,27 @@ public class SplashCtrl {
     }
 
     /**
-     * Initialize setup for main controller's showMultiplayer() method. Creates a new session if no free session is
-     * available and adds the player to the session.
-     * In case a player enters a username already present in an active game session, or an invalid/blank username, they
-     * are not added to the session, instead being prompted to change their username.
+     * Initialize setup for main controller's showRoomSelection() method.
+     * In case a player enters an invalid/blank username, or if the username is used in an active game session, they are
+     * being prompted to change their username.
      */
-    public void showWaitingArea() {
+    public void showRoomSelection() {
+        if (!establishConnection()) return;
         String newUserName = usernameField.getText();
         Optional<Player> playerResult = generatePlayer(newUserName);
         if (playerResult.isEmpty()) return;
 
-        gameSessionUtils.addPlayer(MainCtrl.WAITING_AREA_ID, playerResult.get());
+        gameSessionUtils.addPlayer(MainCtrl.SELECTION_ID, playerResult.get());
         long playerId = playerResult.get().id;
 
         if (playerId == 0L) {
             playerId = gameSessionUtils
-                    .getPlayers(MainCtrl.WAITING_AREA_ID)
+                    .getPlayers(MainCtrl.SELECTION_ID)
                     .stream().filter(p -> p.username.equals(newUserName))
                     .findFirst().get().id;
         }
 
-        mainCtrl.showWaitingArea(playerId);
+        mainCtrl.showRoomSelection(playerId);
     }
 
     /**
@@ -132,6 +199,7 @@ public class SplashCtrl {
      * not added to the session, instead being prompted to change their username.
      */
     public void showSinglePlayer() {
+        if (!establishConnection()) return;
         String newUserName = usernameField.getText();
         Optional<Player> playerResult = generatePlayer(newUserName);
         if (playerResult.isEmpty()) return;
@@ -171,6 +239,7 @@ public class SplashCtrl {
      * Initialize setup for main controller's showLeaderboard() method.
      */
     public void showLeaderboard() {
+        if (!establishConnection()) return;
         mainCtrl.showLeaderboard();
     }
 

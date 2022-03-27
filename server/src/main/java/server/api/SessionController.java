@@ -38,7 +38,9 @@ public class SessionController {
         this.repo = repo;
         this.sm = sm;
         this.activityCtrl = activityCtrl;
-        if (!controllerConfig.equals("test")) sm.save(new GameSession(GameSession.SessionType.WAITING_AREA));
+        if (!controllerConfig.equals("test")) {
+            sm.save(new GameSession(GameSession.SessionType.SELECTING));
+        }
         if (controllerConfig.equals("all")) resetDatabase();
     }
 
@@ -61,7 +63,7 @@ public class SessionController {
      * @param session The session to end
      */
     public void endSession(GameSession session) {
-        session.playersReady = 0;
+        session.playersReady.set(0);
         if (session.sessionType == GameSession.SessionType.SINGLEPLAYER) {
             Player p = session.getPlayers().get(0);
             p.bestSingleScore = Math.max(p.bestSingleScore, p.currentPoints);
@@ -102,7 +104,7 @@ public class SessionController {
         } else if (session.questionCounter == GameSession.GAME_ROUNDS) {
             endSession(session);
         } else if (session.questionCounter == 0) {
-            session.playersReady = 0;
+            session.playersReady.set(0);
             updateQuestion(session);
         } else {
             System.out.println("Server paused session");
@@ -163,20 +165,30 @@ public class SessionController {
         GameSession saved = sm.save(session);
         return ResponseEntity.ok(saved);
     }
+    /**
+     * Adds a waiting area to the DB
+     *
+     * @param session Session to be added
+     * @return ResponseEntity that contains the added session
+     */
+    @PostMapping(path = {"/waiting"})
+    public ResponseEntity<GameSession> addWaitingArea(@RequestBody GameSession session) {
+        repo.save(session.players.get(0));
+        GameSession saved = sm.save(session);
+        return ResponseEntity.ok(saved);
+    }
 
     /**
-     * Retrieves an available game session from the DB.
+     * Retrieves all available waiting areas from the DB.
      *
      * @return Available game session
      */
-    @GetMapping({"/join"})
-    public ResponseEntity<GameSession> getAvailableSession() {
-        var session = sm.getValues().stream()
-                .filter(s -> s.sessionType == GameSession.SessionType.MULTIPLAYER &&
-                        s.sessionStatus == GameSession.SessionStatus.STARTED)
-                .findFirst();
-        if (session.isEmpty()) return ResponseEntity.ok(null);
-        else return ResponseEntity.ok(session.get());
+    @GetMapping({"/available"})
+    public ResponseEntity<List<GameSession>> getAvailableSessions() {
+        var sessions = sm.getValues().stream()
+                .filter(s -> s.sessionType == GameSession.SessionType.WAITING_AREA).toList();
+        if (sessions.isEmpty()) return ResponseEntity.ok(null);
+        else return ResponseEntity.ok(sessions);
     }
 
     /**
@@ -203,19 +215,13 @@ public class SessionController {
     }
 
     /**
-     * Start a new multiplayer game with the players of the waiting area
+     * Sets the waiting area as a multiplayer game
      * @param waitingArea The waiting area
      */
-    public void startNewMultiplayerSession(GameSession waitingArea) {
-        // Create new session with all waiting players
-        GameSession newSession = new GameSession(GameSession.SessionType.MULTIPLAYER);
-        newSession.players.addAll(waitingArea.players);
-        addSession(newSession);
-
-        // Signal the transfer to the clients and remove them from waiting area
-        waitingArea.players.clear();
-        waitingArea.setSessionStatus(GameSession.SessionStatus.TRANSFERRING);
-        updateSession(waitingArea);
+    public void changeToMultiplayerSession(GameSession waitingArea) {
+        waitingArea.setSessionType(GameSession.SessionType.MULTIPLAYER);
+        waitingArea.setSessionStatus(GameSession.SessionStatus.STARTED);
+        updateQuestion(waitingArea);
     }
 
     /**
@@ -230,11 +236,11 @@ public class SessionController {
         GameSession session = sm.getById(sessionId);
         session.setPlayerReady();
         if (session.sessionType != GameSession.SessionType.WAITING_AREA &&
-                session.playersReady == session.players.size()) {
+                session.playersReady.get() == session.players.size()) {
             advanceRounds(session);
         } else if (session.sessionType == GameSession.SessionType.WAITING_AREA &&
-                session.playersReady == session.players.size()) {
-            startNewMultiplayerSession(session);
+                session.playersReady.get() == session.players.size()) {
+            changeToMultiplayerSession(session);
         } else {
             updateSession(session);
         }
@@ -252,14 +258,9 @@ public class SessionController {
         if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = sm.getById(sessionId);
         session.unsetPlayerReady();
-        if (session.playersReady == 0) {
+        if (session.playersReady.get() == 0) {
             if (session.sessionType == GameSession.SessionType.WAITING_AREA) {
                 session.setSessionStatus(GameSession.SessionStatus.WAITING_AREA);
-                GameSession newMultiSession = getAvailableSession().getBody();
-                if (newMultiSession != null) {
-                    newMultiSession.setSessionStatus(GameSession.SessionStatus.ONGOING);
-                    updateSession(newMultiSession);
-                }
             } else {
                 if (session.sessionStatus != GameSession.SessionStatus.PLAY_AGAIN) {
                     session.setSessionStatus(GameSession.SessionStatus.ONGOING);
@@ -285,7 +286,8 @@ public class SessionController {
         if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = sm.getById(sessionId);
         session.setSessionStatus(status);
-        if (session.sessionStatus == GameSession.SessionStatus.TRANSFERRING &&
+        if ((session.sessionStatus == GameSession.SessionStatus.STARTED ||
+                session.sessionStatus == GameSession.SessionStatus.TRANSFERRING) &&
                 session.sessionType != GameSession.SessionType.WAITING_AREA &&
                 session.questionCounter == 0) {
             advanceRounds(session);

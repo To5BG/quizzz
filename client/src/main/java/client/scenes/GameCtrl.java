@@ -197,8 +197,9 @@ public abstract class GameCtrl implements Initializable {
         answerArea.getChildren().clear();
         for (String opt : q.answerOptions) {
             RadioButton choice = new RadioButton(opt);
+            choice.setWrapText(true);
             choice.setTranslateY(yPosition);
-            yPosition += 30;
+            yPosition += 50;
             multiChoiceAnswers.add(choice);
             answerArea.getChildren().add(choice);
         }

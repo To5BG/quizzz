@@ -17,6 +17,7 @@ package client;
 
 
 import client.scenes.*;
+import client.utils.WebSocketsUtils;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
@@ -31,5 +32,7 @@ public class MyModule implements Module {
         binder.bind(WaitingAreaCtrl.class).in(Scopes.SINGLETON);
         binder.bind(SingleplayerCtrl.class).in(Scopes.SINGLETON);
         binder.bind(LeaderBoardCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(RoomSelectionCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(WebSocketsUtils.class).in(Scopes.SINGLETON);
     }
 }
