@@ -280,7 +280,7 @@ public class MultiplayerCtrl extends GameCtrl {
     @Override
     public void shutdown() {
         if (submitButton.isDisabled() &&
-                gameSessionUtils.getSession(sessionId).sessionStatus != GameSession.SessionStatus.PLAY_AGAIN ) {
+                gameSessionUtils.getSession(sessionId).sessionStatus != GameSession.SessionStatus.PLAY_AGAIN) {
             gameSessionUtils.toggleReady(sessionId, false);
         }
         if (gameSessionUtils.getSession(sessionId).sessionStatus == GameSession.SessionStatus.PLAY_AGAIN &&
@@ -374,7 +374,7 @@ public class MultiplayerCtrl extends GameCtrl {
         questionCount.setText("End of game! Play again or go back to main.");
 
         TimeUtils roundTimer = new TimeUtils(END_GAME_TIME, TIMER_UPDATE_INTERVAL_MS);
-        roundTimer.setTimeBooster(() -> (double)waitingSkip);
+        roundTimer.setTimeBooster(() -> (double) waitingSkip);
         roundTimer.setOnSucceeded((event) -> {
             gameSessionUtils.updateStatus(gameSessionUtils.getSession(sessionId),
                     GameSession.SessionStatus.TRANSFERRING);
@@ -467,6 +467,7 @@ public class MultiplayerCtrl extends GameCtrl {
 
     /**
      * the method to display joker usage
+     *
      * @param jokers a list of jokers which has been used
      */
     public void displayJokerUsage(List<Joker> jokers) {
@@ -476,7 +477,7 @@ public class MultiplayerCtrl extends GameCtrl {
         }
         String temp = "";
         for (int i = 0; i < jokers.size(); i++) {
-            temp += jokers.get(i).username() + " has used "+ jokers.get(i).jokerName() + ", ";
+            temp += jokers.get(i).username() + " has used " + jokers.get(i).jokerName() + ", ";
         }
         temp = temp.substring(0, temp.length() - 2);
         jokerUsage.setText(temp);

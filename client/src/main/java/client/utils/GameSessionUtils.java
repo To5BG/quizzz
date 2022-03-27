@@ -72,6 +72,7 @@ public class GameSessionUtils {
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(session, APPLICATION_JSON), GameSession.class);
     }
+
     /**
      * Adds a waiting room to the DB.
      *
@@ -224,6 +225,7 @@ public class GameSessionUtils {
 
     /**
      * Check if the given username is used in an active session
+     *
      * @param username The username to check
      * @return True if the username is used, otherwise false
      */
@@ -255,7 +257,7 @@ public class GameSessionUtils {
      * Adds an usedJoker to a game session.
      *
      * @param sessionId id of the session to add the joker to
-     * @param joker    Joker object to be added
+     * @param joker     Joker object to be added
      * @return The joker that has been added
      */
     public Joker addUsedJoker(long sessionId, Joker joker) {

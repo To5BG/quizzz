@@ -47,7 +47,7 @@ public class QuestionGenerator {
      * @return A question and the list of expected answers
      */
     private static Pair<Question, List<Long>> generateMultipleChoiceQuestion(Activity activity,
-                                                                                double difficultyFactor) {
+                                                                             double difficultyFactor) {
         Question q = new Question("Guess how much energy the following activity takes\n" + activity.title,
                 activity.image_path, Question.QuestionType.MULTIPLE_CHOICE);
 

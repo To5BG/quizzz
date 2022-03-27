@@ -115,6 +115,7 @@ public class QuestionController {
 
     /**
      * Gets the list of positions of correct answers for the current question in a session
+     *
      * @param sessionId - long representing the id of a session
      * @return a list of integer corresponding to the positions of correct answers
      * for the current question in the session

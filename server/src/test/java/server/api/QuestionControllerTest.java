@@ -24,10 +24,10 @@ public class QuestionControllerTest {
     @BeforeAll
     public static void setupAll() {
         activityRepo = new TestActivityRepository();
-        activityRepo.save(new Activity("test",42L,"test","test"));
-        activityRepo.save(new Activity("test2",43L,"test2","test2"));
-        activityRepo.save(new Activity("test3",44L,"test3","test3"));
-        activityRepo.save(new Activity("test4",45L,"test4","test4"));
+        activityRepo.save(new Activity("test", 42L, "test", "test"));
+        activityRepo.save(new Activity("test2", 43L, "test2", "test2"));
+        activityRepo.save(new Activity("test3", 44L, "test3", "test3"));
+        activityRepo.save(new Activity("test4", 45L, "test4", "test4"));
         activityCtrl = new ActivityController(new Random(), activityRepo);
     }
 
@@ -39,7 +39,7 @@ public class QuestionControllerTest {
                 activityCtrl);
 
         ResponseEntity<GameSession> cur = sessionCtrl.addSession(
-                new GameSession(GameSession.SessionType.MULTIPLAYER, List.of(new Player("test",0))));
+                new GameSession(GameSession.SessionType.MULTIPLAYER, List.of(new Player("test", 0))));
         sut = new QuestionController(sessionCtrl, leaderboardController);
     }
 

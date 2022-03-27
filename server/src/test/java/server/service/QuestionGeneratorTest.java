@@ -21,17 +21,17 @@ public class QuestionGeneratorTest {
     @BeforeEach
     public void setup() {
         repo = new TestActivityRepository();
-        repo.save(new Activity("test",42L,"test","test"));
-        repo.save(new Activity("test2",43L,"test2","test2"));
-        repo.save(new Activity("test3",44L,"test3","test3"));
-        repo.save(new Activity("test4",45L,"test4","test4"));
+        repo.save(new Activity("test", 42L, "test", "test"));
+        repo.save(new Activity("test2", 43L, "test2", "test2"));
+        repo.save(new Activity("test3", 44L, "test3", "test3"));
+        repo.save(new Activity("test4", 45L, "test4", "test4"));
         ctrl = new ActivityController(new Random(), repo);
     }
 
     @Test
     public void testGenerateQuestionInternalRng() {
         double difficulty = 1;
-        Pair<Question, List<Long>> res = QuestionGenerator.generateQuestion(difficulty,ctrl);
+        Pair<Question, List<Long>> res = QuestionGenerator.generateQuestion(difficulty, ctrl);
         assertNotNull(res.getKey());
         assertNotNull(res.getValue());
         assertTrue(res.getValue().size() >= 1);

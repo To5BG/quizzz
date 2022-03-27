@@ -50,7 +50,7 @@ public class ActivityController {
                 .filter(a -> a.title.equals(activity.title))
                 .findFirst();
 
-        return !(activity.title.matches("([a-zA-Z0-9-]+ ){2,}\\w(.*)")  && required.isEmpty());
+        return !(activity.title.matches("([a-zA-Z0-9-]+ ){2,}\\w(.*)") && required.isEmpty());
     }
 
     /**

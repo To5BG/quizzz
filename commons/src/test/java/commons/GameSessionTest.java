@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GameSessionTest {
 
-    private static final Player SOME_PLAYER = new Player("test",0);
+    private static final Player SOME_PLAYER = new Player("test", 0);
     private static GameSession s = null;
 
     @BeforeEach
@@ -90,7 +90,7 @@ public class GameSessionTest {
 
     @Test
     public void testAddPlayer() {
-        Player p = new Player("test2",0);
+        Player p = new Player("test2", 0);
         s.addPlayer(p);
         assertSame(2, s.players.size());
         assertEquals(p, s.players.get(1));
@@ -131,15 +131,15 @@ public class GameSessionTest {
     @Test
     public void testEquals() {
         var s2 = new GameSession(GameSession.SessionType.MULTIPLAYER,
-                Stream.of(new Player("blah",0))
+                Stream.of(new Player("blah", 0))
                         .collect(Collectors.toList()));
 
         var s3 = new GameSession(GameSession.SessionType.MULTIPLAYER,
-                Stream.of(new Player("blah",0))
+                Stream.of(new Player("blah", 0))
                         .collect(Collectors.toList()));
 
         var s4 = new GameSession(GameSession.SessionType.MULTIPLAYER,
-                Stream.of(new Player("blahhh",0))
+                Stream.of(new Player("blahhh", 0))
                         .collect(Collectors.toList()));
 
         assertEquals(s2, s2);
@@ -150,11 +150,11 @@ public class GameSessionTest {
     @Test
     public void testHashCode() {
         var s2 = new GameSession(GameSession.SessionType.MULTIPLAYER,
-                Stream.of(new Player("blah",0))
+                Stream.of(new Player("blah", 0))
                         .collect(Collectors.toList()));
 
         var s3 = new GameSession(GameSession.SessionType.MULTIPLAYER,
-                Stream.of(new Player("blah",0))
+                Stream.of(new Player("blah", 0))
                         .collect(Collectors.toList()));
 
         assertEquals(s2.hashCode(), s2.hashCode());
@@ -164,7 +164,7 @@ public class GameSessionTest {
     @Test
     public void testToString() {
         var s = new GameSession(GameSession.SessionType.MULTIPLAYER,
-                Stream.of(new Player("blah",0))
+                Stream.of(new Player("blah", 0))
                         .collect(Collectors.toList()));
         String str = s.toString();
 

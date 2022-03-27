@@ -47,6 +47,7 @@ public class SessionController {
 
     /**
      * Update the current question of a session
+     *
      * @param session The session to update the question of
      */
     public void updateQuestion(GameSession session) {
@@ -61,6 +62,7 @@ public class SessionController {
 
     /**
      * End the specified session
+     *
      * @param session The session to end
      */
     public void endSession(GameSession session) {
@@ -116,7 +118,6 @@ public class SessionController {
 
     /**
      * Resets the database, wiping all previous persistent data on it
-     *
      */
     public void resetDatabase() {
         try (Connection CONN = DriverManager.getConnection("jdbc:h2:file:./quizzzz", "sa", "")) {
@@ -166,6 +167,7 @@ public class SessionController {
         GameSession saved = sm.save(session);
         return ResponseEntity.ok(saved);
     }
+
     /**
      * Adds a waiting area to the DB
      *
@@ -217,6 +219,7 @@ public class SessionController {
 
     /**
      * Sets the waiting area as a multiplayer game
+     *
      * @param waitingArea The waiting area
      */
     public void changeToMultiplayerSession(GameSession waitingArea) {
@@ -398,6 +401,7 @@ public class SessionController {
 
     /**
      * Check if the given username is active in a session
+     *
      * @param username The username to check
      * @return True if the username is used in an active session, otherwise false
      */
@@ -416,6 +420,7 @@ public class SessionController {
 
     /**
      * the method to get all jokers used from the current session
+     *
      * @param sessionId the id of the current session
      * @return a list of jokers which has been used in the current session
      */
@@ -427,12 +432,13 @@ public class SessionController {
 
     /**
      * the method to add a joker which has been used to the current session
+     *
      * @param sessionId the id of the session
-     * @param joker the joker which is used in the session
+     * @param joker     the joker which is used in the session
      * @return the joker which is added to the session
      */
     @PostMapping("/{sessionId}/add/joker")
-    public ResponseEntity<Joker> addJoker (@PathVariable("sessionId") long sessionId, @RequestBody Joker joker) {
+    public ResponseEntity<Joker> addJoker(@PathVariable("sessionId") long sessionId, @RequestBody Joker joker) {
         if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = sm.getById(sessionId);
 

@@ -30,7 +30,6 @@ public class GameSession {
     public SessionType sessionType;
 
 
-
     public enum SessionType {
         SELECTING,
         WAITING_AREA,
@@ -82,6 +81,7 @@ public class GameSession {
     public void setSessionType(SessionType type) {
         this.sessionType = type;
     }
+
     /**
      * Called when a new player has triggered a ready event
      */
@@ -192,6 +192,7 @@ public class GameSession {
 
     /**
      * the method to add a used joker to the session
+     *
      * @param joker the joker used by a player in this game session
      */
     public void addUsedJoker(Joker joker) {

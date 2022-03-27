@@ -42,6 +42,7 @@ public class Question {
 
     /**
      * Add a new answer option to the list
+     *
      * @param answerOption String representation of the answer to be added
      */
     public void addAnswerOption(String answerOption) {
@@ -56,7 +57,7 @@ public class Question {
     /**
      * Add an activityPath to the list
      *
-     * @param activityPath  Image path of the corresponding activity in string form
+     * @param activityPath Image path of the corresponding activity in string form
      */
     public void addActivityPath(String activityPath) {
         if (type != QuestionType.COMPARISON && type != QuestionType.EQUIVALENCE) {
@@ -68,6 +69,7 @@ public class Question {
 
     /**
      * Equals method
+     *
      * @param obj - Object that will be compared with this
      * @return true if this and obj are equal
      */
@@ -78,6 +80,7 @@ public class Question {
 
     /**
      * Hashcode method
+     *
      * @return the hashcode of the activity
      */
     @Override
@@ -87,6 +90,7 @@ public class Question {
 
     /**
      * ToString method
+     *
      * @return String containing the activity in a readable format
      */
     @Override

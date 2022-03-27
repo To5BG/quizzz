@@ -47,10 +47,13 @@ public class Config {
 
     /**
      * Configure new session manager instance used for controllers autowiring.
+     *
      * @return a new SessionManager
      */
     @Bean
-    public SessionManager createSessionManager() { return new SessionManager(); }
+    public SessionManager createSessionManager() {
+        return new SessionManager();
+    }
 
     /**
      * Configure a random object used for controllers autowiring.

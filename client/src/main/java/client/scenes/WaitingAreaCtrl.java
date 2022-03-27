@@ -147,6 +147,7 @@ public class WaitingAreaCtrl implements Initializable {
     public void setPlayerId(long playerId) {
         this.playerId = playerId;
     }
+
     /**
      * Setter for waitingId.
      *

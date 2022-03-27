@@ -13,5 +13,5 @@ public class WebController {
     public WebController(ActivityController ctrl) {
         this.ctrl = ctrl;
     }
-    
+
 }

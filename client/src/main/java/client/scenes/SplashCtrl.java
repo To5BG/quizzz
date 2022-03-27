@@ -76,6 +76,7 @@ public class SplashCtrl {
 
     /**
      * Sets the server path for all server utils to the provided url
+     *
      * @return True iff the connection is successful
      */
     public boolean establishConnection() {
@@ -139,6 +140,7 @@ public class SplashCtrl {
 
     /**
      * Generate the player object corresponding to the username
+     *
      * @param username The username of the player
      * @return Optional of Player that is set when the username can be used
      */
