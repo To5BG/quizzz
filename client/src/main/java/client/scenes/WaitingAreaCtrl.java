@@ -72,7 +72,6 @@ public class WaitingAreaCtrl implements Initializable {
         if (readyButton.getText().equals("Not Ready")) gameSessionUtils.toggleReady(waitingId, false);
         Player player = gameSessionUtils.removePlayer(waitingId, playerId);
         gameSessionUtils.addPlayer(MainCtrl.SELECTION_ID, player);
-        setPlayerId(0L);
     }
 
     /**

@@ -136,14 +136,6 @@ public class SessionController {
     public void updateSession(GameSession session) {
         if (sm.isValid(session.id)) sm.save(session);
     }
-    /**
-     * Delete session in database.
-     *
-     * @param session Session to delete
-     */
-    public void deleteSession(GameSession session) {
-        if (sm.isValid(session.id)) sm.save(session);
-    }
 
     /**
      * Retrieve all sessions from the DB.
@@ -223,22 +215,7 @@ public class SessionController {
     }
 
     /**
-     * Start a new multiplayer game with the players of the waiting area
-     * @param waitingArea The waiting area
-     */
-    /*public void startNewMultiplayerSession(GameSession waitingArea) {
-        // Create new session with all waiting players
-        GameSession newSession = new GameSession(GameSession.SessionType.MULTIPLAYER);
-        newSession.players.addAll(waitingArea.players);
-        addSession(newSession);
-
-        // Signal the transfer to the clients and remove them from waiting area
-        waitingArea.players.clear();
-        waitingArea.setSessionStatus(GameSession.SessionStatus.TRANSFERRING);
-        deleteSession(waitingArea);
-    }*/
-    /**
-     * Start a new multiplayer game with the players of the waiting area
+     * Sets the waiting area as a multiplayer game
      * @param waitingArea The waiting area
      */
     public void changeToMultiplayerSession(GameSession waitingArea) {
@@ -284,11 +261,6 @@ public class SessionController {
         if (session.playersReady.get() == 0) {
             if (session.sessionType == GameSession.SessionType.WAITING_AREA) {
                 session.setSessionStatus(GameSession.SessionStatus.WAITING_AREA);
-            //      GameSession newMultiSession = getAvailableSession().getBody();
-            //    if (newMultiSession != null) {
-            //         newMultiSession.setSessionStatus(GameSession.SessionStatus.ONGOING);
-            //         updateSession(newMultiSession);
-            //      }
             } else {
                 if (session.sessionStatus != GameSession.SessionStatus.PLAY_AGAIN) {
                     session.setSessionStatus(GameSession.SessionStatus.ONGOING);

@@ -22,6 +22,7 @@ public class RoomSelectionCtrl implements Initializable {
     private final MainCtrl mainCtrl;
 
     private long playerId;
+    private boolean notCancel;
 
     @FXML
     private TableView<GameSession> availableRooms;
@@ -32,6 +33,7 @@ public class RoomSelectionCtrl implements Initializable {
     public RoomSelectionCtrl(GameSessionUtils gameSessionUtils, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
         this.mainCtrl = mainCtrl;
+        notCancel = true;
     }
 
     @Override
@@ -40,7 +42,7 @@ public class RoomSelectionCtrl implements Initializable {
     }
 
     /**
-     * Set the player to a new Player
+     * Setter for playerId
      *
      * @param playerId - new Id for the player
      */
@@ -73,15 +75,16 @@ public class RoomSelectionCtrl implements Initializable {
      *
      * @return True iff the refresh should continue
      */
-    public void refresh() {
+    public boolean refresh() {
         var roomList = gameSessionUtils.getAvailableSessions();
         if (roomList == null || roomList.isEmpty()) {
             availableRooms.setPlaceholder(new Label("No games here, try hosting one instead..."));
             availableRooms.setItems(null);
-            return;
+            return notCancel;
         }
         var data = FXCollections.observableList(roomList);
         availableRooms.setItems(data);
+        return notCancel;
     }
 
     /**
@@ -94,6 +97,7 @@ public class RoomSelectionCtrl implements Initializable {
         session = gameSessionUtils.addWaitingRoom(session);
         long waitingId = session.id;
         mainCtrl.showWaitingArea(playerId, waitingId);
+        notCancel = false;
     }
 
     /**
@@ -115,6 +119,7 @@ public class RoomSelectionCtrl implements Initializable {
                     .findFirst().get().id;
         }
         mainCtrl.showWaitingArea(playerId, waitingId);
+        notCancel = false;
     }
 
 }

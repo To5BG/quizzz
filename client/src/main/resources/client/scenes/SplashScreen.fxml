@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.SplashCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.SplashCtrl">
    <TextField fx:id="usernameField" layoutX="109.0" layoutY="160.0" prefHeight="38.0" prefWidth="170.0" promptText="Enter a username" />
    <TextField fx:id="connectionField" layoutX="109.0" layoutY="205.0" prefHeight="38.0" prefWidth="170.0" promptText="http://localhost:8080/" />
    <Label layoutX="80.0" layoutY="48.0" text="QUIZZZZ">

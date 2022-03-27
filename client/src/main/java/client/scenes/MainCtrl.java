@@ -127,16 +127,11 @@ public class MainCtrl {
             public void run() {
                 Platform.runLater(() -> {
                     try {
-                        roomSelectionCtrl.refresh();
+                        if(!roomSelectionCtrl.refresh()) cancel();
                     } catch (Exception e) {
                         cancel();
                     }
                 });
-            }
-
-            @Override
-            public boolean cancel() {
-                return super.cancel();
             }
         }, 0, 500);
     }
@@ -164,11 +159,6 @@ public class MainCtrl {
                         cancel();
                     }
                 });
-            }
-
-            @Override
-            public boolean cancel() {
-                return super.cancel();
             }
         }, 0, 500);
     }

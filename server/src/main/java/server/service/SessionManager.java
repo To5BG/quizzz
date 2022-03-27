@@ -36,8 +36,7 @@ public class SessionManager {
      */
     public GameSession delete(Long id) {
         //Make sure that the SELECTING session is never deleted
-        if(getById(id) == null) return null;
-        if(getById(id).sessionType == GameSession.SessionType.SELECTING) return null;
+        if(getById(id) == null || getById(id).sessionType == GameSession.SessionType.SELECTING) return null;
         return sessions.remove(id);
     }
 
