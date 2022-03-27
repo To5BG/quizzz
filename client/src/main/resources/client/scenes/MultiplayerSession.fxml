@@ -65,6 +65,7 @@
           <TableColumn fx:id="emojiImage" prefWidth="75.0" sortable="false" text="Emoji" />
         </columns>
       </TableView>
-        <Label fx:id="removedPlayers" layoutX="588.0" layoutY="289.0" opacity="0.0" text="Player : DISCONNECTED..." />
+        <Label fx:id="removedPlayers" layoutX="382.0" layoutY="285.0" opacity="0.0" text="Player : DISCONNECTED..." />
+      <Label fx:id="jokerUsage" layoutX="338.0" layoutY="332.0" prefHeight="17.0" prefWidth="251.0" wrapText="true" />
     </children>
 </AnchorPane>

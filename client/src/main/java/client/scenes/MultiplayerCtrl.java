@@ -19,6 +19,7 @@ import client.utils.*;
 import com.google.inject.Inject;
 import commons.Emoji;
 import commons.GameSession;
+import commons.Joker;
 import commons.Player;
 import commons.Question;
 import javafx.application.Platform;
@@ -64,12 +65,18 @@ public class MultiplayerCtrl extends GameCtrl {
     private Label status;
     @FXML
     private Label removedPlayers;
+    @FXML
+    private Label jokerUsage;
+
     private int lastDisconnectIndex;
     private Timer disconnectTimer;
+    private int lastJokerIndex;
+    private Timer jokerTimer;
     private StompSession.Subscription channel;
     private boolean playingAgain;
     private int waitingSkip = 0;
     private final static long END_GAME_TIME = 60L;
+    private List<Joker> usedJokers;
 
     @Inject
     public MultiplayerCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
@@ -85,6 +92,7 @@ public class MultiplayerCtrl extends GameCtrl {
 
             emojiImages.add(new Image(location.toString()));
         }
+        usedJokers = new ArrayList<>();
     }
 
     /**
@@ -283,6 +291,8 @@ public class MultiplayerCtrl extends GameCtrl {
         super.shutdown();
         disconnectTimer.cancel();
         lastDisconnectIndex = -1;
+        jokerTimer.cancel();
+        lastJokerIndex = -1;
     }
 
     /**
@@ -430,5 +440,46 @@ public class MultiplayerCtrl extends GameCtrl {
      */
     public void setPlayingAgain(boolean playingAgain) {
         this.playingAgain = playingAgain;
+    }
+
+    /**
+     * the method to deal with the joker usage in the game
+     */
+    public void scanForJokerUsage() {
+        lastJokerIndex = -1;
+        jokerTimer = new Timer();
+        jokerTimer.scheduleAtFixedRate(new TimerTask() {
+
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    List<Joker> allUsed = gameSessionUtils.getUsedJoker(sessionId);
+                    List<Joker> newlyUsed = new ArrayList<>();
+                    for (int i = lastJokerIndex + 1; i < allUsed.size(); i++) {
+                        newlyUsed.add(allUsed.get(i));
+                    }
+                    displayJokerUsage(newlyUsed);
+                    lastJokerIndex = allUsed.size() - 1;
+                });
+            }
+        }, 0, 2000);
+    }
+
+    /**
+     * the method to display joker usage
+     * @param jokers a list of jokers which has been used
+     */
+    public void displayJokerUsage(List<Joker> jokers) {
+        if (jokers.size() == 0) {
+            jokerUsage.setOpacity(0.0);
+            return;
+        }
+        String temp = "";
+        for (int i = 0; i < jokers.size(); i++) {
+            temp += jokers.get(i).username() + " has used "+ jokers.get(i).jokerName() + ", ";
+        }
+        temp = temp.substring(0, temp.length() - 2);
+        jokerUsage.setText(temp);
+        jokerUsage.setOpacity(1.0);
     }
 }

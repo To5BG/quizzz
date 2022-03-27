@@ -642,6 +642,12 @@ public abstract class GameCtrl implements Initializable {
             default:
                 disableButton(removeOneButton, false);
         }
+        String username = leaderboardUtils.getPlayerByIdInLeaderboard(playerId).getUsername();
+        Joker joker = new Joker(
+                username,
+                "RemoveOneAnswerJoker"
+        );
+        gameSessionUtils.addUsedJoker(sessionId, joker);
     }
 
 
@@ -663,6 +669,8 @@ public abstract class GameCtrl implements Initializable {
         decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
         gameSessionUtils.updateTimeJokers(sessionId, (int) getTimeJokers() + 1);
+        String username = leaderboardUtils.getPlayerByIdInLeaderboard(playerId).getUsername();
+        gameSessionUtils.addUsedJoker(sessionId, new Joker(username, "DecreaseTimeJoker"));
     }
 
     /**
@@ -673,6 +681,8 @@ public abstract class GameCtrl implements Initializable {
         doublePointsJoker = false;
         disableButton(doublePointsButton, true);
         switchStatusOfDoublePoints();
+        String username = leaderboardUtils.getPlayerByIdInLeaderboard(playerId).getUsername();
+        gameSessionUtils.addUsedJoker(sessionId, new Joker(username, "DoublePointsJoker"));
     }
 
     /**
