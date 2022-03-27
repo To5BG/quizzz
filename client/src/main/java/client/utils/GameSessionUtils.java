@@ -1,6 +1,7 @@
 package client.utils;
 
 import commons.GameSession;
+import commons.Joker;
 import commons.Player;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -220,5 +221,35 @@ public class GameSessionUtils {
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<Boolean>() {
                 });
+    }
+
+    /**
+     * Retrieve all removed players from a session in the DB.
+     *
+     * @param sessionId the id of the session
+     * @return List of all removed players from a session
+     */
+    public List<Joker> getUsedJoker(long sessionId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(serverConnection).path("api/sessions/" + sessionId + "/jokers")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Joker>>() {
+                });
+    }
+
+    /**
+     * Adds an usedJoker to a game session.
+     *
+     * @param sessionId id of the session to add the joker to
+     * @param joker    Joker object to be added
+     * @return The joker that has been added
+     */
+    public Joker addUsedJoker(long sessionId, Joker joker) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(serverConnection).path("api/sessions/" + sessionId + "/add/joker")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(joker, APPLICATION_JSON), Joker.class);
     }
 }

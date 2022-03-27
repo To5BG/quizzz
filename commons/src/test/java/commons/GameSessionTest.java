@@ -177,4 +177,14 @@ public class GameSessionTest {
         assertTrue(str.contains("currentQuestion=<null>"));
         assertTrue(str.contains(s.players.get(0).toString()));
     }
+
+    @Test
+    public void testAddUsedJoker() {
+        var j = new Joker("test", "testJoker");
+        assertNotNull(s.usedJokers);
+        s.addUsedJoker(j);
+        assertEquals(1, s.usedJokers.size());
+        assertEquals("testJoker", s.usedJokers.get(0).jokerName);
+        assertEquals("test", s.usedJokers.get(0).username);
+    }
 }

@@ -73,4 +73,10 @@ public class PlayerTest {
 		assertTrue(str.contains("username"));
 		assertTrue(str.contains("0"));
 	}
+
+	@Test
+	public void testGetUsername() {
+		var player = new Player("test", 10);
+		assertEquals("test", player.getUsername());
+	}
 }

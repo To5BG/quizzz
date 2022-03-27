@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.GameSession;
+import commons.Joker;
 import commons.Player;
 import commons.Question;
 import org.apache.commons.lang3.tuple.Pair;
@@ -409,5 +410,20 @@ public class SessionController {
             if (existing.isPresent()) return true;
         }
         return false;
+    }
+
+    @GetMapping("/{sessionId}/jokers")
+    public ResponseEntity<List<Joker>> getAllJokers(@PathVariable("sessionId") long sessionId) {
+        if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(sm.getById(sessionId).usedJokers);
+    }
+
+    @PostMapping("/{sessionId}/add/joker")
+    public ResponseEntity<Joker> addJoker (@PathVariable("sessionId") long sessionId, @RequestBody Joker joker) {
+        if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
+        GameSession session = sm.getById(sessionId);
+
+        session.addUsedJoker(joker);
+        return ResponseEntity.ok(joker);
     }
 }

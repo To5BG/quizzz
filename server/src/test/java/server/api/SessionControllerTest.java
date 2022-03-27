@@ -21,6 +21,7 @@ import static org.springframework.http.HttpStatus.OK;
 import java.util.Random;
 
 import commons.*;
+import org.hibernate.metamodel.model.convert.spi.JpaAttributeConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -245,6 +246,35 @@ public class SessionControllerTest {
         ResponseEntity<GameSession> resp = sut.updateStatus(42L, GameSession.SessionStatus.ONGOING);
         assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
     }
+
+    @Test
+    public void testAddJoker() {
+        sut.addSession(first);
+
+        assertTrue(first.usedJokers.isEmpty());
+
+        Joker j = new Joker("test", "testJoker");
+        Joker test = sut.addJoker(first.id, j).getBody();
+        assertTrue(first.usedJokers.size() != 0);
+        assertEquals(test, first.usedJokers.get(0));
+    }
+
+    @Test
+    public void testGetAllJokers() {
+        sut.addSession(first);
+        assertEquals(0, sut.getAllJokers(first.id).getBody().size());
+        Joker j1 = new Joker("test1", "testJoker1");
+        Joker j2 = new Joker("test2", "testJoker2");
+        Joker j3 = new Joker("test3", "testJoker3");
+        sut.addJoker(first.id, j1);
+        sut.addJoker(first.id, j2);
+        sut.addJoker(first.id, j3);
+        assertEquals(3, sut.getAllJokers(first.id).getBody().size());
+        assertEquals(j1, sut.getAllJokers(first.id).getBody().get(0));
+        assertEquals(j2, sut.getAllJokers(first.id).getBody().get(1));
+        assertEquals(j3, sut.getAllJokers(first.id).getBody().get(2));
+    }
+
 
     @SuppressWarnings("serial")
     public class MyRandom extends Random {

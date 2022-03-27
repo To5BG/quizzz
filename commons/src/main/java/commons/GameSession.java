@@ -17,6 +17,8 @@ public class GameSession {
     public List<Player> players;
     public List<Player> removedPlayers;
 
+    public List<Joker> usedJokers;
+
     public Question currentQuestion;
     public List<Integer> expectedAnswers;
 
@@ -59,6 +61,7 @@ public class GameSession {
 
     public GameSession(SessionType sessionType, List<Player> players, List<Integer> expectedAnswers) {
         this.removedPlayers = new ArrayList<Player>();
+        this.usedJokers = new ArrayList<Joker>();
         this.players = players;
         this.sessionType = sessionType;
         this.expectedAnswers = expectedAnswers;
@@ -177,5 +180,13 @@ public class GameSession {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+    }
+
+    /**
+     * the method to add a used joker to the session
+     * @param joker the joker used by a player in this game session
+     */
+    public void addUsedJoker(Joker joker) {
+        usedJokers.add(joker);
     }
 }
