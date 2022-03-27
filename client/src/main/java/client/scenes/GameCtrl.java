@@ -245,7 +245,7 @@ public abstract class GameCtrl implements Initializable {
         long givenAnswer = 0L;
         long actualAnswer = correctAnswers.get(0);
         try {
-            givenAnswer = Integer.parseInt(estimationAnswer.getText());
+            givenAnswer = Long.parseLong(estimationAnswer.getText());
         } catch (NumberFormatException ex) {
             givenAnswer = actualAnswer;
         }
@@ -271,7 +271,7 @@ public abstract class GameCtrl implements Initializable {
      */
     protected void renderMultipleChoiceAnswers(List<Long> correctIndices) {
         for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
-            if (correctIndices.contains(i)) {
+            if (correctIndices.contains((long) i)) {
                 multiChoiceAnswers.get(i).setStyle("-fx-background-color: green");
             } else {
                 multiChoiceAnswers.get(i).setDisable(true);
@@ -452,7 +452,7 @@ public abstract class GameCtrl implements Initializable {
                 break;
             case RANGE_GUESS:
                 try {
-                    ans.addAnswer(Integer.parseInt(estimationAnswer.getText()));
+                    ans.addAnswer(Long.parseLong(estimationAnswer.getText()));
                 } catch (NumberFormatException ex) {
                     System.out.println("Invalid answer yo");
                     if (!initiatedByTimer) {
