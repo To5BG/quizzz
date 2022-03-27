@@ -126,7 +126,7 @@ public class WaitingAreaCtrl implements Initializable {
         int playersCount = waitingArea.players.size();
 
         if (waitingArea.sessionStatus == GameSession.SessionStatus.TRANSFERRING) {
-          //  GameSession sessionToJoin = gameSessionUtils.getAvailableSession();
+         //   GameSession sessionToJoin = gameSessionUtils.getAvailableSession();
             gameSessionUtils.toggleReady(MainCtrl.WAITING_AREA_ID, false);
         //    if (sessionToJoin == null) return true;
 

@@ -71,6 +71,19 @@ public class GameSessionUtils {
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(session, APPLICATION_JSON), GameSession.class);
     }
+    /**
+     * Adds a waiting room to the DB.
+     *
+     * @param session GameSession object to be added
+     * @return The session that has been added
+     */
+    public GameSession addWaitingRoom(GameSession session) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(serverConnection).path("api/sessions/waiting")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(session, APPLICATION_JSON), GameSession.class);
+    }
 
     /**
      * Removes a session from the DB.

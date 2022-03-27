@@ -40,8 +40,6 @@ public class SessionController {
         this.activityCtrl = activityCtrl;
         if (!controllerConfig.equals("test")) {
             sm.save(new GameSession(GameSession.SessionType.SELECTING));
-            sm.save(new GameSession(GameSession.SessionType.WAITING_AREA));
-            sm.save(new GameSession(GameSession.SessionType.WAITING_AREA));
         }
         if (controllerConfig.equals("all")) resetDatabase();
     }
@@ -164,6 +162,18 @@ public class SessionController {
             repo.save(p);
         }
         advanceRounds(session);
+        GameSession saved = sm.save(session);
+        return ResponseEntity.ok(saved);
+    }
+    /**
+     * Adds a waiting area to the DB
+     *
+     * @param session Session to be added
+     * @return ResponseEntity that contains the added session
+     */
+    @PostMapping(path = {"/waiting"})
+    public ResponseEntity<GameSession> addWaitingArea(@RequestBody GameSession session) {
+        repo.save(session.players.get(0));
         GameSession saved = sm.save(session);
         return ResponseEntity.ok(saved);
     }

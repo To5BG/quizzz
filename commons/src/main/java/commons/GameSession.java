@@ -71,6 +71,7 @@ public class GameSession {
 
         this.sessionStatus = SessionStatus.STARTED;
         if (sessionType == SessionType.SELECTING) this.sessionStatus = SessionStatus.SELECTING;
+        if (sessionType == SessionType.WAITING_AREA) this.sessionStatus = SessionStatus.WAITING_AREA;
     }
 
     /**

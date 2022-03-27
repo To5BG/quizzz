@@ -83,19 +83,19 @@ public class RoomSelectionCtrl implements Initializable {
      * In case a player enters a username already present in an active game session, or an invalid/blank username, they
      * are not added to the session, instead being prompted to change their username.
      */
-    public void showQuickJoin() {
-
+    public void hostRoom() {
         Player player = gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
-        gameSessionUtils.addPlayer(MainCtrl.WAITING_AREA_ID, player);
+        GameSession session = new GameSession(GameSession.SessionType.WAITING_AREA);
+        session.addPlayer(player);
+        session = gameSessionUtils.addWaitingRoom(session);
         long playerId = player.id;
-
+        long waitingId = session.id;
         if (playerId == 0L) {
             playerId = gameSessionUtils
-                    .getPlayers(MainCtrl.WAITING_AREA_ID)
+                    .getPlayers(waitingId)
                     .stream().filter(p -> p.username.equals(player.username))
                     .findFirst().get().id;
         }
-
         mainCtrl.showWaitingArea(playerId);
     }
 

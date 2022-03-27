@@ -15,8 +15,6 @@
  */
 package client.scenes;
 
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
-import commons.Player;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -117,6 +115,7 @@ public class MainCtrl {
     /**
      * Sets the current screen to the room selection area.
      * Contains a scheduled task to refresh the available waiting rooms.
+     *
      * @param playerId - The id of the player that's joining
      */
     public void showRoomSelection(long playerId) {
@@ -129,7 +128,7 @@ public class MainCtrl {
             public void run() {
                 Platform.runLater(() -> {
                     try {
-                       roomSelectionCtrl.refresh();
+                        roomSelectionCtrl.refresh();
                     } catch (Exception e) {
                         cancel();
                     }
