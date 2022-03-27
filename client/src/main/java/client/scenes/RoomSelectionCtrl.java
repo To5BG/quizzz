@@ -14,6 +14,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 public class RoomSelectionCtrl implements Initializable {
@@ -101,14 +102,37 @@ public class RoomSelectionCtrl implements Initializable {
     }
 
     /**
-     * Initialize setup for main controller's showWaitingArea() method. Player is added to the selected session.
+     * Player is added to the selected session.
      */
-    public void joinRoom() {
+    public void joinSelectedRoom() {
         if (availableRooms.getSelectionModel().getSelectedItem() == null) {
             //TODO: Add some kind of alert to the user
             return;
         }
         GameSession session = availableRooms.getSelectionModel().getSelectedItem();
+        joinSession(session);
+    }
+
+    /**
+     * Player is added to random waiting area
+     * or creates a new waiting area if there are none available.
+     */
+    public void quickJoin() {
+        var listRooms = availableRooms.getItems();
+        if(listRooms == null || listRooms.isEmpty()) {
+            hostRoom();
+            return;
+        }
+
+        int randomId = new Random().nextInt(listRooms.size());
+        joinSession(listRooms.get(randomId));
+    }
+
+    /**
+     * Initialize setup for main controller's showWaitingArea() method. Player is added to the specified session
+     * @param session - GameSession to which the player is added.
+     */
+    public void joinSession(GameSession session) {
         Player player = gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
         gameSessionUtils.addPlayer(session.id, player);
         long waitingId = session.id;
