@@ -58,6 +58,7 @@ public class RoomSelectionCtrl implements Initializable {
     public void back() {
         gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
         mainCtrl.showSplash();
+        notCancel = false;
     }
 
     /**
@@ -146,4 +147,11 @@ public class RoomSelectionCtrl implements Initializable {
         notCancel = false;
     }
 
+    /**
+     * Setter for notCancel
+     * @param notCancel
+     */
+    public void setNotCancel(boolean notCancel) {
+        this.notCancel = notCancel;
+    }
 }
