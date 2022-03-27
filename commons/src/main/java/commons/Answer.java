@@ -12,17 +12,17 @@ import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 public class Answer {
 
     public Question.QuestionType type;
-    public List<Integer> answers;
+    public List<Long> answers;
     public double timeFactor;
 
     public Answer() {
         this.type = Question.QuestionType.UNKNOWN;
-        answers = new ArrayList<Integer>();
+        answers = new ArrayList<Long>();
     }
 
     public Answer(Question.QuestionType type) {
         this.type = type;
-        answers = new ArrayList<Integer>();
+        answers = new ArrayList<Long>();
     }
 
     /**
@@ -31,7 +31,7 @@ public class Answer {
      * @param answers   The given answer.
      * @param type      The question type.
      */
-    public Answer(List<Integer> answers, Question.QuestionType type) {
+    public Answer(List<Long> answers, Question.QuestionType type) {
         this.type = type;
         this.answers = answers;
     }
@@ -40,7 +40,7 @@ public class Answer {
      * Adds answer to the list of answers
      * @param answer index of answer to be included
      */
-    public void addAnswer(int answer) {
+    public void addAnswer(long answer) {
         answers.add(answer);
     }
 

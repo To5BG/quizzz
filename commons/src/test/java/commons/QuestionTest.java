@@ -45,7 +45,7 @@ public class QuestionTest {
 
     @Test
     public void testAddActivityPathEquivalence() {
-        Activity activity = new Activity("title1", "1000", "path1", "source1");
+        Activity activity = new Activity("title1", 1000L, "path1", "source1");
 
         Question q = new Question("Question 1", "test.png",
                 Question.QuestionType.EQUIVALENCE);
