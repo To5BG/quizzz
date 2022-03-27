@@ -170,28 +170,27 @@ public class SplashCtrl {
     }
 
     /**
-     * Initialize setup for main controller's showMultiplayer() method. Creates a new session if no free session is
-     * available and adds the player to the session.
-     * In case a player enters a username already present in an active game session, or an invalid/blank username, they
-     * are not added to the session, instead being prompted to change their username.
+     * Initialize setup for main controller's showRoomSelection() method.
+     * In case a player enters an invalid/blank username, or if the username is used in an active game session, they are
+     * being prompted to change their username.
      */
-    public void showWaitingArea() {
+    public void showRoomSelection() {
         if (!establishConnection()) return;
         String newUserName = usernameField.getText();
         Optional<Player> playerResult = generatePlayer(newUserName);
         if (playerResult.isEmpty()) return;
 
-        gameSessionUtils.addPlayer(MainCtrl.WAITING_AREA_ID, playerResult.get());
+        gameSessionUtils.addPlayer(MainCtrl.SELECTION_ID, playerResult.get());
         long playerId = playerResult.get().id;
 
         if (playerId == 0L) {
             playerId = gameSessionUtils
-                    .getPlayers(MainCtrl.WAITING_AREA_ID)
+                    .getPlayers(MainCtrl.SELECTION_ID)
                     .stream().filter(p -> p.username.equals(newUserName))
                     .findFirst().get().id;
         }
 
-        mainCtrl.showWaitingArea(playerId);
+        mainCtrl.showRoomSelection(playerId);
     }
 
     /**

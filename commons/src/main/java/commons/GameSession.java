@@ -29,7 +29,10 @@ public class GameSession {
 
     public SessionType sessionType;
 
+
+
     public enum SessionType {
+        SELECTING,
         WAITING_AREA,
         MULTIPLAYER,
         SINGLEPLAYER
@@ -38,6 +41,7 @@ public class GameSession {
     public SessionStatus sessionStatus;
 
     public enum SessionStatus {
+        SELECTING,
         WAITING_AREA,
         TRANSFERRING,
         ONGOING,
@@ -71,9 +75,13 @@ public class GameSession {
         this.timeJokers = 0;
 
         this.sessionStatus = SessionStatus.STARTED;
+        if (sessionType == SessionType.SELECTING) this.sessionStatus = SessionStatus.SELECTING;
         if (sessionType == SessionType.WAITING_AREA) this.sessionStatus = SessionStatus.WAITING_AREA;
     }
 
+    public void setSessionType(SessionType type) {
+        this.sessionType = type;
+    }
     /**
      * Called when a new player has triggered a ready event
      */
@@ -106,7 +114,7 @@ public class GameSession {
      */
     public void removePlayer(Player player) {
         players.remove(player);
-        if (sessionType == SessionType.WAITING_AREA) return;
+        if (sessionType == SessionType.SELECTING || sessionType == SessionType.WAITING_AREA) return;
         removedPlayers.add(player);
     }
 
