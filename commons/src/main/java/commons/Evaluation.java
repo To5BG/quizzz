@@ -11,16 +11,16 @@ import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 public class Evaluation {
     public int points;
-    public List<Integer> correctAnswers;
+    public List<Long> correctAnswers;
     public Question.QuestionType type;
 
     public Evaluation() {
         this.type = Question.QuestionType.UNKNOWN;
-        this.correctAnswers = new ArrayList<Integer>();
+        this.correctAnswers = new ArrayList<Long>();
         this.points = 0;
     }
 
-    public Evaluation(int points, Question.QuestionType type, List<Integer> correctAnswers) {
+    public Evaluation(int points, Question.QuestionType type, List<Long> correctAnswers) {
         this.type = type;
         this.correctAnswers = correctAnswers;
         this.points = points;

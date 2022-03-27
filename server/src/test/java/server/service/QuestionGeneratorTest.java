@@ -21,17 +21,17 @@ public class QuestionGeneratorTest {
     @BeforeEach
     public void setup() {
         repo = new TestActivityRepository();
-        repo.save(new Activity("test","42","test","test"));
-        repo.save(new Activity("test2","43","test2","test2"));
-        repo.save(new Activity("test3","44","test3","test3"));
-        repo.save(new Activity("test4","45","test4","test4"));
+        repo.save(new Activity("test",42L,"test","test"));
+        repo.save(new Activity("test2",43L,"test2","test2"));
+        repo.save(new Activity("test3",44L,"test3","test3"));
+        repo.save(new Activity("test4",45L,"test4","test4"));
         ctrl = new ActivityController(new Random(), repo);
     }
 
     @Test
     public void testGenerateQuestionInternalRng() {
         double difficulty = 1;
-        Pair<Question, List<Integer>> res = QuestionGenerator.generateQuestion(difficulty,ctrl);
+        Pair<Question, List<Long>> res = QuestionGenerator.generateQuestion(difficulty,ctrl);
         assertNotNull(res.getKey());
         assertNotNull(res.getValue());
         assertTrue(res.getValue().size() >= 1);
@@ -41,7 +41,7 @@ public class QuestionGeneratorTest {
     @Test
     public void testGenerateComparison() {
         double difficulty = 1;
-        Pair<Question, List<Integer>> res =
+        Pair<Question, List<Long>> res =
                 QuestionGenerator.generateTypeQuestion(Question.QuestionType.COMPARISON, difficulty, ctrl);
         assertNotNull(res);
         Question q = res.getKey();
@@ -54,7 +54,7 @@ public class QuestionGeneratorTest {
     @Test
     public void testGenerateMultipleChoice() {
         double difficulty = 1;
-        Pair<Question, List<Integer>> res =
+        Pair<Question, List<Long>> res =
                 QuestionGenerator.generateTypeQuestion(Question.QuestionType.MULTIPLE_CHOICE, difficulty, ctrl);
         assertNotNull(res);
         Question q = res.getKey();
@@ -67,7 +67,7 @@ public class QuestionGeneratorTest {
     @Test
     public void testGenerateEquivalence() {
         double difficulty = 1;
-        Pair<Question, List<Integer>> res =
+        Pair<Question, List<Long>> res =
                 QuestionGenerator.generateTypeQuestion(Question.QuestionType.EQUIVALENCE, difficulty, ctrl);
         assertNotNull(res);
         Question q = res.getKey();
@@ -81,7 +81,7 @@ public class QuestionGeneratorTest {
     @Test
     public void testGenerateEstimation() {
         double difficulty = 1;
-        Pair<Question, List<Integer>> res =
+        Pair<Question, List<Long>> res =
                 QuestionGenerator.generateTypeQuestion(Question.QuestionType.RANGE_GUESS, difficulty, ctrl);
         assertNotNull(res);
         Question q = res.getKey();

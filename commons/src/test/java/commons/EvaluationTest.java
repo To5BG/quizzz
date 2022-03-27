@@ -17,7 +17,7 @@ public class EvaluationTest {
 
     @Test
     public void testConstructor() {
-        List<Integer> correctAnswers = List.of(1,2,3,4);
+        List<Long> correctAnswers = List.of(1L,2L,3L,4L);
         Evaluation eval = new Evaluation(10, Question.QuestionType.MULTIPLE_CHOICE, correctAnswers);
         assertEquals(10, eval.points);
         assertEquals(Question.QuestionType.MULTIPLE_CHOICE, eval.type);
@@ -26,10 +26,10 @@ public class EvaluationTest {
 
     @Test
     public void testEquals() {
-        List<Integer> correctAnswers = List.of(1,2,3,4);
+        List<Long> correctAnswers = List.of(1L,2L,3L,4L);
         Evaluation eval1 = new Evaluation(10, Question.QuestionType.MULTIPLE_CHOICE, correctAnswers);
         Evaluation eval2 = new Evaluation(10, Question.QuestionType.MULTIPLE_CHOICE, correctAnswers);
-        Evaluation eval3 = new Evaluation(20, Question.QuestionType.RANGE_GUESS, List.of(1));
+        Evaluation eval3 = new Evaluation(20, Question.QuestionType.RANGE_GUESS, List.of(1L));
 
         assertEquals(eval1, eval1);
         assertEquals(eval1, eval2);
@@ -38,7 +38,7 @@ public class EvaluationTest {
 
     @Test
     public void testHashCode() {
-        List<Integer> correctAnswers = List.of(1,2,3,4);
+        List<Long> correctAnswers = List.of(1L,2L,3L,4L);
         Evaluation eval1 = new Evaluation(10, Question.QuestionType.MULTIPLE_CHOICE, correctAnswers);
         Evaluation eval2 = new Evaluation(10, Question.QuestionType.MULTIPLE_CHOICE, correctAnswers);
 
@@ -48,7 +48,7 @@ public class EvaluationTest {
 
     @Test
     public void testToString() {
-        List<Integer> correctAnswers = List.of(1,2,3,4);
+        List<Long> correctAnswers = List.of(1L,2L,3L,4L);
         Evaluation eval1 = new Evaluation(10, Question.QuestionType.MULTIPLE_CHOICE, correctAnswers);
         String result = eval1.toString();
 
