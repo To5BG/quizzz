@@ -88,15 +88,8 @@ public class RoomSelectionCtrl implements Initializable {
         GameSession session = new GameSession(GameSession.SessionType.WAITING_AREA);
         session.addPlayer(player);
         session = gameSessionUtils.addWaitingRoom(session);
-        long playerId = player.id;
         long waitingId = session.id;
-        if (playerId == 0L) {
-            playerId = gameSessionUtils
-                    .getPlayers(waitingId)
-                    .stream().filter(p -> p.username.equals(player.username))
-                    .findFirst().get().id;
-        }
-        mainCtrl.showWaitingArea(playerId);
+        mainCtrl.showWaitingArea(playerId, waitingId);
     }
 
     /**
@@ -117,7 +110,7 @@ public class RoomSelectionCtrl implements Initializable {
                     .stream().filter(p -> p.username.equals(player.username))
                     .findFirst().get().id;
         }
-        mainCtrl.showWaitingArea(playerId);
+        mainCtrl.showWaitingArea(playerId, waitingId);
     }
 
 }

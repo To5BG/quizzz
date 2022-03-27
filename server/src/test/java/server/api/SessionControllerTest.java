@@ -123,7 +123,7 @@ public class SessionControllerTest {
         assertEquals(2, sessions.get(1).id);
     }
 
-    @Test
+    /*@Test
     public void getAvailableSessionTest() {
 
         var newSession = sut.getAvailableSession();
@@ -135,7 +135,7 @@ public class SessionControllerTest {
 
         // make sure that a game session is returned successfully
         assertTrue(availableSession.getClass() == GameSession.class);
-    }
+    }*/
 
     @Test
     public void getSessionTest() {

@@ -27,6 +27,8 @@ public class GameSession {
 
     public SessionType sessionType;
 
+
+
     public enum SessionType {
         SELECTING,
         WAITING_AREA,
@@ -74,6 +76,9 @@ public class GameSession {
         if (sessionType == SessionType.WAITING_AREA) this.sessionStatus = SessionStatus.WAITING_AREA;
     }
 
+    public void setSessionType(SessionType type) {
+        this.sessionType = type;
+    }
     /**
      * Called when a new player has triggered a ready event
      */
@@ -106,7 +111,7 @@ public class GameSession {
      */
     public void removePlayer(Player player) {
         players.remove(player);
-        if (sessionType == SessionType.WAITING_AREA) return;
+        if (sessionType == SessionType.SELECTING || sessionType == SessionType.WAITING_AREA) return;
         removedPlayers.add(player);
     }
 

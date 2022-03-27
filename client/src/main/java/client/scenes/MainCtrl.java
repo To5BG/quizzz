@@ -30,7 +30,6 @@ public class MainCtrl {
 
     // for now a field will suffice, in case more constants are needed an enum must be created
     public final static long SELECTION_ID = 1L;
-    public final static long WAITING_AREA_ID = 2L;
     private Stage primaryStage;
     private SplashCtrl splashCtrl;
     private Scene splashScreen;
@@ -148,12 +147,12 @@ public class MainCtrl {
      *
      * @param playerId - new Id for the player that's about to join
      */
-    public void showWaitingArea(long playerId) {
+    public void showWaitingArea(long playerId, long waitingId) {
         primaryStage.setTitle("Waiting area");
         primaryStage.setScene(waitingAreaScreen);
         waitingAreaScreen.setOnKeyPressed(e -> waitingAreaCtrl.keyPressed(e));
         waitingAreaCtrl.setPlayerId(playerId);
-
+        waitingAreaCtrl.setWaitingId(waitingId);
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
