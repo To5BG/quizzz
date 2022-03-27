@@ -32,8 +32,8 @@ public class ActivityControllerTest {
 
     @Test
     public void cannotAddDuplTitleActivityTest() {
-        Activity activity = new Activity("test", "7", "ab", "cd");
-        Activity duplTitled = new Activity("test", "1000", "ef", "gh");
+        Activity activity = new Activity("test", 7L, "ab", "cd");
+        Activity duplTitled = new Activity("test", 100L, "ef", "gh");
         sut.addActivity(activity);
         var actual = sut.addActivity(duplTitled);
         assertEquals(BAD_REQUEST, actual.getStatusCode());
@@ -41,12 +41,12 @@ public class ActivityControllerTest {
 
     @Test
     public void cannotReplaceWithDuplTitleTest() {
-        Activity activity = new Activity("test", "7", "ab", "cd");
-        Activity activity2 = new Activity("test2", "100", "abc", "cde");
+        Activity activity = new Activity("test", 7L, "ab", "cd");
+        Activity activity2 = new Activity("test2", 100L, "abc", "cde");
         sut.addActivity(activity);
         sut.addActivity(activity2);
         long id = activity2.id;
-        Activity replaceDetails = new Activity("test", "8", "abo", "cdg");
+        Activity replaceDetails = new Activity("test", 8L, "abo", "cdg");
         var actual = sut.updateActivityById(id, replaceDetails);
         assertEquals(BAD_REQUEST, actual.getStatusCode());
     }
