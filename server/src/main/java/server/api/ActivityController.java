@@ -40,43 +40,20 @@ public class ActivityController {
      * @param activity - Activity to be checked
      * @return true if any of the attributes is null or empty
      */
-    private boolean invalidActivity(Activity activity) {
+    private boolean invalidActivity(long id, Activity activity) {
         if (isNullOrEmpty(activity.title) || isNullOrEmpty(activity.consumption_in_wh)
                 || isNullOrEmpty(activity.image_path) || isNullOrEmpty(activity.source)) {
             return true;
         }
 
-        return !(activity.title.matches("([a-zA-Z0-9-]+ ){2,}\\w(.*)") &&
-                activity.consumption_in_wh.matches("[0-9]+"));
-    }
-
-    /**
-     * Check if another activity with the same title exists in the repository
-     *
-     * @param activity - Activity to be checked
-     * @return true iff another activity with the same title exists in the repository
-     */
-    private boolean duplicateTitle(Activity activity) {
-        Activity probe = new Activity();
-        probe.title = activity.title;
-        Example<Activity> exampleActivity = Example.of(probe, ExampleMatcher.matchingAny());
-        return (repo.exists(exampleActivity));
-    }
-
-    /**
-     * Check if the repository contains another activity with the same title but different ID
-     *
-     * @param id - id of the activity to be excluded in the search
-     * @param activity - activity whose title is to be compared
-     * @return true iff another activity with same title but different ID exists
-     */
-    private boolean sameTitleDiffActivity(long id, Activity activity) {
         Optional<Activity> required = getAllActivities()
                 .stream()
                 .filter(a -> a.id != id)
                 .filter(a -> a.title.equals(activity.title))
                 .findFirst();
-        return required.isPresent();
+
+        return !(activity.title.matches("([a-zA-Z0-9-]+ ){2,}\\w(.*)") &&
+                activity.consumption_in_wh.matches("[0-9]+") && required.isEmpty());
     }
 
     /**
@@ -97,7 +74,7 @@ public class ActivityController {
      */
     @PostMapping(path = {"", "/"})
     public ResponseEntity<Activity> addActivity(@RequestBody Activity activity) {
-        if (invalidActivity(activity) || duplicateTitle(activity)) {
+        if (invalidActivity(activity.id, activity)) {
             return ResponseEntity.badRequest().build();
         }
         Activity saved = repo.save(activity);
@@ -140,7 +117,7 @@ public class ActivityController {
     public ResponseEntity<Activity> updateActivityById(@PathVariable("id") long id,
                                                        @RequestBody Activity activityDetails) {
 
-        if (isInvalid(id, repo) || invalidActivity(activityDetails) || sameTitleDiffActivity(id, activityDetails)) {
+        if (isInvalid(id, repo) || invalidActivity(id, activityDetails)) {
             return ResponseEntity.badRequest().build();
         }
 
