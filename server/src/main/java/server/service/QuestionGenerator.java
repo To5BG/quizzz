@@ -19,20 +19,20 @@ public class QuestionGenerator {
      * @param activities List of activities to compare
      * @return The question and the list of expected answers
      */
-    private static Pair<Question, List<Integer>> generateComparisonQuestion(List<Activity> activities) {
+    private static Pair<Question, List<Long>> generateComparisonQuestion(List<Activity> activities) {
         Question q = new Question("Which activity takes the most energy?", "N/A",
                 Question.QuestionType.COMPARISON);
 
-        int answerIndex = 0;
-        int maxUsage = Integer.MIN_VALUE;
+        long answerIndex = 0;
+        long maxUsage = Integer.MIN_VALUE;
 
         for (int i = 0; i < activities.size(); ++i) {
             Activity a = activities.get(i);
             q.addAnswerOption(a.title);
             q.addActivityPath(a.image_path);
-            if (Integer.parseInt(a.consumption_in_wh) > maxUsage) {
+            if (a.consumption_in_wh > maxUsage) {
                 answerIndex = i;
-                maxUsage = Integer.parseInt(a.consumption_in_wh);
+                maxUsage = a.consumption_in_wh;
             }
         }
 
@@ -46,21 +46,21 @@ public class QuestionGenerator {
      * @param difficultyFactor The difficulty factor of the question
      * @return A question and the list of expected answers
      */
-    private static Pair<Question, List<Integer>> generateMultipleChoiceQuestion(Activity activity,
-                                                                                double difficultyFactor) {
+    private static Pair<Question, List<Long>> generateMultipleChoiceQuestion(Activity activity,
+                                                                             double difficultyFactor) {
         Question q = new Question("Guess how much energy the following activity takes\n" + activity.title,
                 activity.image_path, Question.QuestionType.MULTIPLE_CHOICE);
 
         Random rng = new Random();
-        int answerOption = rng.nextInt(4);
+        long answerOption = rng.nextInt(4);
         for (int i = 0; i < 4; ++i) {
             if (i == answerOption) {
                 q.answerOptions.add(activity.consumption_in_wh + " Wh");
             } else {
-                int activityCons = Integer.parseInt(activity.consumption_in_wh);
-                int randomOption = Math.abs(activityCons - (int) (activityCons * 0.5 / difficultyFactor)) +
+                long activityCons = activity.consumption_in_wh;
+                long randomOption = Math.abs(activityCons - (int) (activityCons * 0.5 / difficultyFactor)) +
                         rng.nextInt((int) (activityCons / difficultyFactor));
-                if (randomOption == Integer.parseInt(activity.consumption_in_wh)) {
+                if (randomOption == activity.consumption_in_wh) {
                     randomOption += rng.nextInt((int) (activityCons * 0.5 / difficultyFactor));
                 }
                 q.addAnswerOption(randomOption + " Wh");
@@ -75,11 +75,11 @@ public class QuestionGenerator {
      * @param activity The activity with the consumption to be estimated
      * @return A question and the list of expected answers
      */
-    private static Pair<Question, List<Integer>> generateEstimationQuestion(Activity activity) {
+    private static Pair<Question, List<Long>> generateEstimationQuestion(Activity activity) {
         Question q = new Question("Guess how much Wh of energy the following activity takes\n" + activity.title,
                 activity.image_path, Question.QuestionType.RANGE_GUESS);
 
-        return Pair.of(q, List.of(Integer.parseInt(activity.consumption_in_wh)));
+        return Pair.of(q, List.of(activity.consumption_in_wh));
     }
 
     /**
@@ -89,19 +89,19 @@ public class QuestionGenerator {
      * @param other Alternative activities instead of the first one
      * @return A question and the list of expected answers
      */
-    private static Pair<Question, List<Integer>> generateEquivalenceQuestion(Activity a, List<Activity> other) {
+    private static Pair<Question, List<Long>> generateEquivalenceQuestion(Activity a, List<Activity> other) {
         Question q = new Question(
                 "What could you do instead of the following activity to use the same energy?\n" +
                         a.title, a.image_path, Question.QuestionType.EQUIVALENCE);
 
-        int diff = Integer.MAX_VALUE;
-        int closestIndex = 0;
+        long diff = Integer.MAX_VALUE;
+        long closestIndex = 0;
 
         for (int i = 0; i < other.size(); ++i) {
             Activity act = other.get(i);
             q.addAnswerOption(act.title);
             q.addActivityPath(act.image_path);
-            int curDiff = Math.abs(Integer.parseInt(a.consumption_in_wh) - Integer.parseInt(act.consumption_in_wh));
+            long curDiff = Math.abs(a.consumption_in_wh - act.consumption_in_wh);
             if (curDiff < diff) {
                 diff = curDiff;
                 closestIndex = i;
@@ -116,7 +116,7 @@ public class QuestionGenerator {
      *
      * @return The question and the list of expected answers
      */
-    public static Pair<Question, List<Integer>> generateQuestion(double difficultyFactor, ActivityController ctrl) {
+    public static Pair<Question, List<Long>> generateQuestion(double difficultyFactor, ActivityController ctrl) {
         Random rng = new Random();
         return generateTypeQuestion(QUESTION_TYPES.get(rng.nextInt(QUESTION_TYPES.size())), difficultyFactor, ctrl);
     }
@@ -127,7 +127,7 @@ public class QuestionGenerator {
      * @param type The type of the question to generate
      * @return The question and the list of expected answers
      */
-    public static Pair<Question, List<Integer>> generateTypeQuestion
+    public static Pair<Question, List<Long>> generateTypeQuestion
     (Question.QuestionType type, double difficultyFactor, ActivityController ctrl) {
 
         Activity activity = fetchActivity(ctrl);
@@ -147,8 +147,8 @@ public class QuestionGenerator {
                 activities.add(potential);
                 continue;
             }
-            int potentialCons = Integer.parseInt(potential.consumption_in_wh);
-            int pivotCons = Integer.parseInt(activity.consumption_in_wh);
+            long potentialCons = potential.consumption_in_wh;
+            long pivotCons = activity.consumption_in_wh;
 
             if (!activities.contains(potential)) {
                 if (Math.abs(potentialCons - pivotCons) <= 0.5 * potentialCons / difficultyFactor) {

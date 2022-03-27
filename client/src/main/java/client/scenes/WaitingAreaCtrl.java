@@ -39,6 +39,7 @@ public class WaitingAreaCtrl implements Initializable {
     private final MainCtrl mainCtrl;
 
     private long playerId;
+    private long waitingId;
 
     @FXML
     private TableView<Player> currentPlayers;
@@ -68,18 +69,19 @@ public class WaitingAreaCtrl implements Initializable {
      * Removes player from session. Also called if controller is closed forcibly
      */
     public void shutdown() {
-        if (readyButton.getText().equals("Not Ready")) gameSessionUtils.toggleReady(MainCtrl.WAITING_AREA_ID, false);
-        gameSessionUtils.removePlayer(MainCtrl.WAITING_AREA_ID, playerId);
-        setPlayerId(0L);
+        if (readyButton.getText().equals("Not Ready")) gameSessionUtils.toggleReady(waitingId, false);
+        Player player = gameSessionUtils.removePlayer(waitingId, playerId);
+        gameSessionUtils.addPlayer(MainCtrl.SELECTION_ID, player);
     }
 
     /**
      * Reverts the player to the splash screen and remove him from the current game session.
      */
     public void back() {
+        long id = playerId;
         shutdown();
         readyButton.setText("Ready");
-        mainCtrl.showSplash();
+        mainCtrl.showRoomSelection(id);
     }
 
     /**
@@ -89,11 +91,11 @@ public class WaitingAreaCtrl implements Initializable {
         switch (readyButton.getText()) {
             case "Ready" -> {
                 readyButton.setText("Not Ready");
-                gameSessionUtils.toggleReady(MainCtrl.WAITING_AREA_ID, true);
+                gameSessionUtils.toggleReady(waitingId, true);
             }
             case "Not Ready" -> {
                 readyButton.setText("Ready");
-                gameSessionUtils.toggleReady(MainCtrl.WAITING_AREA_ID, false);
+                gameSessionUtils.toggleReady(waitingId, false);
             }
         }
     }
@@ -116,38 +118,20 @@ public class WaitingAreaCtrl implements Initializable {
      * @return True iff the refresh should continue
      */
     public boolean refresh() {
-        GameSession waitingArea = gameSessionUtils.getSession(MainCtrl.WAITING_AREA_ID);
+        GameSession waitingArea = gameSessionUtils.getSession(waitingId);
         ObservableList<Player> data = FXCollections.observableList(waitingArea.players);
         currentPlayers.setItems(data);
 
-        int playersReady = waitingArea.playersReady;
+        int playersReady = waitingArea.playersReady.get();
         int playersCount = waitingArea.players.size();
 
-        if (waitingArea.sessionStatus == GameSession.SessionStatus.TRANSFERRING) {
-
-            gameSessionUtils.toggleReady(MainCtrl.WAITING_AREA_ID, false);
-            GameSession sessionToJoin = gameSessionUtils.getAvailableSession();
-            if (sessionToJoin == null) return true;
+        if (waitingArea.sessionStatus == GameSession.SessionStatus.STARTED) {
+            gameSessionUtils.toggleReady(waitingId, false);
 
             readyButton.setText("Ready");
             readyButton.setVisible(false);
 
-            gameSessionUtils.addPlayer(sessionToJoin.id,
-                    gameSessionUtils.removePlayer(MainCtrl.WAITING_AREA_ID, playerId));
-            if (gameSessionUtils.getPlayers(MainCtrl.WAITING_AREA_ID).size() == 0) {
-                sessionToJoin = gameSessionUtils.updateStatus(sessionToJoin, GameSession.SessionStatus.ONGOING);
-                gameSessionUtils.updateStatus(waitingArea, GameSession.SessionStatus.WAITING_AREA);
-            }
-            mainCtrl.showMultiplayer(sessionToJoin.id, playerId);
-            return false;
-        } else if (playersReady == playersCount && playersReady >= 2) {
-            toggleReady();
-            gameSessionUtils.updateStatus(waitingArea, GameSession.SessionStatus.TRANSFERRING);
-            var sessionToJoin = gameSessionUtils.addSession(
-                    new GameSession(GameSession.SessionType.MULTIPLAYER));
-            gameSessionUtils.addPlayer(sessionToJoin.id,
-                    gameSessionUtils.removePlayer(MainCtrl.WAITING_AREA_ID, playerId));
-            mainCtrl.showMultiplayer(sessionToJoin.id, playerId);
+            mainCtrl.showMultiplayer(waitingId, playerId);
             return false;
         }
         readyButton.setVisible(playersCount >= 2);
@@ -162,5 +146,14 @@ public class WaitingAreaCtrl implements Initializable {
      */
     public void setPlayerId(long playerId) {
         this.playerId = playerId;
+    }
+
+    /**
+     * Setter for waitingId.
+     *
+     * @param waitingId New waitingId
+     */
+    public void setWaitingId(long waitingId) {
+        this.waitingId = waitingId;
     }
 }

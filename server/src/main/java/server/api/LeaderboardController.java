@@ -1,6 +1,7 @@
 package server.api;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import commons.Player;
@@ -27,6 +28,7 @@ public class LeaderboardController {
 
     /**
      * An API to return all players in the DB
+     *
      * @return a list of all players in the DB
      */
     @GetMapping(path = {"/"})
@@ -78,6 +80,18 @@ public class LeaderboardController {
     }
 
     /**
+     * Get a player object with the specified username
+     *
+     * @param username The username of the player to check
+     * @return The player object if the username is found, otherwise null
+     */
+    @GetMapping("/getByUsername/{username}")
+    public ResponseEntity<Player> getPlayerByUsername(@PathVariable("username") String username) {
+        Optional<Player> result = repo.findAll().stream().filter(p -> p.username.equals(username)).findFirst();
+        return ResponseEntity.ok(result.orElse(null));
+    }
+
+    /**
      * Adds a player entry to the database with no associated game session/forcibly
      *
      * @param player Player to be added
@@ -106,7 +120,7 @@ public class LeaderboardController {
                                                             @RequestBody int points) {
         if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
         Player updatedPlayer = repo.findById(playerId).get();
-        updatedPlayer.setCurrentPoints(points);
+        updatedPlayer.currentPoints += points;
         repo.save(updatedPlayer);
         return ResponseEntity.ok(updatedPlayer);
     }
@@ -123,7 +137,7 @@ public class LeaderboardController {
                                                            @RequestBody int points) {
         if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
         Player updatedPlayer = repo.findById(playerId).get();
-        updatedPlayer.setCurrentPoints(points);
+        updatedPlayer.currentPoints += points;
         repo.save(updatedPlayer);
         return ResponseEntity.ok(updatedPlayer);
     }

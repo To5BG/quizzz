@@ -1,6 +1,7 @@
 package client.utils;
 
 import commons.GameSession;
+import commons.Joker;
 import commons.Player;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -13,7 +14,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class GameSessionUtils {
 
-    private static final String SERVER = "http://localhost:8080/";
+    public static String serverConnection = "http://localhost:8080/";
 
     /**
      * Retrieves a game session from the DB.
@@ -23,7 +24,7 @@ public class GameSessionUtils {
      */
     public GameSession getSession(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/" + sessionId)
+                .target(serverConnection).path("api/sessions/" + sessionId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<GameSession>() {
@@ -31,16 +32,16 @@ public class GameSessionUtils {
     }
 
     /**
-     * Retrieves an available game session from the DB.
+     * Retrieves all available waiting rooms from the DB.
      *
      * @return Available game session
      */
-    public GameSession getAvailableSession() {
+    public List<GameSession> getAvailableSessions() {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/join")
+                .target(serverConnection).path("api/sessions/available")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<GameSession>() {
+                .get(new GenericType<List<GameSession>>() {
                 });
     }
 
@@ -51,7 +52,7 @@ public class GameSessionUtils {
      */
     public List<GameSession> getSessions() {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions")
+                .target(serverConnection).path("api/sessions")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<GameSession>>() {
@@ -66,7 +67,21 @@ public class GameSessionUtils {
      */
     public GameSession addSession(GameSession session) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions")
+                .target(serverConnection).path("api/sessions")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(session, APPLICATION_JSON), GameSession.class);
+    }
+
+    /**
+     * Adds a waiting room to the DB.
+     *
+     * @param session GameSession object to be added
+     * @return The session that has been added
+     */
+    public GameSession addWaitingRoom(GameSession session) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(serverConnection).path("api/sessions/waiting")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(session, APPLICATION_JSON), GameSession.class);
@@ -80,7 +95,7 @@ public class GameSessionUtils {
      */
     public GameSession removeSession(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/" + sessionId)
+                .target(serverConnection).path("api/sessions/" + sessionId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .delete(GameSession.class);
@@ -95,7 +110,7 @@ public class GameSessionUtils {
      */
     public GameSession updateStatus(GameSession session, GameSession.SessionStatus status) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/" + session.id + "/status")
+                .target(serverConnection).path("api/sessions/" + session.id + "/status")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .put(Entity.entity(status, APPLICATION_JSON), GameSession.class);
@@ -110,7 +125,7 @@ public class GameSessionUtils {
      */
     public GameSession toggleReady(long sessionId, boolean isReady) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/" + sessionId + "/" + ((isReady) ? "" : "not") + "ready")
+                .target(serverConnection).path("api/sessions/" + sessionId + "/" + ((isReady) ? "" : "not") + "ready")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<GameSession>() {
@@ -126,7 +141,7 @@ public class GameSessionUtils {
      */
     public Player addPlayer(long sessionId, Player player) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/" + sessionId + "/players")
+                .target(serverConnection).path("api/sessions/" + sessionId + "/players")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(player, APPLICATION_JSON), Player.class);
@@ -141,7 +156,7 @@ public class GameSessionUtils {
      */
     public Player removePlayer(long sessionId, long playerId) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/" + sessionId + "/players/" + playerId)
+                .target(serverConnection).path("api/sessions/" + sessionId + "/players/" + playerId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .delete(Player.class);
@@ -155,7 +170,7 @@ public class GameSessionUtils {
      */
     public List<Player> getPlayers(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/" + sessionId + "/players")
+                .target(serverConnection).path("api/sessions/" + sessionId + "/players")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Player>>() {
@@ -170,7 +185,7 @@ public class GameSessionUtils {
      */
     public List<Player> getRemovedPlayers(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/" + sessionId + "/removedPlayers")
+                .target(serverConnection).path("api/sessions/" + sessionId + "/removedPlayers")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Player>>() {
@@ -187,7 +202,7 @@ public class GameSessionUtils {
      */
     public Integer updateTimeJokers(long sessionID, int timeJokers) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/" + sessionID + "/timeJokers/" + timeJokers)
+                .target(serverConnection).path("api/sessions/" + sessionID + "/timeJokers/" + timeJokers)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(Integer.class);
@@ -201,11 +216,55 @@ public class GameSessionUtils {
      */
     public GameSession resetQuestionCounter(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/sessions/" + sessionId + "/reset")
+                .target(serverConnection).path("api/sessions/" + sessionId + "/reset")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<GameSession>() {
                 });
     }
 
+    /**
+     * Check if the given username is used in an active session
+     *
+     * @param username The username to check
+     * @return True if the username is used, otherwise false
+     */
+    public Boolean isDuplInActive(String username) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(serverConnection).path("api/sessions/checkUsername/" + username)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Boolean>() {
+                });
+    }
+
+    /**
+     * Retrieve all used jokers from a session in the DB.
+     *
+     * @param sessionId the id of the session
+     * @return List of all used jokers from a session
+     */
+    public List<Joker> getUsedJoker(long sessionId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(serverConnection).path("api/sessions/" + sessionId + "/jokers")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Joker>>() {
+                });
+    }
+
+    /**
+     * Adds an usedJoker to a game session.
+     *
+     * @param sessionId id of the session to add the joker to
+     * @param joker     Joker object to be added
+     * @return The joker that has been added
+     */
+    public Joker addUsedJoker(long sessionId, Joker joker) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(serverConnection).path("api/sessions/" + sessionId + "/add/joker")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(joker, APPLICATION_JSON), Joker.class);
+    }
 }

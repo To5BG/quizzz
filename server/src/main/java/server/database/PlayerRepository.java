@@ -8,6 +8,7 @@ import java.util.List;
 public interface PlayerRepository extends JpaRepository<Player, Long> {
     /**
      * the JPA sorting method to return a list of players sorted by their best single score
+     *
      * @return a list of ordered players
      */
     List<Player> findByOrderByBestSingleScoreDesc();
@@ -16,6 +17,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
 
     /**
      * the JPA sorting method to return a list of players sorted by their best multimode score
+     *
      * @return a list of ordered players
      */
     List<Player> findByOrderByBestMultiScoreDesc();

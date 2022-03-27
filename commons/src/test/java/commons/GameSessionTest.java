@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GameSessionTest {
 
-    private static final Player SOME_PLAYER = new Player("test",0);
+    private static final Player SOME_PLAYER = new Player("test", 0);
     private static GameSession s = null;
 
     @BeforeEach
@@ -43,7 +43,7 @@ public class GameSessionTest {
         assertNull(session.players);
         assertNull(session.sessionStatus);
         assertNull(session.sessionType);
-        assertSame(0, session.playersReady);
+        assertNull(session.playersReady);
         assertSame(0, session.questionCounter);
         assertSame(0L, session.id);
     }
@@ -53,18 +53,18 @@ public class GameSessionTest {
         GameSession waitingArea = new GameSession(GameSession.SessionType.WAITING_AREA);
         waitingArea.addPlayer(SOME_PLAYER);
         waitingArea.setPlayerReady();
-        assertSame(1, waitingArea.playersReady);
+        assertSame(1, waitingArea.playersReady.get());
         waitingArea.setPlayerReady();
-        assertSame(1, waitingArea.playersReady);
+        assertSame(1, waitingArea.playersReady.get());
     }
 
     @Test
     public void testUnsetReady() {
         s.unsetPlayerReady();
-        assertSame(0, s.playersReady);
+        assertSame(0, s.playersReady.get());
         s.setPlayerReady();
         s.unsetPlayerReady();
-        assertSame(0, s.playersReady);
+        assertSame(0, s.playersReady.get());
     }
 
     @Test
@@ -85,12 +85,12 @@ public class GameSessionTest {
         assertEquals(SOME_PLAYER, s.players.get(0));
         assertNotNull(s.expectedAnswers);
         assertSame(0, s.questionCounter);
-        assertSame(0, s.playersReady);
+        assertSame(0, s.playersReady.get());
     }
 
     @Test
     public void testAddPlayer() {
-        Player p = new Player("test2",0);
+        Player p = new Player("test2", 0);
         s.addPlayer(p);
         assertSame(2, s.players.size());
         assertEquals(p, s.players.get(1));
@@ -131,15 +131,15 @@ public class GameSessionTest {
     @Test
     public void testEquals() {
         var s2 = new GameSession(GameSession.SessionType.MULTIPLAYER,
-                Stream.of(new Player("blah",0))
+                Stream.of(new Player("blah", 0))
                         .collect(Collectors.toList()));
 
         var s3 = new GameSession(GameSession.SessionType.MULTIPLAYER,
-                Stream.of(new Player("blah",0))
+                Stream.of(new Player("blah", 0))
                         .collect(Collectors.toList()));
 
         var s4 = new GameSession(GameSession.SessionType.MULTIPLAYER,
-                Stream.of(new Player("blahhh",0))
+                Stream.of(new Player("blahhh", 0))
                         .collect(Collectors.toList()));
 
         assertEquals(s2, s2);
@@ -150,11 +150,11 @@ public class GameSessionTest {
     @Test
     public void testHashCode() {
         var s2 = new GameSession(GameSession.SessionType.MULTIPLAYER,
-                Stream.of(new Player("blah",0))
+                Stream.of(new Player("blah", 0))
                         .collect(Collectors.toList()));
 
         var s3 = new GameSession(GameSession.SessionType.MULTIPLAYER,
-                Stream.of(new Player("blah",0))
+                Stream.of(new Player("blah", 0))
                         .collect(Collectors.toList()));
 
         assertEquals(s2.hashCode(), s2.hashCode());
@@ -164,7 +164,7 @@ public class GameSessionTest {
     @Test
     public void testToString() {
         var s = new GameSession(GameSession.SessionType.MULTIPLAYER,
-                Stream.of(new Player("blah",0))
+                Stream.of(new Player("blah", 0))
                         .collect(Collectors.toList()));
         String str = s.toString();
 
@@ -176,5 +176,18 @@ public class GameSessionTest {
         assertTrue(str.contains("expectedAnswers=[]"));
         assertTrue(str.contains("currentQuestion=<null>"));
         assertTrue(str.contains(s.players.get(0).toString()));
+    }
+
+    @Test
+    public void testAddUsedJoker() {
+        var j = new Joker(
+                "test",
+                "testJoker"
+        );
+        assertNotNull(s.usedJokers);
+        s.addUsedJoker(j);
+        assertEquals(1, s.usedJokers.size());
+        assertEquals("testJoker", s.usedJokers.get(0).jokerName());
+        assertEquals("test", s.usedJokers.get(0).username());
     }
 }

@@ -16,26 +16,27 @@
             prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.scenes.SingleplayerCtrl">
     <children>
-        <Label fx:id="questionPrompt" layoutX="14.0" layoutY="14.0" text="[Question]" />
-        <StackPane fx:id="answerArea" layoutX="14.0" layoutY="61.0" prefHeight="156.0" prefWidth="203.0" />
+        <Label fx:id="questionPrompt" layoutX="14.0" layoutY="14.0" text="[Question]"/>
+        <StackPane fx:id="answerArea" alignment="BASELINE_LEFT" layoutX="14.0" layoutY="61.0" prefHeight="156.0"
+                   prefWidth="203.0"/>
         <Button fx:id="submitButton" layoutX="361.0" layoutY="248.0" mnemonicParsing="false"
-                onAction="#submitAnswerButton" text="Final Answer" />
-        <Label fx:id="pointsLabel" layoutX="492.0" layoutY="14.0" text="Points: 0" />
-        <Label fx:id="questionCount" layoutX="14.0" layoutY="1.0" text="Question: 1" />
+                onAction="#submitAnswerButton" text="Final Answer"/>
+        <Label fx:id="pointsLabel" layoutX="492.0" layoutY="14.0" text="Points: 0"/>
+        <Label fx:id="questionCount" layoutX="14.0" layoutY="1.0" text="Question: 1"/>
         <ProgressBar fx:id="timeProgress" layoutX="18.0" layoutY="248.0" prefHeight="20.0" prefWidth="321.0"
-                     progress="0.0" />
-        <Button layoutX="521.0" layoutY="355.0" mnemonicParsing="false" onAction="#back" text="Go Back" />
+                     progress="0.0"/>
+        <Button layoutX="521.0" layoutY="355.0" mnemonicParsing="false" onAction="#back" text="Go Back"/>
         <Button fx:id="removeOneButton" layoutX="29.0" layoutY="323.0" mnemonicParsing="false"
                 onAction="#removeOneAnswer" prefHeight="26.0" prefWidth="103.0" text="Remove One Answer">
             <font>
-                <Font size="9.0" />
+                <Font size="9.0"/>
             </font>
         </Button>
         <Button fx:id="decreaseTimeButton" layoutX="189.0" layoutY="323.0" mnemonicParsing="false"
-                onAction="#increaseTime" prefHeight="26.0" prefWidth="103.0" text="Increase Time" />
+                onAction="#increaseTime" prefHeight="26.0" prefWidth="103.0" text="Increase Time"/>
         <Button fx:id="doublePointsButton" layoutX="340.0" layoutY="323.0" mnemonicParsing="false"
-                onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points" />
-        <Accordion layoutX="498.0" layoutY="79.0" />
+                onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points"/>
+        <Accordion layoutX="498.0" layoutY="79.0"/>
         <TitledPane animated="true" layoutX="449.0" layoutY="67.0" prefHeight="150.0" prefWidth="144.0"
                     text="LeaderBoard">
             <content>
@@ -43,15 +44,16 @@
                     <children>
                         <TableView fx:id="allPlayers" prefHeight="133.0" prefWidth="144.0">
                             <columns>
-                                <TableColumn fx:id="colName" prefWidth="73.0" text="Player" />
-                                <TableColumn fx:id="colPoint" prefWidth="77.0" text="Point" />
+                                <TableColumn fx:id="colName" prefWidth="73.0" text="Player"/>
+                                <TableColumn fx:id="colPoint" prefWidth="77.0" text="Point"/>
                             </columns>
                         </TableView>
-                    </children></AnchorPane>
+                    </children>
+                </AnchorPane>
             </content>
         </TitledPane>
-      <Label fx:id="countdown" layoutX="16.0" layoutY="44.0" text="Options:" />
-      <ImageView fx:id="imagePanel" fitHeight="156.0" fitWidth="200.0" layoutX="240.0" layoutY="61.0"
-                 pickOnBounds="true" preserveRatio="true" />
+        <Label fx:id="countdown" layoutX="16.0" layoutY="44.0" text="Options:"/>
+        <ImageView fx:id="imagePanel" fitHeight="156.0" fitWidth="200.0" layoutX="240.0" layoutY="61.0"
+                   pickOnBounds="true" preserveRatio="true"/>
     </children>
 </AnchorPane>

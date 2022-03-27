@@ -47,7 +47,7 @@ public class SingleplayerCtrl extends GameCtrl {
     @Override
     public void submitAnswer(boolean initiatedByTimer) {
         super.submitAnswer(initiatedByTimer);
-        startEvaluation(bestSingleScore);
+        startEvaluation();
     }
 
     /**
@@ -55,12 +55,8 @@ public class SingleplayerCtrl extends GameCtrl {
      */
     @Override
     public void loadAnswer() {
-        if (decreaseTimeJoker) {
-            disableButton(decreaseTimeButton, false);
-        }
-        if (doublePointsJoker) {
-            disableButton(doublePointsButton, false);
-        }
+        disableButton(decreaseTimeButton, !decreaseTimeJoker);
+        disableButton(doublePointsButton, !doublePointsJoker);
         super.loadAnswer();
     }
 
@@ -69,7 +65,6 @@ public class SingleplayerCtrl extends GameCtrl {
      */
     @Override
     public void showEndScreen() {
-        return;
     }
 
     /**
@@ -88,8 +83,7 @@ public class SingleplayerCtrl extends GameCtrl {
      */
     @Override
     public double getTimeJokers() {
-        int number = gameSessionUtils.getSession(sessionId).getTimeJokers();
-        return (number == 1) ? -0.5 : 0;
+        return gameSessionUtils.getSession(sessionId).getTimeJokers() * -0.5;
     }
 
     /**
@@ -109,10 +103,4 @@ public class SingleplayerCtrl extends GameCtrl {
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
     }
-
-    @Override
-    public void updateScore(long playerId, int points, boolean isBestScore) {
-        leaderboardUtils.updateSingleScore(playerId, points, isBestScore);
-    }
-
 }

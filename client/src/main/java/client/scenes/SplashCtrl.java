@@ -17,24 +17,36 @@ package client.scenes;
 
 import client.utils.GameSessionUtils;
 import client.utils.LeaderboardUtils;
+import client.utils.QuestionUtils;
+import client.utils.WebSocketsUtils;
 import com.google.inject.Inject;
 import commons.GameSession;
 import commons.Player;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SplashCtrl {
 
     private final GameSessionUtils gameSessionUtils;
     private final LeaderboardUtils leaderboardUtils;
+    private final QuestionUtils questionUtils;
+    private final WebSocketsUtils webSocketsUtils;
     private final MainCtrl mainCtrl;
 
     @FXML
@@ -46,36 +58,67 @@ public class SplashCtrl {
     @FXML
     private Text invalidUserName;
 
+    @FXML
+    private TextField connectionField;
+
+    @FXML
+    private Text failedConnectionAlert;
+
     @Inject
-    public SplashCtrl(GameSessionUtils gameSessionUtils, LeaderboardUtils leaderboardUtils, MainCtrl mainCtrl) {
+    public SplashCtrl(GameSessionUtils gameSessionUtils, LeaderboardUtils leaderboardUtils,
+                      QuestionUtils questionUtils, WebSocketsUtils webSocketsUtils, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
         this.leaderboardUtils = leaderboardUtils;
+        this.webSocketsUtils = webSocketsUtils;
+        this.questionUtils = questionUtils;
         this.mainCtrl = mainCtrl;
     }
 
-    /*
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        colFirstName.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().person.firstName));
-        colLastName.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().person.lastName));
-        colQuote.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().quote));
+    /**
+     * Sets the server path for all server utils to the provided url
+     *
+     * @return True iff the connection is successful
+     */
+    public boolean establishConnection() {
+        String connURL = connectionField.getText().strip();
+
+        if (connURL.isEmpty()) connURL = "http://localhost:8080/";
+        if (!connURL.endsWith("/")) connURL = connURL.concat("/");
+
+        Pattern connPattern = Pattern.compile("\\w+\\w+://[\\w.]+:\\d+/");
+        Matcher matcher = connPattern.matcher(connURL);
+
+        try {
+            if (matcher.find()) connURL = matcher.group();
+            URL url = new URL(connURL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            int respCode = connection.getResponseCode();
+            if (respCode != 200) {
+                alertFailedConnection();
+                return false;
+            }
+
+            gameSessionUtils.serverConnection = connURL;
+            leaderboardUtils.serverConnection = connURL;
+            questionUtils.serverConnection = connURL;
+            webSocketsUtils.updateConnection(connURL);
+            return true;
+        } catch (Exception e) {
+            alertFailedConnection();
+            return false;
+        }
     }
-    */
 
     /**
-     * Initialize setup for main controller's showMultiplayer() method. Creates a new session if no free session is
-     * available and adds the player to the session.
+     * Displays an alert for a failed attempt at connecting to the server.
      */
-    public void enterMultiplayerGame() {
-        GameSession sessionToJoin = gameSessionUtils.getAvailableSession();
-        String newUserName = usernameField.getText();
-
-        gameSessionUtils.addPlayer(sessionToJoin.id, new Player(newUserName, 0));
-        var playerId = gameSessionUtils
-                .getPlayers(sessionToJoin.id)
-                .stream().filter(p -> p.username.equals(newUserName))
-                .findFirst().get().id;
-        mainCtrl.showMultiplayer(sessionToJoin.id, playerId);
+    public void alertFailedConnection() {
+        connectionField.clear();
+        failedConnectionAlert.setOpacity(1);
+        Platform.runLater(() -> new Timeline(
+                new KeyFrame(Duration.seconds(2), e -> failedConnectionAlert.setOpacity(0))).play());
     }
 
     /**
@@ -88,7 +131,7 @@ public class SplashCtrl {
     public boolean isUsernameValid(String username) {
         if (username.isBlank()) return false;
         for (int i = 0; i < username.length(); i++) {
-            if ((Character.isLetterOrDigit(username.charAt(i)) == false)) {
+            if (!Character.isLetterOrDigit(username.charAt(i))) {
                 return false;
             }
         }
@@ -96,93 +139,60 @@ public class SplashCtrl {
     }
 
     /**
-     * Checks active sessions in the DB if another Player entry with the same username is present.
+     * Generate the player object corresponding to the username
      *
-     * @param username username of the player to be checked
-     * @return true if another Player with the same username exists
+     * @param username The username of the player
+     * @return Optional of Player that is set when the username can be used
      */
-    public boolean isDuplInActive(String username) {
-        for (GameSession gs : gameSessionUtils.getSessions()) {
-            Optional<Player> existing = gs
-                    .getPlayers()
-                    .stream().filter(p -> p.username.equals(username))
-                    .findFirst();
-
-            if (existing.isPresent()) return true;
-        }
-        return false;
-    }
-
-    /**
-     * Checks the player repository if another Player entry with the same username is present.
-     *
-     * @param username username of the player to be checked
-     * @return true if another Player with the same username exists
-     */
-    public boolean isDuplInRepository(String username) {
-        for (Player p : leaderboardUtils.getAllLeaderBoardPlayers()) {
-            if (p.username.equals(username)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Gets the player with the same username (if exists) from the player repository
-     *
-     * @param username username of the player to be obtained
-     * @return the player if it exists, null otherwise
-     */
-    public Player getDuplPlayer(String username) {
-        for (Player p : leaderboardUtils.getAllLeaderBoardPlayers()) {
-            if (p.username.equals(username)) {
-                return p;
-            }
-        }
-        return null;
-    }
-
-
-    /**
-     * Initialize setup for main controller's showMultiplayer() method. Creates a new session if no free session is
-     * available and adds the player to the session.
-     * In case a player enters a username already present in an active game session, or an invalid/blank username, they
-     * are not added to the session, instead being prompted to change their username.
-     */
-    public void showWaitingArea() {
-        String newUserName = usernameField.getText();
-
-        if (isDuplInActive(newUserName)) {
+    private Optional<Player> generatePlayer(String username) {
+        Player result = null;
+        if (!isUsernameValid(username)) {
+            invalidUserName.setOpacity(1);
+            duplUsername.setOpacity(0);
+            usernameField.clear();
+        } else if (gameSessionUtils.isDuplInActive(username)) {
             invalidUserName.setOpacity(0);
             duplUsername.setOpacity(1);
             usernameField.clear();
-        } else if (!isUsernameValid(newUserName)) {
-            duplUsername.setOpacity(0);
-            invalidUserName.setOpacity(1);
-            usernameField.clear();
         } else {
-            duplUsername.setOpacity(0);
-            invalidUserName.setOpacity(0);
+            saveUsername(usernameField.getText());
 
-            if (isDuplInRepository(newUserName)) {
-                Player p = getDuplPlayer(newUserName);
-                p.setCurrentPoints(0);
-                gameSessionUtils.addPlayer(1L, p);
+            invalidUserName.setOpacity(0);
+            duplUsername.setOpacity(0);
+            result = leaderboardUtils.getPlayerByUsername(username);
+
+            if (result != null) {
+                result.setCurrentPoints(0);
             } else {
-                gameSessionUtils.addPlayer(1L /*waiting area id*/, new Player(newUserName, 0));
+                result = new Player(username, 0);
             }
-            var playerId = gameSessionUtils
-                    .getPlayers(1L)
+        }
+
+        return Optional.ofNullable(result);
+    }
+
+    /**
+     * Initialize setup for main controller's showRoomSelection() method.
+     * In case a player enters an invalid/blank username, or if the username is used in an active game session, they are
+     * being prompted to change their username.
+     */
+    public void showRoomSelection() {
+        if (!establishConnection()) return;
+        String newUserName = usernameField.getText();
+        Optional<Player> playerResult = generatePlayer(newUserName);
+        if (playerResult.isEmpty()) return;
+
+        gameSessionUtils.addPlayer(MainCtrl.SELECTION_ID, playerResult.get());
+        long playerId = playerResult.get().id;
+
+        if (playerId == 0L) {
+            playerId = gameSessionUtils
+                    .getPlayers(MainCtrl.SELECTION_ID)
                     .stream().filter(p -> p.username.equals(newUserName))
                     .findFirst().get().id;
-            try {
-                saveUsername(usernameField.getText());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            mainCtrl.showWaitingArea(playerId);
         }
+
+        mainCtrl.showRoomSelection(playerId);
     }
 
     /**
@@ -191,39 +201,23 @@ public class SplashCtrl {
      * not added to the session, instead being prompted to change their username.
      */
     public void showSinglePlayer() {
+        if (!establishConnection()) return;
         String newUserName = usernameField.getText();
+        Optional<Player> playerResult = generatePlayer(newUserName);
+        if (playerResult.isEmpty()) return;
 
-        if (!isUsernameValid(newUserName)) {
-            invalidUserName.setOpacity(1);
-            duplUsername.setOpacity(0);
-            usernameField.clear();
-        } else if (isDuplInActive(newUserName)) {
-            invalidUserName.setOpacity(0);
-            duplUsername.setOpacity(1);
-            usernameField.clear();
-        } else {
-            try {
-                saveUsername(usernameField.getText());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            invalidUserName.setOpacity(0);
-            duplUsername.setOpacity(0);
-            if (isDuplInRepository(newUserName)) {
-                getDuplPlayer(newUserName).setCurrentPoints(0);
-            }
-            GameSession newSession = new GameSession(GameSession.SessionType.SINGLEPLAYER);
-            newSession = gameSessionUtils.addSession(newSession);
-            gameSessionUtils.addPlayer(newSession.id, isDuplInRepository(newUserName) ?
-                    getDuplPlayer(newUserName) : new Player(newUserName, 0));
+        GameSession newSession = new GameSession(GameSession.SessionType.SINGLEPLAYER);
+        newSession = gameSessionUtils.addSession(newSession);
+        gameSessionUtils.addPlayer(newSession.id, playerResult.get());
 
-            var playerId = gameSessionUtils
-                    .getPlayers(newSession.id)
-                    .stream().filter(p -> p.username.equals(newUserName))
-                    .findFirst().get().id;
+        long playerId = playerResult.get().id;
 
-            mainCtrl.showSinglePlayer(newSession.id, playerId);
+        if (playerId == 0L) {
+            playerId = gameSessionUtils
+                    .getPlayers(newSession.id).get(0).id;
         }
+
+        mainCtrl.showSinglePlayer(newSession.id, playerId);
     }
 
     /**
@@ -231,7 +225,7 @@ public class SplashCtrl {
      *
      * @param username - String to be saved inside the file
      */
-    private void saveUsername(String username) throws IOException {
+    private void saveUsername(String username) {
         try {
             File file = new File("username.txt");
             file.createNewFile();
@@ -239,7 +233,7 @@ public class SplashCtrl {
             writer.write(username);
             writer.close();
         } catch (IOException e) {
-            throw new IOException();
+            e.printStackTrace();
         }
     }
 
@@ -247,6 +241,7 @@ public class SplashCtrl {
      * Initialize setup for main controller's showLeaderboard() method.
      */
     public void showLeaderboard() {
+        if (!establishConnection()) return;
         mainCtrl.showLeaderboard();
     }
 

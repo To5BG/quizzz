@@ -2,7 +2,6 @@ package client.utils;
 
 import commons.Player;
 import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -12,11 +11,11 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class LeaderboardUtils {
 
-    private static final String SERVER = "http://localhost:8080/";
+    public static String serverConnection = "http://localhost:8080/";
 
     public List<Player> getAllLeaderBoardPlayers() {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/")
+                .target(serverConnection).path("api/leaderboard/")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Player>>() {
@@ -31,7 +30,7 @@ public class LeaderboardUtils {
      */
     public List<Player> getPlayerSingleScore() {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/single")
+                .target(serverConnection).path("api/leaderboard/single")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Player>>() {
@@ -46,7 +45,7 @@ public class LeaderboardUtils {
      */
     public List<Player> getPlayerMultiScore() {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/multi")
+                .target(serverConnection).path("api/leaderboard/multi")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<List<Player>>() {
@@ -61,7 +60,7 @@ public class LeaderboardUtils {
      */
     public Player getPlayerByIdInLeaderboard(long playerId) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/" + playerId)
+                .target(serverConnection).path("api/leaderboard/" + playerId)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<Player>() {
@@ -69,51 +68,17 @@ public class LeaderboardUtils {
     }
 
     /**
-     * Adds a player entry to the database forcibly (without an associated game session)
+     * Get the player object with the specified username
      *
-     * @param player the player to be added
-     * @return a message to show whether the adding is successful or not
+     * @param username The username of the player
+     * @return The player object is the username if found, otherwise false
      */
-    public Player addPlayerForcibly(Player player) {
+    public Player getPlayerByUsername(String username) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard")
+                .target(serverConnection).path("api/leaderboard/getByUsername/" + username)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .post(Entity.entity(player, APPLICATION_JSON), Player.class);
+                .get(new GenericType<Player>() {
+                });
     }
-
-    /**
-     * Update a player's score in DB
-     *
-     * @param playerId    Id of player
-     * @param points      Updated points
-     * @param isBestScore Is this over the current best score for the player
-     * @return Updated player DB entry reference
-     */
-    public Player updateSingleScore(long playerId, int points, boolean isBestScore) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/" + playerId +
-                        ((isBestScore) ? "/best" : "/") + "singlescore")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(points, APPLICATION_JSON), Player.class);
-    }
-
-    /**
-     * Update a player's score in DB
-     *
-     * @param playerId    Id of player
-     * @param points      Updated points
-     * @param isBestScore Is this over the current best score for the player
-     * @return Updated player DB entry reference
-     */
-    public Player updateMultiScore(long playerId, int points, boolean isBestScore) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/leaderboard/" + playerId +
-                        ((isBestScore) ? "/best" : "/") + "multiscore")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(points, APPLICATION_JSON), Player.class);
-    }
-
 }

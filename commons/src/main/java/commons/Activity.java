@@ -18,7 +18,7 @@ public class Activity {
     public long id;
 
     public String title;
-    public String consumption_in_wh;
+    public long consumption_in_wh;
     public String image_path;
     public String source;
 
@@ -31,12 +31,13 @@ public class Activity {
 
     /**
      * Constructor method for Activity
-     * @param title - String representing the name of the activity
+     *
+     * @param title             - String representing the name of the activity
      * @param consumption_in_wh - String representing the consumption in Wh of the activity
-     * @param image_path - String representing the path to the image of the activity
-     * @param source  - String representing the source URL where the consumption information was taken from
+     * @param image_path        - String representing the path to the image of the activity
+     * @param source            - String representing the source URL where the consumption information was taken from
      */
-    public Activity(String title, String consumption_in_wh,String image_path, String source) {
+    public Activity(String title, long consumption_in_wh, String image_path, String source) {
         this.title = title;
         this.consumption_in_wh = consumption_in_wh;
         this.image_path = image_path;
@@ -45,6 +46,7 @@ public class Activity {
 
     /**
      * Equals method
+     *
      * @param obj - Object that will be compared with this
      * @return true if this and obj are equal
      */
@@ -55,6 +57,7 @@ public class Activity {
 
     /**
      * Hashcode method
+     *
      * @return the hashcode of the activity
      */
     @Override
@@ -64,6 +67,7 @@ public class Activity {
 
     /**
      * ToString method
+     *
      * @return String containing the activity in a readable format
      */
     @Override

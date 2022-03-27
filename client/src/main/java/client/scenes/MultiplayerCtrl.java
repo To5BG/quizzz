@@ -15,21 +15,19 @@
  */
 package client.scenes;
 
-import client.utils.GameSessionUtils;
-import client.utils.LeaderboardUtils;
-import client.utils.QuestionUtils;
-import client.utils.WebSocketsUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Emoji;
 import commons.GameSession;
+import commons.Joker;
 import commons.Player;
+import commons.Question;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -67,11 +65,18 @@ public class MultiplayerCtrl extends GameCtrl {
     private Label status;
     @FXML
     private Label removedPlayers;
+    @FXML
+    private Label jokerUsage;
+
     private int lastDisconnectIndex;
     private Timer disconnectTimer;
+    private int lastJokerIndex;
+    private Timer jokerTimer;
     private StompSession.Subscription channel;
     private boolean playingAgain;
     private int waitingSkip = 0;
+    private final static long END_GAME_TIME = 60L;
+    private List<Joker> usedJokers;
 
     @Inject
     public MultiplayerCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
@@ -87,6 +92,7 @@ public class MultiplayerCtrl extends GameCtrl {
 
             emojiImages.add(new Image(location.toString()));
         }
+        usedJokers = new ArrayList<>();
     }
 
     /**
@@ -109,6 +115,10 @@ public class MultiplayerCtrl extends GameCtrl {
                 };
             }
         });
+
+        leaderboard.setPrefWidth(IN_GAME_LEADERBOARD_WIDTH);
+        colUserName.setPrefWidth(IN_GAME_COLUSERNAME_WIDTH);
+        leaderboard.setOpacity(1);
 
         leaveButton.setOpacity(0);
         backButton.setOpacity(1);
@@ -145,15 +155,13 @@ public class MultiplayerCtrl extends GameCtrl {
 
             @Override
             public void run() {
-                Platform.runLater(() -> {
-                    List<Player> allRemoved = gameSessionUtils.getRemovedPlayers(sessionId);
-                    List<Player> newRemoved = new ArrayList<Player>();
-                    for (int i = lastDisconnectIndex + 1; i < allRemoved.size(); i++) {
-                        newRemoved.add(allRemoved.get(i));
-                    }
-                    disconnectedText(newRemoved);
-                    lastDisconnectIndex = allRemoved.size() - 1;
-                });
+                List<Player> allRemoved = gameSessionUtils.getRemovedPlayers(sessionId);
+                List<Player> newRemoved = new ArrayList<Player>();
+                for (int i = lastDisconnectIndex + 1; i < allRemoved.size(); i++) {
+                    newRemoved.add(allRemoved.get(i));
+                }
+                Platform.runLater(() -> disconnectedText(newRemoved));
+                lastDisconnectIndex = allRemoved.size() - 1;
             }
         }, 0, 2000);
     }
@@ -186,36 +194,33 @@ public class MultiplayerCtrl extends GameCtrl {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            if (gameSessionUtils.getSession(sessionId).sessionStatus
-                                    == GameSession.SessionStatus.PAUSED) {
-                                startEvaluation(bestMultiScore);
-                                cancel();
-                            }
-                            if (gameSessionUtils.getSession(sessionId).sessionStatus
-                                    == GameSession.SessionStatus.PLAY_AGAIN) {
-                                if (gameSessionUtils.getSession(sessionId).players.size() ==
-                                        gameSessionUtils.getSession(sessionId).playersReady) {
-                                    //Speed the timer up
-                                    waitingSkip = 4;
-                                } else {
-                                    //Slow the timer down
-                                    waitingSkip = 0;
-                                }
-                                status.setText(gameSessionUtils.getSession(sessionId).playersReady + " / " +
-                                        gameSessionUtils.getSession(sessionId).players.size()
-                                        + " players want to play again");
-                            }
-                            if (gameSessionUtils.getSession(sessionId).sessionStatus
-                                    == GameSession.SessionStatus.TRANSFERRING) {
-                                cancel();
-                            }
-                        } catch (Exception e) {
+                Platform.runLater(() -> {
+                    try {
+                        if (gameSessionUtils.getSession(sessionId).sessionStatus
+                                == GameSession.SessionStatus.PAUSED) {
+                            startEvaluation();
                             cancel();
                         }
+                        if (gameSessionUtils.getSession(sessionId).sessionStatus
+                                == GameSession.SessionStatus.PLAY_AGAIN) {
+                            if (gameSessionUtils.getSession(sessionId).players.size() ==
+                                    gameSessionUtils.getSession(sessionId).playersReady.get()) {
+                                //Speed the timer up
+                                waitingSkip = 4;
+                            } else {
+                                //Slow the timer down
+                                waitingSkip = 0;
+                            }
+                            status.setText(gameSessionUtils.getSession(sessionId).playersReady.get() + " / " +
+                                    gameSessionUtils.getSession(sessionId).players.size()
+                                    + " players want to play again");
+                        }
+                        if (gameSessionUtils.getSession(sessionId).sessionStatus
+                                == GameSession.SessionStatus.TRANSFERRING) {
+                            cancel();
+                        }
+                    } catch (Exception e) {
+                        cancel();
                     }
                 });
             }
@@ -227,6 +232,35 @@ public class MultiplayerCtrl extends GameCtrl {
         }, 0, 100);
     }
 
+    /**
+     * Renders the leaderboard at the start of a question and renders the rest of the general information
+     *
+     * @param q the question to be rendered
+     */
+    @Override
+    public void renderGeneralInformation(Question q) {
+        renderLeaderboard();
+        super.renderGeneralInformation(q);
+    }
+
+    /**
+     * Renders the correct answer and updates the leaderboard
+     */
+    @Override
+    public void renderCorrectAnswer() {
+        super.renderCorrectAnswer();
+        renderLeaderboard();
+    }
+
+    /**
+     * Resizes the leaderboard and displays the question screen attributes
+     */
+    @Override
+    public void removeMidGameLeaderboard() {
+        leaderboard.setPrefWidth(IN_GAME_LEADERBOARD_WIDTH);
+        colUserName.setPrefWidth(IN_GAME_COLUSERNAME_WIDTH);
+        super.removeMidGameLeaderboard();
+    }
 
     /**
      * Interrupts the timer, disables the submit button, sends the user's answer for evaluation and pauses the game
@@ -237,25 +271,28 @@ public class MultiplayerCtrl extends GameCtrl {
         if (!initiatedByTimer && this.evaluation == null) return;
 
         //enable jokers that can be used after submitting an answer
-        if (decreaseTimeJoker) {
-            disableButton(decreaseTimeButton, false);
-        }
-        if (doublePointsJoker) {
-            disableButton(doublePointsButton, false);
-        }
+        disableButton(decreaseTimeButton, !decreaseTimeJoker);
+        disableButton(doublePointsButton, !doublePointsJoker);
 
         refresh();
     }
 
     @Override
     public void shutdown() {
-        if (gameSessionUtils.getSession(sessionId).sessionStatus == GameSession.SessionStatus.PLAY_AGAIN) {
-            if (playAgain.getText().equals("Don't play again")) playAgain();
+        if (submitButton.isDisabled() &&
+                gameSessionUtils.getSession(sessionId).sessionStatus != GameSession.SessionStatus.PLAY_AGAIN) {
+            gameSessionUtils.toggleReady(sessionId, false);
+        }
+        if (gameSessionUtils.getSession(sessionId).sessionStatus == GameSession.SessionStatus.PLAY_AGAIN &&
+                playAgain.getText().equals("Don't play again")) {
+            playAgain();
         }
         channel.unsubscribe();
         super.shutdown();
         disconnectTimer.cancel();
         lastDisconnectIndex = -1;
+        jokerTimer.cancel();
+        lastJokerIndex = -1;
     }
 
     /**
@@ -266,15 +303,9 @@ public class MultiplayerCtrl extends GameCtrl {
         emojiList.setItems(sessionEmojis);
 
         channel = this.webSocketsUtils.registerForEmojiUpdates(emoji -> {
-            System.out.println("Emoji received for the current room: " + emoji);
             sessionEmojis.add(emoji);
             Platform.runLater(() -> emojiList.scrollTo(sessionEmojis.size() - 1));
         }, this.sessionId);
-    }
-
-    @Override
-    public void updateScore(long playerId, int points, boolean isBestScore) {
-        leaderboardUtils.updateMultiScore(playerId, points, isBestScore);
     }
 
     /**
@@ -300,6 +331,7 @@ public class MultiplayerCtrl extends GameCtrl {
         status.setOpacity(0);
         setPlayingAgain(false);
         waitingSkip = 0;
+        leaderboard.setOpacity(0);
         super.reset();
     }
 
@@ -341,40 +373,25 @@ public class MultiplayerCtrl extends GameCtrl {
         waitingSkip = 0;
         questionCount.setText("End of game! Play again or go back to main.");
 
-        Task roundTimer = new Task() {
-            @Override
-            public Object call() {
-                long refreshCounter = 0;
-                long waitingTime = 60000L;
-                while (refreshCounter * TIMER_UPDATE_INTERVAL_MS < waitingTime) {
-                    updateProgress(waitingTime - refreshCounter * TIMER_UPDATE_INTERVAL_MS, waitingTime);
-                    refreshCounter += waitingSkip + 1;
-                    try {
-                        Thread.sleep(TIMER_UPDATE_INTERVAL_MS);
-                    } catch (InterruptedException e) {
-                        updateProgress(0, 1);
-                        return null;
-                    }
+        TimeUtils roundTimer = new TimeUtils(END_GAME_TIME, TIMER_UPDATE_INTERVAL_MS);
+        roundTimer.setTimeBooster(() -> (double) waitingSkip);
+        roundTimer.setOnSucceeded((event) -> {
+            gameSessionUtils.updateStatus(gameSessionUtils.getSession(sessionId),
+                    GameSession.SessionStatus.TRANSFERRING);
+            Platform.runLater(() -> {
+                if (isPlayingAgain()) {
+                    startGame();
+                } else {
+                    leaveGame();
                 }
-                updateProgress(0, 1);
-                gameSessionUtils.updateStatus(gameSessionUtils.getSession(sessionId),
-                        GameSession.SessionStatus.TRANSFERRING);
-                Platform.runLater(() -> {
-                    if (isPlayingAgain()) {
-                        startGame();
-                    } else {
-                        leaveGame();
-                    }
-                });
-                return null;
-            }
-        };
+            });
+        });
+
         timeProgress.progressProperty().bind(roundTimer.progressProperty());
         this.timerThread = new Thread(roundTimer);
         this.timerThread.start();
 
-        GameSession session = gameSessionUtils.toggleReady(sessionId, false);
-        gameSessionUtils.updateStatus(session, GameSession.SessionStatus.PLAY_AGAIN);
+        gameSessionUtils.toggleReady(sessionId, false);
         refresh();
     }
 
@@ -389,14 +406,18 @@ public class MultiplayerCtrl extends GameCtrl {
                 Platform.runLater(() -> {
                     if (gameSessionUtils.getPlayers(sessionId).size() >= 2 && isPlayingAgain()) {
                         GameSession session = gameSessionUtils.toggleReady(sessionId, false);
-                        if (session.playersReady == 0) {
+                        if (session.playersReady.get() == 0) {
                             gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
-                            gameSessionUtils.resetQuestionCounter(sessionId);
                         }
                         reset();
                         loadQuestion();
                     } else {
                         leaveGame();
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Unable to start new game!");
+                        alert.setHeaderText("There are too few people to play again:");
+                        alert.setContentText("Please join a fresh game to play with more people!");
+                        alert.showAndWait();
                     }
                 });
             }
@@ -419,5 +440,47 @@ public class MultiplayerCtrl extends GameCtrl {
      */
     public void setPlayingAgain(boolean playingAgain) {
         this.playingAgain = playingAgain;
+    }
+
+    /**
+     * the method to deal with the joker usage in the game
+     */
+    public void scanForJokerUsage() {
+        lastJokerIndex = -1;
+        jokerTimer = new Timer();
+        jokerTimer.scheduleAtFixedRate(new TimerTask() {
+
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    List<Joker> allUsed = gameSessionUtils.getUsedJoker(sessionId);
+                    List<Joker> newlyUsed = new ArrayList<>();
+                    for (int i = lastJokerIndex + 1; i < allUsed.size(); i++) {
+                        newlyUsed.add(allUsed.get(i));
+                    }
+                    displayJokerUsage(newlyUsed);
+                    lastJokerIndex = allUsed.size() - 1;
+                });
+            }
+        }, 0, 2000);
+    }
+
+    /**
+     * the method to display joker usage
+     *
+     * @param jokers a list of jokers which has been used
+     */
+    public void displayJokerUsage(List<Joker> jokers) {
+        if (jokers.size() == 0) {
+            jokerUsage.setOpacity(0.0);
+            return;
+        }
+        String temp = "";
+        for (int i = 0; i < jokers.size(); i++) {
+            temp += jokers.get(i).username() + " has used " + jokers.get(i).jokerName() + ", ";
+        }
+        temp = temp.substring(0, temp.length() - 2);
+        jokerUsage.setText(temp);
+        jokerUsage.setOpacity(1.0);
     }
 }

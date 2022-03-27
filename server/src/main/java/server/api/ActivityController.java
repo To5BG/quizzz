@@ -1,10 +1,9 @@
 package server.api;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,19 +38,19 @@ public class ActivityController {
      * @param activity - Activity to be checked
      * @return true if any of the attributes is null or empty
      */
-    private boolean invalidActivity(Activity activity) {
-        if (isNullOrEmpty(activity.title) || isNullOrEmpty(activity.consumption_in_wh)
+    private boolean invalidActivity(long id, Activity activity) {
+        if (isNullOrEmpty(activity.title) || activity.consumption_in_wh <= 0L
                 || isNullOrEmpty(activity.image_path) || isNullOrEmpty(activity.source)) {
             return true;
         }
 
-        Activity probe = new Activity();
-        probe.title = activity.title;
-        Example<Activity> exampleActivity = Example.of(probe, ExampleMatcher.matchingAny());
-        if (repo.exists(exampleActivity)) return true;
+        Optional<Activity> required = getAllActivities()
+                .stream()
+                .filter(a -> a.id != id)
+                .filter(a -> a.title.equals(activity.title))
+                .findFirst();
 
-        return !(activity.title.matches("([a-zA-Z0-9-]+ ){2,}\\w(.*)") &&
-                activity.consumption_in_wh.matches("[0-9]+"));
+        return !(activity.title.matches("([a-zA-Z0-9-]+ ){2,}\\w(.*)") && required.isEmpty());
     }
 
     /**
@@ -72,7 +71,7 @@ public class ActivityController {
      */
     @PostMapping(path = {"", "/"})
     public ResponseEntity<Activity> addActivity(@RequestBody Activity activity) {
-        if (invalidActivity(activity)) {
+        if (invalidActivity(activity.id, activity)) {
             return ResponseEntity.badRequest().build();
         }
         Activity saved = repo.save(activity);
@@ -115,7 +114,7 @@ public class ActivityController {
     public ResponseEntity<Activity> updateActivityById(@PathVariable("id") long id,
                                                        @RequestBody Activity activityDetails) {
 
-        if (isInvalid(id, repo) || invalidActivity(activityDetails)) {
+        if (isInvalid(id, repo) || invalidActivity(id, activityDetails)) {
             return ResponseEntity.badRequest().build();
         }
 
