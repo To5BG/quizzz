@@ -6,15 +6,14 @@ import commons.GameSession;
 import commons.Player;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class RoomSelectionCtrl implements Initializable {
@@ -75,8 +74,13 @@ public class RoomSelectionCtrl implements Initializable {
      * @return True iff the refresh should continue
      */
     public void refresh() {
-        List<GameSession> roomList = gameSessionUtils.getAvailableSessions();
-        ObservableList<GameSession> data = FXCollections.observableList(roomList);
+        var roomList = gameSessionUtils.getAvailableSessions();
+        if (roomList == null || roomList.isEmpty()) {
+            availableRooms.setPlaceholder(new Label("No games here, try hosting one instead..."));
+            availableRooms.setItems(null);
+            return;
+        }
+        var data = FXCollections.observableList(roomList);
         availableRooms.setItems(data);
     }
 
