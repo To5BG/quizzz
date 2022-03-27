@@ -6,17 +6,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class JokerTest {
     @Test
-    public void testEmptyConstructor() {
-        Joker j = new Joker();
-        assertNull(j.username);
-        assertNull(j.jokerName);
-    }
-
-    @Test
     public void testConstructor() {
         Joker j = new Joker("test", "testJoker");
-        assertEquals("test", j.username);
-        assertEquals("testJoker", j.jokerName);
+        assertEquals("test", j.username());
+        assertEquals("testJoker", j.jokerName());
     }
 
     @Test

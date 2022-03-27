@@ -419,7 +419,7 @@ public class MultiplayerCtrl extends GameCtrl {
             public void run() {
                 Platform.runLater(() -> {
                     List<Joker> allUsed = gameSessionUtils.getUsedJoker(sessionId);
-                    List<Joker> newlyUsed = new ArrayList<Joker>();
+                    List<Joker> newlyUsed = new ArrayList<>();
                     for (int i = lastJokerIndex + 1; i < allUsed.size(); i++) {
                         newlyUsed.add(allUsed.get(i));
                     }
@@ -441,7 +441,7 @@ public class MultiplayerCtrl extends GameCtrl {
         }
         String temp = "";
         for (int i = 0; i < jokers.size(); i++) {
-            temp += jokers.get(i).getUsername() + " has used "+ jokers.get(i).getJokerName()+ ", ";
+            temp += jokers.get(i).username() + " has used "+ jokers.get(i).jokerName() + ", ";
         }
         temp = temp.substring(0, temp.length() - 2);
         jokerUsage.setText(temp);

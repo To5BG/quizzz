@@ -629,7 +629,11 @@ public abstract class GameCtrl implements Initializable {
                 disableButton(removeOneButton, false);
         }
         String username = leaderboardUtils.getPlayerByIdInLeaderboard(playerId).getUsername();
-        gameSessionUtils.addUsedJoker(sessionId, new Joker(username, "RemoveOneAnswerJoker"));
+        Joker joker = new Joker(
+                username,
+                "RemoveOneAnswerJoker"
+        );
+        gameSessionUtils.addUsedJoker(sessionId, joker);
     }
 
 
