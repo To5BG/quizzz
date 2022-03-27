@@ -135,8 +135,6 @@ public abstract class GameCtrl implements Initializable {
      * @param q the question to be rendered
      */
     protected void renderGeneralInformation(Question q) {
-        if (this.leaderboard != null) renderLeaderboard();
-
         this.questionPrompt.setText(q.prompt);
         if (q.type != Question.QuestionType.RANGE_GUESS && q.type != Question.QuestionType.EQUIVALENCE &&
             q.type != Question.QuestionType.MULTIPLE_CHOICE) {
@@ -241,8 +239,6 @@ public abstract class GameCtrl implements Initializable {
             default:
                 throw new UnsupportedOperationException("Currently only multiple choice answers can be rendered");
         }
-
-        if (this.leaderboard != null) renderLeaderboard();
     }
 
     private void renderEstimationAnswers(List<Integer> correctAnswers) {
@@ -380,7 +376,6 @@ public abstract class GameCtrl implements Initializable {
      * Resets all fields and the screen for a new game.
      */
     public void reset() {
-        if (leaderboard != null) leaderboard.setOpacity(0);
         removeMidGameLeaderboard();
         this.questionPrompt.setText("[Question]");
         this.answerArea.getChildren().clear();
@@ -572,13 +567,9 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Displays the question screen attributes and resizes the leaderboard
+     * Displays the question screen attributes.
      */
     public void removeMidGameLeaderboard() {
-        if (this.leaderboard != null) {
-            leaderboard.setPrefWidth(188);
-            colUserName.setPrefWidth(92);
-        }
         answerArea.setOpacity(1);
         questionPrompt.setOpacity(1);
         submitButton.setOpacity(1);
