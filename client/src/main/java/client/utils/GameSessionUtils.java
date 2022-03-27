@@ -224,10 +224,10 @@ public class GameSessionUtils {
     }
 
     /**
-     * Retrieve all removed players from a session in the DB.
+     * Retrieve all used jokers from a session in the DB.
      *
      * @param sessionId the id of the session
-     * @return List of all removed players from a session
+     * @return List of all used jokers from a session
      */
     public List<Joker> getUsedJoker(long sessionId) {
         return ClientBuilder.newClient(new ClientConfig())

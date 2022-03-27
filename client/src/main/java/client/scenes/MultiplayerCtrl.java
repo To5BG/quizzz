@@ -441,7 +441,7 @@ public class MultiplayerCtrl extends GameCtrl {
         }
         String temp = "";
         for (int i = 0; i < jokers.size(); i++) {
-            temp += jokers.get(i).getJokerName() + " has used "+ jokers.get(i).getJokerName()+ ", ";
+            temp += jokers.get(i).getUsername() + " has used "+ jokers.get(i).getJokerName()+ ", ";
         }
         temp = temp.substring(0, temp.length() - 2);
         jokerUsage.setText(temp);

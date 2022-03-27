@@ -21,7 +21,6 @@ import static org.springframework.http.HttpStatus.OK;
 import java.util.Random;
 
 import commons.*;
-import org.hibernate.metamodel.model.convert.spi.JpaAttributeConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
