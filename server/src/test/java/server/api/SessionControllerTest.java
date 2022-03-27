@@ -36,6 +36,7 @@ public class SessionControllerTest {
 
     private SessionController sut;
     private GameSession first;
+    private GameSession waiting;
 
     @BeforeEach
     public void setup() {
@@ -51,6 +52,7 @@ public class SessionControllerTest {
         sut = new SessionController(random, playerRepo, "test", stubSessionManager,
                 new ActivityController(new Random(), activityRepo));
         first = new GameSession(GameSession.SessionType.MULTIPLAYER);
+        waiting = new GameSession(GameSession.SessionType.WAITING_AREA);
     }
 
     @Test
@@ -123,19 +125,23 @@ public class SessionControllerTest {
         assertEquals(2, sessions.get(1).id);
     }
 
-    /*@Test
-    public void getAvailableSessionTest() {
+    @Test
+    public void getAvailableSessionsTest() {
 
-        var newSession = sut.getAvailableSession();
+        var newSession = sut.getAvailableSessions();
         // make sure fetch returns null if no sessions were added
-        assertEquals(sut.getAvailableSession().getBody(), null);
+        assertEquals(sut.getAvailableSessions().getBody(), null);
 
+        //make sure it does not fetch non waiting rooms
         sut.addSession(first);
-        var availableSession = sut.getAvailableSession().getBody();
+        assertEquals(sut.getAvailableSessions().getBody(), null);
+
+        sut.addSession(waiting);
+        var availableSession = sut.getAvailableSessions().getBody();
 
         // make sure that a game session is returned successfully
-        assertTrue(availableSession.getClass() == GameSession.class);
-    }*/
+        assertTrue(availableSession.get(0).getClass() == GameSession.class);
+    }
 
     @Test
     public void getSessionTest() {
