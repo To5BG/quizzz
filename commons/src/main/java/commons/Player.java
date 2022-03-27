@@ -44,6 +44,7 @@ public class Player {
 
     /**
      * A setter for the bestSingleScore
+     *
      * @param points the point which is the best single score
      */
     public void setBestSingleScore(int points) {
@@ -52,6 +53,7 @@ public class Player {
 
     /**
      * A setter for the bestMultiScore
+     *
      * @param points the point which is the best multiMode score
      */
     public void setBestMultiScore(int points) {
@@ -67,6 +69,7 @@ public class Player {
 
     /**
      * Getter for best multiMode score
+     *
      * @return
      */
     public Integer getBestMultiScore() {
@@ -115,6 +118,7 @@ public class Player {
 
     /**
      * the method to get the username of a player
+     *
      * @return the username of the player
      */
     public String getUsername() {

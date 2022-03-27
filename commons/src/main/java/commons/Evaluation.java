@@ -28,6 +28,7 @@ public class Evaluation {
 
     /**
      * Equals method
+     *
      * @param obj - Object that will be compared with this
      * @return true if this and obj are equal
      */
@@ -38,6 +39,7 @@ public class Evaluation {
 
     /**
      * Hashcode method
+     *
      * @return the hashcode of the activity
      */
     @Override
@@ -47,6 +49,7 @@ public class Evaluation {
 
     /**
      * ToString method
+     *
      * @return String containing the activity in a readable format
      */
     @Override

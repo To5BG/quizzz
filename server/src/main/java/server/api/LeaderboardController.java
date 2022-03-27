@@ -28,6 +28,7 @@ public class LeaderboardController {
 
     /**
      * An API to return all players in the DB
+     *
      * @return a list of all players in the DB
      */
     @GetMapping(path = {"/"})
@@ -80,6 +81,7 @@ public class LeaderboardController {
 
     /**
      * Get a player object with the specified username
+     *
      * @param username The username of the player to check
      * @return The player object if the username is found, otherwise null
      */

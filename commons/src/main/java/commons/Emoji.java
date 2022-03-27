@@ -12,7 +12,7 @@ public class Emoji {
         SAD,
         ANGRY,
         UNKNOWN
-    };
+    }
 
     public String username;
     public EmojiType emoji;
@@ -30,6 +30,7 @@ public class Emoji {
 
     /**
      * Equals method
+     *
      * @param obj - Object that will be compared with this
      * @return true if this and obj are equal
      */
@@ -40,6 +41,7 @@ public class Emoji {
 
     /**
      * Hashcode method
+     *
      * @return the hashcode of the activity
      */
     @Override
@@ -49,6 +51,7 @@ public class Emoji {
 
     /**
      * ToString method
+     *
      * @return String containing the activity in a readable format
      */
     @Override

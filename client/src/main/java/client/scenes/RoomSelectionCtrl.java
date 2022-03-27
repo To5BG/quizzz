@@ -120,7 +120,7 @@ public class RoomSelectionCtrl implements Initializable {
      */
     public void quickJoin() {
         var listRooms = availableRooms.getItems();
-        if(listRooms == null || listRooms.isEmpty()) {
+        if (listRooms == null || listRooms.isEmpty()) {
             hostRoom();
             return;
         }
@@ -131,6 +131,7 @@ public class RoomSelectionCtrl implements Initializable {
 
     /**
      * Initialize setup for main controller's showWaitingArea() method. Player is added to the specified session
+     *
      * @param session - GameSession to which the player is added.
      */
     public void joinSession(GameSession session) {
@@ -149,6 +150,7 @@ public class RoomSelectionCtrl implements Initializable {
 
     /**
      * Setter for notCancel
+     *
      * @param notCancel
      */
     public void setNotCancel(boolean notCancel) {

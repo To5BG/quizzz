@@ -141,14 +141,15 @@ public abstract class GameCtrl implements Initializable {
     protected void renderGeneralInformation(Question q) {
         this.questionPrompt.setText(q.prompt);
         if (q.type != Question.QuestionType.RANGE_GUESS && q.type != Question.QuestionType.EQUIVALENCE &&
-            q.type != Question.QuestionType.MULTIPLE_CHOICE) {
+                q.type != Question.QuestionType.MULTIPLE_CHOICE) {
             return;
         }
 
         try {
             Image image = new Image("assets/" + q.imagePath);
             imagePanel.setImage(image);
-        } catch (Exception ignore) { }
+        } catch (Exception ignore) {
+        }
     }
 
     /**
@@ -224,7 +225,8 @@ public abstract class GameCtrl implements Initializable {
                     rb.setOnMouseExited(e -> imagePanel.setImage(defaultImage));
                 }
             }
-        } catch (IllegalArgumentException ignore) { }
+        } catch (IllegalArgumentException ignore) {
+        }
     }
 
     /**

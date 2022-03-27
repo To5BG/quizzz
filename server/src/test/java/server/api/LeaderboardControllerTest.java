@@ -107,7 +107,7 @@ class LeaderboardControllerTest {
         var savedPlayer1 = lbc.addPlayerForcibly(new Player("david", 10)).getBody();
         assertEquals(10, savedPlayer1.getBestMultiScore());
         lbc.updateBestMultiScore(1L, 2000);
-        assertEquals(2000,savedPlayer1.bestMultiScore );
+        assertEquals(2000, savedPlayer1.bestMultiScore);
 
     }
 

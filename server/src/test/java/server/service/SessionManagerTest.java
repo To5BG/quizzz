@@ -28,7 +28,7 @@ class SessionManagerTest {
 
     @Test
     public void getCounter() {
-        assertEquals(1,sut.getCounter());
+        assertEquals(1, sut.getCounter());
         sut.save(first);
         assertEquals(2, sut.getCounter());
     }

@@ -69,6 +69,7 @@ public class LeaderboardUtils {
 
     /**
      * Get the player object with the specified username
+     *
      * @param username The username of the player
      * @return The player object is the username if found, otherwise false
      */

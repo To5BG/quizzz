@@ -64,7 +64,8 @@ public class SingleplayerCtrl extends GameCtrl {
      * Empty method because singleplayer mode does not have an end screen.
      */
     @Override
-    public void showEndScreen() { }
+    public void showEndScreen() {
+    }
 
     /**
      * Reverts the player to the splash screen and remove him from the current game session.

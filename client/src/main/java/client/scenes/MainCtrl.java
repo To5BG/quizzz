@@ -130,7 +130,7 @@ public class MainCtrl {
             public void run() {
                 Platform.runLater(() -> {
                     try {
-                        if(!roomSelectionCtrl.refresh()) cancel();
+                        if (!roomSelectionCtrl.refresh()) cancel();
                     } catch (Exception e) {
                         cancel();
                     }
