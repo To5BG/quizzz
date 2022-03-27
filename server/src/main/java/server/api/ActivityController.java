@@ -39,7 +39,7 @@ public class ActivityController {
      * @return true if any of the attributes is null or empty
      */
     private boolean invalidActivity(long id, Activity activity) {
-        if (isNullOrEmpty(activity.title) || isNullOrEmpty(activity.consumption_in_wh)
+        if (isNullOrEmpty(activity.title) || activity.consumption_in_wh <= 0L
                 || isNullOrEmpty(activity.image_path) || isNullOrEmpty(activity.source)) {
             return true;
         }
@@ -50,8 +50,7 @@ public class ActivityController {
                 .filter(a -> a.title.equals(activity.title))
                 .findFirst();
 
-        return !(activity.title.matches("([a-zA-Z0-9-]+ ){2,}\\w(.*)") &&
-                activity.consumption_in_wh.matches("[0-9]+") && required.isEmpty());
+        return !(activity.title.matches("([a-zA-Z0-9-]+ ){2,}\\w(.*)")  && required.isEmpty());
     }
 
     /**
