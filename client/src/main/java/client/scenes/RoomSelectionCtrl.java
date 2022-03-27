@@ -42,6 +42,7 @@ public class RoomSelectionCtrl implements Initializable {
 
     /**
      * Set the player to a new Player
+     *
      * @param playerId - new Id for the player
      */
     public void setPlayerId(long playerId) {
@@ -59,6 +60,7 @@ public class RoomSelectionCtrl implements Initializable {
 
     /**
      * Switch method that maps keyboard key presses to functions.
+     *
      * @param e KeyEvent to be switched
      */
     public void keyPressed(KeyEvent e) {
@@ -69,6 +71,7 @@ public class RoomSelectionCtrl implements Initializable {
 
     /**
      * Refresh the list of available waiting rooms
+     *
      * @return True iff the refresh should continue
      */
     public void refresh() {
@@ -78,10 +81,7 @@ public class RoomSelectionCtrl implements Initializable {
     }
 
     /**
-     * Initialize setup for main controller's showMultiplayer() method. Creates a new session if no free session is
-     * available and adds the player to the session.
-     * In case a player enters a username already present in an active game session, or an invalid/blank username, they
-     * are not added to the session, instead being prompted to change their username.
+     * Initialize setup for main controller's showWaitingArea() method. Creates a new session.
      */
     public void hostRoom() {
         Player player = gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
@@ -89,6 +89,27 @@ public class RoomSelectionCtrl implements Initializable {
         session.addPlayer(player);
         session = gameSessionUtils.addWaitingRoom(session);
         long playerId = player.id;
+        long waitingId = session.id;
+        if (playerId == 0L) {
+            playerId = gameSessionUtils
+                    .getPlayers(waitingId)
+                    .stream().filter(p -> p.username.equals(player.username))
+                    .findFirst().get().id;
+        }
+        mainCtrl.showWaitingArea(playerId);
+    }
+
+    /**
+     * Initialize setup for main controller's showWaitingArea() method. Player is added to the selected session.
+     */
+    public void joinRoom() {
+        if (availableRooms.getSelectionModel().getSelectedItem() == null) {
+            //TODO: Add some kind of alert to the user
+            return;
+        }
+        GameSession session = availableRooms.getSelectionModel().getSelectedItem();
+        Player player = gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
+        gameSessionUtils.addPlayer(session.id, player);
         long waitingId = session.id;
         if (playerId == 0L) {
             playerId = gameSessionUtils

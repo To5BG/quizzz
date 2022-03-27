@@ -172,7 +172,8 @@ public class SplashCtrl {
 //    /**
 //     * Initialize setup for main controller's showMultiplayer() method. Creates a new session if no free session is
 //     * available and adds the player to the session.
-//     * In case a player enters a username already present in an active game session, or an invalid/blank username, they
+//     * In case a player enters a username already present in an active game session, or an invalid/blank username,
+//     * they
 //     * are not added to the session, instead being prompted to change their username.
 //     */
 //    public void showWaitingArea() {
