@@ -15,6 +15,9 @@ addEventListener("load", _ => {
     document.querySelector("#inputCont > #addJsonFile")
         .addEventListener('submit', postJsonFile);
 
+    document.querySelector("#inputCont > #editOne > form")
+        .addEventListener('submit', editActivity);
+
     document.querySelector("#refreshDB")
         .addEventListener('click', refreshTable);
 
@@ -48,7 +51,7 @@ function toggleInputForm(contName) {
     let children = document.getElementById("inputCont").children;
     for (let container of children) {
         if (container.id === contName) {
-            let newOpacity = 1 - parseInt(container.style.getPropertyValue("opacity"));
+            let newOpacity = 1 - container.style.getPropertyValue("opacity");
             container.style.setProperty("opacity", newOpacity.toString());
 
             for (let input of container.querySelectorAll("input,textarea")) {
@@ -170,6 +173,46 @@ function postJsonFile(event) {
         }
     }
     fileReader.readAsText(event.target.querySelector("input").files[0]);
+}
+
+/*------------------------ EDIT ACTIVITY --------------------------*/
+
+async function updateEditedActivity(id, activityDetails) {
+    let url = basePath + "/" + id;
+    return await fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: activityDetails
+    });
+}
+
+async function editActivity(event) {
+    event.preventDefault();
+
+    const id = document.querySelector("#editId").value;
+    const data = new FormData(event.target);
+    const values = Object.fromEntries(data.entries());
+    let alertMsg = document.querySelector("#alertMsg");
+
+    updateEditedActivity(id, JSON.stringify(values))
+        .then(response => {
+            if (response.status === 400) {
+                console.log("Bad request!");
+                alertMsg.textContent = "Edit was unsuccessful!";
+                alertMsg.style.setProperty("color", "red");
+            } else return response.json()
+                .then(_ => {
+                    alertMsg.textContent = "Edit was successful!";
+                    alertMsg.style.setProperty("color", "green");
+                    refreshTable();
+                }, err => {
+                    console.log("Error! " + err);
+                    alertMsg.textContent = "Edit was unsuccessful!";
+                    alertMsg.style.setProperty("color", "red");
+                });
+        });
 }
 
 /*------------------------ REMOVE ACTIVITY --------------------------*/

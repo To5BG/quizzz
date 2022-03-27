@@ -29,12 +29,14 @@ import java.util.TimerTask;
 public class MainCtrl {
 
     // for now a field will suffice, in case more constants are needed an enum must be created
-    public final static long WAITING_AREA_ID = 1L;
+    public final static long SELECTION_ID = 1L;
     private Stage primaryStage;
     private SplashCtrl splashCtrl;
     private Scene splashScreen;
     private MultiplayerCtrl multiplayerCtrl;
     private Scene multiPlayerScreen;
+    private RoomSelectionCtrl roomSelectionCtrl;
+    private Scene roomSelectionScreen;
     private SingleplayerCtrl singlePlayerCtrl;
     private Scene singlePlayerScreen;
     private WaitingAreaCtrl waitingAreaCtrl;
@@ -52,6 +54,7 @@ public class MainCtrl {
      */
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
                            Pair<MultiplayerCtrl, Parent> multi,
+                           Pair<RoomSelectionCtrl, Parent> rooms,
                            Pair<WaitingAreaCtrl, Parent> wait,
                            Pair<SingleplayerCtrl, Parent> single,
                            Pair<LeaderBoardCtrl, Parent> leaderboard) {
@@ -62,6 +65,9 @@ public class MainCtrl {
 
         this.multiplayerCtrl = multi.getKey();
         this.multiPlayerScreen = new Scene(multi.getValue());
+
+        this.roomSelectionCtrl = rooms.getKey();
+        this.roomSelectionScreen = new Scene(rooms.getValue());
 
         this.waitingAreaCtrl = wait.getKey();
         this.waitingAreaScreen = new Scene(wait.getValue());
@@ -106,16 +112,44 @@ public class MainCtrl {
     }
 
     /**
+     * Sets the current screen to the room selection area.
+     * Contains a scheduled task to refresh the available waiting rooms.
+     *
+     * @param playerId - The id of the player that's joining
+     */
+    public void showRoomSelection(long playerId) {
+        primaryStage.setTitle("Room Selection");
+        primaryStage.setScene(roomSelectionScreen);
+        roomSelectionScreen.setOnKeyPressed(e -> roomSelectionCtrl.keyPressed(e));
+        roomSelectionCtrl.setPlayerId(playerId);
+        roomSelectionCtrl.setNotCancel(true);
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    try {
+                        if(!roomSelectionCtrl.refresh()) cancel();
+                    } catch (Exception e) {
+                        cancel();
+                    }
+                });
+            }
+        }, 0, 500);
+    }
+
+    /**
      * Sets the current screen to the waiting area and adds the player to it. Contains a
      * scheduled task to refresh the waiting area player board.
      *
-     * @param playerId Id of player that's about to join
+     * @param playerId - new Id for the player that's about to join
      */
-    public void showWaitingArea(long playerId) {
+    public void showWaitingArea(long playerId, long waitingId) {
         primaryStage.setTitle("Waiting area");
         primaryStage.setScene(waitingAreaScreen);
         waitingAreaScreen.setOnKeyPressed(e -> waitingAreaCtrl.keyPressed(e));
         waitingAreaCtrl.setPlayerId(playerId);
+        waitingAreaCtrl.setWaitingId(waitingId);
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -127,11 +161,6 @@ public class MainCtrl {
                         cancel();
                     }
                 });
-            }
-
-            @Override
-            public boolean cancel() {
-                return super.cancel();
             }
         }, 0, 500);
     }
