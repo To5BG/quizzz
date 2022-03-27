@@ -23,6 +23,10 @@ public abstract class GameCtrl implements Initializable {
     protected final static int MIDGAME_BREAK_TIME = 6;
     protected final static int TIMER_UPDATE_INTERVAL_MS = 50;
     protected final static int GAME_ROUND_DELAY = 2;
+    protected final static int IN_GAME_LEADERBOARD_WIDTH = 188;
+    protected final static int IN_GAME_COLUSERNAME_WIDTH = 92;
+    protected final static int MID_GAME_LEADERBOARD_WIDTH = 644;
+    protected final static int MID_GAME_COLUSERNAME_WIDTH = 548;
 
     @FXML
     protected StackPane answerArea;
@@ -376,7 +380,7 @@ public abstract class GameCtrl implements Initializable {
      * Resets all fields and the screen for a new game.
      */
     public void reset() {
-        removeLeaderboard();
+        removeMidGameLeaderboard();
         this.questionPrompt.setText("[Question]");
         this.answerArea.getChildren().clear();
         this.pointsLabel.setText("Points: 0");
@@ -538,12 +542,22 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Displays the current session's leaderboard and hides the question screen attributes
+     * Updates the items in the leaderboard and makes sure the leaderboard remains visible
      */
-    public void displayLeaderboard() {
+    public void renderLeaderboard() {
         var players = gameSessionUtils.getPlayers(sessionId);
         var data = FXCollections.observableList(players);
         leaderboard.setItems(data);
+        leaderboard.setOpacity(1);
+    }
+
+    /**
+     * Displays the current session's leaderboard and hides the question screen attributes
+     */
+    public void displayLeaderboard() {
+        renderLeaderboard();
+        leaderboard.setPrefWidth(MID_GAME_LEADERBOARD_WIDTH);
+        colUserName.setPrefWidth(MID_GAME_COLUSERNAME_WIDTH);
         answerArea.setOpacity(0);
         submitButton.setOpacity(0);
         removeOneButton.setOpacity(0);
@@ -557,10 +571,9 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Displays the question screen attributes and hides the leaderboard
+     * Displays the question screen attributes.
      */
-    public void removeLeaderboard() {
-        if (leaderboard != null) leaderboard.setOpacity(0);
+    public void removeMidGameLeaderboard() {
         answerArea.setOpacity(1);
         questionPrompt.setOpacity(1);
         submitButton.setOpacity(1);
@@ -577,7 +590,7 @@ public abstract class GameCtrl implements Initializable {
 
         TimeUtils roundTimer = new TimeUtils(MIDGAME_BREAK_TIME, TIMER_UPDATE_INTERVAL_MS);
         roundTimer.setOnSucceeded((event) -> Platform.runLater(() -> {
-            removeLeaderboard();
+            removeMidGameLeaderboard();
             loadQuestion();
         }));
 

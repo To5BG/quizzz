@@ -20,6 +20,7 @@ import com.google.inject.Inject;
 import commons.Emoji;
 import commons.GameSession;
 import commons.Player;
+import commons.Question;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -106,6 +107,10 @@ public class MultiplayerCtrl extends GameCtrl {
                 };
             }
         });
+
+        leaderboard.setPrefWidth(IN_GAME_LEADERBOARD_WIDTH);
+        colUserName.setPrefWidth(IN_GAME_COLUSERNAME_WIDTH);
+        leaderboard.setOpacity(1);
 
         leaveButton.setOpacity(0);
         backButton.setOpacity(1);
@@ -219,6 +224,35 @@ public class MultiplayerCtrl extends GameCtrl {
         }, 0, 100);
     }
 
+    /**
+     * Renders the leaderboard at the start of a question and renders the rest of the general information
+     *
+     * @param q the question to be rendered
+     */
+    @Override
+    public void renderGeneralInformation(Question q) {
+        renderLeaderboard();
+        super.renderGeneralInformation(q);
+    }
+
+    /**
+     * Renders the correct answer and updates the leaderboard
+     */
+    @Override
+    public void renderCorrectAnswer() {
+        super.renderCorrectAnswer();
+        renderLeaderboard();
+    }
+
+    /**
+     * Resizes the leaderboard and displays the question screen attributes
+     */
+    @Override
+    public void removeMidGameLeaderboard() {
+        leaderboard.setPrefWidth(IN_GAME_LEADERBOARD_WIDTH);
+        colUserName.setPrefWidth(IN_GAME_COLUSERNAME_WIDTH);
+        super.removeMidGameLeaderboard();
+    }
 
     /**
      * Interrupts the timer, disables the submit button, sends the user's answer for evaluation and pauses the game
@@ -287,6 +321,7 @@ public class MultiplayerCtrl extends GameCtrl {
         status.setOpacity(0);
         setPlayingAgain(false);
         waitingSkip = 0;
+        leaderboard.setOpacity(0);
         super.reset();
     }
 
