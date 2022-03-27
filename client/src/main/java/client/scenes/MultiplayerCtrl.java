@@ -108,8 +108,8 @@ public class MultiplayerCtrl extends GameCtrl {
             }
         });
 
-        leaderboard.setPrefWidth(188);
-        colUserName.setPrefWidth(92);
+        leaderboard.setPrefWidth(IN_GAME_LEADERBOARD_WIDTH);
+        colUserName.setPrefWidth(IN_GAME_COLUSERNAME_WIDTH);
         leaderboard.setOpacity(1);
 
         leaveButton.setOpacity(0);
@@ -249,8 +249,8 @@ public class MultiplayerCtrl extends GameCtrl {
      */
     @Override
     public void removeMidGameLeaderboard() {
-        leaderboard.setPrefWidth(188);
-        colUserName.setPrefWidth(92);
+        leaderboard.setPrefWidth(IN_GAME_LEADERBOARD_WIDTH);
+        colUserName.setPrefWidth(IN_GAME_COLUSERNAME_WIDTH);
         super.removeMidGameLeaderboard();
     }
 
