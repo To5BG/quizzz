@@ -412,12 +412,23 @@ public class SessionController {
         return false;
     }
 
+    /**
+     * the method to get all jokers used from the current session
+     * @param sessionId the id of the current session
+     * @return a list of jokers which has been used in the current session
+     */
     @GetMapping("/{sessionId}/jokers")
     public ResponseEntity<List<Joker>> getAllJokers(@PathVariable("sessionId") long sessionId) {
         if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(sm.getById(sessionId).usedJokers);
     }
 
+    /**
+     * the method to add a joker which has been used to the current session
+     * @param sessionId the id of the session
+     * @param joker the joker which is used in the session
+     * @return the joker which is added to the session
+     */
     @PostMapping("/{sessionId}/add/joker")
     public ResponseEntity<Joker> addJoker (@PathVariable("sessionId") long sessionId, @RequestBody Joker joker) {
         if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
