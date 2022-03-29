@@ -1,0 +1,6 @@
+.background{
+    -fx-background-image: url("/Image/background.png");
+}
+.leaderboardColumn{
+    -fx-text-fill: white;
+}

@@ -1,27 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0"
-            prefWidth="720.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="client.scenes.SplashCtrl">
-    <TextField fx:id="usernameField" layoutX="109.0" layoutY="160.0" prefHeight="38.0" prefWidth="170.0"
-               promptText="Enter a username"/>
-    <TextField fx:id="connectionField" layoutX="109.0" layoutY="205.0" prefHeight="38.0" prefWidth="170.0"
-               promptText="http://localhost:8080/"/>
-    <Label layoutX="80.0" layoutY="48.0" text="QUIZZZZ">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0" prefWidth="720.0" styleClass="background" stylesheets="@../../CSS/Splash.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.SplashCtrl">
+    <TextField fx:id="usernameField" alignment="CENTER" layoutX="109.0" layoutY="269.0" prefHeight="38.0" prefWidth="170.0" promptText="Enter a username" styleClass="username" stylesheets="@../../CSS/Splash.css" />
+    <TextField fx:id="connectionField" alignment="CENTER" layoutX="109.0" layoutY="336.0" prefHeight="38.0" prefWidth="170.0" promptText="http://localhost:8080/" styleClass="connect" stylesheets="@../../CSS/Splash.css" />
+    <Label layoutX="50.0" layoutY="80.0" prefHeight="236.0" prefWidth="516.0" styleClass="title" text="QUIZZZZ" textFill="#33b5f2">
         <font>
-            <Font size="48.0"/>
+            <Font name="Earth Orbiter Punch" size="79.0" />
         </font>
     </Label>
-    <Button layoutX="143.0" layoutY="276.0" mnemonicParsing="false" onAction="#showSinglePlayer" text="Singleplayer"/>
-    <Button layoutX="145.0" layoutY="334.0" mnemonicParsing="false" onAction="#showRoomSelection" text="Multiplayer"/>
-    <Button layoutX="141.0" layoutY="396.0" mnemonicParsing="false" onAction="#showLeaderboard" text="Leaderboard"/>
-    <Text fx:id="duplUsername" layoutX="286.0" layoutY="183.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0"
-          text="Username already exists. Change to continue" wrappingWidth="270.13665771484375"/>
-    <Text fx:id="invalidUserName" layoutX="286.0" layoutY="183.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0"
-          text="Username should be non-empty, and only contain letters and/or numbers."/>
-    <Text fx:id="failedConnectionAlert" layoutX="286.0" layoutY="229.0" opacity="0.0" text="Could not connect!"/>
+    <Button layoutX="105.0" layoutY="393.0" mnemonicParsing="false" onAction="#showSinglePlayer" prefHeight="52.0" prefWidth="178.0" styleClass="gameButton" stylesheets="@../../CSS/Splash.css" text="Singleplayer" />
+    <Button layoutX="105.0" layoutY="497.0" mnemonicParsing="false" onAction="#showRoomSelection" prefHeight="52.0" prefWidth="178.0" styleClass="gameButton" text="Multiplayer" />
+    <Button layoutX="447.0" layoutY="445.0" mnemonicParsing="false" onAction="#showLeaderboard" prefHeight="52.0" prefWidth="178.0" styleClass="gameButton" text="Leaderboard" />
+    <Text fx:id="duplUsername" fill="WHITE" layoutX="308.0" layoutY="320.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username already exists. Change to continue" wrappingWidth="270.13665771484375" />
+    <Text fx:id="invalidUserName" fill="WHITE" layoutX="303.0" layoutY="341.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username should be non-empty, and only contain letters and/or numbers." />
+    <Text fx:id="failedConnectionAlert" fill="WHITE" layoutX="142.0" layoutY="329.0" opacity="0.0" text="Could not connect!" />
+   <ImageView fitHeight="323.0" fitWidth="438.0" layoutX="308.0" layoutY="-14.0" pickOnBounds="true" preserveRatio="true">
+      <image>
+         <Image url="@../../Image/decoration1.png" />
+      </image>
+   </ImageView>
+   <Button layoutX="660.0" layoutY="523.0" mnemonicParsing="false" text="?" />
+   <Label layoutX="443.0" layoutY="549.0" prefHeight="17.0" prefWidth="203.0" text="       Produced By OOPP Group 51" textFill="WHITE" />
+   <ImageView fitHeight="800.0" fitWidth="200.0" layoutX="-150.0" pickOnBounds="true" preserveRatio="true">
+      <image>
+         <Image url="@../../Image/decoration3.png" />
+      </image>
+   </ImageView>
+   <ImageView fitHeight="52.0" fitWidth="54.0" layoutX="50.0" layoutY="393.0" pickOnBounds="true" preserveRatio="true" rotate="90.0">
+      <image>
+         <Image url="@../../Image/decoration4.jpeg" />
+      </image>
+   </ImageView>
+   <ImageView fitHeight="52.0" fitWidth="54.0" layoutX="50.0" layoutY="497.0" pickOnBounds="true" preserveRatio="true" rotate="90.0">
+      <image>
+         <Image url="@../../Image/decoration4.jpeg" />
+      </image>
+   </ImageView>
+   <ImageView fitHeight="52.0" fitWidth="54.0" layoutX="391.0" layoutY="445.0" pickOnBounds="true" preserveRatio="true" rotate="90.0">
+      <image>
+         <Image url="@../../Image/decoration4.jpeg" />
+      </image>
+   </ImageView>
 </AnchorPane>

@@ -1,0 +1,21 @@
+.background{
+    -fx-background-image: url("/Image/background.png");
+}
+@font-face {
+    font-family: 'EarthOrbitPunch';
+    src: url('Image/Fonts/earthorbiterpunch.ttf');
+}
+.title{
+    -fx-font-family: EarthOrbitPunch;
+}
+.username{
+    -fx-text-fill: white;
+    -fx-background-color: gray;
+}
+.connect{
+    -fx-text-fill: white;
+    -fx-background-color: gray;
+}
+.gameButton{
+    -fx-background-color: #84ba84;
+}
