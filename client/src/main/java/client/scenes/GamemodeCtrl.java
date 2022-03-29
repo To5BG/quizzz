@@ -60,9 +60,11 @@ public class GamemodeCtrl {
      * Removes player from session. Also called if controller is closed forcibly
      */
     public void shutdown() {
-        Player player = gameSessionUtils.removePlayer(sessionId, playerId);
-        gameSessionUtils.addPlayer(MainCtrl.SELECTION_ID, player);
+        gameSessionUtils.removePlayer(sessionId, playerId);
+        setPlayerId(0);
+        setSessionId(0);
     }
+
     /**
      * Reverts the player to the splash screen and remove him from the current game session.
      */
