@@ -3,7 +3,6 @@ package client.scenes;
 import client.utils.GameSessionUtils;
 import client.utils.LeaderboardUtils;
 import client.utils.QuestionUtils;
-import commons.Player;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
