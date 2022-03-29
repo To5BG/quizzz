@@ -16,7 +16,7 @@
             <Font size="48.0"/>
         </font>
     </Label>
-    <Button layoutX="143.0" layoutY="276.0" mnemonicParsing="false" onAction="#showSinglePlayer" text="Singleplayer"/>
+    <Button layoutX="143.0" layoutY="276.0" mnemonicParsing="false" onAction="#showGamemodeScreen" text="Singleplayer"/>
     <Button layoutX="145.0" layoutY="334.0" mnemonicParsing="false" onAction="#showRoomSelection" text="Multiplayer"/>
     <Button layoutX="141.0" layoutY="396.0" mnemonicParsing="false" onAction="#showLeaderboard" text="Leaderboard"/>
     <Text fx:id="duplUsername" layoutX="286.0" layoutY="183.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0"

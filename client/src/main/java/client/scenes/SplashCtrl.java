@@ -200,7 +200,7 @@ public class SplashCtrl {
      * In case a player enters an invalid/blank username, or if the username is used in an active game session, they are
      * not added to the session, instead being prompted to change their username.
      */
-    public void showSinglePlayer() {
+    public void showGamemodeScreen() {
         if (!establishConnection()) return;
         String newUserName = usernameField.getText();
         Optional<Player> playerResult = generatePlayer(newUserName);
@@ -217,7 +217,7 @@ public class SplashCtrl {
                     .getPlayers(newSession.id).get(0).id;
         }
 
-        mainCtrl.showSinglePlayer(newSession.id, playerId);
+        mainCtrl.showGamemodeScreen(newSession.id, playerId);
     }
 
     /**

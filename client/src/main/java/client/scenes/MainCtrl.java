@@ -41,6 +41,8 @@ public class MainCtrl {
     private Scene singlePlayerScreen;
     private WaitingAreaCtrl waitingAreaCtrl;
     private Scene waitingAreaScreen;
+    private GamemodeCtrl gamemodeCtrl;
+    private Scene gamemodeScreen;
     private LeaderBoardCtrl leaderBoardCtrl;
     private Scene leaderBoardScreen;
 
@@ -56,6 +58,7 @@ public class MainCtrl {
                            Pair<MultiplayerCtrl, Parent> multi,
                            Pair<RoomSelectionCtrl, Parent> rooms,
                            Pair<WaitingAreaCtrl, Parent> wait,
+                           Pair<GamemodeCtrl, Parent> mode,
                            Pair<SingleplayerCtrl, Parent> single,
                            Pair<LeaderBoardCtrl, Parent> leaderboard) {
         this.primaryStage = primaryStage;
@@ -71,6 +74,9 @@ public class MainCtrl {
 
         this.waitingAreaCtrl = wait.getKey();
         this.waitingAreaScreen = new Scene(wait.getValue());
+
+        this.gamemodeCtrl = mode.getKey();
+        this.gamemodeScreen = new Scene(mode.getValue());
 
         this.singlePlayerCtrl = single.getKey();
         this.singlePlayerScreen = new Scene(single.getValue());
@@ -166,11 +172,25 @@ public class MainCtrl {
         }, 0, 500);
     }
 
+    /**
+     * Sets the current screen to the gamemode screen and adds a player to it.
+     *
+     * @param sessionId Id of the session the player is in.
+     * @param playerId  Id of the player in the session.
+     */
+    public void showGamemodeScreen(long sessionId, long playerId) {
+        primaryStage.setTitle("Singleplayer gamemodes");
+        primaryStage.setScene(gamemodeScreen);
+        gamemodeScreen.setOnKeyPressed(e -> gamemodeCtrl.keyPressed(e));
+        gamemodeCtrl.setSessionId(sessionId);
+        gamemodeCtrl.setPlayerId(playerId);
+    }
+
 
     /**
      * Sets the current screen to the single player screen.
      */
-    public void showSinglePlayer(long sessionId, long playerId) {
+    public void showDefaultSinglePlayer(long sessionId, long playerId) {
         primaryStage.setTitle("Singe player game");
         primaryStage.setScene(singlePlayerScreen);
         singlePlayerScreen.setOnKeyPressed(e -> singlePlayerCtrl.keyPressed(e));

@@ -47,6 +47,8 @@ public class Main extends Application {
                 (RoomSelectionCtrl.class, "client", "scenes", "RoomSelection.fxml");
         var waitingArea = FXML.load
                 (WaitingAreaCtrl.class, "client", "scenes", "WaitingAreaScreen.fxml");
+        var mode = FXML.load
+                (GamemodeCtrl.class, "client", "scenes", "GamemodeScreen.fxml");
         var leaderboard = FXML.load
                 (LeaderBoardCtrl.class, "client", "scenes", "Leaderboard.fxml");
 
@@ -56,17 +58,22 @@ public class Main extends Application {
                 waitingArea.getKey().shutdown();
             } catch (Exception exit) {
                 try {
-                    multiplayer.getKey().shutdown();
+                    mode.getKey().shutdown();
                 } catch (Exception exit2) {
                     try {
-                        singleplayer.getKey().shutdown();
+                        multiplayer.getKey().shutdown();
                     } catch (Exception exit3) {
+                        try {
+                            singleplayer.getKey().shutdown();
+                        } catch (Exception exit4) {
+                        }
                     }
                 }
             }
         });
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, splash, multiplayer, roomSelection, waitingArea, singleplayer, leaderboard);
+        mainCtrl.initialize(primaryStage, splash, multiplayer, roomSelection,
+                waitingArea, mode, singleplayer, leaderboard);
     }
 }
