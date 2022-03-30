@@ -1,9 +1,12 @@
 package client.scenes;
 
 import client.utils.*;
+import commons.Answer;
 import commons.Question;
+import jakarta.ws.rs.BadRequestException;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.scene.control.Alert;
 
 import javax.inject.Inject;
 import java.util.Timer;
@@ -11,9 +14,7 @@ import java.util.TimerTask;
 
 public class TimeAttackCtrl extends SingleplayerCtrl {
 
-    private final long initialTime = 10L;
-    private long timeLeft;
-    private long elapsedTime;
+    private long initialTime;
     private TimeUtils roundTimer;
 
     @Inject
@@ -21,7 +22,8 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
                           LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
         super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
 
-        this.timeLeft = 10L;
+
+        this.initialTime = 60;
     }
 
     /**
@@ -34,11 +36,29 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
         submitButton.setOpacity(1);
     }
 
+    /**
+     * Resets all fields and the screen for a new game.
+     */
     @Override
     public void reset() {
-        this.timeLeft = 60L;
-        this.elapsedTime = 0;
+        this.initialTime = 60L;
         super.reset();
+    }
+
+    /**
+     * Loads a question and starts reading time.
+     */
+    public void loadQuestion() {
+        disableButton(submitButton, false);
+        this.answerArea.getChildren().clear();
+
+        try {
+            Question q = this.questionUtils.fetchOneQuestion(this.sessionId);
+            this.currentQuestion = q;
+            renderGeneralInformation(q);
+            renderQuestionCount();
+            loadAnswer();
+        } catch (BadRequestException ignore) { /* happens when session is removed before question is loaded */ }
     }
 
     /**
@@ -51,19 +71,6 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
         renderAnswerFields(q);
 
         disableButton(submitButton, false);
-
-        roundTimer = new TimeUtils(timeLeft, TIMER_UPDATE_INTERVAL_MS, initialTime);
-        roundTimer.setTimeBooster(this::getTimeJokers);
-        roundTimer.setOnSucceeded((event) -> Platform.runLater(() -> {
-            System.out.println("roundTimer is done");
-            this.timeLeft = 0;
-            rounds = Integer.MAX_VALUE;
-            submitAnswer(true);
-        }));
-
-        timeProgress.progressProperty().bind(roundTimer.progressProperty());
-        this.timerThread = new Thread(roundTimer);
-        this.timerThread.start();
         imageHover();
     }
 
@@ -72,8 +79,52 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
      */
     @Override
     public void submitAnswerButton() {
-        this.elapsedTime = this.roundTimer.getElapsedTime();
         submitAnswer(false);
+    }
+
+    /**
+     * Submit an answer to the server
+     */
+    public void submitAnswer(boolean initiatedByTimer) {
+        Answer ans = new Answer(currentQuestion.type);
+
+        switch (currentQuestion.type) {
+            case MULTIPLE_CHOICE:
+            case COMPARISON:
+            case EQUIVALENCE:
+                for (int i = 0; i < multiChoiceAnswers.size(); ++i) {
+                    if (multiChoiceAnswers.get(i).isSelected()) {
+                        ans.addAnswer(i);
+                    }
+                }
+                break;
+            case RANGE_GUESS:
+                try {
+                    ans.addAnswer(Long.parseLong(estimationAnswer.getText()));
+                } catch (NumberFormatException ex) {
+                    System.out.println("Invalid answer yo");
+                    if (!initiatedByTimer) {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Invalid answer");
+                        alert.setHeaderText("Invalid answer");
+                        alert.setContentText("You should only enter an integer number");
+                        alert.show();
+                        return;
+                    } else {
+                        ans.addAnswer(0);
+                    }
+                }
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported question type when parsing answer");
+        }
+
+        disableButton(submitButton, true);
+
+        this.evaluation = questionUtils.submitAnswer(sessionId, playerId, ans);
+
+        gameSessionUtils.toggleReady(sessionId, true);
+        startEvaluation();
     }
 
     /**
@@ -85,7 +136,6 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
         updatePoints();
         renderCorrectAnswer();
         this.evaluation = null;
-        this.timeLeft -= this.elapsedTime;
 
         // TODO disable button while waiting
         new Timer().schedule(new TimerTask() {
@@ -94,14 +144,34 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
                 Platform.runLater(() -> {
                     if (currentQuestion == null) return; // happens if shutdown is called before triggering
                     rounds++;
-                    if (getTimeLeft() <= 0) {
+                    if (initialTime <= 0) {
                         handleGameEnd();
                     } else {
                         handleNextRound();
                     }
                 });
             }
-        }, GAME_ROUND_DELAY * 1000);
+        }, GAME_ROUND_DELAY * 500);
+    }
+
+    /**
+     * Initiates the timer at the beginning of the game and loads a question.
+     */
+    public void startTimer() {
+        roundTimer = new TimeUtils(initialTime, TIMER_UPDATE_INTERVAL_MS);
+        roundTimer.setTimeBooster(this::getTimeJokers);
+        roundTimer.setOnSucceeded((event) -> Platform.runLater(() -> {
+            System.out.println("roundTimer is done");
+            this.initialTime = 0;
+            rounds = Integer.MAX_VALUE;
+            submitAnswer(true);
+        }));
+
+        timeProgress.progressProperty().bind(roundTimer.progressProperty());
+        this.timerThread = new Thread(roundTimer);
+        this.timerThread.start();
+
+        loadQuestion();
     }
 
     /**
@@ -111,15 +181,6 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
         var players = leaderboardUtils.getPlayerTimeAttackScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
-    }
-
-    /**
-     * Getter for the time left.
-     *
-     * @return  the time left.
-     */
-    public long getTimeLeft() {
-        return this.timeLeft;
     }
 
 }

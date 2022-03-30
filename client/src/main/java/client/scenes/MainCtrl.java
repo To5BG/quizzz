@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import commons.Player;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -181,15 +182,13 @@ public class MainCtrl {
     /**
      * Sets the current screen to the gamemode screen and adds a player to it.
      *
-     * @param sessionId Id of the session the player is in.
-     * @param playerId  Id of the player in the session.
+     * @param player The player the entered the gamemodeScreen.
      */
-    public void showGamemodeScreen(long sessionId, long playerId) {
+    public void showGamemodeScreen(Player player) {
         primaryStage.setTitle("Singleplayer gamemodes");
         primaryStage.setScene(gamemodeScreen);
         gamemodeScreen.setOnKeyPressed(e -> gamemodeCtrl.keyPressed(e));
-        gamemodeCtrl.setSessionId(sessionId);
-        gamemodeCtrl.setPlayerId(playerId);
+        gamemodeCtrl.setPlayer(player);
     }
 
 
@@ -215,7 +214,7 @@ public class MainCtrl {
         timeAttackScreen.setOnKeyPressed(e -> timeAttackCtrl.keyPressed(e));
         timeAttackCtrl.setSessionId(sessionId);
         timeAttackCtrl.setPlayerId(playerId);
-        timeAttackCtrl.loadQuestion();
+        timeAttackCtrl.startTimer();
         timeAttackCtrl.refresh();
     }
 
