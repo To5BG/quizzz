@@ -403,9 +403,7 @@ public class MultiplayerCtrl extends GameCtrl {
         timer.setTimeBooster(() -> (double) waitingSkip);
         timer.setOnSucceeded((event) -> {
             Platform.runLater(() -> {
-                System.out.println("test");
-                mainCtrl.showMultiplayer(sessionId, playerId);
-                showEndScreen();
+                mainCtrl.showEndGameScreen(sessionId);
             });
         });
 

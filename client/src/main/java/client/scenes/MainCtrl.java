@@ -50,8 +50,7 @@ public class MainCtrl {
 
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
-     *
-     * @param primaryStage store base stage of the application
+     *  @param primaryStage store base stage of the application
      * @param splash       Controller and Scene pair for the splash screen of the application
      * @param multi        Controller and Scene pair for the multiplayer screen of the application
      * @param leaderboard  Controller and Scene pair for the leaderboard screen of the application
@@ -236,6 +235,5 @@ public class MainCtrl {
     public void showEndGameScreen(Long sessionId) {
         primaryStage.setTitle("EndGameLeaderboard");
         primaryStage.setScene(endGameScreen);
-
     }
 }
