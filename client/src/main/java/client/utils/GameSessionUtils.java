@@ -9,6 +9,7 @@ import jakarta.ws.rs.core.GenericType;
 import org.glassfish.jersey.client.ClientConfig;
 
 import java.util.List;
+import java.util.Map;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -266,5 +267,15 @@ public class GameSessionUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(joker, APPLICATION_JSON), Joker.class);
+    }
+
+
+    public Map<String, Joker.JokerStatus> getJokerStates(long sessionId, long playerId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(serverConnection).path("api/sessions/" + sessionId + "/" + playerId + "/jokers")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<Map<String, Joker.JokerStatus>>() {
+                });
     }
 }

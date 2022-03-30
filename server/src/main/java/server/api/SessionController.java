@@ -16,10 +16,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static server.Config.isNullOrEmpty;
@@ -478,5 +475,16 @@ public class SessionController {
 
         session.addUsedJoker(joker);
         return ResponseEntity.ok(joker);
+    }
+
+    @GetMapping("/{sessionId}/{playerId}/jokers")
+    public ResponseEntity<Map<String, Joker.JokerStatus>> getJokerStates(@PathVariable("sessionId") long sessionId,
+                                                                         @PathVariable("playerId") long playerId) {
+        if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
+        GameSession session = sm.getById(sessionId);
+        Optional<Player> player = session.players.stream().filter(pl -> pl.id == playerId).findFirst();
+        if (player.isEmpty()) return ResponseEntity.badRequest().build();
+        Player p = player.get();
+        return ResponseEntity.ok(p.jokerStates);
     }
 }

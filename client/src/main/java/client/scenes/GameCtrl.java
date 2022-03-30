@@ -501,6 +501,7 @@ public abstract class GameCtrl implements Initializable {
         try {
             gameSessionUtils.toggleReady(sessionId, false);
             imagePanel.setImage(null);
+            fetchJokerStates();
             loadQuestion();
         } catch (BadRequestException e) {
             System.out.println("takingover");
@@ -593,6 +594,7 @@ public abstract class GameCtrl implements Initializable {
         TimeUtils roundTimer = new TimeUtils(MIDGAME_BREAK_TIME, TIMER_UPDATE_INTERVAL_MS);
         roundTimer.setOnSucceeded((event) -> Platform.runLater(() -> {
             removeMidGameLeaderboard();
+            fetchJokerStates();
             loadQuestion();
         }));
 
@@ -717,5 +719,17 @@ public abstract class GameCtrl implements Initializable {
                 return;
         }
         webSocketsUtils.sendEmoji(sessionId, playerId, type);
+    }
+
+    public void fetchJokerStates() {
+        // TODO: maybe display animation once joker is refilled.
+        Map<String, Joker.JokerStatus> states = gameSessionUtils.getJokerStates(sessionId, playerId);
+        for (var joker : states.entrySet()) {
+            switch (joker.getKey()) {
+                case "DoublePointsJoker" -> doublePointsJoker = joker.getValue() == Joker.JokerStatus.AVAILABLE;
+                case "DecreaseTimeJoker" -> decreaseTimeJoker = joker.getValue() == Joker.JokerStatus.AVAILABLE;
+                case "RemoveOneAnswerJoker" -> removeOneJoker = joker.getValue() == Joker.JokerStatus.AVAILABLE;
+            }
+        }
     }
 }
