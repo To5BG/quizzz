@@ -369,6 +369,8 @@ public abstract class GameCtrl implements Initializable {
      */
     abstract public void showEndScreen();
 
+    abstract public void showPodiumScreen(long sessionId) throws InterruptedException;
+
     /**
      * Reverts the player to the splash screen and remove him from the current game session.
      */
@@ -486,14 +488,30 @@ public abstract class GameCtrl implements Initializable {
         gameSessionUtils.toggleReady(sessionId, true);
     }
 
-    private void handleGameEnd() {
+//    private void handleGameEnd() {
+//        try {
+//            if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showEndScreen();
+//            else back();
+//        } catch (BadRequestException ex) {
+//            setPlayerId(0);
+//            setSessionId(0);
+//            back();
+//        }
+//    }
+
+    /**
+     * the method to handle the podium part of a game
+     */
+    private void handleGamePodium() {
         try {
-            if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showEndScreen();
+            if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showPodiumScreen(sessionId);
             else back();
         } catch (BadRequestException ex) {
             setPlayerId(0);
             setSessionId(0);
             back();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -531,7 +549,8 @@ public abstract class GameCtrl implements Initializable {
                     if (currentQuestion == null) return; // happens if shutdown is called before triggering
                     rounds++;
                     if (rounds == GameSession.GAME_ROUNDS) {
-                        handleGameEnd();
+                        handleGamePodium();
+                       //handleGameEnd();
                     } else if (rounds == GameSession.GAME_ROUNDS / 2 &&
                             gameSessionUtils.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
                         displayMidGameScreen();
@@ -717,5 +736,15 @@ public abstract class GameCtrl implements Initializable {
                 return;
         }
         webSocketsUtils.sendEmoji(sessionId, playerId, type);
+    }
+
+    /**
+     * the method to get all players from the current game
+     * @param sessionId the sessionId of the game
+     * @return a list of players
+     */
+    public List<Player> getPlayerFromCurrentGame(Long sessionId) {
+        var players = gameSessionUtils.getPlayers(sessionId);
+        return players;
     }
 }

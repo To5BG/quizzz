@@ -34,5 +34,6 @@ public class MyModule implements Module {
         binder.bind(LeaderBoardCtrl.class).in(Scopes.SINGLETON);
         binder.bind(RoomSelectionCtrl.class).in(Scopes.SINGLETON);
         binder.bind(WebSocketsUtils.class).in(Scopes.SINGLETON);
+        binder.bind(PodiumCtrl.class).in(Scopes.SINGLETON);
     }
 }

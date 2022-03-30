@@ -43,21 +43,24 @@ public class MainCtrl {
     private Scene waitingAreaScreen;
     private LeaderBoardCtrl leaderBoardCtrl;
     private Scene leaderBoardScreen;
+    private PodiumCtrl podiumCtrl;
+    private Scene podiumScreen;
 
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
-     *
-     * @param primaryStage store base stage of the application
+     *  @param primaryStage store base stage of the application
      * @param splash       Controller and Scene pair for the splash screen of the application
      * @param multi        Controller and Scene pair for the multiplayer screen of the application
      * @param leaderboard  Controller and Scene pair for the leaderboard screen of the application
+     * @param podium       Controller and Scene pair for the podium screen of the application
      */
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
                            Pair<MultiplayerCtrl, Parent> multi,
                            Pair<RoomSelectionCtrl, Parent> rooms,
                            Pair<WaitingAreaCtrl, Parent> wait,
                            Pair<SingleplayerCtrl, Parent> single,
-                           Pair<LeaderBoardCtrl, Parent> leaderboard) {
+                           Pair<LeaderBoardCtrl, Parent> leaderboard,
+                           Pair<PodiumCtrl, Parent> podium) {
         this.primaryStage = primaryStage;
 
         this.splashCtrl = splash.getKey();
@@ -77,6 +80,9 @@ public class MainCtrl {
 
         this.leaderBoardCtrl = leaderboard.getKey();
         this.leaderBoardScreen = new Scene(leaderboard.getValue());
+
+        this.podiumCtrl = podium.getKey();
+        this.podiumScreen = new Scene(podium.getValue());
 
         confirmClose();
         showSplash();
@@ -201,5 +207,14 @@ public class MainCtrl {
             alert.setHeaderText("Close the program?");
             alert.showAndWait().filter(r -> r != ButtonType.OK).ifPresent(r -> evt.consume());
         });
+    }
+
+    /**
+     * Sets the current screen to the podium screen.
+     */
+    public void showPodiumScreen(Long sessionId) {
+        primaryStage.setTitle("Podium");
+        primaryStage.setScene(podiumScreen);
+        podiumCtrl.creatPodium(sessionId);
     }
 }

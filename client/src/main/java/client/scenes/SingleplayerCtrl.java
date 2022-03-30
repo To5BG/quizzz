@@ -68,6 +68,14 @@ public class SingleplayerCtrl extends GameCtrl {
     }
 
     /**
+     * Empty method because singleplayer mode does not have a podium screen.
+     * @param sessionId
+     */
+    @Override
+    public void showPodiumScreen(long sessionId) {
+    }
+
+    /**
      * Reverts the player to the splash screen and remove him from the current game session.
      */
     @Override

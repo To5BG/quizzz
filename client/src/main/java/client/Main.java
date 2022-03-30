@@ -49,6 +49,8 @@ public class Main extends Application {
                 (WaitingAreaCtrl.class, "client", "scenes", "WaitingAreaScreen.fxml");
         var leaderboard = FXML.load
                 (LeaderBoardCtrl.class, "client", "scenes", "Leaderboard.fxml");
+        var podium = FXML.load
+                (PodiumCtrl.class, "client", "scenes", "PodiumScreen.fxml");
 
 
         primaryStage.setOnHidden(e -> {
@@ -67,6 +69,7 @@ public class Main extends Application {
         });
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, splash, multiplayer, roomSelection, waitingArea, singleplayer, leaderboard);
+        mainCtrl.initialize(primaryStage, splash, multiplayer, roomSelection, waitingArea, singleplayer, leaderboard
+                            , podium);
     }
 }

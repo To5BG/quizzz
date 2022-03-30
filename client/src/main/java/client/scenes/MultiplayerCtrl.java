@@ -38,6 +38,7 @@ import org.springframework.messaging.simp.stomp.StompSession;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class MultiplayerCtrl extends GameCtrl {
 
@@ -393,6 +394,25 @@ public class MultiplayerCtrl extends GameCtrl {
 
         gameSessionUtils.toggleReady(sessionId, false);
         refresh();
+    }
+
+    @Override
+    public void showPodiumScreen(long sessionId) throws InterruptedException {
+        mainCtrl.showPodiumScreen(this.sessionId);
+
+        TimeUtils timer = new TimeUtils(10L, TIMER_UPDATE_INTERVAL_MS);
+        timer.setTimeBooster(() -> (double) waitingSkip);
+        timer.setOnSucceeded((event) -> {
+            Platform.runLater(() -> {
+                System.out.println("test");
+                mainCtrl.showMultiplayer(sessionId, playerId);
+                showEndScreen();
+            });
+        });
+
+        timeProgress.progressProperty().bind(timer.progressProperty());
+        this.timerThread = new Thread(timer);
+        this.timerThread.start();
     }
 
     /**
