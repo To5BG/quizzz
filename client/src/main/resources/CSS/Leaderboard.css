@@ -4,3 +4,7 @@
 .leaderboardColumn{
     -fx-text-fill: white;
 }
+.button{
+    -fx-border-color: #00CCFF;
+    -fx-background-color: transparent;
+}

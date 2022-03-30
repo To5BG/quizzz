@@ -1,0 +1,46 @@
+.background{
+    -fx-background-image: url("/Image/background.png");
+}
+.button{
+    -fx-background-color: transparent;
+    -fx-border-color: #00CCFF;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 12px;
+    -fx-text-fill: white;
+}
+.table-view {
+    -fx-background-color: transparent;
+    -fx-text-alignment: center;
+    -fx-text-color: white;
+}
+.table-column {
+    -fx-background-color: transparent;
+    -fx-alignment: center;
+    -fx-text-color: white;
+}
+.table-row-cell {
+    -fx-background-color: transparent;
+    -fx-alignment: center;
+    -fx-text-color: white;
+}
+.table-view .column-header-background {
+    -fx-background-color:transparent;
+    -fx-text-color: white;
+}
+.table-view .filler {
+    -fx-background-color: transparent;
+    -fx-text-color: white;
+}
+.table-view .scroll-bar{
+    -fx-background-color: transparent;
+}
+/*
+    change the color of the table header
+ */
+.table-column .label{
+    -fx-background-color: #5f93e7;
+    -fx-text-fill: white ;
+    -fx-text-alignment: center ;
+    -fx-graphic-text-gap:0;
+
+}

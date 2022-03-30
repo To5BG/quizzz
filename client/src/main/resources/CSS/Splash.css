@@ -1,21 +1,23 @@
 .background{
     -fx-background-image: url("/Image/background.png");
 }
-@font-face {
-    font-family: 'EarthOrbitPunch';
-    src: url('Image/Fonts/earthorbiterpunch.ttf');
-}
-.title{
-    -fx-font-family: EarthOrbitPunch;
-}
-.username{
-    -fx-text-fill: white;
-    -fx-background-color: gray;
-}
-.connect{
-    -fx-text-fill: white;
-    -fx-background-color: gray;
-}
+/*@font-face {*/
+/*    font-family: 'EarthOrbitPunch';*/
+/*    src: url('Fonts/earthorbiterpunch.ttf');*/
+/*}*/
+/*.title{*/
+/*    -fx-font: EarthOrbitPunch;*/
+/*}*/
 .gameButton{
     -fx-background-color: #84ba84;
+}
+.button{
+    -fx-background-radius: 12px;
+}
+.text-field{
+    -fx-background-radius: 12px;
+    -fx-border-color: #00CCFF;
+    -fx-border-radius: 12px;
+    -fx-text-fill: white;
+    -fx-background-color: transparent;;
 }
