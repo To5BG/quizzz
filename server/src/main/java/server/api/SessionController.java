@@ -315,7 +315,7 @@ public class SessionController {
      * @return The updated game session
      */
     @PutMapping("/{id}/type")
-    public ResponseEntity<GameSession> updateStatus(@PathVariable("id") long sessionId,
+    public ResponseEntity<GameSession> updateType(@PathVariable("id") long sessionId,
                                                     @RequestBody GameSession.SessionType type) {
         if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = sm.getById(sessionId);
