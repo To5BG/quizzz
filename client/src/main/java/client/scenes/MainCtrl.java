@@ -45,14 +45,18 @@ public class MainCtrl {
     private Scene leaderBoardScreen;
     private PodiumCtrl podiumCtrl;
     private Scene podiumScreen;
+    private EndGameScreenCtrl endGameScreenCtrl;
+    private Scene endGameScreen;
 
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
-     *  @param primaryStage store base stage of the application
+     *
+     * @param primaryStage store base stage of the application
      * @param splash       Controller and Scene pair for the splash screen of the application
      * @param multi        Controller and Scene pair for the multiplayer screen of the application
      * @param leaderboard  Controller and Scene pair for the leaderboard screen of the application
      * @param podium       Controller and Scene pair for the podium screen of the application
+     * @param endScreen
      */
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
                            Pair<MultiplayerCtrl, Parent> multi,
@@ -60,7 +64,8 @@ public class MainCtrl {
                            Pair<WaitingAreaCtrl, Parent> wait,
                            Pair<SingleplayerCtrl, Parent> single,
                            Pair<LeaderBoardCtrl, Parent> leaderboard,
-                           Pair<PodiumCtrl, Parent> podium) {
+                           Pair<PodiumCtrl, Parent> podium,
+                           Pair<EndGameScreenCtrl, Parent> endScreen) {
         this.primaryStage = primaryStage;
 
         this.splashCtrl = splash.getKey();
@@ -83,6 +88,9 @@ public class MainCtrl {
 
         this.podiumCtrl = podium.getKey();
         this.podiumScreen = new Scene(podium.getValue());
+
+        this.endGameScreenCtrl = endScreen.getKey();
+        this.endGameScreen = new Scene(endScreen.getValue());
 
         confirmClose();
         showSplash();
@@ -210,11 +218,24 @@ public class MainCtrl {
     }
 
     /**
-     * Sets the current screen to the podium screen.
+     * Sets the current screen to the podium screen
+     *
+     * @param sessionId the id of the current game session
      */
     public void showPodiumScreen(Long sessionId) {
         primaryStage.setTitle("Podium");
         primaryStage.setScene(podiumScreen);
         podiumCtrl.creatPodium(sessionId);
+    }
+
+    /**
+     * Sets the current screen to the end game screen
+     *
+     * @param sessionId the id of the current game session
+     */
+    public void showEndGameScreen(Long sessionId) {
+        primaryStage.setTitle("EndGameLeaderboard");
+        primaryStage.setScene(endGameScreen);
+
     }
 }
