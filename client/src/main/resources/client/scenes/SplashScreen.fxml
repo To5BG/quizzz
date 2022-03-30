@@ -9,15 +9,15 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0" prefWidth="720.0" styleClass="background" stylesheets="@../../CSS/Splash.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.SplashCtrl">
-    <TextField fx:id="usernameField" alignment="CENTER" layoutX="109.0" layoutY="269.0" prefHeight="38.0" prefWidth="170.0" promptText="Enter a username" styleClass="username" stylesheets="@../../CSS/Splash.css" />
-    <TextField fx:id="connectionField" alignment="CENTER" layoutX="109.0" layoutY="336.0" prefHeight="38.0" prefWidth="170.0" promptText="http://localhost:8080/" styleClass="connect" stylesheets="@../../CSS/Splash.css" />
-    <Label layoutX="50.0" layoutY="80.0" prefHeight="236.0" prefWidth="516.0" styleClass="title" text="QUIZZZZ" textFill="#33b5f2">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0" prefWidth="720.0" styleClass="background" stylesheets="@/CSS/Splash.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.SplashCtrl">
+    <TextField fx:id="usernameField" alignment="CENTER" layoutX="109.0" layoutY="269.0" prefHeight="38.0" prefWidth="170.0" promptText="Enter a username" styleClass="username" stylesheets="@/CSS/Splash.css" />
+    <TextField fx:id="connectionField" alignment="CENTER" layoutX="109.0" layoutY="336.0" prefHeight="38.0" prefWidth="170.0" promptText="http://localhost:8080/" styleClass="connect" stylesheets="@/CSS/Splash.css" />
+    <Label layoutX="62.0" layoutY="152.0" prefHeight="81.0" prefWidth="516.0" styleClass="title" text="QUIZZZZ" textFill="#33b5f2">
         <font>
             <Font name="Earth Orbiter Punch" size="79.0" />
         </font>
     </Label>
-    <Button layoutX="105.0" layoutY="393.0" mnemonicParsing="false" onAction="#showSinglePlayer" prefHeight="52.0" prefWidth="178.0" styleClass="gameButton" stylesheets="@../../CSS/Splash.css" text="Singleplayer" textFill="WHITE">
+    <Button layoutX="105.0" layoutY="393.0" mnemonicParsing="false" onAction="#showSinglePlayer" prefHeight="52.0" prefWidth="178.0" styleClass="gameButton" stylesheets="@/CSS/Splash.css" text="Singleplayer" textFill="WHITE">
       <font>
          <Font name="Earth Orbiter Engraved" size="19.0" />
       </font></Button>
@@ -34,29 +34,29 @@
     <Text fx:id="failedConnectionAlert" fill="WHITE" layoutX="142.0" layoutY="329.0" opacity="0.0" text="Could not connect!" />
    <ImageView fitHeight="323.0" fitWidth="438.0" layoutX="308.0" layoutY="-14.0" pickOnBounds="true" preserveRatio="true">
       <image>
-         <Image url="@../../Image/decoration1.png" />
+         <Image url="@/Image/decoration1.png" />
       </image>
    </ImageView>
    <Button layoutX="660.0" layoutY="523.0" mnemonicParsing="false" text="?" />
    <Label layoutX="443.0" layoutY="549.0" prefHeight="17.0" prefWidth="203.0" text="       Produced By OOPP Group 51" textFill="WHITE" />
    <ImageView fitHeight="800.0" fitWidth="200.0" layoutX="-150.0" pickOnBounds="true" preserveRatio="true">
       <image>
-         <Image url="@../../Image/decoration3.png" />
+         <Image url="@/Image/decoration3.png" />
       </image>
    </ImageView>
    <ImageView fitHeight="52.0" fitWidth="54.0" layoutX="50.0" layoutY="393.0" pickOnBounds="true" preserveRatio="true">
       <image>
-         <Image url="@../../Image/decoration16.png" />
+         <Image url="@/Image/decoration16.png" />
       </image>
    </ImageView>
    <ImageView fitHeight="52.0" fitWidth="54.0" layoutX="50.0" layoutY="497.0" pickOnBounds="true" preserveRatio="true">
       <image>
-         <Image url="@../../Image/decoration16.png" />
+         <Image url="@/Image/decoration16.png" />
       </image>
    </ImageView>
    <ImageView fitHeight="52.0" fitWidth="54.0" layoutX="391.0" layoutY="445.0" pickOnBounds="true" preserveRatio="true">
       <image>
-         <Image url="@../../Image/decoration16.png" />
+         <Image url="@/Image/decoration16.png" />
       </image>
    </ImageView>
 </AnchorPane>

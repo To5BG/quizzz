@@ -2,7 +2,7 @@
     -fx-background-image: url("/Image/background.png");
 }
 .text-field{
-    -fx-text-color: white;
+    -fx-text-fill: white;
 }
 .table-view {
     -fx-background-color: transparent;
@@ -50,5 +50,12 @@
     -fx-text-fill: white;
 }
 .pane{
+    -fx-text-fill: white;
+}
+.scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+.stack-pane .radio-button{
     -fx-text-fill: white;
 }
