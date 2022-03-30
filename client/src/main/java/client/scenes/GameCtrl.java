@@ -369,6 +369,11 @@ public abstract class GameCtrl implements Initializable {
      */
     abstract public void showEndScreen();
 
+    /**
+     * Abstract method that gets called to show the podium screen
+     * @param sessionId the id of the current session
+     * @throws InterruptedException the exception to be thrown when necessary
+     */
     abstract public void showPodiumScreen(long sessionId) throws InterruptedException;
 
     /**
@@ -488,17 +493,6 @@ public abstract class GameCtrl implements Initializable {
         gameSessionUtils.toggleReady(sessionId, true);
     }
 
-//    private void handleGameEnd() {
-//        try {
-//            if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showEndScreen();
-//            else back();
-//        } catch (BadRequestException ex) {
-//            setPlayerId(0);
-//            setSessionId(0);
-//            back();
-//        }
-//    }
-
     /**
      * the method to handle the podium part of a game
      */
@@ -550,7 +544,7 @@ public abstract class GameCtrl implements Initializable {
                     rounds++;
                     if (rounds == GameSession.GAME_ROUNDS) {
                         handleGamePodium();
-                       //handleGameEnd();
+                        //handleGameEnd();
                     } else if (rounds == GameSession.GAME_ROUNDS / 2 &&
                             gameSessionUtils.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
                         displayMidGameScreen();

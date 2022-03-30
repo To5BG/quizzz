@@ -1,7 +1,6 @@
 package client.scenes;
 
 import client.utils.GameSessionUtils;
-import client.utils.LeaderboardUtils;
 import com.google.inject.Inject;
 import commons.Player;
 import javafx.fxml.FXML;
@@ -47,17 +46,18 @@ public class PodiumCtrl implements Initializable {
 
     /**
      * the method to create a podium with a given game session
+     *
      * @param sessionId the id of the given session
      */
     public void creatPodium(Long sessionId) {
         playerList = gameSessionUtils.getPlayers(sessionId);
 
         Collections.sort(playerList, new Comparator<Player>() {
-                    @Override
-                    public int compare(Player p1, Player p2) {
-                        return p2.getCurrentPoints() - p1.getCurrentPoints();
-                    }
-                });
+            @Override
+            public int compare(Player p1, Player p2) {
+                return p2.getCurrentPoints() - p1.getCurrentPoints();
+            }
+        });
 
         var player1 = playerList.get(0);
         name1.setText(player1.username);
