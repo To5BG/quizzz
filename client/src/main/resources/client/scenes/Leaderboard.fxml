@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="499.0" prefWidth="633.0" styleClass="background" stylesheets="@../../CSS/Leaderboard.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.LeaderBoardCtrl">
+<AnchorPane prefHeight="499.0" prefWidth="633.0" styleClass="background" stylesheets="@/CSS/Leaderboard.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.LeaderBoardCtrl">
     <children>
         <TableView id="allPoints" fx:id="allPlayers" layoutX="119.0" layoutY="125.0" prefHeight="271.0" prefWidth="397.0" styleClass="leaderboardColumn">
             <columns>
@@ -43,52 +43,52 @@
          </font></Button>
       <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="151.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../Image/decoration7.png" />
+            <Image url="@/Image/decoration7.png" />
          </image>
       </ImageView>
       <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="175.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../Image/decoration8.png" />
+            <Image url="@/Image/decoration8.png" />
          </image>
       </ImageView>
       <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="199.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../Image/decoration8.png" />
+            <Image url="@/Image/decoration8.png" />
          </image>
       </ImageView>
       <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="222.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../Image/decoration10.png" />
+            <Image url="@/Image/decoration10.png" />
          </image>
       </ImageView>
       <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="247.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../Image/decoration11.png" />
+            <Image url="@/Image/decoration11.png" />
          </image>
       </ImageView>
       <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="270.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../Image/decoration11.png" />
+            <Image url="@/Image/decoration11.png" />
          </image>
       </ImageView>
       <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="295.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../Image/decoration12.png" />
+            <Image url="@/Image/decoration12.png" />
          </image>
       </ImageView>
       <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="320.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../Image/decoration13.png" />
+            <Image url="@/Image/decoration13.png" />
          </image>
       </ImageView>
       <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="344.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../Image/decoration14.png" />
+            <Image url="@/Image/decoration14.png" />
          </image>
       </ImageView>
       <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="368.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../Image/decoration15.png" />
+            <Image url="@/Image/decoration15.png" />
          </image>
       </ImageView>
     </children>
