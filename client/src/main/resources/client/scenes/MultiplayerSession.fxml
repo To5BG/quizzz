@@ -25,7 +25,7 @@
                 <TableColumn fx:id="colPoints" prefWidth="61.0" text="points" />
             </columns>
         </TableView>
-        <StackPane fx:id="answerArea" alignment="BASELINE_LEFT" layoutX="221.0" layoutY="131.0" prefHeight="156.0" prefWidth="235.0" styleClass="pane" stylesheets="@../../CSS/MultiplayerSession.css" />
+        <StackPane fx:id="answerArea" alignment="BASELINE_LEFT" layoutX="221.0" layoutY="131.0" prefHeight="156.0" prefWidth="235.0" styleClass="stack-pane" stylesheets="@../../CSS/MultiplayerSession.css" />
         <Button fx:id="submitButton" layoutX="552.0" layoutY="265.0" mnemonicParsing="false" onAction="#submitAnswerButton" text="Final Answer">
          <effect>
             <Lighting>

@@ -63,6 +63,9 @@
 .stack-pane .text-field{
     -fx-text-fill: black;
 }
+.stack-pane .radio-button{
+    -fx-text-fill: white;
+}
 .text-field {
     -fx-text-fill: white;
 }
