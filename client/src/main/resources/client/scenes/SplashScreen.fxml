@@ -17,15 +17,15 @@
             <Font name="Earth Orbiter Punch" size="79.0" />
         </font>
     </Label>
-    <Button layoutX="105.0" layoutY="393.0" mnemonicParsing="false" onAction="#showSinglePlayer" prefHeight="52.0" prefWidth="178.0" styleClass="gameButton" stylesheets="@../../CSS/Splash.css" text="Singleplayer">
+    <Button layoutX="105.0" layoutY="393.0" mnemonicParsing="false" onAction="#showSinglePlayer" prefHeight="52.0" prefWidth="178.0" styleClass="gameButton" stylesheets="@../../CSS/Splash.css" text="Singleplayer" textFill="WHITE">
       <font>
          <Font name="Earth Orbiter Engraved" size="19.0" />
       </font></Button>
-    <Button layoutX="105.0" layoutY="497.0" mnemonicParsing="false" onAction="#showRoomSelection" prefHeight="52.0" prefWidth="178.0" styleClass="gameButton" text="Multiplayer">
+    <Button layoutX="105.0" layoutY="497.0" mnemonicParsing="false" onAction="#showRoomSelection" prefHeight="52.0" prefWidth="178.0" styleClass="gameButton" text="Multiplayer" textFill="WHITE">
       <font>
          <Font name="Earth Orbiter Engraved" size="19.0" />
       </font></Button>
-    <Button layoutX="447.0" layoutY="445.0" mnemonicParsing="false" onAction="#showLeaderboard" prefHeight="52.0" prefWidth="178.0" styleClass="gameButton" text="Leaderboard">
+    <Button layoutX="447.0" layoutY="445.0" mnemonicParsing="false" onAction="#showLeaderboard" prefHeight="52.0" prefWidth="178.0" styleClass="gameButton" text="Leaderboard" textFill="WHITE">
       <font>
          <Font name="Earth Orbiter Engraved" size="19.0" />
       </font></Button>

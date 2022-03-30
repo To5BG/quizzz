@@ -6,6 +6,7 @@
     -fx-border-color: #00CCFF;
     -fx-background-radius: 10px;
     -fx-border-radius: 12px;
+    -fx-border-width: 2px;
 }
 .table-view {
     -fx-background-color: transparent;
@@ -30,4 +31,10 @@
 }
 .text{
     -fx-text-fill: white;
+}
+.label{
+    -fx-text-fill: white;
+}
+.table-view .label{
+    -fx-text-fill: black;
 }

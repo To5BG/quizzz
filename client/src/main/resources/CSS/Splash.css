@@ -13,11 +13,16 @@
 }
 .button{
     -fx-background-radius: 12px;
+    -fx-border-width: 2px;
 }
 .text-field{
     -fx-background-radius: 12px;
     -fx-border-color: #00CCFF;
     -fx-border-radius: 12px;
     -fx-text-fill: white;
-    -fx-background-color: transparent;;
+    -fx-background-color: transparent;
+    -fx-border-width: 2px;
+}
+.label{
+    -fx-text-fill: white;
 }

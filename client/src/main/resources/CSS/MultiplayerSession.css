@@ -31,7 +31,12 @@
     -fx-background-color: transparent;
 }
 .button{
-    -fx-background-radius: 12px;
+    -fx-background-color: transparent;
+    -fx-border-color: #00CCFF;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 12px;
+    -fx-text-fill: white;
+    -fx-border-width: 2px;
 }
 .text-field{
     -fx-background-radius: 12px;
@@ -39,4 +44,11 @@
     -fx-border-radius: 12px;
     -fx-text-fill: white;
     -fx-background-color: transparent;
+    -fx-border-width: 2px;
+}
+.label{
+    -fx-text-fill: white;
+}
+.pane{
+    -fx-text-fill: white;
 }
