@@ -308,23 +308,6 @@ public class SessionController {
     }
 
     /**
-     * Updates type of game session
-     *
-     * @param sessionId Id of session to update
-     * @param type      new type of game session
-     * @return The updated game session
-     */
-    @PutMapping("/{id}/type")
-    public ResponseEntity<GameSession> updateType(@PathVariable("id") long sessionId,
-                                                    @RequestBody GameSession.SessionType type) {
-        if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
-        GameSession session = sm.getById(sessionId);
-        session.setSessionType(type);
-        updateSession(session);
-        return ResponseEntity.ok(session);
-    }
-
-    /**
      * Updates number of timeJokers of game session
      *
      * @param sessionId Id of session to update

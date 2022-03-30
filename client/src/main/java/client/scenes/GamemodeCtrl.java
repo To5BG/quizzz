@@ -4,6 +4,7 @@ import client.utils.GameSessionUtils;
 import client.utils.LeaderboardUtils;
 import client.utils.QuestionUtils;
 import commons.GameSession;
+import commons.Player;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
@@ -17,8 +18,7 @@ public class GamemodeCtrl {
     private final QuestionUtils questionUtils;
     private final MainCtrl mainCtrl;
 
-    private long sessionId;
-    private long playerId;
+    private Player player;
 
     @FXML
     private Button defaultButton;
@@ -39,10 +39,6 @@ public class GamemodeCtrl {
         this.leaderboardUtils = leaderboardUtils;
         this.questionUtils = questionUtils;
         this.mainCtrl = mainCtrl;
-
-        // Set to defaults
-        this.sessionId = 0L;
-        this.playerId = 0L;
     }
 
     /**
@@ -60,9 +56,7 @@ public class GamemodeCtrl {
      * Removes player from session. Also called if controller is closed forcibly
      */
     public void shutdown() {
-        gameSessionUtils.removePlayer(sessionId, playerId);
-        setPlayerId(0);
-        setSessionId(0);
+        this.player = null;
     }
 
     /**
@@ -77,7 +71,17 @@ public class GamemodeCtrl {
      * Starts the default singleplayer game.
      */
     public void showDefault() {
-        mainCtrl.showDefaultSinglePlayer(this.sessionId, this.playerId);
+        GameSession newSession = new GameSession(GameSession.SessionType.SINGLEPLAYER);
+        newSession = gameSessionUtils.addSession(newSession);
+        gameSessionUtils.addPlayer(newSession.id, this.player);
+
+        long playerId = this.player.id;
+
+        if (playerId == 0L) {
+            playerId = gameSessionUtils
+                    .getPlayers(newSession.id).get(0).id;
+        }
+        mainCtrl.showDefaultSinglePlayer(newSession.id, playerId);
     }
 
     /**
@@ -91,26 +95,21 @@ public class GamemodeCtrl {
      * Starts the time attack singleplayer game.
      */
     public void showTimeAttack() {
-        gameSessionUtils.setGameRounds(sessionId, Integer.MAX_VALUE);
-        gameSessionUtils.updateType(gameSessionUtils.getSession(sessionId), GameSession.SessionType.TIME_ATTACK);
-        mainCtrl.showTimeAttack(this.sessionId, this.playerId);
+        GameSession newSession = new GameSession(GameSession.SessionType.TIME_ATTACK);
+        newSession = gameSessionUtils.addSession(newSession);
+        gameSessionUtils.addPlayer(newSession.id, this.player);
+
+        long playerId = this.player.id;
+
+        if (playerId == 0L) {
+            playerId = gameSessionUtils
+                    .getPlayers(newSession.id).get(0).id;
+        }
+        gameSessionUtils.setGameRounds(newSession.id, Integer.MAX_VALUE);
+        mainCtrl.showTimeAttack(newSession.id, playerId);
     }
 
-    /**
-     * Setter for sessionId.
-     *
-     * @param sessionId the id of the sessions
-     */
-    public void setSessionId(long sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    /**
-     * Setter for playerId.
-     *
-     * @param playerId the id of the player
-     */
-    public void setPlayerId(long playerId) {
-        this.playerId = playerId;
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 }

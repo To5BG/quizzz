@@ -20,7 +20,6 @@ import client.utils.LeaderboardUtils;
 import client.utils.QuestionUtils;
 import client.utils.WebSocketsUtils;
 import com.google.inject.Inject;
-import commons.GameSession;
 import commons.Player;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -206,18 +205,7 @@ public class SplashCtrl {
         Optional<Player> playerResult = generatePlayer(newUserName);
         if (playerResult.isEmpty()) return;
 
-        GameSession newSession = new GameSession(GameSession.SessionType.SINGLEPLAYER);
-        newSession = gameSessionUtils.addSession(newSession);
-        gameSessionUtils.addPlayer(newSession.id, playerResult.get());
-
-        long playerId = playerResult.get().id;
-
-        if (playerId == 0L) {
-            playerId = gameSessionUtils
-                    .getPlayers(newSession.id).get(0).id;
-        }
-
-        mainCtrl.showGamemodeScreen(newSession.id, playerId);
+        mainCtrl.showGamemodeScreen(playerResult.get());
     }
 
     /**

@@ -117,21 +117,6 @@ public class GameSessionUtils {
     }
 
     /**
-     * Updates a session type
-     *
-     * @param session Session to update
-     * @param type    new type to be set
-     * @return The updated session
-     */
-    public GameSession updateType(GameSession session, GameSession.SessionType type) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(serverConnection).path("api/sessions/" + session.id + "/type")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .put(Entity.entity(type, APPLICATION_JSON), GameSession.class);
-    }
-
-    /**
      * Sets and unsets a player as being ready for a multiplayer game
      *
      * @param sessionId the id of the session
