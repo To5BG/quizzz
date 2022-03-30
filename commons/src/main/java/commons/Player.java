@@ -6,10 +6,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
 public class Player {
+
+    private static final String[] JOKER_NAMES = { "DecreaseTimeJoker", "DoublePointsJoker", "RemoveOneAnswerJoker" };
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -21,16 +26,23 @@ public class Player {
     public String username;
     public String ans;
 
+    @Transient
+    public Map<String, Joker.JokerStatus> jokerStates;
+
     @SuppressWarnings("unused")
     public Player() {
         this.currentPoints = 0;
+        this.jokerStates = new HashMap<String, Joker.JokerStatus>();
+        for (String jokerName : JOKER_NAMES) {
+            jokerStates.put(jokerName, Joker.JokerStatus.AVAILABLE);
+        }
     }
 
     public Player(String username, int point) {
+        this();
         this.username = username;
         this.bestSingleScore = point;
         this.bestMultiScore = point;
-        this.currentPoints = 0;
     }
 
     /**
