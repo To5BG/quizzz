@@ -171,6 +171,9 @@ public class LeaderBoardCtrl implements Initializable {
         timeAttackButton.setText("Time Attack");
     }
 
+    /**
+     * Show SurvivalLeaderBoard
+     */
     public void showSurvivalLeaderBoard() {
         colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSurvivalScore)));
         refreshSurvival();
