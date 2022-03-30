@@ -69,20 +69,23 @@ public class SessionController {
         session.playersReady.set(0);
         if (session.sessionType == GameSession.SessionType.SINGLEPLAYER) {
             Player p = session.getPlayers().get(0);
-            p.bestSingleScore = Math.max(p.bestSingleScore, p.currentPoints);
+            p.setBestSingleScore(Math.max(p.bestSingleScore, p.currentPoints));
+            p.setCurrentPoints(0);
             repo.save(p);
             System.out.println("removing session");
             removeSession(session.id);
         }
         if (session.sessionType == GameSession.SessionType.TIME_ATTACK) {
             Player p = session.getPlayers().get(0);
-            p.bestTimeAttackScore = Math.max(p.bestTimeAttackScore, p.currentPoints);
+            p.setBestTimeAttackScore(Math.max(p.bestTimeAttackScore, p.currentPoints));
+            p.setCurrentPoints(0);
             repo.save(p);
             System.out.println("removing session");
             removeSession(session.id);
         } else {
             for (Player p : session.players) {
-                p.bestMultiScore = Math.max(p.bestMultiScore, p.currentPoints);
+                p.setBestMultiScore(Math.max(p.bestMultiScore, p.currentPoints));
+                p.setCurrentPoints(0);
                 repo.save(p);
             }
             session.setSessionStatus(GameSession.SessionStatus.PAUSED);
@@ -106,7 +109,7 @@ public class SessionController {
     public void advanceRounds(GameSession session) {
         updateTimeJokers(session.id, 0);
         if (session.sessionStatus == GameSession.SessionStatus.PLAY_AGAIN) {
-            session.resetQuestionCounter();
+            session.setQuestionCounter(0);
             for (Player p : session.players) {
                 p.currentPoints = 0;
             }
@@ -392,17 +395,18 @@ public class SessionController {
     }
 
     /**
-     * Sets the questionCounter of a session to zero.
+     * Sets the questionCounter of a session.
      *
      * @param sessionId The current session.
      * @return The updated session.
      */
-    @GetMapping("/{id}/reset")
-    public ResponseEntity<GameSession> resetQuestionCounter(@PathVariable("id") long sessionId) {
+    @PutMapping ("/{id}/set")
+    public ResponseEntity<GameSession> setQuestionCounter(@PathVariable("id") long sessionId, @RequestBody int count) {
         if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = sm.getById(sessionId);
 
-        session.resetQuestionCounter();
+        session.setQuestionCounter(count);
+        updateSession(session);
         return ResponseEntity.ok(session);
     }
 

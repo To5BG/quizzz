@@ -128,10 +128,10 @@ public class GameSession {
     }
 
     /**
-     * Resets the questionCounter to zero.
+     * Setter for the questionCounter.
      */
-    public void resetQuestionCounter() {
-        this.questionCounter = 0;
+    public void setQuestionCounter(int count) {
+        this.questionCounter = count;
     }
 
     /**

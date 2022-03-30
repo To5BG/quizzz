@@ -155,6 +155,16 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
     }
 
     /**
+     * refresh the screen to show the leaderboard.
+     */
+    @Override
+    public void refresh() {
+        var players = leaderboardUtils.getPlayerTimeAttackScore();
+        data = FXCollections.observableList(players);
+        allPlayers.setItems(data);
+    }
+
+    /**
      * Initiates the timer at the beginning of the game and loads a question.
      */
     public void startTimer() {
@@ -163,7 +173,7 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
         roundTimer.setOnSucceeded((event) -> Platform.runLater(() -> {
             System.out.println("roundTimer is done");
             this.initialTime = 0;
-            rounds = Integer.MAX_VALUE;
+            gameSessionUtils.setQuestionCounter(sessionId, Integer.MAX_VALUE);
             submitAnswer(true);
         }));
 
@@ -172,15 +182,6 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
         this.timerThread.start();
 
         loadQuestion();
-    }
-
-    /**
-     * refresh the screen to show the leaderboard.
-     */
-    public void refresh() {
-        var players = leaderboardUtils.getPlayerTimeAttackScore();
-        data = FXCollections.observableList(players);
-        allPlayers.setItems(data);
     }
 
 }
