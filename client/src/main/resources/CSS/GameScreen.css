@@ -57,3 +57,12 @@
     -fx-background-color: transparent;
     -fx-border-width: 0;
 }
+.stack-pane .label{
+    -fx-text-fill: white;
+}
+.stack-pane .text-field{
+    -fx-text-fill: black;
+}
+.text-field {
+    -fx-text-fill: white;
+}
