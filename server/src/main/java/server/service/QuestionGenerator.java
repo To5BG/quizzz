@@ -13,6 +13,9 @@ public class QuestionGenerator {
     private static final List<Question.QuestionType> QUESTION_TYPES = Arrays.stream(Question.QuestionType.values())
             .filter(qt -> qt != Question.QuestionType.UNKNOWN).toList();
 
+    private static final List<Question.QuestionType> SURVIVAL_QN_TYPES = QUESTION_TYPES.stream()
+            .filter(qt -> qt != Question.QuestionType.RANGE_GUESS).toList();
+
     /**
      * Generate a Comparison style question
      *
@@ -119,6 +122,13 @@ public class QuestionGenerator {
     public static Pair<Question, List<Long>> generateQuestion(double difficultyFactor, ActivityController ctrl) {
         Random rng = new Random();
         return generateTypeQuestion(QUESTION_TYPES.get(rng.nextInt(QUESTION_TYPES.size())), difficultyFactor, ctrl);
+    }
+
+    public static Pair<Question, List<Long>>
+    generateSurvivalQuestion(double difficultyFactor, ActivityController ctrl) {
+        Random rng = new Random();
+        return generateTypeQuestion(SURVIVAL_QN_TYPES.get(rng.nextInt(SURVIVAL_QN_TYPES.size())),
+                difficultyFactor, ctrl);
     }
 
     /**

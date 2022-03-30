@@ -54,6 +54,21 @@ public class LeaderboardUtils {
 
     /**
      * Get all player object entries from the database
+     * for survival mode
+     *
+     * @return List of all player entries
+     */
+    public List<Player> getPlayerSurvivalScore() {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(serverConnection).path("api/leaderboard/survival")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<List<Player>>() {
+                });
+    }
+
+    /**
+     * Get all player object entries from the database
      * for multi mode
      *
      * @return List of all player entries

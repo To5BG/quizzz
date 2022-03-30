@@ -35,7 +35,8 @@ public class GameSession {
         WAITING_AREA,
         MULTIPLAYER,
         SINGLEPLAYER,
-        TIME_ATTACK
+        TIME_ATTACK,
+        SURVIVAL
     }
 
     public SessionStatus sessionStatus;

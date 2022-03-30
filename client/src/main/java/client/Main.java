@@ -45,6 +45,8 @@ public class Main extends Application {
                 (SingleplayerCtrl.class, "client", "scenes", "GameScreen.fxml");
         var timeAttack = FXML.load
                 (TimeAttackCtrl.class, "client", "scenes", "TimeAttackScreen.fxml");
+        var survival = FXML.load
+                (SurvivalCtrl.class, "client", "scenes", "SurvivalScreen.fxml");
         var roomSelection = FXML.load
                 (RoomSelectionCtrl.class, "client", "scenes", "RoomSelection.fxml");
         var waitingArea = FXML.load
@@ -76,6 +78,6 @@ public class Main extends Application {
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         mainCtrl.initialize(primaryStage, splash, multiplayer, roomSelection,
-                waitingArea, mode, singleplayer, timeAttack, leaderboard);
+                waitingArea, mode, singleplayer, timeAttack, survival, leaderboard);
     }
 }

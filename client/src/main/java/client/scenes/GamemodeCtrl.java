@@ -88,7 +88,18 @@ public class GamemodeCtrl {
      * Starts the survival singleplayer game.
      */
     public void showSurvival() {
-        //TODO rithik
+        GameSession newSession = new GameSession(GameSession.SessionType.SURVIVAL);
+        newSession = gameSessionUtils.addSession(newSession);
+        gameSessionUtils.addPlayer(newSession.id, this.player);
+
+        long playerId = this.player.id;
+
+        if (playerId == 0L) {
+            playerId = gameSessionUtils
+                    .getPlayers(newSession.id).get(0).id;
+        }
+        gameSessionUtils.setGameRounds(newSession.id, Integer.MAX_VALUE);
+        mainCtrl.showSurvival(newSession.id, playerId);
     }
 
     /**

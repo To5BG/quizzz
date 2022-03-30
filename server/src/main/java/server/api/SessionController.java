@@ -53,7 +53,9 @@ public class SessionController {
     public void updateQuestion(GameSession session) {
         session.difficultyFactor = session.questionCounter / 4 + 1;
         session.questionCounter++;
-        Pair<Question, List<Long>> res = QuestionGenerator.generateQuestion(session.difficultyFactor, activityCtrl);
+        Pair<Question, List<Long>> res = (session.sessionType == GameSession.SessionType.SURVIVAL) ?
+                QuestionGenerator.generateSurvivalQuestion(session.difficultyFactor, activityCtrl) :
+                QuestionGenerator.generateQuestion(session.difficultyFactor, activityCtrl);
         session.currentQuestion = res.getKey();
         session.expectedAnswers.clear();
         session.expectedAnswers.addAll(res.getValue());
@@ -78,6 +80,14 @@ public class SessionController {
         if (session.sessionType == GameSession.SessionType.TIME_ATTACK) {
             Player p = session.getPlayers().get(0);
             p.setBestTimeAttackScore(Math.max(p.bestTimeAttackScore, p.currentPoints));
+            p.setCurrentPoints(0);
+            repo.save(p);
+            System.out.println("removing session");
+            removeSession(session.id);
+        }
+        if (session.sessionType == GameSession.SessionType.SURVIVAL) {
+            Player p = session.getPlayers().get(0);
+            p.setBestSurvivalScore(Math.max(p.bestSurvivalScore, p.currentPoints));
             p.setCurrentPoints(0);
             repo.save(p);
             System.out.println("removing session");
@@ -400,7 +410,7 @@ public class SessionController {
      * @param sessionId The current session.
      * @return The updated session.
      */
-    @PutMapping ("/{id}/set")
+    @PutMapping("/{id}/set")
     public ResponseEntity<GameSession> setQuestionCounter(@PathVariable("id") long sessionId, @RequestBody int count) {
         if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = sm.getById(sessionId);

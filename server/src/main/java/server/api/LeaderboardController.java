@@ -66,6 +66,20 @@ public class LeaderboardController {
     }
 
     /**
+     * Deliver all player data in the DB
+     * sorted by best survival mode score, excluding all players with a 0 score
+     *
+     * @return a list of all data about players for survival mode
+     */
+    @GetMapping(path = {"/survival"})
+    public ResponseEntity<List<Player>> getPlayerSurvivalScores() {
+        var list = repo.findByOrderByBestSurvivalScoreDesc().stream()
+                .filter(player -> player.getBestSurvivalScore() != 0)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(list);
+    }
+
+    /**
      * Deliver all Player data in the DB
      * sorted by best multi mode score, filtered all players with 0 score
      *

@@ -99,7 +99,7 @@ public class QuestionController {
         Evaluation eval = new Evaluation((answer.answers.equals(s.expectedAnswers)) ? 1 : 0,
                 s.currentQuestion.type, List.copyOf(s.expectedAnswers));
 
-        if (s.sessionType == GameSession.SessionType.TIME_ATTACK) {
+        if (s.sessionType == GameSession.SessionType.TIME_ATTACK || s.sessionType == GameSession.SessionType.SURVIVAL) {
             player.currentPoints += eval.points;
             return ResponseEntity.ok(eval);
         }

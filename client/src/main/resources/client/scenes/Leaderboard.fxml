@@ -25,9 +25,11 @@
         <Button layoutX="526.0" layoutY="361.0" mnemonicParsing="false" onAction="#back" text="BACK"/>
         <Button fx:id="singleLeaderboard" layoutX="505.0" layoutY="124.0" mnemonicParsing="false"
                 onAction="#showSingleLeaderBoard" prefHeight="25.0" prefWidth="92.0" text="Singleplayer"/>
-        <Button fx:id="multiLeaderboard" layoutX="505.0" layoutY="175.0" mnemonicParsing="false"
+        <Button fx:id="multiLeaderboard" layoutX="505.0" layoutY="174.0" mnemonicParsing="false"
                 onAction="#showMultiLeaderboard" prefHeight="25.0" prefWidth="92.0" text="Multiplayer"/>
-        <Button fx:id="timeAttackButton" layoutX="504.0" layoutY="224.0" mnemonicParsing="false"
+        <Button fx:id="timeAttackButton" layoutX="505.0" layoutY="224.0" mnemonicParsing="false"
                 onAction="#showTimeAttackLeaderBoard" prefHeight="26.0" prefWidth="92.0" text="Time Attack"/>
+        <Button fx:id="survivalButton" layoutX="505.0" layoutY="274.0" mnemonicParsing="false"
+                onAction="#showSurvivalLeaderBoard" prefHeight="25.0" prefWidth="92.0" text="Survival"/>
     </children>
 </AnchorPane>

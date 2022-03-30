@@ -42,6 +42,8 @@ public class MainCtrl {
     private Scene singlePlayerScreen;
     private TimeAttackCtrl timeAttackCtrl;
     private Scene timeAttackScreen;
+    private SurvivalCtrl survivalCtrl;
+    private Scene survivalScreen;
     private WaitingAreaCtrl waitingAreaCtrl;
     private Scene waitingAreaScreen;
     private GamemodeCtrl gamemodeCtrl;
@@ -55,6 +57,12 @@ public class MainCtrl {
      * @param primaryStage store base stage of the application
      * @param splash       Controller and Scene pair for the splash screen of the application
      * @param multi        Controller and Scene pair for the multiplayer screen of the application
+     * @param rooms        Controller and Scene pair for the room selection screen of the application
+     * @param wait         Controller and Scene pair for the waiting area screen of the application
+     * @param mode         Controller and Scene pair for the gamemode selection screen of the application
+     * @param single       Controller and Scene pair for the default singleplayer gamescreen of the application
+     * @param timeAttack   Controller and Scene pair for the time attack gamescreen of the application
+     * @param survival     Controller and Scene pair for the survival gamescreen of the application
      * @param leaderboard  Controller and Scene pair for the leaderboard screen of the application
      */
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
@@ -64,6 +72,7 @@ public class MainCtrl {
                            Pair<GamemodeCtrl, Parent> mode,
                            Pair<SingleplayerCtrl, Parent> single,
                            Pair<TimeAttackCtrl, Parent> timeAttack,
+                           Pair<SurvivalCtrl, Parent> survival,
                            Pair<LeaderBoardCtrl, Parent> leaderboard) {
         this.primaryStage = primaryStage;
 
@@ -87,6 +96,9 @@ public class MainCtrl {
 
         this.timeAttackCtrl = timeAttack.getKey();
         this.timeAttackScreen = new Scene(timeAttack.getValue());
+
+        this.survivalCtrl = survival.getKey();
+        this.survivalScreen = new Scene(survival.getValue());
 
         this.leaderBoardCtrl = leaderboard.getKey();
         this.leaderBoardScreen = new Scene(leaderboard.getValue());
@@ -216,6 +228,19 @@ public class MainCtrl {
         timeAttackCtrl.setPlayerId(playerId);
         timeAttackCtrl.startTimer();
         timeAttackCtrl.refresh();
+    }
+
+    /**
+     * Sets the current screen to the survival screen.
+     */
+    public void showSurvival(long sessionId, long playerId) {
+        primaryStage.setTitle("Survival Mode");
+        primaryStage.setScene(survivalScreen);
+        survivalScreen.setOnKeyPressed(e -> survivalCtrl.keyPressed(e));
+        survivalCtrl.setSessionId(sessionId);
+        survivalCtrl.setPlayerId(playerId);
+        survivalCtrl.loadQuestion();
+        survivalCtrl.refresh();
     }
 
     /**

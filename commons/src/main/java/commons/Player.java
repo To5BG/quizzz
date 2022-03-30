@@ -17,6 +17,7 @@ public class Player {
     public int currentPoints;
     public int bestSingleScore;
     public int bestTimeAttackScore;
+    public int bestSurvivalScore;
     public int bestMultiScore;
 
     public String username;
@@ -31,6 +32,7 @@ public class Player {
         this.username = username;
         this.bestSingleScore = point;
         this.bestTimeAttackScore = point;
+        this.bestSurvivalScore = point;
         this.bestMultiScore = point;
         this.currentPoints = 0;
     }
@@ -56,10 +58,19 @@ public class Player {
     /**
      * A setter for the bestTimeAttackScore
      *
-     * @param points The points to be set
+     * @param points The points to be set as the best time attack score
      */
     public void setBestTimeAttackScore(int points) {
         this.bestTimeAttackScore = points;
+    }
+
+    /**
+     * A setter for the bestSurvivalScore
+     *
+     * @param points to be set as the best survival score
+     */
+    public void setBestSurvivalScore(int points) {
+        this.bestSurvivalScore = points;
     }
 
     /**
@@ -86,9 +97,14 @@ public class Player {
     }
 
     /**
+     * Getter for best survival score
+     */
+    public Integer getBestSurvivalScore() {
+        return bestSurvivalScore;
+    }
+
+    /**
      * Getter for best multiMode score
-     *
-     * @return
      */
     public Integer getBestMultiScore() {
         return this.bestMultiScore;

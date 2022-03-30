@@ -48,4 +48,10 @@ public class TestPlayerRepository extends StubRepository<Player, Long> implement
         return returnList;
     }
 
+    public List<Player> findByOrderByBestSurvivalScoreDesc() {
+        var returnList = findAll().stream().sorted(Comparator
+                .comparing(Player::getBestSurvivalScore).reversed()).collect(Collectors.toList());
+        return returnList;
+    }
+
 }

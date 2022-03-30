@@ -52,6 +52,8 @@ public class LeaderBoardCtrl implements Initializable {
     @FXML
     private Button timeAttackButton;
     @FXML
+    private Button survivalButton;
+    @FXML
     private Label leaderboardLabel;
 
     /**
@@ -97,7 +99,7 @@ public class LeaderBoardCtrl implements Initializable {
     }
 
     /**
-     * refresh the screen to show the leaderboards
+     * refresh the screen to show the Single Player leaderboards
      */
     public void refreshSingle() {
         var players = leaderboardUtils.getPlayerSingleScore();
@@ -107,7 +109,7 @@ public class LeaderBoardCtrl implements Initializable {
     }
 
     /**
-     * refresh the screen to show the leaderboards
+     * refresh the screen to show the Time Attack leaderboards
      */
     public void refreshTimeAttack() {
         var players = leaderboardUtils.getPlayerTimeAttackScore();
@@ -117,7 +119,17 @@ public class LeaderBoardCtrl implements Initializable {
     }
 
     /**
-     * refresh the screen to show the leaderboards
+     * refresh the screen to show the Survival leaderboards
+     */
+    public void refreshSurvival() {
+        var players = leaderboardUtils.getPlayerSurvivalScore();
+        data = FXCollections.observableList(players);
+        allPlayers.setItems(data);
+        leaderboardLabel.setText("Leaderboard-Survival");
+    }
+
+    /**
+     * refresh the screen to show the Multiplayer leaderboards
      */
     public void refreshMulti() {
         var players = leaderboardUtils.getPlayerMultiScore();
@@ -149,7 +161,7 @@ public class LeaderBoardCtrl implements Initializable {
     }
 
     /**
-     * Show SinglePlayerLeaderBoard
+     * Show TimeAttackLeaderBoard
      */
     public void showTimeAttackLeaderBoard() {
         colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestTimeAttackScore)));
@@ -157,5 +169,13 @@ public class LeaderBoardCtrl implements Initializable {
         allPlayers.setItems(data);
         allPlayers.refresh();
         timeAttackButton.setText("Time Attack");
+    }
+
+    public void showSurvivalLeaderBoard() {
+        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSurvivalScore)));
+        refreshSurvival();
+        allPlayers.setItems(data);
+        allPlayers.refresh();
+        survivalButton.setText("Survival");
     }
 }
