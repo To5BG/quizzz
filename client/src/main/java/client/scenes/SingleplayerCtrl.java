@@ -61,14 +61,8 @@ public class SingleplayerCtrl extends GameCtrl {
     }
 
     /**
-     * Empty method because singleplayer mode does not have an end screen.
-     */
-    @Override
-    public void showEndScreen() {
-    }
-
-    /**
      * Empty method because singleplayer mode does not have a podium screen.
+     *
      * @param sessionId
      */
     @Override

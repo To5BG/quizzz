@@ -17,11 +17,7 @@ package client.scenes;
 
 import client.utils.*;
 import com.google.inject.Inject;
-import commons.Emoji;
-import commons.GameSession;
-import commons.Joker;
-import commons.Player;
-import commons.Question;
+import commons.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -58,12 +54,6 @@ public class MultiplayerCtrl extends GameCtrl {
     @FXML
     private Button backButton;
     @FXML
-    private Button leaveButton;
-    @FXML
-    private Button playAgain;
-    @FXML
-    private Label status;
-    @FXML
     private Label removedPlayers;
     @FXML
     private Label jokerUsage;
@@ -73,9 +63,7 @@ public class MultiplayerCtrl extends GameCtrl {
     private int lastJokerIndex;
     private Timer jokerTimer;
     private StompSession.Subscription channel;
-    private boolean playingAgain;
-    private int waitingSkip = 0;
-    private final static long END_GAME_TIME = 60L;
+
     private List<Joker> usedJokers;
 
     @Inject
@@ -120,10 +108,7 @@ public class MultiplayerCtrl extends GameCtrl {
         colUserName.setPrefWidth(IN_GAME_COLUSERNAME_WIDTH);
         leaderboard.setOpacity(1);
 
-        leaveButton.setOpacity(0);
         backButton.setOpacity(1);
-        playAgain.setOpacity(0);
-        status.setOpacity(0);
 
         emojiUsername.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().username));
         emojiImage.setCellValueFactory(e -> {
@@ -201,24 +186,6 @@ public class MultiplayerCtrl extends GameCtrl {
                             startEvaluation();
                             cancel();
                         }
-                        if (gameSessionUtils.getSession(sessionId).sessionStatus
-                                == GameSession.SessionStatus.PLAY_AGAIN) {
-                            if (gameSessionUtils.getSession(sessionId).players.size() ==
-                                    gameSessionUtils.getSession(sessionId).playersReady.get()) {
-                                //Speed the timer up
-                                waitingSkip = 4;
-                            } else {
-                                //Slow the timer down
-                                waitingSkip = 0;
-                            }
-                            status.setText(gameSessionUtils.getSession(sessionId).playersReady.get() + " / " +
-                                    gameSessionUtils.getSession(sessionId).players.size()
-                                    + " players want to play again");
-                        }
-                        if (gameSessionUtils.getSession(sessionId).sessionStatus
-                                == GameSession.SessionStatus.TRANSFERRING) {
-                            cancel();
-                        }
                     } catch (Exception e) {
                         cancel();
                     }
@@ -279,13 +246,8 @@ public class MultiplayerCtrl extends GameCtrl {
 
     @Override
     public void shutdown() {
-        if (submitButton.isDisabled() &&
-                gameSessionUtils.getSession(sessionId).sessionStatus != GameSession.SessionStatus.PLAY_AGAIN) {
+        if (submitButton.isDisabled()) {
             gameSessionUtils.toggleReady(sessionId, false);
-        }
-        if (gameSessionUtils.getSession(sessionId).sessionStatus == GameSession.SessionStatus.PLAY_AGAIN &&
-                playAgain.getText().equals("Don't play again")) {
-            playAgain();
         }
         channel.unsubscribe();
         super.shutdown();
@@ -309,89 +271,14 @@ public class MultiplayerCtrl extends GameCtrl {
     }
 
     /**
-     * Method that calls the parent class' back method when the endgame back button is pressed and calls reset.
-     */
-    public void leaveGame() {
-        if (playAgain.getText().equals("Don't play again")) playAgain();
-        super.back();
-    }
-
-    /**
      * Reset method that resets multiplayer only attributes.
      */
     @Override
     public void reset() {
-        playAgain.setText("Play again");
-        playAgain.setOpacity(0);
-        leaveButton.setOpacity(0);
-        leaveButton.setDisable(true);
         backButton.setOpacity(1);
         backButton.setDisable(false);
-        status.setText("[Status]");
-        status.setOpacity(0);
-        setPlayingAgain(false);
-        waitingSkip = 0;
         leaderboard.setOpacity(0);
         super.reset();
-    }
-
-    /**
-     * Toggles between want to play again and don't want to play again, modifying playAgain button and stores whether
-     * the player wants to play again.
-     */
-    public void playAgain() {
-        switch (playAgain.getText()) {
-            case "Play again" -> {
-                playAgain.setText("Don't play again");
-                questionCount.setText("Waiting for game to start...");
-                gameSessionUtils.toggleReady(sessionId, true);
-                setPlayingAgain(true);
-            }
-            case "Don't play again" -> {
-                playAgain.setText("Play again");
-                questionCount.setText("End of game! Play again or go back to main.");
-                gameSessionUtils.toggleReady(sessionId, false);
-                setPlayingAgain(false);
-            }
-        }
-    }
-
-    /**
-     * Show leaderboard at the end of the game and reveals the back button as well as the playAgain button. Starts timer
-     * and after 20 seconds a new game starts if enough players want to play again.
-     */
-    public void showEndScreen() {
-        displayLeaderboard();
-        backButton.setOpacity(0);
-        backButton.setDisable(true);
-        leaveButton.setOpacity(1);
-        leaveButton.setDisable(false);
-        playAgain.setOpacity(1);
-        status.setOpacity(1);
-        status.setText("");
-        waitingSkip = 0;
-        questionCount.setText("End of game! Play again or go back to main.");
-
-        TimeUtils roundTimer = new TimeUtils(END_GAME_TIME, TIMER_UPDATE_INTERVAL_MS);
-        roundTimer.setTimeBooster(() -> (double) waitingSkip);
-        roundTimer.setOnSucceeded((event) -> {
-            gameSessionUtils.updateStatus(gameSessionUtils.getSession(sessionId),
-                    GameSession.SessionStatus.TRANSFERRING);
-            Platform.runLater(() -> {
-                if (isPlayingAgain()) {
-                    startGame();
-                } else {
-                    leaveGame();
-                }
-            });
-        });
-
-        timeProgress.progressProperty().bind(roundTimer.progressProperty());
-        this.timerThread = new Thread(roundTimer);
-        this.timerThread.start();
-
-        gameSessionUtils.toggleReady(sessionId, false);
-        refresh();
     }
 
     @Override
@@ -399,63 +286,15 @@ public class MultiplayerCtrl extends GameCtrl {
         mainCtrl.showPodiumScreen(this.sessionId);
 
         TimeUtils timer = new TimeUtils(10L, TIMER_UPDATE_INTERVAL_MS);
-        timer.setTimeBooster(() -> (double) waitingSkip);
         timer.setOnSucceeded((event) -> {
             Platform.runLater(() -> {
-                mainCtrl.showEndGameScreen(sessionId);
+                mainCtrl.showEndGameScreen(sessionId, playerId);
             });
         });
 
         timeProgress.progressProperty().bind(timer.progressProperty());
         this.timerThread = new Thread(timer);
         this.timerThread.start();
-    }
-
-    /**
-     * Checks whether there are enough players in the session after the clients had time to remove the players that
-     * quit.
-     */
-    public void startGame() {
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    if (gameSessionUtils.getPlayers(sessionId).size() >= 2 && isPlayingAgain()) {
-                        GameSession session = gameSessionUtils.toggleReady(sessionId, false);
-                        if (session.playersReady.get() == 0) {
-                            gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
-                        }
-                        reset();
-                        loadQuestion();
-                    } else {
-                        leaveGame();
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Unable to start new game!");
-                        alert.setHeaderText("There are too few people to play again:");
-                        alert.setContentText("Please join a fresh game to play with more people!");
-                        alert.showAndWait();
-                    }
-                });
-            }
-        }, 1000);
-    }
-
-    /**
-     * Getter for playingAgain field.
-     *
-     * @return whether the player wants to play again.
-     */
-    public boolean isPlayingAgain() {
-        return playingAgain;
-    }
-
-    /**
-     * Setter for playingAgain field
-     *
-     * @param playingAgain parameter that shows if a player wants to play again.
-     */
-    public void setPlayingAgain(boolean playingAgain) {
-        this.playingAgain = playingAgain;
     }
 
     /**

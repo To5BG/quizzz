@@ -50,7 +50,8 @@ public class MainCtrl {
 
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
-     *  @param primaryStage store base stage of the application
+     *
+     * @param primaryStage store base stage of the application
      * @param splash       Controller and Scene pair for the splash screen of the application
      * @param multi        Controller and Scene pair for the multiplayer screen of the application
      * @param leaderboard  Controller and Scene pair for the leaderboard screen of the application
@@ -228,13 +229,15 @@ public class MainCtrl {
     }
 
     /**
-     * Sets the current screen to the end game screen
+     * Sets the current screen to the end of game screen
      *
-     * @param sessionId the id of the current game session
+     * @param sessionId The id of the current game session
      */
-    public void showEndGameScreen(Long sessionId) {
-        primaryStage.setTitle("EndGameLeaderboard");
+    public void showEndGameScreen(Long sessionId, long playerId) {
+        primaryStage.setTitle("End of game");
         primaryStage.setScene(endGameScreen);
-        endGameScreenCtrl.showEndGameScreen(sessionId);
+        endGameScreenCtrl.setPlayerId(playerId);
+        endGameScreenCtrl.setSessionId(sessionId);
+        endGameScreenCtrl.showEndScreen();
     }
 }

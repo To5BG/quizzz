@@ -365,12 +365,8 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Abstract method that gets called to show the end game screen for multiplayer sessions.
-     */
-    abstract public void showEndScreen();
-
-    /**
      * Abstract method that gets called to show the podium screen
+     *
      * @param sessionId the id of the current session
      * @throws InterruptedException the exception to be thrown when necessary
      */
@@ -734,6 +730,7 @@ public abstract class GameCtrl implements Initializable {
 
     /**
      * the method to get all players from the current game
+     *
      * @param sessionId the sessionId of the game
      * @return a list of players
      */
