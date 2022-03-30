@@ -5,6 +5,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
+<?import javafx.scene.control.TextField?>
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.scenes.RoomSelectionCtrl">
     <Button layoutX="41.0" layoutY="43.0" mnemonicParsing="false" onAction="#back" text="Back"/>
@@ -19,6 +20,8 @@
             prefWidth="104.0" text="Play"/>
     <Button layoutX="30.0" layoutY="140.0" mnemonicParsing="false" onAction="#quickJoin" prefHeight="35.0"
             prefWidth="104.0" text="Quick Join"/>
+    <TextField fx:id="gameID" layoutX="30.0" layoutY="91.5" prefHeight="38.0" prefWidth="170.0"
+               promptText="Enter a game ID"/>
 
 
 </AnchorPane>

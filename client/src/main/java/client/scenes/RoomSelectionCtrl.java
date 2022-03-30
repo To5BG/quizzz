@@ -11,11 +11,14 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class RoomSelectionCtrl implements Initializable {
 
@@ -29,6 +32,8 @@ public class RoomSelectionCtrl implements Initializable {
     private TableView<GameSession> availableRooms;
     @FXML
     private TableColumn<GameSession, String> roomNumber;
+    @FXML
+    private TextField gameID;
 
     @Inject
     public RoomSelectionCtrl(GameSessionUtils gameSessionUtils, MainCtrl mainCtrl) {
@@ -39,7 +44,9 @@ public class RoomSelectionCtrl implements Initializable {
 
     @Override
     public void initialize(URL loc, ResourceBundle res) {
-        roomNumber.setCellValueFactory(r -> new SimpleStringProperty("Room # " + String.valueOf(r.getValue().id)));
+        roomNumber.setCellValueFactory(r -> new SimpleStringProperty("Room # " + r.getValue().id
+        + " - Session Status: " + r.getValue().sessionStatus
+        + " - Player(s) active: " + r.getValue().players));
     }
 
     /**
@@ -78,8 +85,12 @@ public class RoomSelectionCtrl implements Initializable {
      * @return True iff the refresh should continue
      */
     public boolean refresh() {
-        var roomList = gameSessionUtils.getAvailableSessions();
-        if (roomList == null || roomList.isEmpty()) {
+        List<GameSession> roomList;
+        roomList = gameSessionUtils.getAvailableSessions()
+                .stream()
+                .filter(gs -> gs.sessionType != GameSession.SessionType.SINGLEPLAYER)
+                .collect(Collectors.toList());
+        if (roomList.isEmpty()) {
             availableRooms.setPlaceholder(new Label("No games here, try hosting one instead..."));
             availableRooms.setItems(null);
             return notCancel;
