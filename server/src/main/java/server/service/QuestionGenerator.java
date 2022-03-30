@@ -124,8 +124,8 @@ public class QuestionGenerator {
         return generateTypeQuestion(QUESTION_TYPES.get(rng.nextInt(QUESTION_TYPES.size())), difficultyFactor, ctrl);
     }
 
-    public static Pair<Question, List<Long>>
-    generateSurvivalQuestion(double difficultyFactor, ActivityController ctrl) {
+    public static Pair<Question, List<Long>> generateSurvivalQuestion(double difficultyFactor,
+                                                                      ActivityController ctrl) {
         Random rng = new Random();
         return generateTypeQuestion(SURVIVAL_QN_TYPES.get(rng.nextInt(SURVIVAL_QN_TYPES.size())),
                 difficultyFactor, ctrl);
