@@ -36,3 +36,7 @@
 .table-view .scroll-bar{
     -fx-background-color: transparent;
 }
+.scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}

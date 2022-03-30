@@ -24,14 +24,14 @@
         <Button fx:id="decreaseTimeButton" alignment="CENTER" layoutX="189.0" layoutY="317.0" mnemonicParsing="false" onAction="#increaseTime" prefHeight="34.0" prefWidth="114.0" text="Increase Time" textFill="WHITE" />
         <Button fx:id="doublePointsButton" alignment="CENTER" layoutX="340.0" layoutY="317.0" mnemonicParsing="false" onAction="#doublePoints" prefHeight="34.0" prefWidth="108.0" text="Double Points" textFill="WHITE" />
         <Accordion layoutX="498.0" layoutY="79.0" />
-        <TitledPane animated="true" layoutX="9.0" layoutY="82.0" prefHeight="185.0" prefWidth="144.0" styleClass="table-view" stylesheets="@../../CSS/GameScreen.css" text="LeaderBoard">
+        <TitledPane animated="true" layoutX="9.0" layoutY="82.0" prefHeight="185.0" prefWidth="144.0" styleClass="TitledPane" stylesheets="@../../CSS/GameScreen.css" text="LeaderBoard" textFill="WHITE">
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                     <children>
-                        <TableView fx:id="allPlayers" prefHeight="156.0" prefWidth="142.0" styleClass="stackpane" stylesheets="@../../CSS/GameScreen.css">
+                        <TableView fx:id="allPlayers" prefHeight="156.0" prefWidth="142.0" stylesheets="@../../CSS/GameScreen.css">
                             <columns>
-                                <TableColumn fx:id="colName" prefWidth="73.0" text="Player" />
-                                <TableColumn fx:id="colPoint" prefWidth="77.0" text="Point" />
+                                <TableColumn id="column-header-background" fx:id="colName" prefWidth="73.0" styleClass="column" text="Player" />
+                                <TableColumn fx:id="colPoint" prefWidth="77.0" styleClass="column" text="Point" />
                             </columns>
                         </TableView>
                     </children>

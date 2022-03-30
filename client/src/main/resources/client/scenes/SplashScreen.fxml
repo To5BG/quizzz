@@ -12,7 +12,7 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0" prefWidth="720.0" styleClass="background" stylesheets="@../../CSS/Splash.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.SplashCtrl">
     <TextField fx:id="usernameField" alignment="CENTER" layoutX="109.0" layoutY="269.0" prefHeight="38.0" prefWidth="170.0" promptText="Enter a username" styleClass="username" stylesheets="@../../CSS/Splash.css" />
     <TextField fx:id="connectionField" alignment="CENTER" layoutX="109.0" layoutY="336.0" prefHeight="38.0" prefWidth="170.0" promptText="http://localhost:8080/" styleClass="connect" stylesheets="@../../CSS/Splash.css" />
-    <Label layoutX="50.0" layoutY="80.0" prefHeight="236.0" prefWidth="516.0" styleClass="title" text="QUIZZZZ" textFill="#33b5f2">
+    <Label layoutX="62.0" layoutY="152.0" prefHeight="81.0" prefWidth="516.0" styleClass="title" text="QUIZZZZ" textFill="#33b5f2">
         <font>
             <Font name="Earth Orbiter Punch" size="79.0" />
         </font>
