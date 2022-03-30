@@ -235,5 +235,6 @@ public class MainCtrl {
     public void showEndGameScreen(Long sessionId) {
         primaryStage.setTitle("EndGameLeaderboard");
         primaryStage.setScene(endGameScreen);
+        endGameScreenCtrl.showEndGameScreen(sessionId);
     }
 }

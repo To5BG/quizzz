@@ -360,7 +360,6 @@ public class MultiplayerCtrl extends GameCtrl {
      * Show leaderboard at the end of the game and reveals the back button as well as the playAgain button. Starts timer
      * and after 20 seconds a new game starts if enough players want to play again.
      */
-    @Override
     public void showEndScreen() {
         displayLeaderboard();
         backButton.setOpacity(0);
