@@ -53,6 +53,20 @@ public class LeaderboardController {
 
     /**
      * Deliver all Player data in the DB
+     * sorted by best time attack mode score, excluding all players with 0 score
+     *
+     * @return a list of all data about players for time attack mode
+     */
+    @GetMapping(path = {"/timeAttack"})
+    public ResponseEntity<List<Player>> getPlayerTimeAttackScores() {
+        var list = repo.findByOrderByBestTimeAttackScoreDesc().stream()
+                .filter(player -> player.getBestTimeAttackScore() != 0)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(list);
+    }
+
+    /**
+     * Deliver all Player data in the DB
      * sorted by best multi mode score, filtered all players with 0 score
      *
      * @return a list of all data about players in multi mode

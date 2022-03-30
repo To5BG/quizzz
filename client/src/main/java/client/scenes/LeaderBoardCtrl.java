@@ -50,6 +50,8 @@ public class LeaderBoardCtrl implements Initializable {
     @FXML
     private Button multiLeaderboard;
     @FXML
+    private Button timeAttackButton;
+    @FXML
     private Label leaderboardLabel;
 
     /**
@@ -107,6 +109,16 @@ public class LeaderBoardCtrl implements Initializable {
     /**
      * refresh the screen to show the leaderboards
      */
+    public void refreshTimeAttack() {
+        var players = leaderboardUtils.getPlayerTimeAttackScore();
+        data = FXCollections.observableList(players);
+        allPlayers.setItems(data);
+        leaderboardLabel.setText("Leaderboard-TimeAttack");
+    }
+
+    /**
+     * refresh the screen to show the leaderboards
+     */
     public void refreshMulti() {
         var players = leaderboardUtils.getPlayerMultiScore();
         data = FXCollections.observableList(players);
@@ -134,5 +146,16 @@ public class LeaderBoardCtrl implements Initializable {
         allPlayers.setItems(data);
         allPlayers.refresh();
         multiLeaderboard.setText("Multi");
+    }
+
+    /**
+     * Show SinglePlayerLeaderBoard
+     */
+    public void showTimeAttackLeaderBoard() {
+        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestTimeAttackScore)));
+        refreshTimeAttack();
+        allPlayers.setItems(data);
+        allPlayers.refresh();
+        timeAttackButton.setText("Time Attack");
     }
 }

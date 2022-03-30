@@ -18,13 +18,13 @@ import java.util.ResourceBundle;
 
 public class SingleplayerCtrl extends GameCtrl {
 
-    private ObservableList<Player> data;
+    protected ObservableList<Player> data;
     @FXML
-    private TableView<Player> allPlayers;
+    protected TableView<Player> allPlayers;
     @FXML
-    private TableColumn<Player, String> colName;
+    protected TableColumn<Player, String> colName;
     @FXML
-    private TableColumn<Player, String> colPoint;
+    protected TableColumn<Player, String> colPoint;
 
     @Inject
     public SingleplayerCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,

@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
-
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.scenes.LeaderBoardCtrl">
     <children>
@@ -23,15 +19,15 @@
         <Label fx:id="leaderboardLabel" layoutX="89.0" layoutY="14.0" prefHeight="71.0" prefWidth="421.0"
                text="LeaderBoard">
             <font>
-                <Font size="49.0"/>
+                <Font size="36.0"/>
             </font>
         </Label>
         <Button layoutX="526.0" layoutY="361.0" mnemonicParsing="false" onAction="#back" text="BACK"/>
-        <Button fx:id="singleLeaderboard" layoutX="524.0" layoutY="125.0" mnemonicParsing="false"
-                onAction="#showSingleLeaderBoard" text="Single"/>
-        <Button fx:id="multiLeaderboard" layoutX="524.0" layoutY="175.0" mnemonicParsing="false"
-                onAction="#showMultiLeaderboard" text="Multi-"/>
-        <Button fx:id="elseLeaderboard" layoutX="524.0" layoutY="224.0" mnemonicParsing="false" prefHeight="26.0"
-                prefWidth="51.0" text="Else"/>
+        <Button fx:id="singleLeaderboard" layoutX="505.0" layoutY="124.0" mnemonicParsing="false"
+                onAction="#showSingleLeaderBoard" prefHeight="25.0" prefWidth="92.0" text="Singleplayer"/>
+        <Button fx:id="multiLeaderboard" layoutX="505.0" layoutY="175.0" mnemonicParsing="false"
+                onAction="#showMultiLeaderboard" prefHeight="25.0" prefWidth="92.0" text="Multiplayer"/>
+        <Button fx:id="timeAttackButton" layoutX="504.0" layoutY="224.0" mnemonicParsing="false"
+                onAction="#showTimeAttackLeaderBoard" prefHeight="26.0" prefWidth="92.0" text="Time Attack"/>
     </children>
 </AnchorPane>

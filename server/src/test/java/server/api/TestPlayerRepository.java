@@ -36,4 +36,16 @@ public class TestPlayerRepository extends StubRepository<Player, Long> implement
         return returnList;
     }
 
+    /**
+     * the sorting in the TestPlayerRepository for Best time attack Score
+     *
+     * @return a list of players sorted by the best time attack Score
+     */
+    @Override
+    public List<Player> findByOrderByBestTimeAttackScoreDesc() {
+        var returnList = findAll().stream().sorted(Comparator
+                .comparing(Player::getBestTimeAttackScore).reversed()).collect(Collectors.toList());
+        return returnList;
+    }
+
 }

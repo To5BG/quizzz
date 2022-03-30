@@ -73,6 +73,13 @@ public class SessionController {
             repo.save(p);
             System.out.println("removing session");
             removeSession(session.id);
+        }
+        if (session.sessionType == GameSession.SessionType.TIME_ATTACK) {
+            Player p = session.getPlayers().get(0);
+            p.bestTimeAttackScore = Math.max(p.bestTimeAttackScore, p.currentPoints);
+            repo.save(p);
+            System.out.println("removing session");
+            removeSession(session.id);
         } else {
             for (Player p : session.players) {
                 p.bestMultiScore = Math.max(p.bestMultiScore, p.currentPoints);
@@ -104,7 +111,7 @@ public class SessionController {
                 p.currentPoints = 0;
             }
             updateSession(session);
-        } else if (session.questionCounter == GameSession.GAME_ROUNDS) {
+        } else if (session.questionCounter == GameSession.gameRounds) {
             endSession(session);
         } else if (session.questionCounter == 0) {
             session.playersReady.set(0);
@@ -301,6 +308,23 @@ public class SessionController {
     }
 
     /**
+     * Updates type of game session
+     *
+     * @param sessionId Id of session to update
+     * @param type      new type of game session
+     * @return The updated game session
+     */
+    @PutMapping("/{id}/type")
+    public ResponseEntity<GameSession> updateStatus(@PathVariable("id") long sessionId,
+                                                    @RequestBody GameSession.SessionType type) {
+        if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
+        GameSession session = sm.getById(sessionId);
+        session.setSessionType(type);
+        updateSession(session);
+        return ResponseEntity.ok(session);
+    }
+
+    /**
      * Updates number of timeJokers of game session
      *
      * @param sessionId Id of session to update
@@ -444,5 +468,21 @@ public class SessionController {
 
         session.addUsedJoker(joker);
         return ResponseEntity.ok(joker);
+    }
+
+    /**
+     * Sets the game rounds of a session
+     *
+     * @param sessionId Id of the session
+     * @param rounds    Number of rounds to be set
+     * @return The updated session
+     */
+    @PutMapping("{id}/rounds")
+    public ResponseEntity<GameSession> setGameRounds(@PathVariable("id") long sessionId, @RequestBody int rounds) {
+        if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
+        GameSession session = sm.getById(sessionId);
+        session.setGameRounds(rounds);
+        updateSession(session);
+        return ResponseEntity.ok(session);
     }
 }

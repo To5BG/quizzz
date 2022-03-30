@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 public class GameSession {
-    public final static int GAME_ROUNDS = 2;
+    public static int gameRounds = 2;
 
     public long id;
 
@@ -34,7 +34,8 @@ public class GameSession {
         SELECTING,
         WAITING_AREA,
         MULTIPLAYER,
-        SINGLEPLAYER
+        SINGLEPLAYER,
+        TIME_ATTACK
     }
 
     public SessionStatus sessionStatus;
@@ -149,6 +150,10 @@ public class GameSession {
      */
     public void setTimeJokers(int timeJokers) {
         this.timeJokers = timeJokers;
+    }
+
+    public void setGameRounds(int rounds) {
+        gameRounds = rounds;
     }
 
     /**

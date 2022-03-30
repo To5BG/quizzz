@@ -39,6 +39,8 @@ public class MainCtrl {
     private Scene roomSelectionScreen;
     private SingleplayerCtrl singlePlayerCtrl;
     private Scene singlePlayerScreen;
+    private TimeAttackCtrl timeAttackCtrl;
+    private Scene timeAttackScreen;
     private WaitingAreaCtrl waitingAreaCtrl;
     private Scene waitingAreaScreen;
     private GamemodeCtrl gamemodeCtrl;
@@ -60,6 +62,7 @@ public class MainCtrl {
                            Pair<WaitingAreaCtrl, Parent> wait,
                            Pair<GamemodeCtrl, Parent> mode,
                            Pair<SingleplayerCtrl, Parent> single,
+                           Pair<TimeAttackCtrl, Parent> timeAttack,
                            Pair<LeaderBoardCtrl, Parent> leaderboard) {
         this.primaryStage = primaryStage;
 
@@ -80,6 +83,9 @@ public class MainCtrl {
 
         this.singlePlayerCtrl = single.getKey();
         this.singlePlayerScreen = new Scene(single.getValue());
+
+        this.timeAttackCtrl = timeAttack.getKey();
+        this.timeAttackScreen = new Scene(timeAttack.getValue());
 
         this.leaderBoardCtrl = leaderboard.getKey();
         this.leaderBoardScreen = new Scene(leaderboard.getValue());
@@ -198,6 +204,19 @@ public class MainCtrl {
         singlePlayerCtrl.setPlayerId(playerId);
         singlePlayerCtrl.loadQuestion();
         singlePlayerCtrl.refresh();
+    }
+
+    /**
+     * Sets the current screen to the time attack screen.
+     */
+    public void showTimeAttack(long sessionId, long playerId) {
+        primaryStage.setTitle("Time Attack");
+        primaryStage.setScene(timeAttackScreen);
+        timeAttackScreen.setOnKeyPressed(e -> timeAttackCtrl.keyPressed(e));
+        timeAttackCtrl.setSessionId(sessionId);
+        timeAttackCtrl.setPlayerId(playerId);
+        timeAttackCtrl.loadQuestion();
+        timeAttackCtrl.refresh();
     }
 
     /**

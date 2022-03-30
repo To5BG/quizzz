@@ -16,6 +16,7 @@ public class Player {
     public long id;
     public int currentPoints;
     public int bestSingleScore;
+    public int bestTimeAttackScore;
     public int bestMultiScore;
 
     public String username;
@@ -29,6 +30,7 @@ public class Player {
     public Player(String username, int point) {
         this.username = username;
         this.bestSingleScore = point;
+        this.bestTimeAttackScore = point;
         this.bestMultiScore = point;
         this.currentPoints = 0;
     }
@@ -52,6 +54,15 @@ public class Player {
     }
 
     /**
+     * A setter for the bestTimeAttackScore
+     *
+     * @param points The points to be set
+     */
+    public void setBestTimeAttackScore(int points) {
+        this.bestTimeAttackScore = points;
+    }
+
+    /**
      * A setter for the bestMultiScore
      *
      * @param points the point which is the best multiMode score
@@ -65,6 +76,13 @@ public class Player {
      */
     public Integer getBestSingleScore() {
         return this.bestSingleScore;
+    }
+
+    /**
+     * Getter for best time attack score
+     */
+    public Integer getBestTimeAttackScore() {
+        return this.bestTimeAttackScore;
     }
 
     /**

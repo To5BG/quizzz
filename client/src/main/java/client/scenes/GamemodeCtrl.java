@@ -3,6 +3,7 @@ package client.scenes;
 import client.utils.GameSessionUtils;
 import client.utils.LeaderboardUtils;
 import client.utils.QuestionUtils;
+import commons.GameSession;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
@@ -90,7 +91,9 @@ public class GamemodeCtrl {
      * Starts the time attack singleplayer game.
      */
     public void showTimeAttack() {
-        mainCtrl.showDefaultSinglePlayer(this.sessionId, this.playerId);
+        gameSessionUtils.setGameRounds(sessionId, Integer.MAX_VALUE);
+        gameSessionUtils.updateType(gameSessionUtils.getSession(sessionId), GameSession.SessionType.TIME_ATTACK);
+        mainCtrl.showTimeAttack(this.sessionId, this.playerId);
     }
 
     /**

@@ -7,28 +7,40 @@ public class TimeUtils extends Task<Void> {
 
     private final long maxTime;
     private final long updateInterval;
+    private final long initialTime;
     private Producer<Double> getTimeBoost;
+    private double timeElapsed;
 
     public TimeUtils(long duration, long updateInterval) {
         super();
         this.maxTime = duration;
         this.updateInterval = updateInterval;
         this.getTimeBoost = () -> 0.0;
+        this.timeElapsed = 0;
+        this.initialTime = duration;
+    }
+
+    public TimeUtils(long duration, long updateInterval, long initialTime) {
+        super();
+        this.maxTime = duration;
+        this.updateInterval = updateInterval;
+        this.getTimeBoost = () -> 0.0;
+        this.timeElapsed = 0;
+        this.initialTime = initialTime;
     }
 
     @Override
     protected Void call() throws Exception {
         double refreshCounter = 0;
         long gameRoundMs = maxTime * 1000;
-        double timeElapsed = 0;
-        while (timeElapsed < gameRoundMs) {
+        while (this.timeElapsed < gameRoundMs) {
             //the speed on which the timer updates, with default speed 1
             double booster = getTimeBoost.call() + 1;
-            updateProgress(gameRoundMs - timeElapsed, gameRoundMs);
+            updateProgress(gameRoundMs - this.timeElapsed, initialTime * 1000);
             refreshCounter += booster;
             try {
                 Thread.sleep(updateInterval);
-                timeElapsed = refreshCounter * updateInterval;
+                this.timeElapsed = refreshCounter * updateInterval;
             } catch (InterruptedException e) {
                 updateProgress(0, 1);
                 throw e;
@@ -40,5 +52,9 @@ public class TimeUtils extends Task<Void> {
 
     public void setTimeBooster(Producer<Double> booster) {
         this.getTimeBoost = booster;
+    }
+
+    public long getElapsedTime() {
+        return (long) this.timeElapsed/1000;
     }
 }
