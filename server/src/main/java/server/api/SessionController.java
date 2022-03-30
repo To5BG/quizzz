@@ -90,6 +90,10 @@ public class SessionController {
         }
     }
 
+    /**
+     * Update joker states of all players in the given session and award double points if applicable
+     * @param session The session to operate on
+     */
     private void updatePlayerJokers(GameSession session) {
         Random rng = new Random();
         for (Player p : session.players) {
@@ -113,6 +117,10 @@ public class SessionController {
         }
     }
 
+    /**
+     * Set all jokers of all player in the session to AVAILABLE
+     * @param session The session to operate on
+     */
     private void grantAllJokers(GameSession session) {
         for (Player p : session.players) {
             for (var joker : p.jokerStates.entrySet()) {
@@ -480,6 +488,12 @@ public class SessionController {
         return ResponseEntity.ok(joker);
     }
 
+    /**
+     * Get the state of jokers stored for a given player in a given session
+     * @param sessionId The ID of the session
+     * @param playerId The ID of the player
+     * @return The state of each joker the player has
+     */
     @GetMapping("/{sessionId}/{playerId}/jokers")
     public ResponseEntity<Map<String, Joker.JokerStatus>> getJokerStates(@PathVariable("sessionId") long sessionId,
                                                                          @PathVariable("playerId") long playerId) {

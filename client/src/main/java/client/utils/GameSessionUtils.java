@@ -269,7 +269,12 @@ public class GameSessionUtils {
                 .post(Entity.entity(joker, APPLICATION_JSON), Joker.class);
     }
 
-
+    /**
+     * Get the current joker state from the server for a given player in the given session
+     * @param sessionId The ID of the session
+     * @param playerId The ID of the player
+     * @return The state of each joker the player has
+     */
     public Map<String, Joker.JokerStatus> getJokerStates(long sessionId, long playerId) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(serverConnection).path("api/sessions/" + sessionId + "/" + playerId + "/jokers")

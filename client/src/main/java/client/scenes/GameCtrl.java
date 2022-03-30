@@ -721,6 +721,9 @@ public abstract class GameCtrl implements Initializable {
         webSocketsUtils.sendEmoji(sessionId, playerId, type);
     }
 
+    /**
+     * Fetch joker state from the server and update local state accordingly
+     */
     public void fetchJokerStates() {
         // TODO: maybe display animation once joker is refilled.
         Map<String, Joker.JokerStatus> states = gameSessionUtils.getJokerStates(sessionId, playerId);
