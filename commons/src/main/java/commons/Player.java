@@ -29,6 +29,9 @@ public class Player {
     @Transient
     public Map<String, Joker.JokerStatus> jokerStates;
 
+    @Transient
+    public Evaluation previousEval;
+
     @SuppressWarnings("unused")
     public Player() {
         this.currentPoints = 0;

@@ -94,6 +94,9 @@ public class SessionController {
         Random rng = new Random();
         for (Player p : session.players) {
             System.out.println(p);
+            if (p.jokerStates.get("DoublePointsJoker") == Joker.JokerStatus.USED_HOT) {
+                p.currentPoints += p.previousEval.points;
+            }
             for (var joker : p.jokerStates.entrySet()) {
                 int threshold = 0;
                 switch (joker.getValue()) {
