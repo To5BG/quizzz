@@ -8,7 +8,6 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 import org.glassfish.jersey.client.ClientConfig;
 
-import java.awt.image.BufferedImage;
 import java.util.List;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -68,12 +67,12 @@ public class QuestionUtils {
      * @param path The image path.
      * @return The buffferedImage.
      */
-    public BufferedImage fetchImage(String path) {
+    public byte[] fetchImage(String path) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(serverConnection).path("api/questions/image/" + path)
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<BufferedImage>() {
+                .get(new GenericType<byte[]>() {
                 });
     }
 }

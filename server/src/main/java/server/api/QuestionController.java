@@ -6,7 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -135,20 +138,36 @@ public class QuestionController {
     }
 
     /**
-     * Fetches the image corresponding to the provided path.
+     * Fetches the images for the corresponding path.
      *
-     * @param path The image path.
-     * @return The bufferedImage.
+     * @param req The path of the image.
+     * @return The BufferedImage.
      */
-    @GetMapping(path = "/image/{path}")
-    public BufferedImage fetchImage(@PathVariable("path") String path) {
+    @RequestMapping(path = "/image/**", method = RequestMethod.GET)
+    public byte[] fetchImage(HttpServletRequest req) throws IOException {
         BufferedImage image;
-        try {
-            image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("assets/" + path)));
-            return image;
-        } catch (Exception e) {
-            return null;
-        }
+        image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/assets/1.jpg")));
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(image, "jpg", baos);
+        return baos.toByteArray();
 
+        //        try {
+        //            String url = "/assets/" + req.getRequestURL().toString().split("/image/")[1];
+        //            image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(url)));
+        //            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        //            switch (url.split(".")[1]) {
+        //                case "jpg" -> {
+        //                    ImageIO.write(image, "jpg", baos);
+        //                    return baos.toByteArray();
+        //                }
+        //                case "png" -> {
+        //                    ImageIO.write(image, "png", baos);
+        //                    return baos.toByteArray();
+        //                }
+        //            }
+        //        } catch (Exception e) {
+        //            return null;
+        //        }
+        //        return null;
     }
 }
