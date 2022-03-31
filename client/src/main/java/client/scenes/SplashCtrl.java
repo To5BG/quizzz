@@ -250,7 +250,10 @@ public class SplashCtrl {
      */
     public void showWebView() {
         if (!establishConnection()) return;
-        mainCtrl.showWebView();
+        String url = connectionField.getText().strip();
+        if (url.isEmpty()) url = "http://localhost:8080/";
+        if (!url.endsWith("/")) url = url.concat("/");
+        mainCtrl.showWebView(url);
     }
 
     /**

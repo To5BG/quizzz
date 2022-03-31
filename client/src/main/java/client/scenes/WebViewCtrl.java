@@ -46,7 +46,6 @@ public class WebViewCtrl implements Initializable {
         });
 
         engine = webView.getEngine();
-        page = "http://localhost:8080/";
         loadPage();
     }
 
@@ -54,7 +53,7 @@ public class WebViewCtrl implements Initializable {
      * Loads the edit activities page.
      */
     public void loadPage() {
-        engine.load(page);
+        engine.load(this.page);
     }
 
     /**
@@ -62,5 +61,14 @@ public class WebViewCtrl implements Initializable {
      */
     public void back() {
         mainCtrl.showSplash();
+    }
+
+    /**
+     * Setter for the page url.
+     *
+     * @param url The url to be set.
+     */
+    public void setPage(String url) {
+        this.page = url;
     }
 }

@@ -200,9 +200,10 @@ public class MainCtrl {
     /**
      * Sets the current screen to the WebView screen.
      */
-    public void showWebView() {
+    public void showWebView(String url) {
         primaryStage.setTitle("Edit activities");
         primaryStage.setScene(webViewScreen);
+        webViewCtrl.setPage(url);
         webViewCtrl.loadPage();
     }
 
