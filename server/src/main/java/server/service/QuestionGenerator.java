@@ -118,7 +118,7 @@ public class QuestionGenerator {
      * Generate a question from the 4 basic types
      *
      * @param difficultyFactor difficulty factor of the current stage of the game
-     * @param ctrl activity controller
+     * @param ctrl             activity controller
      * @return The question and the list of expected answers
      */
     public static Pair<Question, List<Long>> generateQuestion(double difficultyFactor, ActivityController ctrl) {
@@ -130,7 +130,7 @@ public class QuestionGenerator {
      * Generate a question from the 3 multiple choice based types
      *
      * @param difficultyFactor difficulty factor of the current stage of the game
-     * @param ctrl activity controller
+     * @param ctrl             activity controller
      * @return The question and the list of expected answers
      */
     public static Pair<Question, List<Long>> generateSurvivalQuestion(double difficultyFactor,

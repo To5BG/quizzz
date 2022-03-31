@@ -1,6 +1,9 @@
 package client.scenes;
 
-import client.utils.*;
+import client.utils.GameSessionUtils;
+import client.utils.LeaderboardUtils;
+import client.utils.QuestionUtils;
+import client.utils.WebSocketsUtils;
 import commons.Answer;
 import commons.Question;
 import jakarta.ws.rs.BadRequestException;

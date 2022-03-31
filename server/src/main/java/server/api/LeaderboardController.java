@@ -1,14 +1,13 @@
 package server.api;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import commons.Player;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import server.database.PlayerRepository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static server.Config.isNullOrEmpty;
 

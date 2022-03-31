@@ -15,16 +15,16 @@
  */
 package server.api;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.http.HttpStatus.OK;
-
-import java.util.Random;
-
 import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.Random;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.HttpStatus.OK;
 
 public class SessionControllerTest {
 
