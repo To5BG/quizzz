@@ -176,6 +176,7 @@ public class EndGameScreenCtrl implements Initializable {
      * the player wants to play again.
      */
     public void playAgain() {
+        System.out.println("working");
         switch (playAgain.getText()) {
             case "Play again" -> {
                 System.out.println("10086");
