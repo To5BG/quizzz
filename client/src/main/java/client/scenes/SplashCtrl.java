@@ -246,6 +246,14 @@ public class SplashCtrl {
     }
 
     /**
+     * Show the edit activities page
+     */
+    public void showWebView() {
+        if (!establishConnection()) return;
+        mainCtrl.showWebView();
+    }
+
+    /**
      * Autofill the usernameField with the saved username from the 'username.txt' file, if it exists.g
      */
     public void retrieveSavedName() {

@@ -43,6 +43,8 @@ public class MainCtrl {
     private Scene waitingAreaScreen;
     private LeaderBoardCtrl leaderBoardCtrl;
     private Scene leaderBoardScreen;
+    private WebViewCtrl webViewCtrl;
+    private Scene webViewScreen;
 
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
@@ -57,7 +59,8 @@ public class MainCtrl {
                            Pair<RoomSelectionCtrl, Parent> rooms,
                            Pair<WaitingAreaCtrl, Parent> wait,
                            Pair<SingleplayerCtrl, Parent> single,
-                           Pair<LeaderBoardCtrl, Parent> leaderboard) {
+                           Pair<LeaderBoardCtrl, Parent> leaderboard,
+                           Pair<WebViewCtrl, Parent> webView) {
         this.primaryStage = primaryStage;
 
         this.splashCtrl = splash.getKey();
@@ -77,6 +80,9 @@ public class MainCtrl {
 
         this.leaderBoardCtrl = leaderboard.getKey();
         this.leaderBoardScreen = new Scene(leaderboard.getValue());
+
+        this.webViewCtrl = webView.getKey();
+        this.webViewScreen = new Scene(webView.getValue());
 
         confirmClose();
         showSplash();
@@ -189,6 +195,15 @@ public class MainCtrl {
         leaderBoardCtrl.refreshSingle();
         leaderBoardScreen.setOnKeyPressed(e -> leaderBoardCtrl.keyPressed(e));
 
+    }
+
+    /**
+     * Sets the current screen to the WebView screen.
+     */
+    public void showWebView() {
+        primaryStage.setTitle("Edit activities");
+        primaryStage.setScene(webViewScreen);
+        webViewCtrl.loadPage();
     }
 
     /**
