@@ -1,12 +1,8 @@
 package client.scenes;
 
 import client.utils.GameSessionUtils;
-import client.utils.LeaderboardUtils;
-import client.utils.QuestionUtils;
 import commons.GameSession;
 import commons.Player;
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 
 import javax.inject.Inject;
@@ -14,30 +10,13 @@ import javax.inject.Inject;
 public class GamemodeCtrl {
 
     private final GameSessionUtils gameSessionUtils;
-    private final LeaderboardUtils leaderboardUtils;
-    private final QuestionUtils questionUtils;
     private final MainCtrl mainCtrl;
 
     private Player player;
 
-    @FXML
-    private Button defaultButton;
-
-    @FXML
-    private Button survivalButton;
-
-    @FXML
-    private Button timeAttackButton;
-
-    @FXML
-    private Button backButton;
-
     @Inject
-    public GamemodeCtrl(GameSessionUtils gameSessionUtils, LeaderboardUtils leaderboardUtils,
-                        QuestionUtils questionUtils, MainCtrl mainCtrl) {
+    public GamemodeCtrl(GameSessionUtils gameSessionUtils, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
-        this.leaderboardUtils = leaderboardUtils;
-        this.questionUtils = questionUtils;
         this.mainCtrl = mainCtrl;
     }
 
