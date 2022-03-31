@@ -106,4 +106,10 @@ public class SingleplayerCtrl extends GameCtrl {
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
     }
+
+    @Override
+    protected String getJokerDisplayName(String jokerName) {
+        if (jokerName.equals("DecreaseTimeJoker")) return "Increase time";
+        return super.getJokerDisplayName(jokerName);
+    }
 }

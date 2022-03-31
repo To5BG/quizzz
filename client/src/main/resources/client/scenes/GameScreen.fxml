@@ -36,6 +36,7 @@
                 onAction="#increaseTime" prefHeight="26.0" prefWidth="103.0" text="Increase Time"/>
         <Button fx:id="doublePointsButton" layoutX="340.0" layoutY="323.0" mnemonicParsing="false"
                 onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points"/>
+        <Label fx:id="jokerRefreshLabel" layoutX="29.0" layoutY="355.0"/>
         <Accordion layoutX="498.0" layoutY="79.0"/>
         <TitledPane animated="true" layoutX="449.0" layoutY="67.0" prefHeight="150.0" prefWidth="144.0"
                     text="LeaderBoard">
