@@ -98,7 +98,10 @@ public class SurvivalCtrl extends SingleplayerCtrl {
 
         this.evaluation = questionUtils.submitAnswer(sessionId, playerId, ans);
 
-        if (gamelives == 1 && evaluation.points == 0) {
+        if (evaluation.points == 0) {
+            gamelives--;
+        }
+        if (gamelives == 0) {
             gameSessionUtils.setQuestionCounter(sessionId, Integer.MAX_VALUE);
         }
         gameSessionUtils.toggleReady(sessionId, true);
@@ -136,9 +139,6 @@ public class SurvivalCtrl extends SingleplayerCtrl {
      * Updates the point counter in client side, and then updates database entry
      */
     public void updatePoints() {
-        if (evaluation.points == 0) {
-            gamelives--;
-        }
         points += evaluation.points;
         renderStreak();
     }
