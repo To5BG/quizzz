@@ -120,10 +120,16 @@ public class GameSession {
         removedPlayers.add(player);
     }
 
+    /**
+     * Setter for the currentQuestion
+     */
     public void setCurrentQuestion(Question question) {
         this.currentQuestion = question;
     }
 
+    /**
+     * Setter for the SessionStatus
+     */
     public void setSessionStatus(SessionStatus sessionStatus) {
         this.sessionStatus = sessionStatus;
     }
@@ -153,6 +159,9 @@ public class GameSession {
         this.timeJokers = timeJokers;
     }
 
+    /**
+     * Setter for the gameRounds
+     */
     public void setGameRounds(int rounds) {
         gameRounds = rounds;
     }
