@@ -20,6 +20,11 @@ Everyone was present in-person.
     - Discussion on CSS aspects for the game.
 * Discuss task distribution for week 8 sprint.
 
+# Tips/Tops for this week
+* Rithik/Faizel : Code contribution has improved compared to past weeks, but work is still to be done. Expected to contribute to majority of issues next week.
+* Alperen/Beni : Satisfactory contributions, providing majority of contributions so far. Expected to take up lighter issues in order to even out the task distribution during the next week.
+* Yongcheng/Razvan : Satisfactory contributions, and pace of work.
+
 # Action points for next week (Scrum board)
 * Start work on week 8 milestone.
 * Update issue descriptions along the way and identify possible bugs in current implementation.
