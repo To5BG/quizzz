@@ -5,7 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("api/questions")
@@ -129,5 +132,23 @@ public class QuestionController {
 
         GameSession s = session.getBody();
         return ResponseEntity.ok(s.expectedAnswers);
+    }
+
+    /**
+     * Fetches the image corresponding to the provided path.
+     *
+     * @param path The image path.
+     * @return The bufferedImage.
+     */
+    @GetMapping(path = "/image/{path}")
+    public BufferedImage fetchImage(@PathVariable("path") String path) {
+        BufferedImage image;
+        try {
+            image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("assets/" + path)));
+            return image;
+        } catch (Exception e) {
+            return null;
+        }
+
     }
 }

@@ -146,7 +146,7 @@ public abstract class GameCtrl implements Initializable {
         }
 
         try {
-            Image image = new Image("assets/" + q.imagePath);
+            Image image = new ImageUtils(questionUtils.fetchImage(q.imagePath)).call();
             imagePanel.setImage(image);
         } catch (Exception ignore) {
         }
@@ -215,10 +215,10 @@ public abstract class GameCtrl implements Initializable {
         Question q = this.currentQuestion;
         if (q.type != Question.QuestionType.COMPARISON && q.type != Question.QuestionType.EQUIVALENCE) return;
         try {
-            Image defaultImage = new Image("assets/" + q.imagePath);
+            Image defaultImage = new ImageUtils(questionUtils.fetchImage(q.imagePath)).call();
             for (int i = 0; i < multiChoiceAnswers.size(); i++) {
                 RadioButton rb = multiChoiceAnswers.get(i);
-                Image image = new Image("assets/" + q.activityPath.get(i));
+                Image image = new ImageUtils(questionUtils.fetchImage(q.activityPath.get(i))).call();
 
                 rb.setOnMouseEntered(e -> imagePanel.setImage(image));
                 if (q.type == Question.QuestionType.EQUIVALENCE) {
