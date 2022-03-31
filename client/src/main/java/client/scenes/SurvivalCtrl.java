@@ -95,6 +95,9 @@ public class SurvivalCtrl extends SingleplayerCtrl {
 
         this.evaluation = questionUtils.submitAnswer(sessionId, playerId, ans);
 
+        if (gamelives == 1 && evaluation.points == 0) {
+            gameSessionUtils.setQuestionCounter(sessionId, Integer.MAX_VALUE);
+        }
         gameSessionUtils.toggleReady(sessionId, true);
         startEvaluation();
     }
