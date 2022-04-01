@@ -1,6 +1,6 @@
 /*------------------------- EVENT LISTENERS -------------------------*/
 
-let basePath = "http://localhost:8080/api/activities";
+let basePath = "/api/activities";
 
 addEventListener("load", _ => {
     for (let input of document.querySelectorAll("#inputCont input, #inputCont textarea")) {
