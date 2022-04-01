@@ -3,6 +3,8 @@ package client.scenes;
 import client.utils.*;
 import commons.*;
 import jakarta.ws.rs.BadRequestException;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.Event;
@@ -14,6 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 
 import java.util.*;
 
@@ -72,6 +75,9 @@ public abstract class GameCtrl implements Initializable {
 
     @FXML
     protected TableColumn<Player, Integer> colPoints;
+
+    @FXML
+    protected Label jokerRefreshLabel;
 
     protected WebSocketsUtils webSocketsUtils;
     protected GameSessionUtils gameSessionUtils;
@@ -501,6 +507,7 @@ public abstract class GameCtrl implements Initializable {
         try {
             gameSessionUtils.toggleReady(sessionId, false);
             imagePanel.setImage(null);
+            fetchJokerStates();
             loadQuestion();
         } catch (BadRequestException e) {
             System.out.println("takingover");
@@ -594,6 +601,7 @@ public abstract class GameCtrl implements Initializable {
         TimeUtils roundTimer = new TimeUtils(MIDGAME_BREAK_TIME, TIMER_UPDATE_INTERVAL_MS);
         roundTimer.setOnSucceeded((event) -> Platform.runLater(() -> {
             removeMidGameLeaderboard();
+            fetchJokerStates();
             loadQuestion();
         }));
 
@@ -718,5 +726,59 @@ public abstract class GameCtrl implements Initializable {
                 return;
         }
         webSocketsUtils.sendEmoji(sessionId, playerId, type);
+    }
+
+    protected String getJokerDisplayName(String jokerName) {
+        String val;
+        switch (jokerName) {
+            case "DoublePointsJoker" -> val = "Double points";
+            case "DecreaseTimeJoker" -> val = "Decrease time";
+            case "RemoveOneAnswerJoker" -> val = "Remove one answer";
+            default -> val = "Unknown";
+        }
+        return val;
+    }
+
+    /**
+     * Fetch joker state from the server and update local state accordingly
+     */
+    public void fetchJokerStates() {
+        // TODO: maybe display animation once joker is refilled.
+        Map<String, Joker.JokerStatus> states = gameSessionUtils.getJokerStates(sessionId, playerId);
+        StringBuilder refreshText = new StringBuilder();
+        int refreshedJokers = 0;
+        for (var joker : states.entrySet()) {
+            switch (joker.getKey()) {
+                case "DoublePointsJoker" -> {
+                    if (doublePointsJoker != (joker.getValue() == Joker.JokerStatus.AVAILABLE)) {
+                        ++refreshedJokers;
+                        doublePointsJoker = true;
+                        refreshText.append(getJokerDisplayName(joker.getKey())).append(", ");
+                    }
+                }
+                case "DecreaseTimeJoker" -> {
+                    if (decreaseTimeJoker != (joker.getValue() == Joker.JokerStatus.AVAILABLE)) {
+                        ++refreshedJokers;
+                        decreaseTimeJoker = true;
+                        refreshText.append(getJokerDisplayName(joker.getKey())).append(", ");
+                    }
+                }
+                case "RemoveOneAnswerJoker" -> {
+                    if (removeOneJoker != (joker.getValue() == Joker.JokerStatus.AVAILABLE)) {
+                        ++refreshedJokers;
+                        removeOneJoker = true;
+                        refreshText.append(getJokerDisplayName(joker.getKey())).append(", ");
+                    }
+                }
+            }
+        }
+        if (refreshText.isEmpty()) return;
+
+        String finalText = String.format("Lucky you, %s joker%s refreshed",
+                refreshText.substring(0, refreshText.length() - 2),
+                (refreshedJokers != 1) ? "s were" : " was");
+
+        jokerRefreshLabel.setText(finalText);
+        new Timeline(new KeyFrame(Duration.seconds(5), e -> jokerRefreshLabel.setText(""))).play();
     }
 }
