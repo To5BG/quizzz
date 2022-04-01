@@ -26,6 +26,7 @@ public class ActivityController {
 
     private final ActivityRepository repo;
     private final Random random;
+    private static final String ASSET_DIR = System.getProperty("user.dir") + "/server/src/main/resources/assets/";
 
     /**
      * Constructor method
@@ -98,25 +99,25 @@ public class ActivityController {
 
             String[] stringURL = activity.image_path.split("\\.");
 
-            File f = new File("./server/src/main/resources/assets/downloaded");
+            File f = new File(ASSET_DIR + "downloaded");
             f.mkdir();
 
             switch (stringURL[stringURL.length - 1]) {
                 case "jpg" -> {
                     outStream = new BufferedOutputStream(
-                            new FileOutputStream("./server/src/main/resources/assets/downloaded/"
+                            new FileOutputStream(ASSET_DIR + "downloaded/"
                                     + activity.id + ".jpg"));
                     activity.image_path = "downloaded/" + activity.id + ".jpg";
                 }
                 case "jpeg" -> {
                     outStream = new BufferedOutputStream(
-                            new FileOutputStream("./server/src/main/resources/assets/downloaded/"
+                            new FileOutputStream(ASSET_DIR + "downloaded/"
                                     + activity.id + ".jpeg"));
                     activity.image_path = "downloaded/" + activity.id + ".jpeg";
                 }
                 case "png" -> {
                     outStream = new BufferedOutputStream(
-                            new FileOutputStream("./server/src/main/resources/assets/downloaded/"
+                            new FileOutputStream(ASSET_DIR + "downloaded/"
                                     + activity.id + ".png"));
                     activity.image_path = "downloaded/" + activity.id + ".png";
                 }
@@ -146,7 +147,7 @@ public class ActivityController {
      * @param path The path of the image.
      */
     public void deleteImage(String path) {
-        File f = new File("./server/src/main/resources/assets/" + path);
+        File f = new File(ASSET_DIR + path);
         f.delete();
     }
 
@@ -155,7 +156,7 @@ public class ActivityController {
      */
     public void deleteAllImages() {
         try {
-            FileUtils.cleanDirectory(new File("./server/src/main/resources/assets/"));
+            FileUtils.cleanDirectory(new File(ASSET_DIR));
         } catch (IOException ignored) {
         }
     }
@@ -284,10 +285,9 @@ public class ActivityController {
      * @throws IOException
      */
     @RequestMapping(value = "/zip", method = RequestMethod.PUT, consumes = "application/zip")
-    public void unzipFile(InputStream is) throws IOException { //Here
-        File destination = new File("./server/src/main/resources/assets");
+    public void unzipFile(InputStream is) throws IOException {
+        File destination = new File(ASSET_DIR);
         byte[] buffer = new byte[1024];
-        // the actual file needs to be in the fileinputstream
         ZipInputStream zis = new ZipInputStream(is);
         ZipEntry zipEntry = zis.getNextEntry();
         while (zipEntry != null) {
