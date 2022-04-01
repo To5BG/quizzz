@@ -224,6 +224,7 @@ public class MultiplayerCtrl extends GameCtrl {
      */
     @Override
     public void removeMidGameLeaderboard() {
+        countdown.setOpacity(1);
         leaderboard.setPrefWidth(IN_GAME_LEADERBOARD_WIDTH);
         colUserName.setPrefWidth(IN_GAME_COLUSERNAME_WIDTH);
         super.removeMidGameLeaderboard();

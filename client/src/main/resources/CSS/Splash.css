@@ -1,13 +1,16 @@
+@font-face {
+    font-family: 'Earth Orbiter Punch';
+    src: url('../Fonts/earthorbiterpunch.ttf');
+}
+
 .background{
     -fx-background-image: url("/Image/background.png");
 }
-/*@font-face {*/
-/*    font-family: 'EarthOrbitPunch';*/
-/*    src: url('Fonts/earthorbiterpunch.ttf');*/
-/*}*/
-/*.title{*/
-/*    -fx-font: EarthOrbitPunch;*/
-/*}*/
+
+.title{
+    -fx-font-family: 'Earth Orbiter Punch';
+}
+
 .gameButton{
     -fx-background-color: #84ba84;
 }
@@ -25,4 +28,11 @@
 }
 .label{
     -fx-text-fill: white;
+}
+.scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+.table-view .scroll-bar{
+    -fx-background-color: transparent;
 }
