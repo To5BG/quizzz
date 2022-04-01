@@ -113,6 +113,7 @@ public class QuestionController {
         */
 
         player.currentPoints += actual.points;
+        player.previousEval = actual;
 
         return ResponseEntity.ok(actual);
     }
