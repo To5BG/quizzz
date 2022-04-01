@@ -121,6 +121,7 @@ public class MainCtrl {
         multiplayerCtrl.setSessionId(sessionId);
         multiplayerCtrl.setPlayerId(playerId);
         multiplayerCtrl.registerForEmojiUpdates();
+        multiplayerCtrl.fetchJokerStates();
         multiplayerCtrl.loadQuestion();
         multiplayerCtrl.scanForDisconnect();
         multiplayerCtrl.scanForJokerUsage();
@@ -190,6 +191,7 @@ public class MainCtrl {
         singlePlayerScreen.setOnKeyPressed(e -> singlePlayerCtrl.keyPressed(e));
         singlePlayerCtrl.setSessionId(sessionId);
         singlePlayerCtrl.setPlayerId(playerId);
+        singlePlayerCtrl.fetchJokerStates();
         singlePlayerCtrl.loadQuestion();
         singlePlayerCtrl.refresh();
     }
