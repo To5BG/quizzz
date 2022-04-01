@@ -29,7 +29,10 @@
         <Button layoutY="135.0" mnemonicParsing="false" onAction="#back" prefHeight="271.0" prefWidth="50.0" styleClass="button1" stylesheets="@../../CSS/Leaderboard.css" text="BACK" wrapText="true">
          <font>
             <Font size="25.0" />
-         </font></Button>
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
         <Button fx:id="singleLeaderboard" layoutX="525.0" layoutY="163.0" mnemonicParsing="false" onAction="#showSingleLeaderBoard" prefHeight="45.0" prefWidth="109.0" styleClass="button2" stylesheets="@../../CSS/Leaderboard.css" text="Single">
          <font>
             <Font size="21.0" />

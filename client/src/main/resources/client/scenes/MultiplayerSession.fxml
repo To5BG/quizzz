@@ -48,7 +48,7 @@
             <Cursor fx:constant="HAND" />
          </cursor></Button>
         <ImageView fx:id="imagePanel" fitHeight="156.0" fitWidth="169.0" layoutX="479.0" layoutY="107.0" pickOnBounds="true" preserveRatio="true" />
-        <ImageView fx:id="emojiFunny" fitHeight="60.0" fitWidth="60.0" layoutX="14.0" layoutY="321.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
+        <ImageView fx:id="emojiFunny" fitHeight="60.0" fitWidth="60.0" layoutX="14.0" layoutY="323.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
         </ImageView>
         <Button fx:id="playAgain" layoutX="434.0" layoutY="308.0" mnemonicParsing="false" onAction="#playAgain" prefHeight="25.0" prefWidth="103.0" text="Play again">
          <cursor>

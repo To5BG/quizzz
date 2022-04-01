@@ -14,9 +14,9 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="background" stylesheets="@/CSS/GameScreen.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.SingleplayerCtrl">
     <children>
-        <Label fx:id="questionPrompt" layoutX="160.0" layoutY="71.0" styleClass="text" text="[Question]" />
-        <StackPane fx:id="answerArea" alignment="BASELINE_LEFT" layoutX="173.0" layoutY="134.0" prefHeight="156.0" prefWidth="251.0" styleClass="stack-pane" stylesheets="@/CSS/GameScreen.css" />
-        <Button fx:id="submitButton" alignment="CENTER" layoutX="462.0" layoutY="252.0" mnemonicParsing="false" onAction="#submitAnswerButton" prefHeight="34.0" prefWidth="93.0" text="Final Answer" textFill="WHITE" AnchorPane.bottomAnchor="114.0" AnchorPane.leftAnchor="462.0" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="252.0">
+        <Label fx:id="questionPrompt" layoutX="150.0" layoutY="71.0" styleClass="text" text="[Question]" />
+        <StackPane fx:id="answerArea" alignment="BASELINE_LEFT" layoutX="150.0" layoutY="130.0" prefHeight="156.0" prefWidth="238.0" styleClass="stack-pane" stylesheets="@/CSS/GameScreen.css" />
+        <Button fx:id="submitButton" alignment="CENTER" layoutX="462.0" layoutY="269.0" mnemonicParsing="false" onAction="#submitAnswerButton" prefHeight="34.0" prefWidth="93.0" text="Final Answer" textFill="WHITE" AnchorPane.bottomAnchor="97.0" AnchorPane.leftAnchor="462.0" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="269.0">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor></Button>
@@ -54,8 +54,8 @@
                 </AnchorPane>
             </content>
         </TitledPane>
-        <Label fx:id="countdown" layoutX="160.0" layoutY="103.0" styleClass="text" text="Options:" />
-        <ImageView fx:id="imagePanel" fitHeight="156.0" fitWidth="200.0" layoutX="384.0" layoutY="88.0" pickOnBounds="true" preserveRatio="true" />
+        <Label fx:id="countdown" layoutX="150.0" layoutY="105.0" styleClass="text" text="Options:" />
+        <ImageView fx:id="imagePanel" fitHeight="156.0" fitWidth="183.0" layoutX="417.0" layoutY="105.0" pickOnBounds="true" preserveRatio="true" />
       <Label layoutX="286.0" layoutY="15.0" styleClass="text" text="TIME LEFT" />
     </children>
 </AnchorPane>
