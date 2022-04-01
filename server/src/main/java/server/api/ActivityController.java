@@ -1,15 +1,18 @@
 package server.api;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-
+import commons.Activity;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import commons.Activity;
 import server.database.ActivityRepository;
+
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 import static server.Config.isInvalid;
 import static server.Config.isNullOrEmpty;
@@ -54,6 +57,88 @@ public class ActivityController {
     }
 
     /**
+     * Downloads the image if the path is a link providing a supported filetype and updates the activity path to a
+     * relative path
+     *
+     * @param activity The activity that was added.
+     */
+    public void downloadImage(Activity activity) {
+        OutputStream outStream = null;
+        URLConnection uCon;
+
+        InputStream is = null;
+        try {
+            URL url;
+            byte[] buf;
+            int byteRead;
+            url = new URL(activity.image_path);
+
+            String[] stringURL = activity.image_path.split("\\.");
+
+            File f = new File("./server/src/main/resources/assets/downloaded");
+            f.mkdir();
+
+            switch (stringURL[stringURL.length - 1]) {
+                case "jpg" -> {
+                    outStream = new BufferedOutputStream(
+                            new FileOutputStream("./server/src/main/resources/assets/downloaded/"
+                                    + activity.id + ".jpg"));
+                    activity.image_path = "downloaded/" + activity.id + ".jpg";
+                }
+                case "jpeg" -> {
+                    outStream = new BufferedOutputStream(
+                            new FileOutputStream("./server/src/main/resources/assets/downloaded/"
+                                    + activity.id + ".jpeg"));
+                    activity.image_path = "downloaded/" + activity.id + ".jpeg";
+                }
+                case "png" -> {
+                    outStream = new BufferedOutputStream(
+                            new FileOutputStream("./server/src/main/resources/assets/downloaded/"
+                                    + activity.id + ".png"));
+                    activity.image_path = "downloaded/" + activity.id + ".png";
+                }
+                default -> throw new UnsupportedOperationException("Unsupported filetype");
+
+            }
+            uCon = url.openConnection();
+            is = uCon.getInputStream();
+            buf = new byte[1024];
+            while ((byteRead = is.read(buf)) != -1) {
+                outStream.write(buf, 0, byteRead);
+            }
+        } catch (Exception ignored) {
+        } finally {
+            try {
+                is.close();
+                outStream.close();
+            } catch (Exception ignored) {
+            }
+        }
+        repo.save(activity);
+    }
+
+    /**
+     * Delete image corresponding to the provided path.
+     *
+     * @param path The path of the image.
+     */
+    public void deleteImage(String path) {
+        File f = new File("./server/src/main/resources/assets/" + path);
+        f.delete();
+    }
+
+    /**
+     * Clears the assets directory.
+     */
+    public void deleteAllImages() {
+        try {
+            FileUtils.cleanDirectory(new File("./server/src/main/resources/assets/"));
+        } catch (IOException ignored) {
+        }
+    }
+
+
+    /**
      * Get all the activities from the repository
      *
      * @return a List containing all the activities from the repository
@@ -64,7 +149,7 @@ public class ActivityController {
     }
 
     /**
-     * Add a new activity to the repository
+     * Add a new activity to the repository and download the corresponding image if the path is a valid URL.
      *
      * @param activity - Activity to be added
      * @return the response with the new activity if added successfully or return bad request if not
@@ -75,17 +160,19 @@ public class ActivityController {
             return ResponseEntity.badRequest().build();
         }
         Activity saved = repo.save(activity);
+        downloadImage(saved);
         return ResponseEntity.ok(saved);
     }
 
     /**
-     * Removes all activities from the database
+     * Removes all activities from the database and deletes all images.
      *
      * @return The number of removed entries
      */
     @DeleteMapping(path = {"", "/"})
     public ResponseEntity<HttpStatus> removeAllActivities() {
         repo.deleteAll();
+        deleteAllImages();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -104,7 +191,8 @@ public class ActivityController {
 
 
     /**
-     * Update the activity with the given id with the fields of the activity given in the body
+     * Update the activity with the given id with the fields of the activity given in the body and downloads a new
+     * image if the URL is valid.
      *
      * @param id              - long representing the id of the activity that will be modified
      * @param activityDetails - Activity containing the new information
@@ -128,11 +216,12 @@ public class ActivityController {
 
         //Save the attribute to the repo
         Activity saved = repo.save(activity);
+        downloadImage(saved);
         return ResponseEntity.ok(saved);
     }
 
     /**
-     * Delete the activity with the given id from the repository
+     * Delete the activity with the given id from the repository and delete the corresponding image.
      *
      * @param id - long representing the id of the activity to be removed
      * @return the response with the id of the deleted activity or empty response if there was no activity with the id
@@ -147,6 +236,7 @@ public class ActivityController {
         if (activity != null) {
             //Get the id and delete the activity
             long activityId = activity.id;
+            deleteImage(activity.image_path);
             repo.delete(activity);
 
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
