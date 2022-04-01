@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
@@ -197,5 +198,9 @@ public class GameSession {
      */
     public void addUsedJoker(Joker joker) {
         usedJokers.add(joker);
+        Optional<Player> player = players.stream().filter(p -> p.username.equals(joker.username())).findFirst();
+        if (player.isEmpty()) return;
+        Player p = player.get();
+        p.jokerStates.put(joker.jokerName(), Joker.JokerStatus.USED_HOT);
     }
 }

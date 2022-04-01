@@ -16,10 +16,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static server.Config.isNullOrEmpty;
@@ -94,22 +91,67 @@ public class SessionController {
     }
 
     /**
+     * Update joker states of all players in the given session and award double points if applicable
+     * @param session The session to operate on
+     */
+    private void updatePlayerJokers(GameSession session) {
+        Random rng = new Random();
+        for (Player p : session.players) {
+            System.out.println(p);
+            if (p.jokerStates.get("DoublePointsJoker") == Joker.JokerStatus.USED_HOT) {
+                p.currentPoints += p.previousEval.points;
+            }
+            for (var joker : p.jokerStates.entrySet()) {
+                int threshold = 0;
+                switch (joker.getValue()) {
+                    case AVAILABLE -> {
+                        continue;
+                    }
+                    case USED_HOT -> threshold = 1;
+                    case USED -> threshold = 2;
+                }
+                int chance = rng.nextInt(10);
+                if (chance <= threshold) joker.setValue(Joker.JokerStatus.AVAILABLE);
+                else joker.setValue(Joker.JokerStatus.USED);
+            }
+        }
+    }
+
+    /**
+     * Set all jokers of all player in the session to AVAILABLE
+     * @param session The session to operate on
+     */
+    private void grantAllJokers(GameSession session) {
+        for (Player p : session.players) {
+            for (var joker : p.jokerStates.entrySet()) {
+                joker.setValue(Joker.JokerStatus.AVAILABLE);
+            }
+        }
+    }
+
+    /**
      * Updates the question of a game session
      */
     public void advanceRounds(GameSession session) {
         updateTimeJokers(session.id, 0);
+        updatePlayerJokers(session);
         if (session.sessionStatus == GameSession.SessionStatus.PLAY_AGAIN) {
+            // Session end screen after final round
             session.resetQuestionCounter();
             for (Player p : session.players) {
                 p.currentPoints = 0;
             }
             updateSession(session);
         } else if (session.questionCounter == GameSession.GAME_ROUNDS) {
+            // Session final round
             endSession(session);
         } else if (session.questionCounter == 0) {
+            // Session first round
+            grantAllJokers(session);
             session.playersReady.set(0);
             updateQuestion(session);
         } else {
+            // Session nth round
             System.out.println("Server paused session");
             session.setSessionStatus(GameSession.SessionStatus.PAUSED);
             updateQuestion(session);
@@ -444,5 +486,22 @@ public class SessionController {
 
         session.addUsedJoker(joker);
         return ResponseEntity.ok(joker);
+    }
+
+    /**
+     * Get the state of jokers stored for a given player in a given session
+     * @param sessionId The ID of the session
+     * @param playerId The ID of the player
+     * @return The state of each joker the player has
+     */
+    @GetMapping("/{sessionId}/{playerId}/jokers")
+    public ResponseEntity<Map<String, Joker.JokerStatus>> getJokerStates(@PathVariable("sessionId") long sessionId,
+                                                                         @PathVariable("playerId") long playerId) {
+        if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
+        GameSession session = sm.getById(sessionId);
+        Optional<Player> player = session.players.stream().filter(pl -> pl.id == playerId).findFirst();
+        if (player.isEmpty()) return ResponseEntity.badRequest().build();
+        Player p = player.get();
+        return ResponseEntity.ok(p.jokerStates);
     }
 }
