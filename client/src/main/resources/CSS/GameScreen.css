@@ -13,7 +13,6 @@
 }
 .titled-pane {
     -fx-border-width: 1;
-    -fx-border-color: -primary-border-color;
     -fx-background-color: transparent;
 }
 .titled-pane > .content {
@@ -68,4 +67,11 @@
 }
 .text-field {
     -fx-text-fill: white;
+}
+.scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+.table-view .scroll-bar{
+    -fx-background-color: transparent;
 }

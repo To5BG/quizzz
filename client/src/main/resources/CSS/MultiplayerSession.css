@@ -59,3 +59,10 @@
 .stack-pane .radio-button{
     -fx-text-fill: white;
 }
+.scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+.table-view .scroll-bar{
+    -fx-background-color: transparent;
+}

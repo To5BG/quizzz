@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
@@ -11,7 +12,7 @@
 
 <AnchorPane prefHeight="499.0" prefWidth="633.0" styleClass="background" stylesheets="@/CSS/Leaderboard.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.LeaderBoardCtrl">
     <children>
-        <TableView id="allPoints" fx:id="allPlayers" layoutX="119.0" layoutY="125.0" prefHeight="271.0" prefWidth="397.0" styleClass="leaderboardColumn">
+        <TableView id="allPoints" fx:id="allPlayers" layoutX="109.0" layoutY="125.0" prefHeight="271.0" prefWidth="397.0" styleClass="leaderboardColumn">
             <columns>
                 <TableColumn fx:id="colName" prefWidth="199.0" text="UserName" />
                 <TableColumn fx:id="colPoint" prefWidth="196.0" text="Point" />
@@ -20,27 +21,36 @@
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
             </columnResizePolicy>
         </TableView>
-        <Label fx:id="leaderboardLabel" layoutX="97.0" layoutY="42.0" prefHeight="71.0" prefWidth="421.0" text="LeaderBoard" textFill="#36cde4">
+        <Label fx:id="leaderboardLabel" layoutX="89.0" layoutY="42.0" prefHeight="71.0" prefWidth="489.0" text="LeaderBoard" textFill="#36cde4">
             <font>
                 <Font size="49.0" />
             </font>
         </Label>
-        <Button layoutY="135.0" mnemonicParsing="false" onAction="#back" prefHeight="271.0" prefWidth="50.0" text="BACK" wrapText="true">
+        <Button layoutY="135.0" mnemonicParsing="false" onAction="#back" prefHeight="271.0" prefWidth="50.0" styleClass="button1" stylesheets="@../../CSS/Leaderboard.css" text="BACK" wrapText="true">
          <font>
             <Font size="25.0" />
          </font></Button>
-        <Button fx:id="singleLeaderboard" layoutX="533.0" layoutY="163.0" mnemonicParsing="false" onAction="#showSingleLeaderBoard" prefHeight="45.0" prefWidth="101.0" text="Single">
+        <Button fx:id="singleLeaderboard" layoutX="525.0" layoutY="163.0" mnemonicParsing="false" onAction="#showSingleLeaderBoard" prefHeight="45.0" prefWidth="109.0" styleClass="button2" stylesheets="@../../CSS/Leaderboard.css" text="Single">
          <font>
             <Font size="21.0" />
-         </font></Button>
-        <Button fx:id="multiLeaderboard" layoutX="533.0" layoutY="235.0" mnemonicParsing="false" onAction="#showMultiLeaderboard" prefHeight="45.0" prefWidth="101.0" text="Multi-">
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
+        <Button fx:id="multiLeaderboard" layoutX="525.0" layoutY="235.0" mnemonicParsing="false" onAction="#showMultiLeaderboard" prefHeight="45.0" prefWidth="109.0" styleClass="button2" stylesheets="@../../CSS/Leaderboard.css" text="Multi">
          <font>
             <Font size="21.0" />
-         </font></Button>
-        <Button fx:id="elseLeaderboard" layoutX="533.0" layoutY="308.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="101.0" text="Else">
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
+        <Button fx:id="elseLeaderboard" layoutX="525.0" layoutY="308.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="109.0" styleClass="button2" stylesheets="@../../CSS/Leaderboard.css" text="Else">
          <font>
             <Font size="21.0" />
-         </font></Button>
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
       <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="151.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@/Image/decoration7.png" />

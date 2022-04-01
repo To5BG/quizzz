@@ -12,25 +12,25 @@
 .table-view {
     -fx-background-color: transparent;
     -fx-text-alignment: center;
-    -fx-text-color: white;
+    -fx-text-fill: white;
 }
 .table-column {
     -fx-background-color: transparent;
     -fx-alignment: center;
-    -fx-text-color: white;
+    -fx-text-fill: white;
 }
 .table-row-cell {
     -fx-background-color: transparent;
     -fx-alignment: center;
-    -fx-text-color: white;
+    -fx-text-fill: white;
 }
 .table-view .column-header-background {
     -fx-background-color:transparent;
-    -fx-text-color: white;
+    -fx-text-fill: white;
 }
 .table-view .filler {
     -fx-background-color: transparent;
-    -fx-text-color: white;
+    -fx-text-fill: white;
 }
 .table-view .scroll-bar{
     -fx-background-color: transparent;
@@ -52,3 +52,8 @@
      -fx-background-color: transparent;
      -fx-border-width: 0;
  }
+.table-view .scroll-bar{
+    -fx-background-color: transparent;
+    -fx-fill: transparent;
+    -fx-indeterminate-bar-length: 0px;
+}
