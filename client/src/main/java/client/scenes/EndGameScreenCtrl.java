@@ -176,17 +176,14 @@ public class EndGameScreenCtrl implements Initializable {
      * the player wants to play again.
      */
     public void playAgain() {
-        System.out.println("working");
         switch (playAgain.getText()) {
             case "Play again" -> {
-                System.out.println("10086");
                 playAgain.setText("Don't play again");
                 status.setText("Waiting for game to start...");
                 gameSessionUtils.toggleReady(sessionId, true);
                 setPlayingAgain(true);
             }
             case "Don't play again" -> {
-                System.out.println("10087");
                 playAgain.setText("Play again");
                 status.setText("End of game! Play again or go back to main.");
                 gameSessionUtils.toggleReady(sessionId, false);
