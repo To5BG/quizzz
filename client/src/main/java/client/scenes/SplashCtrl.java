@@ -49,6 +49,8 @@ public class SplashCtrl {
     private final WebSocketsUtils webSocketsUtils;
     private final MainCtrl mainCtrl;
 
+    private String url;
+
     @FXML
     private TextField usernameField;
 
@@ -104,6 +106,7 @@ public class SplashCtrl {
             leaderboardUtils.serverConnection = connURL;
             questionUtils.serverConnection = connURL;
             webSocketsUtils.updateConnection(connURL);
+            this.url = connURL;
             return true;
         } catch (Exception e) {
             alertFailedConnection();
@@ -243,6 +246,14 @@ public class SplashCtrl {
     public void showLeaderboard() {
         if (!establishConnection()) return;
         mainCtrl.showLeaderboard();
+    }
+
+    /**
+     * Show the edit activities page
+     */
+    public void showWebView() {
+        if (!establishConnection()) return;
+        mainCtrl.showWebView(this.url);
     }
 
     /**
