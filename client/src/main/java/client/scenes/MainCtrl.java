@@ -50,6 +50,8 @@ public class MainCtrl {
     private Scene gamemodeScreen;
     private LeaderBoardCtrl leaderBoardCtrl;
     private Scene leaderBoardScreen;
+    private WebViewCtrl webViewCtrl;
+    private Scene webViewScreen;
 
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
@@ -64,6 +66,7 @@ public class MainCtrl {
      * @param timeAttack   Controller and Scene pair for the time attack gamescreen of the application
      * @param survival     Controller and Scene pair for the survival gamescreen of the application
      * @param leaderboard  Controller and Scene pair for the leaderboard screen of the application
+     * @param webView      Controller and Scene pair for the webview screen of the application
      */
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
                            Pair<MultiplayerCtrl, Parent> multi,
@@ -73,7 +76,8 @@ public class MainCtrl {
                            Pair<SingleplayerCtrl, Parent> single,
                            Pair<TimeAttackCtrl, Parent> timeAttack,
                            Pair<SurvivalCtrl, Parent> survival,
-                           Pair<LeaderBoardCtrl, Parent> leaderboard) {
+                           Pair<LeaderBoardCtrl, Parent> leaderboard,
+                           Pair<WebViewCtrl, Parent> webView) {
         this.primaryStage = primaryStage;
 
         this.splashCtrl = splash.getKey();
@@ -102,6 +106,9 @@ public class MainCtrl {
 
         this.leaderBoardCtrl = leaderboard.getKey();
         this.leaderBoardScreen = new Scene(leaderboard.getValue());
+
+        this.webViewCtrl = webView.getKey();
+        this.webViewScreen = new Scene(webView.getValue());
 
         confirmClose();
         showSplash();
@@ -254,6 +261,16 @@ public class MainCtrl {
         leaderBoardCtrl.refreshSingle();
         leaderBoardScreen.setOnKeyPressed(e -> leaderBoardCtrl.keyPressed(e));
 
+    }
+
+    /**
+     * Sets the current screen to the WebView screen.
+     */
+    public void showWebView(String url) {
+        primaryStage.setTitle("Edit activities");
+        primaryStage.setScene(webViewScreen);
+        webViewCtrl.setPage(url);
+        webViewCtrl.loadPage();
     }
 
     /**

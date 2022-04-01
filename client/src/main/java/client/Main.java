@@ -55,6 +55,8 @@ public class Main extends Application {
                 (GamemodeCtrl.class, "client", "scenes", "GamemodeScreen.fxml");
         var leaderboard = FXML.load
                 (LeaderBoardCtrl.class, "client", "scenes", "Leaderboard.fxml");
+        var webView = FXML.load
+                (WebViewCtrl.class, "client", "scenes", "WebViewScreen.fxml");
 
 
         primaryStage.setOnHidden(e -> {
@@ -78,6 +80,6 @@ public class Main extends Application {
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         mainCtrl.initialize(primaryStage, splash, multiplayer, roomSelection,
-                waitingArea, mode, singleplayer, timeAttack, survival, leaderboard);
+                waitingArea, mode, singleplayer, timeAttack, survival, leaderboard, webView);
     }
 }
