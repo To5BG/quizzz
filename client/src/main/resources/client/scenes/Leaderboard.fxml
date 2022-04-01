@@ -26,21 +26,21 @@
                 <Font size="49.0" />
             </font>
         </Label>
-        <Button layoutY="135.0" mnemonicParsing="false" onAction="#back" prefHeight="271.0" prefWidth="50.0" styleClass="button1" stylesheets="@../../CSS/Leaderboard.css" text="BACK" wrapText="true">
+        <Button layoutY="135.0" mnemonicParsing="false" onAction="#back" prefHeight="271.0" prefWidth="50.0" styleClass="button1" stylesheets="@/CSS/Leaderboard.css" text="BACK" wrapText="true">
          <font>
             <Font size="25.0" />
          </font>
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor></Button>
-        <Button fx:id="singleLeaderboard" layoutX="525.0" layoutY="163.0" mnemonicParsing="false" onAction="#showSingleLeaderBoard" prefHeight="45.0" prefWidth="109.0" styleClass="button2" stylesheets="@../../CSS/Leaderboard.css" text="Single">
+        <Button fx:id="singleLeaderboard" layoutX="525.0" layoutY="163.0" mnemonicParsing="false" onAction="#showSingleLeaderBoard" prefHeight="45.0" prefWidth="109.0" styleClass="button2" stylesheets="@/CSS/Leaderboard.css" text="Single">
          <font>
             <Font size="21.0" />
          </font>
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor></Button>
-        <Button fx:id="multiLeaderboard" layoutX="525.0" layoutY="235.0" mnemonicParsing="false" onAction="#showMultiLeaderboard" prefHeight="45.0" prefWidth="109.0" styleClass="button2" stylesheets="@../../CSS/Leaderboard.css" text="Multi">
+        <Button fx:id="multiLeaderboard" layoutX="525.0" layoutY="235.0" mnemonicParsing="false" onAction="#showMultiLeaderboard" prefHeight="45.0" prefWidth="109.0" styleClass="button2" stylesheets="@/CSS/Leaderboard.css" text="Multi">
          <font>
             <Font size="21.0" />
          </font>
