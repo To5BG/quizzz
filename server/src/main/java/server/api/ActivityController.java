@@ -13,6 +13,8 @@ import java.net.URLConnection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static server.Config.isInvalid;
 import static server.Config.isNullOrEmpty;
@@ -33,6 +35,27 @@ public class ActivityController {
     public ActivityController(Random random, ActivityRepository repo) {
         this.random = random;
         this.repo = repo;
+    }
+
+    /**
+     * Checks where the next directory/file is wrttten to make sure it will only write in the assets directory.
+     *
+     * @param destinationDir The assets directory.
+     * @param zipEntry       The next entry in the zip archive.
+     * @return The destination for the new entry if valid.
+     * @throws IOException
+     */
+    public static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
+        File destFile = new File(destinationDir, zipEntry.getName());
+
+        String destDirPath = destinationDir.getCanonicalPath();
+        String destFilePath = destFile.getCanonicalPath();
+
+        if (!destFilePath.startsWith(destDirPath + File.separator)) {
+            throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+        }
+
+        return destFile;
     }
 
     /**
@@ -136,7 +159,6 @@ public class ActivityController {
         } catch (IOException ignored) {
         }
     }
-
 
     /**
      * Get all the activities from the repository
@@ -254,5 +276,44 @@ public class ActivityController {
         List<Activity> activities = this.getAllActivities();
         if (activities.size() == 0) return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         return ResponseEntity.ok(activities.get(random.nextInt(activities.size())));
+    }
+
+    /**
+     * Unzips the provided zip file into the assets folder.
+     *
+     * @throws IOException
+     */
+    @PostMapping("/zip")
+    public void unzipFile() throws IOException { //Here the file needs to be fed into the parameter
+        File destination = new File("./server/src/main/resources/assets");
+        byte[] buffer = new byte[1024];
+        // the actual file needs to be in the fileinputstream
+        ZipInputStream zis = new ZipInputStream(new FileInputStream("C:\\Users\\faiz_\\Downloads\\38.zip"));
+        ZipEntry zipEntry = zis.getNextEntry();
+        while (zipEntry != null) {
+            File newFile = newFile(destination, zipEntry);
+            if (zipEntry.isDirectory()) {
+                if (!newFile.isDirectory() && !newFile.mkdirs()) {
+                    throw new IOException("Failed to create directory " + newFile);
+                }
+            } else {
+                // fix for Windows-created archives
+                File parent = newFile.getParentFile();
+                if (!parent.isDirectory() && !parent.mkdirs()) {
+                    throw new IOException("Failed to create directory " + parent);
+                }
+
+                // write file content
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+                fos.close();
+            }
+            zipEntry = zis.getNextEntry();
+        }
+        zis.closeEntry();
+        zis.close();
     }
 }

@@ -15,6 +15,9 @@ addEventListener("load", _ => {
     document.querySelector("#inputCont > #addJsonFile")
         .addEventListener('submit', postJsonFile);
 
+    document.querySelector("#inputCont > #addImageZip")
+        .addEventListener('submit', postZipFile);
+
     document.querySelector("#inputCont > #editOne > form")
         .addEventListener('submit', editActivity);
 
@@ -341,4 +344,20 @@ function resetDatabase() {
         });
 }
 
+/*------------------------ UPLOAD ZIP FILE --------------------------*/
 
+async function uploadZip(zipFile) {
+    let url = basePath + "/zip";
+    return await fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/zip'
+        },
+        body: zipFile
+    });
+}
+
+function postZipFile(event) {
+
+
+}
