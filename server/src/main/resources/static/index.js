@@ -358,6 +358,28 @@ async function uploadZip(zipFile) {
 }
 
 function postZipFile(event) {
+    event.preventDefault();
 
-
+    let alertMsg = document.querySelector("#alertMsg");
+    let fileReader = new FileReader();
+    fileReader.onload = function () {
+        console.log("Got here.")
+        let res = fileReader.result;
+        try {
+            uploadZip(res)
+                .then(_ => {
+                    alertMsg.textContent = "Uploaded zip of images successfully!";
+                    alertMsg.style.setProperty("color", "green");
+                    refreshTable();
+                }, err => {
+                    console.log("Error! " + err);
+                    alertMsg.textContent = "Failed to load some entries!";
+                    alertMsg.style.setProperty("color", "red");
+                });
+        } catch {
+            alertMsg.textContent = "Could not parse file!";
+            alertMsg.style.setProperty("color", "red");
+        }
+    }
+    fileReader.readAsArrayBuffer(event.target.querySelector("input").files[0]);
 }

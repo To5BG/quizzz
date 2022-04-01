@@ -283,12 +283,12 @@ public class ActivityController {
      *
      * @throws IOException
      */
-    @PostMapping("/zip")
-    public void unzipFile() throws IOException { //Here the file needs to be fed into the parameter
+    @RequestMapping(value = "/zip", method = RequestMethod.PUT, consumes = "application/zip")
+    public void unzipFile(InputStream is) throws IOException { //Here
         File destination = new File("./server/src/main/resources/assets");
         byte[] buffer = new byte[1024];
         // the actual file needs to be in the fileinputstream
-        ZipInputStream zis = new ZipInputStream(new FileInputStream("C:\\Users\\faiz_\\Downloads\\38.zip"));
+        ZipInputStream zis = new ZipInputStream(is);
         ZipEntry zipEntry = zis.getNextEntry();
         while (zipEntry != null) {
             File newFile = newFile(destination, zipEntry);
