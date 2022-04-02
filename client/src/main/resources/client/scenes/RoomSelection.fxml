@@ -15,9 +15,9 @@
       <cursor>
          <Cursor fx:constant="HAND" />
       </cursor></Button>
-    <TableView fx:id="availableRooms" layoutX="180.0" layoutY="30.0" prefHeight="350.0" prefWidth="408.0">
+    <TableView fx:id="availableRooms" layoutX="180.0" layoutY="30.0" prefHeight="350.0" prefWidth="409.0">
         <columns>
-            <TableColumn fx:id="roomNumber" prefWidth="400" text="Game Rooms" />
+            <TableColumn fx:id="roomNumber" prefWidth="403.0" text="Game Rooms" />
         </columns>
       <cursor>
          <Cursor fx:constant="HAND" />

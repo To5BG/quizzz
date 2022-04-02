@@ -66,3 +66,6 @@
 .table-view .scroll-bar{
     -fx-background-color: transparent;
 }
+.radio-button {
+    -fx-cursor: hand;
+}

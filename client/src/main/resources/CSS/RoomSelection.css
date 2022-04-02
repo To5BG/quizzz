@@ -18,6 +18,7 @@
     -fx-background-color: transparent;
     -fx-alignment: center;
     -fx-text-fill: white;
+    -fx-border-color: transparent;
 }
 .table-row-cell {
     -fx-background-color: transparent;
@@ -39,16 +40,15 @@
     change the color of the table header
  */
 .table-column .label{
-    -fx-background-color: #5f93e7;
+    -fx-background-color: transparent;
     -fx-text-fill: white ;
     -fx-text-alignment: center ;
     -fx-graphic-text-gap:0;
-
 }
 .label{
     -fx-text-fill: white;
 }
-.scroll-bar:horizontal {
+.table-view.scroll-bar:horizontal {
      -fx-background-color: transparent;
      -fx-border-width: 0;
  }
@@ -57,6 +57,6 @@
     -fx-fill: transparent;
     -fx-indeterminate-bar-length: 0px;
 }
-.table-view .table-row-cell{
-
-}
+.table-row-cell:selected {
+     -fx-background-color: #00CCFF;
+ }

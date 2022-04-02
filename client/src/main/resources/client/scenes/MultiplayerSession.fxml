@@ -50,7 +50,7 @@
         <ImageView fx:id="imagePanel" fitHeight="156.0" fitWidth="169.0" layoutX="479.0" layoutY="107.0" pickOnBounds="true" preserveRatio="true" />
         <ImageView fx:id="emojiFunny" fitHeight="60.0" fitWidth="60.0" layoutX="14.0" layoutY="323.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
         </ImageView>
-        <Button fx:id="playAgain" layoutX="434.0" layoutY="308.0" mnemonicParsing="false" onAction="#playAgain" prefHeight="25.0" prefWidth="103.0" text="Play again">
+        <Button fx:id="playAgain" layoutX="434.0" layoutY="308.0" mnemonicParsing="false" onAction="#playAgain" prefHeight="26.0" prefWidth="115.0" text="Play again">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor></Button>
@@ -63,7 +63,7 @@
         </ImageView>
         <ImageView fx:id="emojiAngry" fitHeight="60.0" fitWidth="60.0" layoutX="148.0" layoutY="323.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
         </ImageView>
-        <TableView fx:id="emojiList" layoutX="652.0" layoutY="43.0" prefHeight="200.0" prefWidth="151.0">
+        <TableView fx:id="emojiList" layoutX="652.0" layoutY="43.0" prefHeight="200.0" prefWidth="156.0">
             <columns>
                 <TableColumn fx:id="emojiUsername" prefWidth="75.0" sortable="false" text="Username" />
                 <TableColumn fx:id="emojiImage" prefWidth="75.0" sortable="false" text="Emoji" />
