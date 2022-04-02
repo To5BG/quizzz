@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<AnchorPane prefHeight="460.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.TutorialScreenCtrl">
+    <children>
+        <Button layoutX="580.0" layoutY="190.0" mnemonicParsing="false" opacity="0.1" prefHeight="110.0" prefWidth="50.0" text="Next" />
+        <Button layoutX="20.0" layoutY="190.0" mnemonicParsing="false" opacity="0.1" prefHeight="110.0" prefWidth="50.0" text="Prev" />
+        <Circle layoutX="200.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle layoutX="260.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle layoutX="320.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle layoutX="380.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle layoutX="440.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <ImageView fitHeight="376.0" fitWidth="425.0" layoutX="95.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
+        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#back" prefHeight="30.0" prefWidth="60.0" text="Back" />
+        <Line endX="55" endY="55" layoutX="-5.0" layoutY="220.0" startX="30" startY="30" strokeWidth="5.0" />
+        <Line endX="55" endY="5" layoutX="-5.0" layoutY="220.0" startX="30" startY="30" strokeWidth="5.0" />
+        <Line endX="55" endY="55" layoutX="545.0" layoutY="220.0" startX="80" startY="30" strokeWidth="5.0" />
+        <Line endX="55" endY="5" layoutX="545.0" layoutY="220.0" startX="80" startY="30" strokeWidth="5.0" />
+    </children>
+
+</AnchorPane>
