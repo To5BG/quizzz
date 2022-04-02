@@ -9,8 +9,8 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("api/questions")
@@ -147,8 +147,8 @@ public class QuestionController {
     public byte[] fetchImage(HttpServletRequest req) {
         BufferedImage image;
         try {
-            String url = "/assets/" + req.getRequestURL().toString().split("/image/")[1];
-            image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(url)));
+            String url = ActivityController.ASSET_DIR + req.getRequestURL().toString().split("/image/")[1];
+            image = ImageIO.read(new FileInputStream(url));
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             String[] urlParts = url.split("\\.");
             String extension = urlParts[urlParts.length - 1];

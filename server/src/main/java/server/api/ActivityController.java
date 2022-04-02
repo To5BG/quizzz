@@ -24,7 +24,7 @@ import static server.Config.isNullOrEmpty;
 @RequestMapping("/api/activities")
 public class ActivityController {
 
-    private static final String ASSET_DIR = (System.getProperty("user.dir") + "/server/src/main/resources/assets/")
+    public static final String ASSET_DIR = (System.getProperty("user.dir") + "/server/src/main/resources/assets/")
             .replace("server/server", "server");
     private final ActivityRepository repo;
     private final Random random;

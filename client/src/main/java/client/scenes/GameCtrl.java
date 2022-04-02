@@ -230,22 +230,22 @@ public abstract class GameCtrl implements Initializable {
             ImageUtils imageConvert = new ImageUtils(questionUtils, q.imagePath);
             imageConvert.setOnSucceeded(ev -> {
                 defaultImage.set(imageConvert.getValue());
+                for (int i = 0; i < multiChoiceAnswers.size(); i++) {
+                    RadioButton rb = multiChoiceAnswers.get(i);
+                    ImageUtils image = new ImageUtils(questionUtils, q.activityPath.get(i));
+                    image.setOnSucceeded(event -> {
+                        rb.setOnMouseEntered(e -> imagePanel.setImage(image.getValue()));
+                    });
+                    Thread b = new Thread(image);
+                    b.start();
+
+                    if (q.type == Question.QuestionType.EQUIVALENCE) {
+                        rb.setOnMouseExited(e -> imagePanel.setImage(defaultImage.get()));
+                    }
+                }
             });
             Thread t = new Thread(imageConvert);
             t.start();
-            for (int i = 0; i < multiChoiceAnswers.size(); i++) {
-                RadioButton rb = multiChoiceAnswers.get(i);
-                ImageUtils image = new ImageUtils(questionUtils, q.activityPath.get(i));
-                image.setOnSucceeded(ev -> {
-                    rb.setOnMouseEntered(e -> imagePanel.setImage(image.getValue()));
-                });
-                Thread b = new Thread(image);
-                b.start();
-
-                if (q.type == Question.QuestionType.EQUIVALENCE) {
-                    rb.setOnMouseExited(e -> imagePanel.setImage(defaultImage.get()));
-                }
-            }
         } catch (IllegalArgumentException ignore) {
         }
     }
