@@ -26,7 +26,8 @@ public class ActivityController {
 
     private final ActivityRepository repo;
     private final Random random;
-    private static final String ASSET_DIR = System.getProperty("user.dir") + "/server/src/main/resources/assets/";
+    private static final String ASSET_DIR = (System.getProperty("user.dir") + "/server/src/main/resources/assets/")
+            .replace("server/server","server");
 
     /**
      * Constructor method
