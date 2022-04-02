@@ -47,11 +47,7 @@
          <Image url="@/Image/decoration1.png" />
       </image>
    </ImageView>
-   <Button layoutX="660.0" layoutY="523.0" mnemonicParsing="false" text="?">
-      <cursor>
-         <Cursor fx:constant="HAND" />
-      </cursor></Button>
-   <Label layoutX="443.0" layoutY="549.0" prefHeight="17.0" prefWidth="203.0" text="       Produced By OOPP Group 51" textFill="WHITE" />
+   <Label layoutX="346.0" layoutY="543.0" prefHeight="17.0" prefWidth="203.0" text="       Produced By OOPP Group 51" textFill="WHITE" />
    <ImageView fitHeight="800.0" fitWidth="200.0" layoutX="-150.0" pickOnBounds="true" preserveRatio="true">
       <image>
          <Image url="@/Image/decoration3.png" />
@@ -73,5 +69,5 @@
       </image>
    </ImageView>
     <Button layoutX="596.0" layoutY="525.0" mnemonicParsing="false" onAction="#showWebView" text="Edit activities" />
-   <Button layoutX="37.0" layoutY="524.0" mnemonicParsing="false" onAction="#showTutorial" prefHeight="26.0" prefWidth="42.0" text="?" />
+   <Button layoutX="641.0" layoutY="491.0" mnemonicParsing="false" onAction="#showTutorial" prefHeight="26.0" prefWidth="42.0" text="?" />
 </AnchorPane>
