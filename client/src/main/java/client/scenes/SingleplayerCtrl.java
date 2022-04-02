@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
@@ -59,6 +60,19 @@ public class SingleplayerCtrl extends GameCtrl {
         disableButton(decreaseTimeButton, !decreaseTimeJoker);
         disableButton(doublePointsButton, !doublePointsJoker);
         super.loadAnswer();
+    }
+
+    /**
+     * Sends player to splash screen, along with an alert that the game has ended, with their points total
+     */
+    @Override
+    public void handleGameEnd() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Game Over");
+        alert.setHeaderText("You will be redirected to the splash screen");
+        alert.setContentText("Your score was : " + points);
+        alert.show();
+        super.handleGameEnd();
     }
 
     /**

@@ -492,6 +492,9 @@ public abstract class GameCtrl implements Initializable {
         gameSessionUtils.toggleReady(sessionId, true);
     }
 
+    /**
+     * Shows the end game screen once the multiplayer game ends. In case of singleplayer, sends the user back to splash
+     */
     protected void handleGameEnd() {
         try {
             if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showEndScreen();
@@ -503,6 +506,9 @@ public abstract class GameCtrl implements Initializable {
         }
     }
 
+    /**
+     * Proceeds the user onto the next round of the game
+     */
     protected void handleNextRound() {
         try {
             gameSessionUtils.toggleReady(sessionId, false);

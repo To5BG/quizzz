@@ -140,14 +140,14 @@ public class SurvivalCtrl extends SingleplayerCtrl {
      */
     public void updatePoints() {
         points += evaluation.points;
-        renderStreak();
+        renderPoints();
     }
 
     /**
      * Called when player points are rendered or updated
      */
-    public void renderStreak() {
-        pointsLabel.setText(String.format("Current Streak: %d", this.points));
+    public void renderPoints() {
+        pointsLabel.setText(String.format("Points: %d", this.points));
     }
 
     /**
