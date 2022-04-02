@@ -150,17 +150,11 @@ public class QuestionController {
             String url = "/assets/" + req.getRequestURL().toString().split("/image/")[1];
             image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(url)));
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            switch (url.split("\\.")[1]) {
-                case "jpg" -> {
-                    ImageIO.write(image, "jpg", baos);
-                    return baos.toByteArray();
-                }
-                case "jpeg" -> {
-                    ImageIO.write(image, "jpeg", baos);
-                    return baos.toByteArray();
-                }
-                case "png" -> {
-                    ImageIO.write(image, "png", baos);
+            String[] urlParts = url.split("\\.");
+            String extension = urlParts[urlParts.length - 1];
+            switch (extension) {
+                case "jpg", "png", "jpeg" -> {
+                    ImageIO.write(image, extension, baos);
                     return baos.toByteArray();
                 }
                 default -> throw new UnsupportedOperationException("Unsupported filetype");

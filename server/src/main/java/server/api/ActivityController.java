@@ -24,10 +24,10 @@ import static server.Config.isNullOrEmpty;
 @RequestMapping("/api/activities")
 public class ActivityController {
 
+    private static final String ASSET_DIR = (System.getProperty("user.dir") + "/server/src/main/resources/assets/")
+            .replace("server/server", "server");
     private final ActivityRepository repo;
     private final Random random;
-    private static final String ASSET_DIR = (System.getProperty("user.dir") + "/server/src/main/resources/assets/")
-            .replace("server/server","server");
 
     /**
      * Constructor method
@@ -82,62 +82,50 @@ public class ActivityController {
     }
 
     /**
+     * Tries to create a new folder.
+     *
+     * @param folder The folder to be created.
+     * @throws IOException
+     */
+    private void tryCreateFolder(File folder) throws IOException {
+        if (!folder.isDirectory() && !folder.mkdirs()) {
+            throw new IOException("Failed to create directory " + folder);
+        }
+    }
+
+    /**
      * Downloads the image if the path is a link providing a supported filetype and updates the activity path to a
      * relative path
      *
      * @param activity The activity that was added.
      */
     public void downloadImage(Activity activity) {
-        OutputStream outStream = null;
-        URLConnection uCon;
-
-        InputStream is = null;
         try {
-            URL url;
-            byte[] buf;
-            int byteRead;
-            url = new URL(activity.image_path);
+            URL url = new URL(activity.image_path);
 
             String[] stringURL = activity.image_path.split("\\.");
+            String extension = stringURL[stringURL.length - 1];
 
             File f = new File(ASSET_DIR + "downloaded");
-            f.mkdir();
+            f.mkdirs();
 
-            switch (stringURL[stringURL.length - 1]) {
-                case "jpg" -> {
-                    outStream = new BufferedOutputStream(
-                            new FileOutputStream(ASSET_DIR + "downloaded/"
-                                    + activity.id + ".jpg"));
-                    activity.image_path = "downloaded/" + activity.id + ".jpg";
-                }
-                case "jpeg" -> {
-                    outStream = new BufferedOutputStream(
-                            new FileOutputStream(ASSET_DIR + "downloaded/"
-                                    + activity.id + ".jpeg"));
-                    activity.image_path = "downloaded/" + activity.id + ".jpeg";
-                }
-                case "png" -> {
-                    outStream = new BufferedOutputStream(
-                            new FileOutputStream(ASSET_DIR + "downloaded/"
-                                    + activity.id + ".png"));
-                    activity.image_path = "downloaded/" + activity.id + ".png";
+            switch (extension) {
+                case "jpg", "jpeg", "png" -> {
+                    activity.image_path = "downloaded/" + activity.id + "." + extension;
                 }
                 default -> throw new UnsupportedOperationException("Unsupported filetype");
 
             }
-            uCon = url.openConnection();
-            is = uCon.getInputStream();
-            buf = new byte[1024];
-            while ((byteRead = is.read(buf)) != -1) {
-                outStream.write(buf, 0, byteRead);
+
+            URLConnection uCon = url.openConnection();
+
+            try (OutputStream   OUTSTREAM = new BufferedOutputStream(
+                    new FileOutputStream(ASSET_DIR + activity.image_path));
+                 InputStream IS = uCon.getInputStream()
+            ) {
+                IS.transferTo(OUTSTREAM);
             }
         } catch (Exception ignored) {
-        } finally {
-            try {
-                is.close();
-                outStream.close();
-            } catch (Exception ignored) {
-            }
         }
         repo.save(activity);
     }
@@ -288,33 +276,24 @@ public class ActivityController {
     @RequestMapping(value = "/zip", method = RequestMethod.PUT, consumes = "application/zip")
     public void unzipFile(InputStream is) throws IOException {
         File destination = new File(ASSET_DIR);
-        byte[] buffer = new byte[1024];
-        ZipInputStream zis = new ZipInputStream(is);
-        ZipEntry zipEntry = zis.getNextEntry();
-        while (zipEntry != null) {
-            File newFile = newFile(destination, zipEntry);
-            if (zipEntry.isDirectory()) {
-                if (!newFile.isDirectory() && !newFile.mkdirs()) {
-                    throw new IOException("Failed to create directory " + newFile);
-                }
-            } else {
-                // fix for Windows-created archives
-                File parent = newFile.getParentFile();
-                if (!parent.isDirectory() && !parent.mkdirs()) {
-                    throw new IOException("Failed to create directory " + parent);
-                }
+        try (ZipInputStream ZIS = new ZipInputStream(is)) {
+            ZipEntry zipEntry;
+            while ((zipEntry = ZIS.getNextEntry()) != null) {
+                File newFile = newFile(destination, zipEntry);
+                if (zipEntry.isDirectory()) {
+                    tryCreateFolder(newFile);
+                } else {
+                    // fix for Windows-created archives
+                    File parent = newFile.getParentFile();
+                    tryCreateFolder(parent);
 
-                // write file content
-                FileOutputStream fos = new FileOutputStream(newFile);
-                int len;
-                while ((len = zis.read(buffer)) > 0) {
-                    fos.write(buffer, 0, len);
+                    // write file content
+                    try (FileOutputStream FOS = new FileOutputStream(newFile)) {
+                        ZIS.transferTo(FOS);
+                    }
                 }
-                fos.close();
             }
-            zipEntry = zis.getNextEntry();
         }
-        zis.closeEntry();
-        zis.close();
     }
+
 }
