@@ -25,6 +25,9 @@
             <button type="button" id="addJsonFileBtn" onclick="toggleInputForm('addJsonFile')">
                 Add activities (JSON-formatted file)
             </button>
+            <button type="button" id="addImageZipBtn" onclick="toggleInputForm('addImageZip')">
+                Add images
+            </button>
         </div>
     </div>
     <div id="inputCont">
@@ -53,6 +56,13 @@
                 <label for="ActivityJsonFile">Select a JSON file:</label>
                 <input type="file" id="ActivityJsonFile" accept=".txt,.json"><br>
                 <input type="submit" value="Send">
+            </form>
+        </div>
+        <div id="addImageZip">
+            <form>
+                <label for="ImageZip">Select a .zip file:</label>
+                <input type="file" id="ImageZip" accept=".zip"><br>
+                <input type="submit" value="Upload">
             </form>
         </div>
         <div id="removeOne">

@@ -1,28 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0"
-            prefWidth="720.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="client.scenes.SplashCtrl">
-    <TextField fx:id="usernameField" layoutX="109.0" layoutY="160.0" prefHeight="38.0" prefWidth="170.0"
-               promptText="Enter a username"/>
-    <TextField fx:id="connectionField" layoutX="109.0" layoutY="205.0" prefHeight="38.0" prefWidth="170.0"
-               promptText="http://localhost:8080/"/>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.SplashCtrl">
+    <TextField fx:id="usernameField" layoutX="109.0" layoutY="160.0" prefHeight="38.0" prefWidth="170.0" promptText="Enter a username" />
+    <TextField fx:id="connectionField" layoutX="109.0" layoutY="205.0" prefHeight="38.0" prefWidth="170.0" promptText="http://localhost:8080/" />
     <Label layoutX="80.0" layoutY="48.0" text="QUIZZZZ">
         <font>
-            <Font size="48.0"/>
+            <Font size="48.0" />
         </font>
     </Label>
-    <Button layoutX="143.0" layoutY="276.0" mnemonicParsing="false" onAction="#showSinglePlayer" text="Singleplayer"/>
-    <Button layoutX="145.0" layoutY="334.0" mnemonicParsing="false" onAction="#showRoomSelection" text="Multiplayer"/>
-    <Button layoutX="141.0" layoutY="396.0" mnemonicParsing="false" onAction="#showLeaderboard" text="Leaderboard"/>
-    <Text fx:id="duplUsername" layoutX="286.0" layoutY="183.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0"
-          text="Username already exists. Change to continue" wrappingWidth="270.13665771484375"/>
-    <Text fx:id="invalidUserName" layoutX="286.0" layoutY="183.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0"
-          text="Username should be non-empty, and only contain letters and/or numbers."/>
-    <Text fx:id="failedConnectionAlert" layoutX="286.0" layoutY="229.0" opacity="0.0" text="Could not connect!"/>
-    <Button layoutX="596.0" layoutY="525.0" mnemonicParsing="false" onAction="#showWebView" text="Edit activities"/>
+    <Button layoutX="143.0" layoutY="276.0" mnemonicParsing="false" onAction="#showSinglePlayer" text="Singleplayer" />
+    <Button layoutX="145.0" layoutY="334.0" mnemonicParsing="false" onAction="#showRoomSelection" text="Multiplayer" />
+    <Button layoutX="141.0" layoutY="396.0" mnemonicParsing="false" onAction="#showLeaderboard" text="Leaderboard" />
+    <Text fx:id="duplUsername" layoutX="286.0" layoutY="183.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username already exists. Change to continue" wrappingWidth="270.13665771484375" />
+    <Text fx:id="invalidUserName" layoutX="286.0" layoutY="183.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username should be non-empty, and only contain letters and/or numbers." />
+    <Text fx:id="failedConnectionAlert" layoutX="286.0" layoutY="229.0" opacity="0.0" text="Could not connect!" />
+    <Button layoutX="596.0" layoutY="525.0" mnemonicParsing="false" onAction="#showWebView" text="Edit activities" />
+   <Button layoutX="37.0" layoutY="524.0" mnemonicParsing="false" onAction="#showTutorial" prefHeight="26.0" prefWidth="42.0" text="?" />
 </AnchorPane>

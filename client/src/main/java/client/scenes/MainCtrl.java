@@ -43,6 +43,8 @@ public class MainCtrl {
     private Scene leaderBoardScreen;
     private WebViewCtrl webViewCtrl;
     private Scene webViewScreen;
+    private TutorialScreenCtrl tutorialCtrl;
+    private Scene tutorialScreen;
 
     private List<Pair<? extends SceneCtrl, Parent>> pairs;
 
@@ -83,6 +85,10 @@ public class MainCtrl {
         var webView = pairs.get(6);
         this.webViewCtrl = (WebViewCtrl) webView.getKey();
         this.webViewScreen = new Scene(webView.getValue());
+
+        var tutorial = pairs.get(7);
+        this.tutorialCtrl = (TutorialScreenCtrl) tutorial.getKey();
+        this.tutorialScreen = new Scene(tutorial.getValue());
 
         confirmClose();
         showSplash();
@@ -188,6 +194,16 @@ public class MainCtrl {
     }
 
     /**
+     * Sets the current scene to the tutorial screen
+     */
+    public void showTutorial() {
+        tutorialCtrl.initialise();
+        primaryStage.setTitle("Tutorial Screen");
+        primaryStage.setScene(tutorialScreen);
+        tutorialScreen.setOnKeyPressed(e -> tutorialCtrl.keyPressed(e));
+    }
+
+    /**
      * Ask the user for confirmation before closing the app
      */
     public void confirmClose() {
@@ -205,4 +221,5 @@ public class MainCtrl {
             }
         });
     }
+
 }

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<AnchorPane prefHeight="460.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.scenes.TutorialScreenCtrl">
+    <children>
+        <Line fx:id="leftUp" endX="55" endY="5" layoutX="-5.0" layoutY="220.0" startX="30" startY="30"
+              strokeWidth="5.0"/>
+        <Line fx:id="leftDown" endX="55" endY="55" layoutX="-5.0" layoutY="220.0" startX="30" startY="30"
+              strokeWidth="5.0"/>
+        <Line fx:id="rightUp" endX="55" endY="5" layoutX="545.0" layoutY="220.0" startX="80" startY="30"
+              strokeWidth="5.0"/>
+        <Line fx:id="rightDown" endX="55" endY="55" layoutX="545.0" layoutY="220.0" startX="80" startY="30"
+              strokeWidth="5.0"/>
+        <Button fx:id="next" layoutX="580.0" layoutY="190.0" mnemonicParsing="false" onAction="#switchNext"
+                opacity="0.0" prefHeight="110.0" prefWidth="50.0" text="Next">
+            <cursor>
+                <Cursor fx:constant="HAND"/>
+            </cursor>
+        </Button>
+        <Button fx:id="prev" layoutX="20.0" layoutY="190.0" mnemonicParsing="false" onAction="#switchPrev" opacity="0.0"
+                prefHeight="110.0" prefWidth="50.0" text="Prev">
+            <cursor>
+                <Cursor fx:constant="HAND"/>
+            </cursor>
+        </Button>
+        <Circle fx:id="dot0" layoutX="200.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK"
+                strokeType="INSIDE"/>
+        <Circle fx:id="dot1" layoutX="260.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK"
+                strokeType="INSIDE"/>
+        <Circle fx:id="dot2" layoutX="320.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK"
+                strokeType="INSIDE"/>
+        <Circle fx:id="dot3" layoutX="380.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK"
+                strokeType="INSIDE"/>
+        <Circle fx:id="dot4" layoutX="440.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK"
+                strokeType="INSIDE"/>
+        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#back" prefHeight="30.0"
+                prefWidth="42.0" text="Back">
+            <cursor>
+                <Cursor fx:constant="HAND"/>
+            </cursor>
+        </Button>
+        <Pane fx:id="pane0" layoutX="60.0" prefHeight="402.0" prefWidth="530.0">
+            <children>
+                <Label alignment="CENTER" layoutX="4.0" layoutY="14.0" prefHeight="58.0" prefWidth="530.0"
+                       text="Welcome to Quizzzz" textAlignment="CENTER">
+                    <font>
+                        <Font size="40.0"/>
+                    </font>
+                </Label>
+                <Label layoutX="25.0" layoutY="85.0" prefHeight="318.0" prefWidth="490.0"
+                       text="This is a fast-paced game, where you answer questions with the theme of `Electricity`. This game was made to raise awareness of how much electricity we usually consume in our lives.&#10;&#10;You can choose to play either singleplayer and gain some insight into how much electricity you consume in your day-to-day life. Or, you can test your fast reflexes and skills in the `Time Attack` or maybe your perfect knowledge in `Survival`.&#10;&#10;You can also challenge your friends in a multiplayer game and use jokers to gain an advantage over them, but be careful the game can change at any moment."
+                       wrapText="true">
+                    <font>
+                        <Font size="15.0"/>
+                    </font>
+                </Label>
+            </children>
+        </Pane>
+        <Pane fx:id="pane1" layoutX="60.0" opacity="0.0" prefHeight="402.0" prefWidth="530.0">
+            <children>
+                <Label alignment="CENTER" layoutX="4.0" layoutY="14.0" prefHeight="58.0" prefWidth="530.0"
+                       text="Default Game" textAlignment="CENTER">
+                    <font>
+                        <Font size="40.0"/>
+                    </font>
+                </Label>
+                <Label layoutX="25.0" layoutY="85.0" prefHeight="318.0" prefWidth="490.0"
+                       text="A default game consists of 20 questions that increase in difficulty based on how far into the game you get.&#10;&#10;For each question you are awarded points based on correctness and speed.&#10;&#10;You can use one joker type once per game to alter the stakes in your favour.&#10;&#10;In the multiplayer, you can interact with other players using emojis.  Go wild!!!&#10;"
+                       wrapText="true">
+                    <font>
+                        <Font size="15.0"/>
+                    </font>
+                </Label>
+            </children>
+        </Pane>
+        <Pane fx:id="pane2" layoutX="60.0" opacity="0.0" prefHeight="402.0" prefWidth="530.0">
+            <children>
+                <Label alignment="CENTER" layoutX="4.0" layoutY="14.0" prefHeight="58.0" prefWidth="530.0" text="Jokers"
+                       textAlignment="CENTER">
+                    <font>
+                        <Font size="40.0"/>
+                    </font>
+                </Label>
+                <Label layoutX="25.0" layoutY="85.0" prefHeight="318.0" prefWidth="490.0"
+                       text="There are 3 types of jokers in this game. You can use one joker type only once per game. They have usage only in the round that they are used in. However, you might get lucky and get a refreshment that will allow you to use one/or more joker(s) again. &#10;&#10;For the Singleplayer game, all jokers are only available before you submit your answer.&#10;&#10;See the joker types on the next page -&gt;&#10;&#10;"
+                       wrapText="true">
+                    <font>
+                        <Font size="15.0"/>
+                    </font>
+                </Label>
+            </children>
+        </Pane>
+        <Pane fx:id="pane3" layoutX="60.0" opacity="0.0" prefHeight="402.0" prefWidth="530.0">
+            <children>
+                <Label alignment="CENTER" layoutX="4.0" layoutY="14.0" prefHeight="58.0" prefWidth="530.0"
+                       text="Joker Types" textAlignment="CENTER">
+                    <font>
+                        <Font size="40.0"/>
+                    </font>
+                </Label>
+                <Label layoutX="25.0" layoutY="85.0" prefHeight="318.0" prefWidth="490.0"
+                       text="`Remove One Answer` - This joker removes one incorrect answer. You can only use this before you submit your answer. This is not available for the estimation questions.&#10;&#10;`Decrease Time`- This joker will make the timer faster for your opponents based on how many people use it. It can be used after you answer and before the timer runs out.&#10;This joker is called `Increase time` in singleplayer and has the opposite effect, making the timer run slower.&#10;&#10;`Double Points` - This joker will double the points acquired in the round it was used. This joker can be used after you answer and before the timer runs out."
+                       wrapText="true">
+                    <font>
+                        <Font size="15.0"/>
+                    </font>
+                </Label>
+            </children>
+        </Pane>
+        <Pane fx:id="pane4" layoutX="60.0" opacity="0.0" prefHeight="402.0" prefWidth="530.0">
+            <children>
+                <Label alignment="CENTER" layoutX="4.0" layoutY="14.0" prefHeight="58.0" prefWidth="530.0"
+                       text="Singleplayer Gamemodes" textAlignment="CENTER">
+                    <font>
+                        <Font size="40.0"/>
+                    </font>
+                </Label>
+                <Label layoutX="25.0" layoutY="85.0" prefHeight="318.0" prefWidth="490.0"
+                       text="There are two special gamemodes in singleplayer, other than the casual one. In these gamemodes you can test your skills and your newly acquired knowledge to the maximum.&#10;&#10;The first gamemode is `Survival`. The purpose is to answer as many questions correctly in a row. The game ends after only 3 incorrect answers, so be careful.&#10;&#10;The second gamemode is `Time attack`. You have 60 seconds to get as many points as you can. Don't take too much time reading this, the timer is running out!!&#10;&#10;The jokers are not available for these two gamemodes. They are all about you and the questions, so no bonuses.&#10;&#10;Don't forget to also have fun while learning! Good luck!&#10;"
+                       wrapText="true">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                </Label>
+            </children>
+        </Pane>
+    </children>
+
+</AnchorPane>

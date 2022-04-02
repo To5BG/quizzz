@@ -48,7 +48,8 @@ public class Main extends Application {
                 FXML.load(SingleplayerCtrl.class, "client", "scenes", "GameScreen.fxml"),
                 FXML.load(WaitingAreaCtrl.class, "client", "scenes", "WaitingAreaScreen.fxml"),
                 FXML.load(LeaderBoardCtrl.class, "client", "scenes", "Leaderboard.fxml"),
-                FXML.load(WebViewCtrl.class, "client", "scenes", "WebViewScreen.fxml")
+                FXML.load(WebViewCtrl.class, "client", "scenes", "WebViewScreen.fxml"),
+                FXML.load(TutorialScreenCtrl.class, "client", "scenes", "TutorialScreen.fxml")
         ));
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);

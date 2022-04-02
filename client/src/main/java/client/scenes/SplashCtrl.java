@@ -292,4 +292,11 @@ public class SplashCtrl extends SceneCtrl {
     public void back() {
         shutdown();
     }
+
+    /**
+     * Show the tutorial page
+     */
+    public void showTutorial() {
+        mainCtrl.showTutorial();
+    }
 }

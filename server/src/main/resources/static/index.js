@@ -15,6 +15,9 @@ addEventListener("load", _ => {
     document.querySelector("#inputCont > #addJsonFile")
         .addEventListener('submit', postJsonFile);
 
+    document.querySelector("#inputCont > #addImageZip")
+        .addEventListener('submit', postZipFile);
+
     document.querySelector("#inputCont > #editOne > form")
         .addEventListener('submit', editActivity);
 
@@ -341,4 +344,41 @@ function resetDatabase() {
         });
 }
 
+/*------------------------ UPLOAD ZIP FILE --------------------------*/
 
+async function uploadZip(zipFile) {
+    let url = basePath + "/zip";
+    return await fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/zip'
+        },
+        body: zipFile
+    });
+}
+
+function postZipFile(event) {
+    event.preventDefault();
+
+    let alertMsg = document.querySelector("#alertMsg");
+    let fileReader = new FileReader();
+    fileReader.onload = function () {
+        let res = fileReader.result;
+        try {
+            uploadZip(res)
+                .then(_ => {
+                    alertMsg.textContent = "Uploaded zip of images successfully!";
+                    alertMsg.style.setProperty("color", "green");
+                    refreshTable();
+                }, err => {
+                    console.log("Error! " + err);
+                    alertMsg.textContent = "Failed to load some entries!";
+                    alertMsg.style.setProperty("color", "red");
+                });
+        } catch {
+            alertMsg.textContent = "Could not parse file!";
+            alertMsg.style.setProperty("color", "red");
+        }
+    }
+    fileReader.readAsArrayBuffer(event.target.querySelector("input").files[0]);
+}
