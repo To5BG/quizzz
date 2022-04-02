@@ -26,7 +26,7 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
         super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
 
 
-        this.initialTime = 60;
+        this.initialTime = 60L;
     }
 
     /**
@@ -84,14 +84,6 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
 
         disableButton(submitButton, false);
         imageHover();
-    }
-
-    /**
-     * Submit button click event handler
-     */
-    @Override
-    public void submitAnswerButton() {
-        submitAnswer(false);
     }
 
     /**
@@ -181,7 +173,6 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
      */
     public void startTimer() {
         roundTimer = new TimeUtils(initialTime, TIMER_UPDATE_INTERVAL_MS);
-        roundTimer.setTimeBooster(this::getTimeJokers);
         roundTimer.setOnSucceeded((event) -> Platform.runLater(() -> {
             System.out.println("roundTimer is done");
             this.initialTime = 0;

@@ -47,56 +47,39 @@ public class GamemodeCtrl {
     }
 
     /**
-     * Starts the default singleplayer game.
+     * Creates a session for the mode that is called and adds the player to it.
+     *
+     * @param type The type of game the player wants to play.
+     * @return The sessionId of the new session.
      */
-    public void showDefault() {
-        GameSession newSession = new GameSession(GameSession.SessionType.SINGLEPLAYER);
+    public long createId(GameSession.SessionType type) {
+        GameSession newSession = new GameSession(type);
         newSession = gameSessionUtils.addSession(newSession);
         gameSessionUtils.addPlayer(newSession.id, this.player);
 
-        long playerId = this.player.id;
+        if (this.player.id == 0L) this.player.id = gameSessionUtils.getPlayers(newSession.id).get(0).id;
+        return newSession.id;
+    }
 
-        if (playerId == 0L) {
-            playerId = gameSessionUtils
-                    .getPlayers(newSession.id).get(0).id;
-        }
-        mainCtrl.showDefaultSinglePlayer(newSession.id, playerId);
+    /**
+     * Starts the default singleplayer game.
+     */
+    public void showDefault() {
+        mainCtrl.showDefaultSinglePlayer(createId(GameSession.SessionType.SINGLEPLAYER), this.player.id);
     }
 
     /**
      * Starts the survival singleplayer game.
      */
     public void showSurvival() {
-        GameSession newSession = new GameSession(GameSession.SessionType.SURVIVAL);
-        newSession = gameSessionUtils.addSession(newSession);
-        gameSessionUtils.addPlayer(newSession.id, this.player);
-
-        long playerId = this.player.id;
-
-        if (playerId == 0L) {
-            playerId = gameSessionUtils
-                    .getPlayers(newSession.id).get(0).id;
-        }
-        gameSessionUtils.setGameRounds(newSession.id, Integer.MAX_VALUE);
-        mainCtrl.showSurvival(newSession.id, playerId);
+        mainCtrl.showDefaultSinglePlayer(createId(GameSession.SessionType.SURVIVAL), this.player.id);
     }
 
     /**
      * Starts the time attack singleplayer game.
      */
     public void showTimeAttack() {
-        GameSession newSession = new GameSession(GameSession.SessionType.TIME_ATTACK);
-        newSession = gameSessionUtils.addSession(newSession);
-        gameSessionUtils.addPlayer(newSession.id, this.player);
-
-        long playerId = this.player.id;
-
-        if (playerId == 0L) {
-            playerId = gameSessionUtils
-                    .getPlayers(newSession.id).get(0).id;
-        }
-        gameSessionUtils.setGameRounds(newSession.id, Integer.MAX_VALUE);
-        mainCtrl.showTimeAttack(newSession.id, playerId);
+        mainCtrl.showDefaultSinglePlayer(createId(GameSession.SessionType.TIME_ATTACK), this.player.id);
     }
 
     public void setPlayer(Player player) {
