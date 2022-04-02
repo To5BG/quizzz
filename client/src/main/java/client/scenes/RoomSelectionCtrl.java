@@ -101,6 +101,28 @@ public class RoomSelectionCtrl implements Initializable {
     }
 
     /**
+     * Displays game room (as entered in search bar) if exists
+     *
+     * @return True iff the refresh should continue
+     */
+    public boolean displaySearchResults() {
+        String roomID = gameID.getText();
+        List<GameSession> searchresults = gameSessionUtils.getAvailableSessions()
+                .stream()
+                .filter(gs -> gs.sessionType != GameSession.SessionType.SINGLEPLAYER)
+                .filter(gs -> gs == gameSessionUtils.getSession(Long.parseLong(roomID)))
+                .collect(Collectors.toList());
+        if (searchresults.isEmpty()) {
+            availableRooms.setPlaceholder(new Label("Specified game session does not exist!"));
+            availableRooms.setItems(null);
+            return notCancel;
+        }
+        var data = FXCollections.observableList(searchresults);
+        availableRooms.setItems(data);
+        return notCancel;
+    }
+
+    /**
      * Initialize setup for main controller's showWaitingArea() method. Creates a new session.
      */
     public void hostRoom() {
