@@ -225,7 +225,7 @@ public class SessionController {
     public ResponseEntity<GameSession> addWaitingArea(@RequestBody GameSession session) {
         repo.save(session.players.get(0));
         GameSession saved = sm.save(session);
-        listeners.forEach((k, l) -> l.accept(Pair.of("add", saved)));
+        listenersSelectionRoom.forEach((k, l) -> l.accept(Pair.of("add", saved)));
         return ResponseEntity.ok(saved);
     }
 
@@ -262,7 +262,9 @@ public class SessionController {
     @DeleteMapping({"/{id}"})
     public ResponseEntity<GameSession> removeSession(@PathVariable("id") long id) {
         GameSession removedSession = sm.delete(id);
-        if (removedSession != null) listeners.forEach((k, l) -> l.accept(Pair.of("remove", removedSession)));
+        if (removedSession != null) {
+            listenersSelectionRoom.forEach((k, l) -> l.accept(Pair.of("remove", removedSession)));
+        }
         return ResponseEntity.ok(removedSession);
     }
 
@@ -275,6 +277,9 @@ public class SessionController {
         waitingArea.setSessionType(GameSession.SessionType.MULTIPLAYER);
         waitingArea.setSessionStatus(GameSession.SessionStatus.STARTED);
         updateQuestion(waitingArea);
+        listenersWaitingArea.forEach((k, l) -> {
+            if (k.getSecond().equals(waitingArea.id)) l.accept("started: " + waitingArea.playersReady);
+        });
     }
 
     /**
@@ -288,15 +293,22 @@ public class SessionController {
         if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = sm.getById(sessionId);
         session.setPlayerReady();
-        if (session.sessionType != GameSession.SessionType.WAITING_AREA &&
-                session.playersReady.get() == session.players.size()) {
+
+        if (session.sessionType == GameSession.SessionType.WAITING_AREA) {
+            if (session.playersReady.get() == session.players.size()) changeToMultiplayerSession(session);
+            else {
+                listenersWaitingArea.forEach((k, l) -> {
+                    if (k.getSecond().equals(session.id)) {
+                        l.accept("playerReady: " + session.playersReady);
+                    }
+                });
+            }
+
+        } else if (session.playersReady.get() == session.players.size()) {
             advanceRounds(session);
-        } else if (session.sessionType == GameSession.SessionType.WAITING_AREA &&
-                session.playersReady.get() == session.players.size()) {
-            changeToMultiplayerSession(session);
-        } else {
-            updateSession(session);
         }
+        else updateSession(session);
+
         return ResponseEntity.ok(session);
     }
 
@@ -311,14 +323,14 @@ public class SessionController {
         if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = sm.getById(sessionId);
         session.unsetPlayerReady();
-        if (session.playersReady.get() == 0) {
-            if (session.sessionType == GameSession.SessionType.WAITING_AREA) {
-                session.setSessionStatus(GameSession.SessionStatus.WAITING_AREA);
-            } else {
-                if (session.sessionStatus != GameSession.SessionStatus.PLAY_AGAIN) {
-                    session.setSessionStatus(GameSession.SessionStatus.ONGOING);
-                }
-            }
+        if (session.sessionType == GameSession.SessionType.WAITING_AREA) {
+            listenersWaitingArea.forEach((k, l) -> {
+                if (k.getSecond().equals(session.id)) l.accept("playerReady: " + session.playersReady);
+            });
+            if (session.playersReady.get() == 0) session.setSessionStatus(GameSession.SessionStatus.WAITING_AREA);
+        }
+        if (session.playersReady.get() == 0 && session.sessionStatus != GameSession.SessionStatus.PLAY_AGAIN) {
+            session.setSessionStatus(GameSession.SessionStatus.ONGOING);
         }
 
         updateSession(session);
@@ -346,7 +358,7 @@ public class SessionController {
             advanceRounds(session);
         }
         updateSession(session);
-        if (session.id != 1) listeners.forEach((k, l) -> l.accept(Pair.of("update", session)));
+        if (session.id != 1) listenersSelectionRoom.forEach((k, l) -> l.accept(Pair.of("update", session)));
         return ResponseEntity.ok(session);
     }
 
@@ -406,7 +418,12 @@ public class SessionController {
 
         session.addPlayer(player);
         repo.save(player);
-        if (session.id != 1) listeners.forEach((k,l) -> l.accept(Pair.of("update", session)));
+        if (session.sessionType.equals(GameSession.SessionType.WAITING_AREA)) {
+            listenersWaitingArea.forEach((k, l) -> {
+                if (k.getSecond().equals(session.id)) l.accept("addPlayer: " + player.username);
+            });
+        }
+        if (session.id != 1) listenersSelectionRoom.forEach((k, l) -> l.accept(Pair.of("update", session)));
         return ResponseEntity.ok(player);
     }
 
@@ -431,7 +448,12 @@ public class SessionController {
             removeSession(session.id);
         } else {
             updateSession(session);
-            if (session.id != 1) listeners.forEach((k,l) -> l.accept(Pair.of("update", session)));
+            if (session.sessionType.equals(GameSession.SessionType.WAITING_AREA)) {
+                listenersWaitingArea.forEach((k, l) -> {
+                    if (k.getSecond().equals(session.id)) l.accept("removePlayer: " + player.username);
+                });
+            }
+            if (session.id != 1) listenersSelectionRoom.forEach((k, l) -> l.accept(Pair.of("update", session)));
         }
         return ResponseEntity.ok(player);
     }
@@ -516,24 +538,42 @@ public class SessionController {
         return ResponseEntity.ok(p.jokerStates);
     }
 
-    Map<Object, Consumer<Pair<String,GameSession>>> listeners = new HashMap<>();
+    Map<Object, Consumer<Pair<String, GameSession>>> listenersSelectionRoom = new HashMap<>();
+    Map<Pair<Object, Long>, Consumer<String>> listenersWaitingArea = new HashMap<>();
+
     /**
      * Register client listener for selection room updates
      *
      * @return DeferredResult that contains updates on selection room, if any
      */
-    @GetMapping("/updates")
-    public DeferredResult<ResponseEntity<GameSession>> getLeaderboardUpdates() {
+    @GetMapping("/updates/selectionroom")
+    public DeferredResult<ResponseEntity<GameSession>> getSelectionRoomUpdates() {
         var emptyContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        var res = new DeferredResult<ResponseEntity<GameSession>>(2000L, emptyContent);
+        var res = new DeferredResult<ResponseEntity<GameSession>>(1000L, emptyContent);
 
         var k = new Object();
-        listeners.put(k, p -> {
+        listenersSelectionRoom.put(k, p -> {
             HttpHeaders headers = new HttpHeaders();
             headers.set("X-operation", p.getFirst());
             res.setResult(new ResponseEntity<GameSession>(p.getSecond(), headers, HttpStatus.OK));
         });
-        res.onCompletion(() -> listeners.remove(k));
+        res.onCompletion(() -> listenersSelectionRoom.remove(k));
+        return res;
+    }
+
+    /**
+     * Register client listener for selection room updates
+     *
+     * @return DeferredResult that contains updates on selection room, if any
+     */
+    @GetMapping("/updates/waitingarea/{sessionId}")
+    public DeferredResult<ResponseEntity<String>> getWaitingAreaUpdates(@PathVariable Long sessionId) {
+        var emptyContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        var res = new DeferredResult<ResponseEntity<String>>(1000L, emptyContent);
+
+        var k = Pair.of(new Object(), sessionId);
+        listenersWaitingArea.put(k, p -> res.setResult(ResponseEntity.ok(p)));
+        res.onCompletion(() -> listenersWaitingArea.remove(k));
         return res;
     }
 }

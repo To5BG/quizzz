@@ -15,7 +15,6 @@
  */
 package client.scenes;
 
-import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -24,8 +23,6 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainCtrl {
 
@@ -47,6 +44,8 @@ public class MainCtrl {
     private WebViewCtrl webViewCtrl;
     private Scene webViewScreen;
 
+    private List<Pair<? extends SceneCtrl, Parent>> pairs;
+
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
      *
@@ -55,6 +54,7 @@ public class MainCtrl {
      */
     public void initialize(Stage primaryStage, List<Pair<? extends SceneCtrl, Parent>> pairs) {
         this.primaryStage = primaryStage;
+        this.pairs = pairs;
 
         var splash = pairs.get(0);
         this.splashCtrl = (SplashCtrl) pairs.get(0).getKey();
@@ -130,8 +130,8 @@ public class MainCtrl {
         primaryStage.setScene(roomSelectionScreen);
         roomSelectionScreen.setOnKeyPressed(e -> roomSelectionCtrl.keyPressed(e));
         roomSelectionCtrl.setPlayerId(playerId);
-        roomSelectionCtrl.registerForUpdates();
         roomSelectionCtrl.refresh(null);
+        roomSelectionCtrl.registerForUpdates();
     }
 
     /**
@@ -146,19 +146,8 @@ public class MainCtrl {
         waitingAreaScreen.setOnKeyPressed(e -> waitingAreaCtrl.keyPressed(e));
         waitingAreaCtrl.setPlayerId(playerId);
         waitingAreaCtrl.setWaitingId(waitingId);
-
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    try {
-                        if (!waitingAreaCtrl.refresh()) cancel();
-                    } catch (Exception e) {
-                        cancel();
-                    }
-                });
-            }
-        }, 0, 500);
+        waitingAreaCtrl.refresh(null);
+        waitingAreaCtrl.registerForUpdates();
     }
 
 
@@ -182,9 +171,9 @@ public class MainCtrl {
     public void showLeaderboard() {
         primaryStage.setTitle("LeaderBoard");
         primaryStage.setScene(leaderBoardScreen);
-        leaderBoardCtrl.registerForUpdates();
-        leaderBoardCtrl.refresh(null);
         leaderBoardScreen.setOnKeyPressed(e -> leaderBoardCtrl.keyPressed(e));
+        leaderBoardCtrl.refresh(null);
+        leaderBoardCtrl.registerForUpdates();
 
     }
 
@@ -206,7 +195,14 @@ public class MainCtrl {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirm Close");
             alert.setHeaderText("Close the program?");
-            alert.showAndWait().filter(r -> r != ButtonType.OK).ifPresent(r -> evt.consume());
+            alert.showAndWait().filter(r -> r != ButtonType.OK).ifPresent(r -> {evt.consume();});
+            if (evt.isConsumed()) return;
+            for (var pair : pairs) {
+                try {
+                    pair.getKey().shutdown();
+                } catch (Exception ignored) {
+                }
+            }
         });
     }
 }

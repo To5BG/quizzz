@@ -43,7 +43,6 @@ public class LongPollingUtils {
                 List<Player> update = res.readEntity(
                         new GenericType<List<Player>>() {
                         });
-                System.out.println(update);
                 consumer.accept(Pair.of(res.getHeaders().get("X-gamemodeType").toString(), update));
             }
         });
@@ -59,7 +58,7 @@ public class LongPollingUtils {
         execSelectionRoom.submit(() -> {
             while (!Thread.interrupted()) {
                 var res = ClientBuilder.newClient(new ClientConfig())
-                        .target(serverConnection).path("api/sessions/updates")
+                        .target(serverConnection).path("api/sessions/updates/selectionroom")
                         .request(APPLICATION_JSON)
                         .accept(APPLICATION_JSON)
                         .get(Response.class);
@@ -68,7 +67,6 @@ public class LongPollingUtils {
                 // TODO Handle atomic updates more discretely
                 // this has to be addressed after Rithik's MR with the room selection screen
                 var update = res.readEntity(GameSession.class);
-                System.out.println(update);
                 consumer.accept(Pair.of(res.getHeaders().get("X-operation").toString(), update));
             }
         });
@@ -79,16 +77,16 @@ public class LongPollingUtils {
      *
      * @param consumer Consumer object representing the client's request
      */
-    public void registerForWaitingAreaUpdates(Consumer<String> consumer) {
+    public void registerForWaitingAreaUpdates(Consumer<String> consumer, Long sessionId) {
         execWaitingArea = Executors.newSingleThreadExecutor();
         execWaitingArea.submit(() -> {
             while (!Thread.interrupted()) {
                 var res = ClientBuilder.newClient(new ClientConfig())
-                        .target(serverConnection).path("api/sessions/updates")
+                        .target(serverConnection).path("api/sessions/updates/waitingarea/" + sessionId)
                         .request(APPLICATION_JSON)
                         .accept(APPLICATION_JSON)
                         .get(Response.class);
-                System.out.println("polling...");
+                System.out.println("polling waiting area...");
                 if (res.getStatus() == 204) continue;
                 var update = res.readEntity(String.class);
                 System.out.println(update);

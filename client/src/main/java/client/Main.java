@@ -51,15 +51,6 @@ public class Main extends Application {
                 FXML.load(WebViewCtrl.class, "client", "scenes", "WebViewScreen.fxml")
         ));
 
-        primaryStage.setOnCloseRequest(e -> {
-            for (var pair: pairs) {
-                try {
-                    pair.getKey().shutdown();
-                } catch (Exception ignored) {
-                }
-            }
-        });
-
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         mainCtrl.initialize(primaryStage, pairs);
     }
