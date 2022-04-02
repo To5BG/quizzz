@@ -221,6 +221,7 @@ public class MainCtrl {
      * Sets the current scene to the tutorial screen
      */
     public void showTutorial() {
+        tutorialCtrl.initialise();
         primaryStage.setTitle("Tutorial Screen");
         primaryStage.setScene(tutorialScreen);
         tutorialScreen.setOnKeyPressed(e -> tutorialCtrl.keyPressed(e));
