@@ -60,4 +60,19 @@ public class QuestionUtils {
                 .get(new GenericType<List<Integer>>() {
                 });
     }
+
+    /**
+     * Fetches the image corresponding to the file path.
+     *
+     * @param path The image path.
+     * @return The buffferedImage.
+     */
+    public byte[] fetchImage(String path) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(serverConnection).path("api/questions/image/" + path)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(new GenericType<byte[]>() {
+                });
+    }
 }
