@@ -19,6 +19,7 @@ import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class GameCtrl implements Initializable {
 
@@ -152,8 +153,12 @@ public abstract class GameCtrl implements Initializable {
         }
 
         try {
-            Image image = new ImageUtils(questionUtils.fetchImage(q.imagePath)).call();
-            imagePanel.setImage(image);
+            ImageUtils image = new ImageUtils(questionUtils, q.imagePath);
+            image.setOnSucceeded(ev -> {
+                imagePanel.setImage(image.getValue());
+            });
+            Thread t = new Thread(image);
+            t.start();
         } catch (Exception ignore) {
         }
     }
@@ -221,14 +226,24 @@ public abstract class GameCtrl implements Initializable {
         Question q = this.currentQuestion;
         if (q.type != Question.QuestionType.COMPARISON && q.type != Question.QuestionType.EQUIVALENCE) return;
         try {
-            Image defaultImage = new ImageUtils(questionUtils.fetchImage(q.imagePath)).call();
+            AtomicReference<Image> defaultImage = new AtomicReference<Image>(null);
+            ImageUtils imageConvert = new ImageUtils(questionUtils, q.imagePath);
+            imageConvert.setOnSucceeded(ev -> {
+                defaultImage.set(imageConvert.getValue());
+            });
+            Thread t = new Thread(imageConvert);
+            t.start();
             for (int i = 0; i < multiChoiceAnswers.size(); i++) {
                 RadioButton rb = multiChoiceAnswers.get(i);
-                Image image = new ImageUtils(questionUtils.fetchImage(q.activityPath.get(i))).call();
+                ImageUtils image = new ImageUtils(questionUtils, q.activityPath.get(i));
+                image.setOnSucceeded(ev -> {
+                    rb.setOnMouseEntered(e -> imagePanel.setImage(image.getValue()));
+                });
+                Thread b = new Thread(image);
+                b.start();
 
-                rb.setOnMouseEntered(e -> imagePanel.setImage(image));
                 if (q.type == Question.QuestionType.EQUIVALENCE) {
-                    rb.setOnMouseExited(e -> imagePanel.setImage(defaultImage));
+                    rb.setOnMouseExited(e -> imagePanel.setImage(defaultImage.get()));
                 }
             }
         } catch (IllegalArgumentException ignore) {

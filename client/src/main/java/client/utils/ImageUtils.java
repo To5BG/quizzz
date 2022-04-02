@@ -7,17 +7,19 @@ import java.io.ByteArrayInputStream;
 
 public class ImageUtils extends Task<Image> {
 
-    byte[] bytes;
-    Image javafxImg;
+    private QuestionUtils questionUtils;
+    private String path;
 
-    public ImageUtils(byte[] bytes) {
+
+    public ImageUtils(QuestionUtils questionUtils, String path) {
         super();
-        this.bytes = bytes;
+        this.path = path;
+        this.questionUtils = questionUtils;
     }
 
     @Override
     public Image call() {
-        return this.javafxImg = new Image(new ByteArrayInputStream(bytes));
+        return new Image(new ByteArrayInputStream(questionUtils.fetchImage(path)));
     }
 
 
