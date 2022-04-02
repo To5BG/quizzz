@@ -60,6 +60,7 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
     /**
      * Loads a question and starts reading time.
      */
+    @Override
     public void loadQuestion() {
         disableButton(submitButton, false);
         this.answerArea.getChildren().clear();
@@ -89,6 +90,7 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
     /**
      * Submit an answer to the server
      */
+    @Override
     public void submitAnswer(boolean initiatedByTimer) {
         Answer ans = new Answer(currentQuestion.type);
 

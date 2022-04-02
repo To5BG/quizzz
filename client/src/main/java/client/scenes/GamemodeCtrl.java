@@ -72,14 +72,18 @@ public class GamemodeCtrl {
      * Starts the survival singleplayer game.
      */
     public void showSurvival() {
-        mainCtrl.showDefaultSinglePlayer(createId(GameSession.SessionType.SURVIVAL), this.player.id);
+        long sessionId = createId(GameSession.SessionType.SURVIVAL);
+        gameSessionUtils.setGameRounds(sessionId, Integer.MAX_VALUE);
+        mainCtrl.showSurvival(sessionId, this.player.id);
     }
 
     /**
      * Starts the time attack singleplayer game.
      */
     public void showTimeAttack() {
-        mainCtrl.showDefaultSinglePlayer(createId(GameSession.SessionType.TIME_ATTACK), this.player.id);
+        long sessionId = createId(GameSession.SessionType.TIME_ATTACK);
+        gameSessionUtils.setGameRounds(sessionId, Integer.MAX_VALUE);
+        mainCtrl.showTimeAttack(sessionId, this.player.id);
     }
 
     public void setPlayer(Player player) {
