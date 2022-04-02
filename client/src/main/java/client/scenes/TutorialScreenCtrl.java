@@ -2,21 +2,25 @@ package client.scenes;
 
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 
 import java.util.List;
 
-public class TutorialScreenCtrl{
-    private final static double CIRCLE_DEFAULT = 0.25;
-    private final static double CIRCLE_SELECTED = 0.80;
+public class TutorialScreenCtrl {
+    private final static double INVISIBLE = 0;
+    private final static double DIM = 0.25;
+    private final static double VISIBLE = 1;
     private static final int NUMBER_OF_PANES = 5;
 
     private final MainCtrl mainCtrl;
-
-    private int currentNum;
-
+    @FXML
+    protected Button prev;
+    @FXML
+    protected Button next;
     @FXML
     protected Pane pane0;
     @FXML
@@ -37,9 +41,17 @@ public class TutorialScreenCtrl{
     protected Pane pane4;
     @FXML
     protected Circle dot4;
-    
+    @FXML
+    protected Line leftUp;
+    @FXML
+    protected Line leftDown;
+    @FXML
+    protected Line rightUp;
+    @FXML
+    protected Line rightDown;
     protected List<Pane> panes;
-    protected List<Circle> circles;
+    protected List<Circle> dots;
+    private int currentNum;
 
 
     @Inject
@@ -48,11 +60,11 @@ public class TutorialScreenCtrl{
     }
 
     /**
-     * Initialise the lists and reset to the first one
+     * Initialise the lists of panes and dots and reset to the first one of each
      */
     public void initialise() {
         panes = List.of(pane0, pane1, pane2, pane3, pane4);
-        circles = List.of(dot0, dot1, dot2, dot3, dot4);
+        dots = List.of(dot0, dot1, dot2, dot3, dot4);
         resetCurrentNum();
     }
 
@@ -75,23 +87,23 @@ public class TutorialScreenCtrl{
     }
 
     /**
-     * Switch to the previous circle
+     * Switch to the previous pane and circle
      */
     public void switchPrev() {
-        if(currentNum == 0) return;
+        if (currentNum == 0) return;
 
-        currentNum --;
-        showPane(currentNum);
+        currentNum--;
+        showPane();
     }
 
     /**
-     * Switch to the next pane
+     * Switch to the next pane and circle
      */
     public void switchNext() {
-        if(currentNum == 4) return;
+        if (currentNum == NUMBER_OF_PANES - 1) return;
 
-        currentNum ++;
-        showPane(currentNum);
+        currentNum++;
+        showPane();
     }
 
     /**
@@ -99,21 +111,47 @@ public class TutorialScreenCtrl{
      */
     public void resetCurrentNum() {
         this.currentNum = 0;
-        showPane(0);
+        showPane();
     }
 
     /**
      * Make the Pane and respective Circle visible and reset all others.
-     * @param num - index of the pane that will be shown
      */
-    private void showPane(int num) {
-        for(int i = 0; i < NUMBER_OF_PANES; i++) {
-            panes.get(i).setOpacity(0);
-            circles.get(i).setOpacity(CIRCLE_DEFAULT);
+    private void showPane() {
+        for (int i = 0; i < NUMBER_OF_PANES; i++) {
+            panes.get(i).setOpacity(INVISIBLE);
+            dots.get(i).setOpacity(DIM);
         }
 
-        panes.get(num).setOpacity(1);
-        circles.get(num).setOpacity(CIRCLE_SELECTED);
-
+        panes.get(currentNum).setOpacity(VISIBLE);
+        dots.get(currentNum).setOpacity(VISIBLE);
+        visibleButtons();
     }
+
+    /**
+     * Make the prev and next button available (or not) based on what the current pane is
+     */
+    private void visibleButtons() {
+        leftUp.setOpacity(VISIBLE);
+        leftDown.setOpacity(VISIBLE);
+        prev.setDisable(false);
+
+        rightUp.setOpacity(VISIBLE);
+        rightDown.setOpacity(VISIBLE);
+        next.setDisable(false);
+
+        if (currentNum == 0) {
+            leftUp.setOpacity(DIM);
+            leftDown.setOpacity(DIM);
+            prev.setDisable(true);
+            return;
+        }
+        if (currentNum == NUMBER_OF_PANES - 1) {
+            rightUp.setOpacity(DIM);
+            rightDown.setOpacity(DIM);
+            next.setDisable(true);
+            return;
+        }
+    }
+
 }

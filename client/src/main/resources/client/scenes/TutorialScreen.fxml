@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
@@ -7,32 +8,43 @@
 
 <AnchorPane prefHeight="460.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.TutorialScreenCtrl">
     <children>
-        <Button layoutX="580.0" layoutY="190.0" mnemonicParsing="false" onAction="#switchNext"  opacity="0.0" prefHeight="110.0" prefWidth="50.0" text="Next" />
-        <Button layoutX="20.0" layoutY="190.0" mnemonicParsing="false" onAction="#switchPrev"  opacity="0.0" prefHeight="110.0" prefWidth="50.0" text="Prev" />
+        <Line fx:id="leftUp" endX="55" endY="5" layoutX="-5.0" layoutY="220.0" startX="30" startY="30" strokeWidth="5.0" />
+        <Line fx:id="leftDown" endX="55" endY="55" layoutX="-5.0" layoutY="220.0" startX="30" startY="30" strokeWidth="5.0" />
+        <Line fx:id="rightUp" endX="55" endY="5" layoutX="545.0" layoutY="220.0" startX="80" startY="30" strokeWidth="5.0" />
+        <Line fx:id="rightDown" endX="55" endY="55" layoutX="545.0" layoutY="220.0" startX="80" startY="30" strokeWidth="5.0" />
+        <Button fx:id="next" layoutX="580.0" layoutY="190.0" mnemonicParsing="false" onAction="#switchNext" opacity="0.0" prefHeight="110.0" prefWidth="50.0" text="Next">
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor>
+        </Button>
+        <Button fx:id="prev" layoutX="20.0" layoutY="190.0" mnemonicParsing="false" onAction="#switchPrev" opacity="0.0" prefHeight="110.0" prefWidth="50.0" text="Prev">
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor>
+        </Button>
         <Circle fx:id="dot0" layoutX="200.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
         <Circle fx:id="dot1" layoutX="260.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
         <Circle fx:id="dot2" layoutX="320.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
         <Circle fx:id="dot3" layoutX="380.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
         <Circle fx:id="dot4" layoutX="440.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#back" prefHeight="30.0" prefWidth="42.0" text="Back" />
-        <Line endX="55" endY="55" layoutX="-5.0" layoutY="220.0" startX="30" startY="30" strokeWidth="5.0" />
-        <Line endX="55" endY="5" layoutX="-5.0" layoutY="220.0" startX="30" startY="30" strokeWidth="5.0" />
-        <Line endX="55" endY="55" layoutX="545.0" layoutY="220.0" startX="80" startY="30" strokeWidth="5.0" />
-        <Line endX="55" endY="5" layoutX="545.0" layoutY="220.0" startX="80" startY="30" strokeWidth="5.0" />
-      <Pane fx:id="pane0" layoutX="60.0" prefHeight="402.0" prefWidth="530.0">
-         <children>
-            <Label alignment="CENTER" layoutX="4.0" layoutY="14.0" prefHeight="58.0" prefWidth="530.0" text="Welcome to Quizzzz" textAlignment="CENTER">
-               <font>
-                  <Font size="40.0" />
-               </font>
-            </Label>
-            <Label layoutX="25.0" layoutY="85.0" prefHeight="318.0" prefWidth="490.0" text="This is a fast-paced game, where you answer questions with the theme of `Electricity`. This game was made to raise awareness of how much electricity we usually consume in our lives.&#10;&#10;You can choose to play either singleplayer and gain some insight into how much electricity you consume in your day-to-day life. Or, you can test your fast reflexes and skills in the `Time Attack` or maybe your perfect knowledge in `Survival`.&#10;&#10;You can also challenge your friends in a multiplayer game and use jokers to gain an advantage over them, but be careful the game can change at any moment." wrapText="true">
-               <font>
-                  <Font size="15.0" />
-               </font>
-            </Label>
-         </children>
-      </Pane>
+        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#back" prefHeight="30.0" prefWidth="42.0" text="Back">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
+        <Pane fx:id="pane0" layoutX="60.0" prefHeight="402.0" prefWidth="530.0">
+            <children>
+                <Label alignment="CENTER" layoutX="4.0" layoutY="14.0" prefHeight="58.0" prefWidth="530.0" text="Welcome to Quizzzz" textAlignment="CENTER">
+                    <font>
+                        <Font size="40.0" />
+                    </font>
+                </Label>
+                <Label layoutX="25.0" layoutY="85.0" prefHeight="318.0" prefWidth="490.0" text="This is a fast-paced game, where you answer questions with the theme of `Electricity`. This game was made to raise awareness of how much electricity we usually consume in our lives.&#10;&#10;You can choose to play either singleplayer and gain some insight into how much electricity you consume in your day-to-day life. Or, you can test your fast reflexes and skills in the `Time Attack` or maybe your perfect knowledge in `Survival`.&#10;&#10;You can also challenge your friends in a multiplayer game and use jokers to gain an advantage over them, but be careful the game can change at any moment." wrapText="true">
+                    <font>
+                        <Font size="15.0" />
+                    </font>
+                </Label>
+            </children>
+        </Pane>
         <Pane fx:id="pane1" layoutX="60.0" opacity="0.0" prefHeight="402.0" prefWidth="530.0">
             <children>
                 <Label alignment="CENTER" layoutX="4.0" layoutY="14.0" prefHeight="58.0" prefWidth="530.0" text="Default Game" textAlignment="CENTER">
