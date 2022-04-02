@@ -5,10 +5,13 @@ import commons.Answer;
 import commons.Question;
 import jakarta.ws.rs.BadRequestException;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
 
 import javax.inject.Inject;
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -24,6 +27,15 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
 
 
         this.initialTime = 60;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        colName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
+        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestTimeAttackScore)));
     }
 
     /**

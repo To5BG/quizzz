@@ -8,11 +8,14 @@ import commons.Answer;
 import commons.Question;
 import jakarta.ws.rs.BadRequestException;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
 import javax.inject.Inject;
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -28,6 +31,15 @@ public class SurvivalCtrl extends SingleplayerCtrl {
                         LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
         super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
         this.gamelives = 3;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        colName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
+        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSurvivalScore)));
     }
 
     /**
