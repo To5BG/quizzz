@@ -29,13 +29,15 @@ public class SessionController {
     private final SessionManager sm;
     private final Random random;
     private final ActivityController activityCtrl;
+    private final LeaderboardController leaderboardCtrl;
 
     public SessionController(Random random, PlayerRepository repo, String controllerConfig, SessionManager sm,
-                             ActivityController activityCtrl) {
+                             ActivityController activityCtrl, LeaderboardController leaderboardCtrl) {
         this.random = random;
         this.repo = repo;
         this.sm = sm;
         this.activityCtrl = activityCtrl;
+        this.leaderboardCtrl = leaderboardCtrl;
         if (!controllerConfig.equals("test")) {
             sm.save(new GameSession(GameSession.SessionType.SELECTING));
         }
@@ -66,15 +68,13 @@ public class SessionController {
         session.playersReady.set(0);
         if (session.sessionType == GameSession.SessionType.SINGLEPLAYER) {
             Player p = session.getPlayers().get(0);
-            p.bestSingleScore = Math.max(p.bestSingleScore, p.currentPoints);
-            repo.save(p);
+            leaderboardCtrl.updateBestSingleScore(p.id, p.currentPoints);
             System.out.println("removing session");
             removeSession(session.id);
         } else {
-            for (Player p : session.players) {
-                p.bestMultiScore = Math.max(p.bestMultiScore, p.currentPoints);
-                repo.save(p);
-            }
+            for (Player p : session.players) leaderboardCtrl.updateBestMultiScore(p.id, p.currentPoints);
+            leaderboardCtrl.commitMultiplayerUpdates();
+
             session.setSessionStatus(GameSession.SessionStatus.PAUSED);
             Thread t = new Thread(() -> {
                 try {
@@ -92,6 +92,7 @@ public class SessionController {
 
     /**
      * Update joker states of all players in the given session and award double points if applicable
+     *
      * @param session The session to operate on
      */
     private void updatePlayerJokers(GameSession session) {
@@ -119,6 +120,7 @@ public class SessionController {
 
     /**
      * Set all jokers of all player in the session to AVAILABLE
+     *
      * @param session The session to operate on
      */
     private void grantAllJokers(GameSession session) {
@@ -490,8 +492,9 @@ public class SessionController {
 
     /**
      * Get the state of jokers stored for a given player in a given session
+     *
      * @param sessionId The ID of the session
-     * @param playerId The ID of the player
+     * @param playerId  The ID of the player
      * @return The state of each joker the player has
      */
     @GetMapping("/{sessionId}/{playerId}/jokers")

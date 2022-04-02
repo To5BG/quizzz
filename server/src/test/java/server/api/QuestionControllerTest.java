@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class QuestionControllerTest {
     private QuestionController sut;
-    private TestPlayerRepository repo;
+    private TestPlayerRepository playerRepo;
     private SessionController sessionCtrl;
     private LeaderboardController leaderboardController;
     private static ActivityController activityCtrl;
@@ -33,10 +33,10 @@ public class QuestionControllerTest {
 
     @BeforeEach
     public void setupEach() {
-        repo = new TestPlayerRepository();
-        leaderboardController = new LeaderboardController(repo);
-        sessionCtrl = new SessionController(new Random(), repo, "test", new SessionManager(),
-                activityCtrl);
+        playerRepo = new TestPlayerRepository();
+        leaderboardController = new LeaderboardController(playerRepo);
+        sessionCtrl = new SessionController(new Random(), playerRepo, "test", new SessionManager(),
+                activityCtrl, new LeaderboardController(playerRepo));
 
         ResponseEntity<GameSession> cur = sessionCtrl.addSession(
                 new GameSession(GameSession.SessionType.MULTIPLAYER, List.of(new Player("test", 0))));

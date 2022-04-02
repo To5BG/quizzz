@@ -50,7 +50,7 @@ public class SessionControllerTest {
 
         stubSessionManager = new StubSessionManager();
         sut = new SessionController(random, playerRepo, "test", stubSessionManager,
-                new ActivityController(new Random(), activityRepo));
+                new ActivityController(new Random(), activityRepo), new LeaderboardController(playerRepo));
         first = new GameSession(GameSession.SessionType.MULTIPLAYER);
         waiting = new GameSession(GameSession.SessionType.WAITING_AREA);
     }

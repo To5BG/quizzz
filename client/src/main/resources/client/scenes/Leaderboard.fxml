@@ -10,11 +10,21 @@
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.scenes.LeaderBoardCtrl">
     <children>
-        <TableView id="allPoints" fx:id="allPlayers" layoutX="101.0" layoutY="89.0" prefHeight="271.0"
+        <TableView id="allPoints" fx:id="allPlayersSingleplayer" layoutX="101.0" layoutY="89.0" prefHeight="271.0"
                    prefWidth="397.0">
             <columns>
-                <TableColumn fx:id="colName" prefWidth="199.0" text="UserName"/>
-                <TableColumn fx:id="colPoint" prefWidth="196.0" text="Point"/>
+                <TableColumn fx:id="colNameSingleplayer" prefWidth="199.0" text="UserName"/>
+                <TableColumn fx:id="colPointSingleplayer" prefWidth="196.0" text="Point"/>
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            </columnResizePolicy>
+        </TableView>
+        <TableView id="allPoints" fx:id="allPlayersMultiplayer" layoutX="101.0" layoutY="89.0" prefHeight="271.0"
+                   prefWidth="397.0">
+            <columns>
+                <TableColumn fx:id="colNameMultiplayer" prefWidth="199.0" text="UserName"/>
+                <TableColumn fx:id="colPointMultiplayer" prefWidth="196.0" text="Point"/>
             </columns>
             <columnResizePolicy>
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
@@ -28,7 +38,7 @@
         </Label>
         <Button layoutX="526.0" layoutY="361.0" mnemonicParsing="false" onAction="#back" text="BACK"/>
         <Button fx:id="singleLeaderboard" layoutX="524.0" layoutY="125.0" mnemonicParsing="false"
-                onAction="#showSingleLeaderBoard" text="Single"/>
+                onAction="#showSingleLeaderboard" text="Single"/>
         <Button fx:id="multiLeaderboard" layoutX="524.0" layoutY="175.0" mnemonicParsing="false"
                 onAction="#showMultiLeaderboard" text="Multi-"/>
         <Button fx:id="elseLeaderboard" layoutX="524.0" layoutY="224.0" mnemonicParsing="false" prefHeight="26.0"

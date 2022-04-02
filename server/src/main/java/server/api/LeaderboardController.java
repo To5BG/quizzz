@@ -1,13 +1,18 @@
 package server.api;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import commons.Player;
+
+import org.springframework.data.util.Pair;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.context.request.async.DeferredResult;
 import server.database.PlayerRepository;
 
 import static server.Config.isNullOrEmpty;
@@ -18,6 +23,7 @@ import static server.Config.isNullOrEmpty;
 public class LeaderboardController {
 
     private final PlayerRepository repo;
+    private boolean multiChangesToCommit = false;
 
     /**
      * @param por the repository of players
@@ -58,7 +64,7 @@ public class LeaderboardController {
      * @return a list of all data about players in multi mode
      */
     @GetMapping(path = {"/multi"})
-    public ResponseEntity<List<Player>> getPlayerMultiScore() {
+    public ResponseEntity<List<Player>> getPlayerMultiScores() {
         var list = repo.findByOrderByBestMultiScoreDesc().stream()
                 .filter(player -> player.getBestMultiScore() != 0)
                 .collect(Collectors.toList());
@@ -154,8 +160,11 @@ public class LeaderboardController {
                                                         @RequestBody int points) {
         if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
         Player updatedPlayer = repo.findById(playerId).get();
-        updatedPlayer.setBestSingleScore(points);
-        repo.save(updatedPlayer);
+        if (points > updatedPlayer.getBestSingleScore()) {
+            updatedPlayer.setBestSingleScore(points);
+            repo.save(updatedPlayer);
+            listeners.forEach((k, l) -> l.accept(Pair.of("single", this.getPlayerSingleScores().getBody())));
+        }
         return ResponseEntity.ok(updatedPlayer);
     }
 
@@ -173,7 +182,43 @@ public class LeaderboardController {
         Player updatedPlayer = repo.findById(playerId).get();
         updatedPlayer.setBestMultiScore(points);
         repo.save(updatedPlayer);
+        if (points > updatedPlayer.getBestMultiScore()) {
+            updatedPlayer.setBestMultiScore(points);
+            repo.save(updatedPlayer);
+            multiChangesToCommit = true;
+        }
         return ResponseEntity.ok(updatedPlayer);
+    }
+
+    Map<Object, Consumer<Pair<String, List<Player>>>> listeners = new HashMap<>();
+
+    /**
+     * Register client listener for leaderboard updates
+     *
+     * @return DeferredResult that contains updates on leaderboard, if any
+     */
+    @GetMapping("/updates")
+    public DeferredResult<ResponseEntity<List<Player>>> getLeaderboardUpdates() {
+        var emptyContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        var res = new DeferredResult<ResponseEntity<List<Player>>>(5000L, emptyContent);
+
+        var k = new Object();
+        listeners.put(k, p -> {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-gamemodeType", p.getFirst());
+            res.setResult(new ResponseEntity<List<Player>>(p.getSecond(), headers, HttpStatus.OK));
+        });
+        res.onCompletion(() -> listeners.remove(k));
+        return res;
+    }
+
+    /**
+     * Informs clients of multiplayer best score changes once all transactions are committed
+     */
+    public void commitMultiplayerUpdates() {
+        if (!multiChangesToCommit) return;
+        listeners.forEach((k, l) -> l.accept(Pair.of("multi", this.getPlayerMultiScores().getBody())));
+        multiChangesToCommit = false;
     }
 
 }

@@ -194,7 +194,8 @@ public class MainCtrl {
     public void showLeaderboard() {
         primaryStage.setTitle("LeaderBoard");
         primaryStage.setScene(leaderBoardScreen);
-        leaderBoardCtrl.refreshSingle();
+        leaderBoardCtrl.registerForUpdates();
+        leaderBoardCtrl.refresh(null);
         leaderBoardScreen.setOnKeyPressed(e -> leaderBoardCtrl.keyPressed(e));
 
     }

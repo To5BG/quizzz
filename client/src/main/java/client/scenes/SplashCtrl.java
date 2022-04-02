@@ -43,7 +43,9 @@ public class SplashCtrl extends SceneCtrl {
     private final GameSessionUtils gameSessionUtils;
     private final LeaderboardUtils leaderboardUtils;
     private final QuestionUtils questionUtils;
+    private final LongPollingUtils longPollUtils;
     private final WebSocketsUtils webSocketsUtils;
+
     private final MainCtrl mainCtrl;
 
     private String url;
@@ -65,11 +67,13 @@ public class SplashCtrl extends SceneCtrl {
 
     @Inject
     public SplashCtrl(GameSessionUtils gameSessionUtils, LeaderboardUtils leaderboardUtils,
-                      QuestionUtils questionUtils, WebSocketsUtils webSocketsUtils, MainCtrl mainCtrl) {
+                      QuestionUtils questionUtils, LongPollingUtils longPollUtils,
+                      WebSocketsUtils webSocketsUtils, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
         this.leaderboardUtils = leaderboardUtils;
-        this.webSocketsUtils = webSocketsUtils;
         this.questionUtils = questionUtils;
+        this.longPollUtils = longPollUtils;
+        this.webSocketsUtils = webSocketsUtils;
         this.mainCtrl = mainCtrl;
     }
 
@@ -102,6 +106,7 @@ public class SplashCtrl extends SceneCtrl {
             gameSessionUtils.serverConnection = connURL;
             leaderboardUtils.serverConnection = connURL;
             questionUtils.serverConnection = connURL;
+            longPollUtils.serverConnection = connURL;
             webSocketsUtils.updateConnection(connURL);
             this.url = connURL;
             return true;
