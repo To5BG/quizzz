@@ -17,8 +17,12 @@ body {
     margin-bottom: 25px;
 }
 
-#btnCont > div, #inputCont > div {
+#btnCont > div {
     opacity: 0;
+}
+
+#inputCont > div {
+    display: none;
 }
 
 table {

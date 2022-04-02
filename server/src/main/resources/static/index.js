@@ -1,6 +1,6 @@
 /*------------------------- EVENT LISTENERS -------------------------*/
 
-let basePath = "http://localhost:8080/api/activities";
+let basePath = "/api/activities";
 
 addEventListener("load", _ => {
     for (let input of document.querySelectorAll("#inputCont input, #inputCont textarea")) {
@@ -43,7 +43,7 @@ function toggleContainer(contName) {
         else container.style.setProperty("opacity", "0");
     }
     for (let sibling of document.querySelectorAll("#inputCont > div")) {
-        sibling.style.setProperty("opacity", "0");
+        sibling.style.setProperty("display", "none");
     }
 }
 
@@ -51,15 +51,15 @@ function toggleInputForm(contName) {
     let children = document.getElementById("inputCont").children;
     for (let container of children) {
         if (container.id === contName) {
-            let newOpacity = 1 - container.style.getPropertyValue("opacity");
-            container.style.setProperty("opacity", newOpacity.toString());
+            const newValue = (container.style.getPropertyValue("display") === 'none' ? 'block' : 'none');
+            container.style.setProperty("display", newValue);
 
             for (let input of container.querySelectorAll("input,textarea")) {
-                if (newOpacity === 0) input.setAttribute("disabled", '');
+                if (newValue === 'none') input.setAttribute("disabled", '');
                 else input.removeAttribute("disabled");
             }
         } else {
-            container.style.setProperty("opacity", "0");
+            container.style.setProperty("display", "none");
             for (let input of container.querySelectorAll("input,textarea")) {
                 input.setAttribute("disabled", '');
             }
