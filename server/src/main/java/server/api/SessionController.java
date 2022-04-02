@@ -66,47 +66,47 @@ public class SessionController {
      */
     public void endSession(GameSession session) {
         session.playersReady.set(0);
-        if (session.sessionType == GameSession.SessionType.SINGLEPLAYER) {
-            Player p = session.getPlayers().get(0);
-            p.setBestSingleScore(Math.max(p.bestSingleScore, p.currentPoints));
-            p.setCurrentPoints(0);
-            repo.save(p);
-            System.out.println("removing session");
-            removeSession(session.id);
-        }
-        if (session.sessionType == GameSession.SessionType.TIME_ATTACK) {
-            Player p = session.getPlayers().get(0);
-            p.setBestTimeAttackScore(Math.max(p.bestTimeAttackScore, p.currentPoints));
-            p.setCurrentPoints(0);
-            repo.save(p);
-            System.out.println("removing session");
-            removeSession(session.id);
-        }
-        if (session.sessionType == GameSession.SessionType.SURVIVAL) {
-            Player p = session.getPlayers().get(0);
-            p.setBestSurvivalScore(Math.max(p.bestSurvivalScore, p.currentPoints));
-            p.setCurrentPoints(0);
-            repo.save(p);
-            System.out.println("removing session");
-            removeSession(session.id);
-        } else {
-            for (Player p : session.players) {
-                p.setBestMultiScore(Math.max(p.bestMultiScore, p.currentPoints));
+        switch (session.sessionType) {
+            case SINGLEPLAYER -> {
+                Player p = session.getPlayers().get(0);
+                p.setBestSingleScore(Math.max(p.bestSingleScore, p.currentPoints));
                 p.setCurrentPoints(0);
                 repo.save(p);
+                removeSession(session.id);
             }
-            session.setSessionStatus(GameSession.SessionStatus.PAUSED);
-            Thread t = new Thread(() -> {
-                try {
-                    Thread.sleep(1000L);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
+            case SURVIVAL -> {
+                Player p = session.getPlayers().get(0);
+                p.setBestSurvivalScore(Math.max(p.bestSurvivalScore, p.currentPoints));
+                p.setCurrentPoints(0);
+                repo.save(p);
+                removeSession(session.id);
+            }
+            case TIME_ATTACK -> {
+                Player p = session.getPlayers().get(0);
+                p.setBestTimeAttackScore(Math.max(p.bestTimeAttackScore, p.currentPoints));
+                p.setCurrentPoints(0);
+                repo.save(p);
+                removeSession(session.id);
+            }
+            default -> {
+                for (Player p : session.players) {
+                    p.setBestMultiScore(Math.max(p.bestMultiScore, p.currentPoints));
+                    p.setCurrentPoints(0);
+                    repo.save(p);
                 }
-                session.setSessionStatus(GameSession.SessionStatus.PLAY_AGAIN);
+                session.setSessionStatus(GameSession.SessionStatus.PAUSED);
+                Thread t = new Thread(() -> {
+                    try {
+                        Thread.sleep(1000L);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                    session.setSessionStatus(GameSession.SessionStatus.PLAY_AGAIN);
+                    updateSession(session);
+                });
+                t.start();
                 updateSession(session);
-            });
-            t.start();
-            updateSession(session);
+            }
         }
     }
 
