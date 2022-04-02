@@ -18,10 +18,14 @@ package client;
 import client.scenes.*;
 import com.google.inject.Injector;
 import javafx.application.Application;
+import javafx.scene.Parent;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.google.inject.Guice.createInjector;
 
@@ -37,39 +41,26 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
 
-        var splash = FXML.load
-                (SplashCtrl.class, "client", "scenes", "SplashScreen.fxml");
-        var multiplayer = FXML.load
-                (MultiplayerCtrl.class, "client", "scenes", "MultiplayerSession.fxml");
-        var singleplayer = FXML.load
-                (SingleplayerCtrl.class, "client", "scenes", "GameScreen.fxml");
-        var roomSelection = FXML.load
-                (RoomSelectionCtrl.class, "client", "scenes", "RoomSelection.fxml");
-        var waitingArea = FXML.load
-                (WaitingAreaCtrl.class, "client", "scenes", "WaitingAreaScreen.fxml");
-        var leaderboard = FXML.load
-                (LeaderBoardCtrl.class, "client", "scenes", "Leaderboard.fxml");
-        var webView = FXML.load
-                (WebViewCtrl.class, "client", "scenes", "WebViewScreen.fxml");
+        List<Pair<? extends SceneCtrl, Parent>> pairs = new ArrayList<>(List.of(
+                FXML.load(SplashCtrl.class, "client", "scenes", "SplashScreen.fxml"),
+                FXML.load(MultiplayerCtrl.class, "client", "scenes", "MultiplayerSession.fxml"),
+                FXML.load(RoomSelectionCtrl.class, "client","scenes","RoomSelection.fxml"),
+                FXML.load(SingleplayerCtrl.class, "client", "scenes", "GameScreen.fxml"),
+                FXML.load(WaitingAreaCtrl.class, "client", "scenes", "WaitingAreaScreen.fxml"),
+                FXML.load(LeaderBoardCtrl.class, "client", "scenes", "Leaderboard.fxml"),
+                FXML.load(WebViewCtrl.class, "client", "scenes", "WebViewScreen.fxml")
+        ));
 
-
-        primaryStage.setOnHidden(e -> {
-            try {
-                waitingArea.getKey().shutdown();
-            } catch (Exception exit) {
+        primaryStage.setOnCloseRequest(e -> {
+            for (var pair: pairs) {
                 try {
-                    multiplayer.getKey().shutdown();
-                } catch (Exception exit2) {
-                    try {
-                        singleplayer.getKey().shutdown();
-                    } catch (Exception exit3) {
-                    }
+                    pair.getKey().shutdown();
+                } catch (Exception ignored) {
                 }
             }
         });
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, splash, multiplayer, roomSelection,
-                waitingArea, singleplayer, leaderboard, webView);
+        mainCtrl.initialize(primaryStage, pairs);
     }
 }

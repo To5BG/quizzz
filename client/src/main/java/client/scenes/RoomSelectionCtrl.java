@@ -17,7 +17,7 @@ import java.net.URL;
 import java.util.Random;
 import java.util.ResourceBundle;
 
-public class RoomSelectionCtrl implements Initializable {
+public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
 
     private final GameSessionUtils gameSessionUtils;
     private final MainCtrl mainCtrl;
@@ -53,10 +53,16 @@ public class RoomSelectionCtrl implements Initializable {
 
 
     /**
-     * Reverts the player to the splash screen.
+     * {@inheritDoc}
+     */
+    public void shutdown() {
+        gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public void back() {
-        gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
         mainCtrl.showSplash();
         notCancel = false;
     }

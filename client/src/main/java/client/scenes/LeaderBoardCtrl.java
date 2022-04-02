@@ -32,7 +32,7 @@ import javafx.scene.input.KeyEvent;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class LeaderBoardCtrl implements Initializable {
+public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
 
     private final LeaderboardUtils leaderboardUtils;
     private final MainCtrl mainCtrl;
@@ -77,9 +77,17 @@ public class LeaderBoardCtrl implements Initializable {
     }
 
     /**
-     * Created for be 'Back' button which makes the player back to the splash screen
+     * {@inheritDoc}
+     */
+    public void shutdown() {
+        // ENSURE STABLE SHUTDOWN
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public void back() {
+        shutdown();
         mainCtrl.showSplash();
     }
 

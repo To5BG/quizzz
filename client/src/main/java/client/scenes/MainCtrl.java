@@ -23,6 +23,7 @@ import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -49,39 +50,38 @@ public class MainCtrl {
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
      *
-     * @param primaryStage store base stage of the application
-     * @param splash       Controller and Scene pair for the splash screen of the application
-     * @param multi        Controller and Scene pair for the multiplayer screen of the application
-     * @param leaderboard  Controller and Scene pair for the leaderboard screen of the application
+     * @param primaryStage Base stage of the application
+     * @param pairs        List of all controller-scene pairs
      */
-    public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
-                           Pair<MultiplayerCtrl, Parent> multi,
-                           Pair<RoomSelectionCtrl, Parent> rooms,
-                           Pair<WaitingAreaCtrl, Parent> wait,
-                           Pair<SingleplayerCtrl, Parent> single,
-                           Pair<LeaderBoardCtrl, Parent> leaderboard,
-                           Pair<WebViewCtrl, Parent> webView) {
+    public void initialize(Stage primaryStage, List<Pair<? extends SceneCtrl, Parent>> pairs) {
         this.primaryStage = primaryStage;
 
-        this.splashCtrl = splash.getKey();
+        var splash = pairs.get(0);
+        this.splashCtrl = (SplashCtrl) pairs.get(0).getKey();
         this.splashScreen = new Scene(splash.getValue());
 
-        this.multiplayerCtrl = multi.getKey();
+        var multi = pairs.get(1);
+        this.multiplayerCtrl = (MultiplayerCtrl) multi.getKey();
         this.multiPlayerScreen = new Scene(multi.getValue());
 
-        this.roomSelectionCtrl = rooms.getKey();
-        this.roomSelectionScreen = new Scene(rooms.getValue());
+        var roomsel = pairs.get(2);
+        this.roomSelectionCtrl = (RoomSelectionCtrl) roomsel.getKey();
+        this.roomSelectionScreen = new Scene(roomsel.getValue());
 
-        this.waitingAreaCtrl = wait.getKey();
-        this.waitingAreaScreen = new Scene(wait.getValue());
-
-        this.singlePlayerCtrl = single.getKey();
+        var single = pairs.get(3);
+        this.singlePlayerCtrl = (SingleplayerCtrl) single.getKey();
         this.singlePlayerScreen = new Scene(single.getValue());
 
-        this.leaderBoardCtrl = leaderboard.getKey();
+        var wait = pairs.get(4);
+        this.waitingAreaCtrl = (WaitingAreaCtrl) wait.getKey();
+        this.waitingAreaScreen = new Scene(wait.getValue());
+
+        var leaderboard = pairs.get(5);
+        this.leaderBoardCtrl = (LeaderBoardCtrl) leaderboard.getKey();
         this.leaderBoardScreen = new Scene(leaderboard.getValue());
 
-        this.webViewCtrl = webView.getKey();
+        var webView = pairs.get(6);
+        this.webViewCtrl = (WebViewCtrl) webView.getKey();
         this.webViewScreen = new Scene(webView.getValue());
 
         confirmClose();

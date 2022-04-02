@@ -33,7 +33,7 @@ import javafx.scene.input.KeyEvent;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class WaitingAreaCtrl implements Initializable {
+public class WaitingAreaCtrl extends SceneCtrl implements Initializable {
 
     private final GameSessionUtils gameSessionUtils;
     private final MainCtrl mainCtrl;
@@ -66,7 +66,7 @@ public class WaitingAreaCtrl implements Initializable {
     }
 
     /**
-     * Removes player from session. Also called if controller is closed forcibly
+     * {@inheritDoc}
      */
     public void shutdown() {
         if (readyButton.getText().equals("Not Ready")) gameSessionUtils.toggleReady(waitingId, false);
@@ -75,7 +75,7 @@ public class WaitingAreaCtrl implements Initializable {
     }
 
     /**
-     * Reverts the player to the splash screen and remove him from the current game session.
+     * {@inheritDoc}
      */
     public void back() {
         long id = playerId;

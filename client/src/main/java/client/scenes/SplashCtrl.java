@@ -15,10 +15,7 @@
  */
 package client.scenes;
 
-import client.utils.GameSessionUtils;
-import client.utils.LeaderboardUtils;
-import client.utils.QuestionUtils;
-import client.utils.WebSocketsUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.GameSession;
 import commons.Player;
@@ -41,7 +38,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SplashCtrl {
+public class SplashCtrl extends SceneCtrl {
 
     private final GameSessionUtils gameSessionUtils;
     private final LeaderboardUtils leaderboardUtils;
@@ -273,5 +270,21 @@ public class SplashCtrl {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void shutdown() {
+        // ENSURE STABLE SHUTDOWN
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void back() {
+        shutdown();
     }
 }
