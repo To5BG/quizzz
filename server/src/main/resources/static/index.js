@@ -363,7 +363,6 @@ function postZipFile(event) {
     let alertMsg = document.querySelector("#alertMsg");
     let fileReader = new FileReader();
     fileReader.onload = function () {
-        console.log("Got here.")
         let res = fileReader.result;
         try {
             uploadZip(res)
