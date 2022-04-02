@@ -130,20 +130,8 @@ public class MainCtrl {
         primaryStage.setScene(roomSelectionScreen);
         roomSelectionScreen.setOnKeyPressed(e -> roomSelectionCtrl.keyPressed(e));
         roomSelectionCtrl.setPlayerId(playerId);
-        roomSelectionCtrl.setNotCancel(true);
-
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    try {
-                        if (!roomSelectionCtrl.refresh()) cancel();
-                    } catch (Exception e) {
-                        cancel();
-                    }
-                });
-            }
-        }, 0, 500);
+        roomSelectionCtrl.registerForUpdates();
+        roomSelectionCtrl.refresh(null);
     }
 
     /**

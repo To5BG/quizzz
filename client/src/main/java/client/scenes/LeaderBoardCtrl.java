@@ -96,7 +96,7 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
      * {@inheritDoc}
      */
     public void shutdown() {
-        longPollUtils.haltUpdates();
+        longPollUtils.haltUpdates("leaderboard");
     }
 
     /**

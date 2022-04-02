@@ -18,6 +18,7 @@ package server.api;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.OK;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import commons.*;
@@ -130,11 +131,11 @@ public class SessionControllerTest {
 
         var newSession = sut.getAvailableSessions();
         // make sure fetch returns null if no sessions were added
-        assertEquals(sut.getAvailableSessions().getBody(), null);
+        assertEquals(sut.getAvailableSessions().getBody(), new ArrayList<GameSession>());
 
         //make sure it does not fetch non waiting rooms
         sut.addSession(first);
-        assertEquals(sut.getAvailableSessions().getBody(), null);
+        assertEquals(sut.getAvailableSessions().getBody(), new ArrayList<GameSession>());
 
         sut.addSession(waiting);
         var availableSession = sut.getAvailableSessions().getBody();

@@ -4,10 +4,12 @@ import commons.GameSession;
 import commons.Joker;
 import commons.Player;
 import commons.Question;
-import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.data.util.Pair;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 import server.database.PlayerRepository;
 import server.service.QuestionGenerator;
 import server.service.SessionManager;
@@ -17,6 +19,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static server.Config.isNullOrEmpty;
@@ -53,9 +56,9 @@ public class SessionController {
         session.difficultyFactor = session.questionCounter / 4 + 1;
         session.questionCounter++;
         Pair<Question, List<Long>> res = QuestionGenerator.generateQuestion(session.difficultyFactor, activityCtrl);
-        session.currentQuestion = res.getKey();
+        session.currentQuestion = res.getFirst();
         session.expectedAnswers.clear();
-        session.expectedAnswers.addAll(res.getValue());
+        session.expectedAnswers.addAll(res.getSecond());
         updateSession(session);
     }
 
@@ -222,6 +225,7 @@ public class SessionController {
     public ResponseEntity<GameSession> addWaitingArea(@RequestBody GameSession session) {
         repo.save(session.players.get(0));
         GameSession saved = sm.save(session);
+        listeners.forEach((k, l) -> l.accept(Pair.of("add", saved)));
         return ResponseEntity.ok(saved);
     }
 
@@ -234,8 +238,7 @@ public class SessionController {
     public ResponseEntity<List<GameSession>> getAvailableSessions() {
         var sessions = sm.getValues().stream()
                 .filter(s -> s.sessionType == GameSession.SessionType.WAITING_AREA).toList();
-        if (sessions.isEmpty()) return ResponseEntity.ok(null);
-        else return ResponseEntity.ok(sessions);
+        return ResponseEntity.ok(sessions);
     }
 
     /**
@@ -258,7 +261,9 @@ public class SessionController {
      */
     @DeleteMapping({"/{id}"})
     public ResponseEntity<GameSession> removeSession(@PathVariable("id") long id) {
-        return ResponseEntity.ok(sm.delete(id));
+        GameSession removedSession = sm.delete(id);
+        if (removedSession != null) listeners.forEach((k, l) -> l.accept(Pair.of("remove", removedSession)));
+        return ResponseEntity.ok(removedSession);
     }
 
     /**
@@ -341,6 +346,7 @@ public class SessionController {
             advanceRounds(session);
         }
         updateSession(session);
+        if (session.id != 1) listeners.forEach((k, l) -> l.accept(Pair.of("update", session)));
         return ResponseEntity.ok(session);
     }
 
@@ -400,6 +406,7 @@ public class SessionController {
 
         session.addPlayer(player);
         repo.save(player);
+        if (session.id != 1) listeners.forEach((k,l) -> l.accept(Pair.of("update", session)));
         return ResponseEntity.ok(player);
     }
 
@@ -424,6 +431,7 @@ public class SessionController {
             removeSession(session.id);
         } else {
             updateSession(session);
+            if (session.id != 1) listeners.forEach((k,l) -> l.accept(Pair.of("update", session)));
         }
         return ResponseEntity.ok(player);
     }
@@ -506,5 +514,26 @@ public class SessionController {
         if (player.isEmpty()) return ResponseEntity.badRequest().build();
         Player p = player.get();
         return ResponseEntity.ok(p.jokerStates);
+    }
+
+    Map<Object, Consumer<Pair<String,GameSession>>> listeners = new HashMap<>();
+    /**
+     * Register client listener for selection room updates
+     *
+     * @return DeferredResult that contains updates on selection room, if any
+     */
+    @GetMapping("/updates")
+    public DeferredResult<ResponseEntity<GameSession>> getLeaderboardUpdates() {
+        var emptyContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        var res = new DeferredResult<ResponseEntity<GameSession>>(2000L, emptyContent);
+
+        var k = new Object();
+        listeners.put(k, p -> {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-operation", p.getFirst());
+            res.setResult(new ResponseEntity<GameSession>(p.getSecond(), headers, HttpStatus.OK));
+        });
+        res.onCompletion(() -> listeners.remove(k));
+        return res;
     }
 }

@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.GameSessionUtils;
+import client.utils.LongPollingUtils;
 import com.google.inject.Inject;
 import commons.GameSession;
 import commons.Player;
@@ -8,10 +9,10 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyEvent;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.net.URL;
 import java.util.Random;
@@ -20,10 +21,10 @@ import java.util.ResourceBundle;
 public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
 
     private final GameSessionUtils gameSessionUtils;
+    private LongPollingUtils longPollUtils;
     private final MainCtrl mainCtrl;
 
     private long playerId;
-    private boolean notCancel;
 
     @FXML
     private TableView<GameSession> availableRooms;
@@ -31,10 +32,10 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
     private TableColumn<GameSession, String> roomNumber;
 
     @Inject
-    public RoomSelectionCtrl(GameSessionUtils gameSessionUtils, MainCtrl mainCtrl) {
+    public RoomSelectionCtrl(GameSessionUtils gameSessionUtils, LongPollingUtils longPollUtils, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
+        this.longPollUtils = longPollUtils;
         this.mainCtrl = mainCtrl;
-        notCancel = true;
     }
 
     @Override
@@ -57,14 +58,15 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
      */
     public void shutdown() {
         gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
+        longPollUtils.haltUpdates("selectionRoom");
     }
 
     /**
      * {@inheritDoc}
      */
     public void back() {
+        shutdown();
         mainCtrl.showSplash();
-        notCancel = false;
     }
 
     /**
@@ -79,23 +81,6 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
     }
 
     /**
-     * Refresh the list of available waiting rooms
-     *
-     * @return True iff the refresh should continue
-     */
-    public boolean refresh() {
-        var roomList = gameSessionUtils.getAvailableSessions();
-        if (roomList == null || roomList.isEmpty()) {
-            availableRooms.setPlaceholder(new Label("No games here, try hosting one instead..."));
-            availableRooms.setItems(null);
-            return notCancel;
-        }
-        var data = FXCollections.observableList(roomList);
-        availableRooms.setItems(data);
-        return notCancel;
-    }
-
-    /**
      * Initialize setup for main controller's showWaitingArea() method. Creates a new session.
      */
     public void hostRoom() {
@@ -104,8 +89,8 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
         session.addPlayer(player);
         session = gameSessionUtils.addWaitingRoom(session);
         long waitingId = session.id;
+        longPollUtils.haltUpdates("selectionRoom");
         mainCtrl.showWaitingArea(playerId, waitingId);
-        notCancel = false;
     }
 
     /**
@@ -150,16 +135,43 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
                     .stream().filter(p -> p.username.equals(player.username))
                     .findFirst().get().id;
         }
+        longPollUtils.haltUpdates("selectionRoom");
         mainCtrl.showWaitingArea(playerId, waitingId);
-        notCancel = false;
     }
 
     /**
-     * Setter for notCancel
+     * Refresh the list of available waiting rooms
      *
-     * @param notCancel
+     * @return True iff the refresh should continue
      */
-    public void setNotCancel(boolean notCancel) {
-        this.notCancel = notCancel;
+    public void refresh(Pair<String, GameSession> update) {
+        if (update == null) {
+            availableRooms.setItems(FXCollections.observableList(gameSessionUtils.getAvailableSessions()));
+            return;
+        }
+        String op = update.getKey();
+        GameSession room = update.getValue();
+        switch (op) {
+            case "[add]" -> availableRooms.getItems().add(room);
+            case "[remove]" -> {
+                for (GameSession gs : availableRooms.getItems()) {
+                    if (gs.id == room.id) availableRooms.getItems().remove(gs);
+                    break;
+                }
+            }
+            case "[update]" -> {
+                for (GameSession gs : availableRooms.getItems()) {
+                    if (gs.id == room.id) gs = room;
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Registers clients for session selection updates
+     */
+    public void registerForUpdates() {
+        longPollUtils.registerForSelectionRoomUpdates(this::refresh);
     }
 }
