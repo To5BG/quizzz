@@ -262,4 +262,11 @@ public class SplashCtrl {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Show the tutorial page
+     */
+    public void showTutorial() {
+        mainCtrl.showTutorial();
+    }
 }

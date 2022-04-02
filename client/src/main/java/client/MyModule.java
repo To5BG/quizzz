@@ -38,5 +38,6 @@ public class MyModule implements Module {
         binder.bind(GamemodeCtrl.class).in(Scopes.SINGLETON);
         binder.bind(SurvivalCtrl.class).in(Scopes.SINGLETON);
         binder.bind(TimeAttackCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(TutorialScreenCtrl.class).in(Scopes.SINGLETON);
     }
 }

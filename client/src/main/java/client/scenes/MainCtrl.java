@@ -52,6 +52,8 @@ public class MainCtrl {
     private Scene leaderBoardScreen;
     private WebViewCtrl webViewCtrl;
     private Scene webViewScreen;
+    private TutorialScreenCtrl tutorialCtrl;
+    private Scene tutorialScreen;
 
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
@@ -67,6 +69,7 @@ public class MainCtrl {
      * @param survival     Controller and Scene pair for the survival gamescreen of the application
      * @param leaderboard  Controller and Scene pair for the leaderboard screen of the application
      * @param webView      Controller and Scene pair for the webview screen of the application
+     * @param tutorial     Controller and Scene pair for the tutorial screen of the application
      */
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
                            Pair<MultiplayerCtrl, Parent> multi,
@@ -77,7 +80,8 @@ public class MainCtrl {
                            Pair<TimeAttackCtrl, Parent> timeAttack,
                            Pair<SurvivalCtrl, Parent> survival,
                            Pair<LeaderBoardCtrl, Parent> leaderboard,
-                           Pair<WebViewCtrl, Parent> webView) {
+                           Pair<WebViewCtrl, Parent> webView,
+                           Pair<TutorialScreenCtrl, Parent> tutorial) {
         this.primaryStage = primaryStage;
 
         this.splashCtrl = splash.getKey();
@@ -109,6 +113,10 @@ public class MainCtrl {
 
         this.webViewCtrl = webView.getKey();
         this.webViewScreen = new Scene(webView.getValue());
+
+
+        this.tutorialCtrl = tutorial.getKey();
+        this.tutorialScreen = new Scene(tutorial.getValue());
 
         confirmClose();
         showSplash();
@@ -271,6 +279,16 @@ public class MainCtrl {
         primaryStage.setScene(webViewScreen);
         webViewCtrl.setPage(url);
         webViewCtrl.loadPage();
+    }
+
+    /**
+     * Sets the current scene to the tutorial screen
+     */
+    public void showTutorial() {
+        tutorialCtrl.initialise();
+        primaryStage.setTitle("Tutorial Screen");
+        primaryStage.setScene(tutorialScreen);
+        tutorialScreen.setOnKeyPressed(e -> tutorialCtrl.keyPressed(e));
     }
 
     /**
