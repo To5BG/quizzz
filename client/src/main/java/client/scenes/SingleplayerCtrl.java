@@ -4,6 +4,7 @@ import client.utils.GameSessionUtils;
 import client.utils.LeaderboardUtils;
 import client.utils.QuestionUtils;
 import client.utils.WebSocketsUtils;
+import commons.Joker;
 import commons.Player;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -93,6 +94,8 @@ public class SingleplayerCtrl extends GameCtrl {
         decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
         gameSessionUtils.updateTimeJokers(sessionId, 1);
+        String username = leaderboardUtils.getPlayerByIdInLeaderboard(playerId).getUsername();
+        gameSessionUtils.addUsedJoker(sessionId, new Joker(username, "DecreaseTimeJoker"));
     }
 
     /**
@@ -102,5 +105,11 @@ public class SingleplayerCtrl extends GameCtrl {
         var players = leaderboardUtils.getPlayerSingleScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
+    }
+
+    @Override
+    protected String getJokerDisplayName(String jokerName) {
+        if (jokerName.equals("DecreaseTimeJoker")) return "Increase time";
+        return super.getJokerDisplayName(jokerName);
     }
 }

@@ -43,6 +43,7 @@
                 onAction="#decreaseTime" prefHeight="26.0" prefWidth="103.0" text="Decrease Time"/>
         <Button fx:id="doublePointsButton" layoutX="546.0" layoutY="308.0" mnemonicParsing="false"
                 onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points"/>
+        <Label fx:id="jokerRefreshLabel" layoutX="220.0" layoutY="335.0"/>
         <ImageView fx:id="imagePanel" fitHeight="156.0" fitWidth="177.0" layoutX="463.0" layoutY="66.0"
                    pickOnBounds="true" preserveRatio="true"/>
         <ImageView fx:id="emojiFunny" fitHeight="60.0" fitWidth="60.0" layoutX="14.0" layoutY="321.0"
