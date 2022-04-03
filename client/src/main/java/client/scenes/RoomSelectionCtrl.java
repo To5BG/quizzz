@@ -53,12 +53,18 @@ public class RoomSelectionCtrl implements Initializable {
         this.playerId = playerId;
     }
 
+    /**
+     * Removes player from the selection session
+     */
+    public void shutdown() {
+        gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
+    }
 
     /**
      * Reverts the player to the splash screen.
      */
     public void back() {
-        gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
+        shutdown();
         mainCtrl.showSplash();
         notCancel = false;
     }
