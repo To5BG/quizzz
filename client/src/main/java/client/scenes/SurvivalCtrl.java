@@ -5,8 +5,6 @@ import client.utils.LeaderboardUtils;
 import client.utils.QuestionUtils;
 import client.utils.WebSocketsUtils;
 import commons.Answer;
-import commons.Question;
-import jakarta.ws.rs.BadRequestException;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -71,25 +69,8 @@ public class SurvivalCtrl extends SingleplayerCtrl {
      * Loads a question and starts reading time.
      */
     public void loadQuestion() {
-        disableButton(submitButton, true);
-        this.answerArea.getChildren().clear();
-
-        try {
-            Question q = this.questionUtils.fetchOneQuestion(this.sessionId);
-            this.currentQuestion = q;
-            renderGeneralInformation(q);
-            renderQuestionCount();
-            renderLivesCount();
-            countdown();
-        } catch (BadRequestException ignore) { /* happens when session is removed before question is loaded */ }
-    }
-
-    /**
-     * Submit button click event handler
-     */
-    @Override
-    public void submitAnswerButton() {
-        submitAnswer(false);
+        renderLivesCount();
+        super.loadQuestion();
     }
 
     /**
@@ -145,21 +126,6 @@ public class SurvivalCtrl extends SingleplayerCtrl {
                 });
             }
         }, GAME_ROUND_DELAY * 1000);
-    }
-
-    /**
-     * Updates the point counter in client side, and then updates database entry
-     */
-    public void updatePoints() {
-        points += evaluation.points;
-        renderPoints();
-    }
-
-    /**
-     * Called when player points are rendered or updated
-     */
-    public void renderPoints() {
-        pointsLabel.setText(String.format("Points: %d", this.points));
     }
 
     /**
