@@ -27,9 +27,9 @@ public abstract class GameCtrl implements Initializable {
     protected final static int MIDGAME_BREAK_TIME = 6;
     protected final static int TIMER_UPDATE_INTERVAL_MS = 50;
     protected final static int GAME_ROUND_DELAY = 2;
-    protected final static int IN_GAME_LEADERBOARD_WIDTH = 188;
+    protected final static int IN_GAME_LEADERBOARD_WIDTH = 193;
     protected final static int IN_GAME_COLUSERNAME_WIDTH = 92;
-    protected final static int MID_GAME_LEADERBOARD_WIDTH = 644;
+    protected final static int MID_GAME_LEADERBOARD_WIDTH = 649;
     protected final static int MID_GAME_COLUSERNAME_WIDTH = 548;
 
     @FXML
@@ -563,6 +563,7 @@ public abstract class GameCtrl implements Initializable {
                     } else if (rounds == GameSession.gameRounds / 2 &&
                             gameSessionUtils.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
                         displayMidGameScreen();
+                        countdown.setOpacity(0);
                     } else {
                         handleNextRound();
                     }

@@ -257,6 +257,7 @@ public class MultiplayerCtrl extends GameCtrl {
      */
     @Override
     public void removeMidGameLeaderboard() {
+        countdown.setOpacity(1);
         leaderboard.setPrefWidth(IN_GAME_LEADERBOARD_WIDTH);
         colUserName.setPrefWidth(IN_GAME_COLUSERNAME_WIDTH);
         super.removeMidGameLeaderboard();
@@ -363,6 +364,7 @@ public class MultiplayerCtrl extends GameCtrl {
     @Override
     public void showEndScreen() {
         displayLeaderboard();
+        countdown.setOpacity(0);
         backButton.setOpacity(0);
         backButton.setDisable(true);
         leaveButton.setOpacity(1);
