@@ -210,18 +210,18 @@ public class GameSessionUtils {
     }
 
     /**
-     * Resets a session's questionCounter
+     * Sets a session's questionCounter
      *
      * @param sessionId The id of the session
+     * @param count     The count to be set
      * @return The updated session
      */
-    public GameSession resetQuestionCounter(long sessionId) {
+    public GameSession setQuestionCounter(long sessionId, int count) {
         return ClientBuilder.newClient(new ClientConfig())
-                .target(serverConnection).path("api/sessions/" + sessionId + "/reset")
+                .target(serverConnection).path("api/sessions/" + sessionId + "/set")
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
-                .get(new GenericType<GameSession>() {
-                });
+                .put(Entity.entity(count, APPLICATION_JSON), GameSession.class);
     }
 
     /**
@@ -282,5 +282,20 @@ public class GameSessionUtils {
                 .accept(APPLICATION_JSON)
                 .get(new GenericType<Map<String, Joker.JokerStatus>>() {
                 });
+    }
+
+    /**
+     * Sets the game rounds for a session.
+     *
+     * @param sessionId The id of the session.
+     * @param rounds    The rounds to be set.
+     * @return The updated session.
+     */
+    public GameSession setGameRounds(long sessionId, int rounds) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(serverConnection).path("api/sessions/" + sessionId + "/rounds")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(rounds, APPLICATION_JSON), GameSession.class);
     }
 }
