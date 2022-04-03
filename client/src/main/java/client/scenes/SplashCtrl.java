@@ -20,7 +20,6 @@ import client.utils.LeaderboardUtils;
 import client.utils.QuestionUtils;
 import client.utils.WebSocketsUtils;
 import com.google.inject.Inject;
-import commons.GameSession;
 import commons.Player;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -48,6 +47,8 @@ public class SplashCtrl {
     private final QuestionUtils questionUtils;
     private final WebSocketsUtils webSocketsUtils;
     private final MainCtrl mainCtrl;
+
+    private String url;
 
     @FXML
     private TextField usernameField;
@@ -104,6 +105,7 @@ public class SplashCtrl {
             leaderboardUtils.serverConnection = connURL;
             questionUtils.serverConnection = connURL;
             webSocketsUtils.updateConnection(connURL);
+            this.url = connURL;
             return true;
         } catch (Exception e) {
             alertFailedConnection();
@@ -196,28 +198,27 @@ public class SplashCtrl {
     }
 
     /**
-     * Initialize setup for main controller's showSinglePlayer() method.
+     * Initialize setup for main controller's showGamemodeScreen() method.
      * In case a player enters an invalid/blank username, or if the username is used in an active game session, they are
      * not added to the session, instead being prompted to change their username.
      */
-    public void showSinglePlayer() {
+    public void showGamemodeScreen() {
         if (!establishConnection()) return;
         String newUserName = usernameField.getText();
         Optional<Player> playerResult = generatePlayer(newUserName);
         if (playerResult.isEmpty()) return;
 
-        GameSession newSession = new GameSession(GameSession.SessionType.SINGLEPLAYER);
-        newSession = gameSessionUtils.addSession(newSession);
-        gameSessionUtils.addPlayer(newSession.id, playerResult.get());
-
+        gameSessionUtils.addPlayer(MainCtrl.SELECTION_ID, playerResult.get());
         long playerId = playerResult.get().id;
 
         if (playerId == 0L) {
             playerId = gameSessionUtils
-                    .getPlayers(newSession.id).get(0).id;
+                    .getPlayers(MainCtrl.SELECTION_ID)
+                    .stream().filter(p -> p.username.equals(newUserName))
+                    .findFirst().get().id;
         }
 
-        mainCtrl.showSinglePlayer(newSession.id, playerId);
+        mainCtrl.showGamemodeScreen(playerId);
     }
 
     /**
@@ -246,6 +247,14 @@ public class SplashCtrl {
     }
 
     /**
+     * Show the edit activities page
+     */
+    public void showWebView() {
+        if (!establishConnection()) return;
+        mainCtrl.showWebView(this.url);
+    }
+
+    /**
      * Autofill the usernameField with the saved username from the 'username.txt' file, if it exists.g
      */
     public void retrieveSavedName() {
@@ -262,5 +271,12 @@ public class SplashCtrl {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Show the tutorial page
+     */
+    public void showTutorial() {
+        mainCtrl.showTutorial();
     }
 }

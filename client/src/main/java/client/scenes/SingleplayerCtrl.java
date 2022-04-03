@@ -4,11 +4,13 @@ import client.utils.GameSessionUtils;
 import client.utils.LeaderboardUtils;
 import client.utils.QuestionUtils;
 import client.utils.WebSocketsUtils;
+import commons.Joker;
 import commons.Player;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
@@ -18,13 +20,13 @@ import java.util.ResourceBundle;
 
 public class SingleplayerCtrl extends GameCtrl {
 
-    private ObservableList<Player> data;
+    protected ObservableList<Player> data;
     @FXML
-    private TableView<Player> allPlayers;
+    protected TableView<Player> allPlayers;
     @FXML
-    private TableColumn<Player, String> colName;
+    protected TableColumn<Player, String> colName;
     @FXML
-    private TableColumn<Player, String> colPoint;
+    protected TableColumn<Player, String> colPoint;
 
     @Inject
     public SingleplayerCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
@@ -61,6 +63,19 @@ public class SingleplayerCtrl extends GameCtrl {
     }
 
     /**
+     * Sends player to splash screen, along with an alert that the game has ended, with their points total
+     */
+    @Override
+    public void handleGameEnd() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Game Over");
+        alert.setHeaderText("You have been redirected to the splash screen");
+        alert.setContentText("Your score was : " + points);
+        alert.show();
+        super.handleGameEnd();
+    }
+
+    /**
      * Empty method because singleplayer mode does not have an end screen.
      */
     @Override
@@ -93,6 +108,8 @@ public class SingleplayerCtrl extends GameCtrl {
         decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
         gameSessionUtils.updateTimeJokers(sessionId, 1);
+        String username = leaderboardUtils.getPlayerByIdInLeaderboard(playerId).getUsername();
+        gameSessionUtils.addUsedJoker(sessionId, new Joker(username, "DecreaseTimeJoker"));
     }
 
     /**
@@ -102,5 +119,11 @@ public class SingleplayerCtrl extends GameCtrl {
         var players = leaderboardUtils.getPlayerSingleScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
+    }
+
+    @Override
+    protected String getJokerDisplayName(String jokerName) {
+        if (jokerName.equals("DecreaseTimeJoker")) return "Increase time";
+        return super.getJokerDisplayName(jokerName);
     }
 }

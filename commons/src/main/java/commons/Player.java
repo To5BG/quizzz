@@ -6,31 +6,50 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
 public class Player {
+
+    private static final String[] JOKER_NAMES = { "DecreaseTimeJoker", "DoublePointsJoker", "RemoveOneAnswerJoker" };
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     public long id;
     public int currentPoints;
     public int bestSingleScore;
+    public int bestTimeAttackScore;
+    public int bestSurvivalScore;
     public int bestMultiScore;
 
     public String username;
     public String ans;
 
+    @Transient
+    public Map<String, Joker.JokerStatus> jokerStates;
+
+    @Transient
+    public Evaluation previousEval;
+
     @SuppressWarnings("unused")
     public Player() {
         this.currentPoints = 0;
+        this.jokerStates = new HashMap<String, Joker.JokerStatus>();
+        for (String jokerName : JOKER_NAMES) {
+            jokerStates.put(jokerName, Joker.JokerStatus.AVAILABLE);
+        }
     }
 
     public Player(String username, int point) {
+        this();
         this.username = username;
         this.bestSingleScore = point;
+        this.bestTimeAttackScore = point;
+        this.bestSurvivalScore = point;
         this.bestMultiScore = point;
-        this.currentPoints = 0;
     }
 
     /**
@@ -52,6 +71,24 @@ public class Player {
     }
 
     /**
+     * A setter for the bestTimeAttackScore
+     *
+     * @param points The points to be set as the best time attack score
+     */
+    public void setBestTimeAttackScore(int points) {
+        this.bestTimeAttackScore = points;
+    }
+
+    /**
+     * A setter for the bestSurvivalScore
+     *
+     * @param points to be set as the best survival score
+     */
+    public void setBestSurvivalScore(int points) {
+        this.bestSurvivalScore = points;
+    }
+
+    /**
      * A setter for the bestMultiScore
      *
      * @param points the point which is the best multiMode score
@@ -68,9 +105,21 @@ public class Player {
     }
 
     /**
+     * Getter for best time attack score
+     */
+    public Integer getBestTimeAttackScore() {
+        return this.bestTimeAttackScore;
+    }
+
+    /**
+     * Getter for best survival score
+     */
+    public Integer getBestSurvivalScore() {
+        return bestSurvivalScore;
+    }
+
+    /**
      * Getter for best multiMode score
-     *
-     * @return
      */
     public Integer getBestMultiScore() {
         return this.bestMultiScore;

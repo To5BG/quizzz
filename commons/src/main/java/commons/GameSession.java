@@ -5,12 +5,13 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 public class GameSession {
-    public final static int GAME_ROUNDS = 2;
+    public static int gameRounds = 2;
 
     public long id;
 
@@ -34,7 +35,9 @@ public class GameSession {
         SELECTING,
         WAITING_AREA,
         MULTIPLAYER,
-        SINGLEPLAYER
+        SINGLEPLAYER,
+        TIME_ATTACK,
+        SURVIVAL
     }
 
     public SessionStatus sessionStatus;
@@ -118,19 +121,25 @@ public class GameSession {
         removedPlayers.add(player);
     }
 
+    /**
+     * Setter for the currentQuestion
+     */
     public void setCurrentQuestion(Question question) {
         this.currentQuestion = question;
     }
 
+    /**
+     * Setter for the SessionStatus
+     */
     public void setSessionStatus(SessionStatus sessionStatus) {
         this.sessionStatus = sessionStatus;
     }
 
     /**
-     * Resets the questionCounter to zero.
+     * Setter for the questionCounter.
      */
-    public void resetQuestionCounter() {
-        this.questionCounter = 0;
+    public void setQuestionCounter(int count) {
+        this.questionCounter = count;
     }
 
     /**
@@ -149,6 +158,13 @@ public class GameSession {
      */
     public void setTimeJokers(int timeJokers) {
         this.timeJokers = timeJokers;
+    }
+
+    /**
+     * Setter for the gameRounds
+     */
+    public void setGameRounds(int rounds) {
+        gameRounds = rounds;
     }
 
     /**
@@ -197,5 +213,9 @@ public class GameSession {
      */
     public void addUsedJoker(Joker joker) {
         usedJokers.add(joker);
+        Optional<Player> player = players.stream().filter(p -> p.username.equals(joker.username())).findFirst();
+        if (player.isEmpty()) return;
+        Player p = player.get();
+        p.jokerStates.put(joker.jokerName(), Joker.JokerStatus.USED_HOT);
     }
 }

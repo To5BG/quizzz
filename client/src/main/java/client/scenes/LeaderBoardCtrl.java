@@ -50,6 +50,10 @@ public class LeaderBoardCtrl implements Initializable {
     @FXML
     private Button multiLeaderboard;
     @FXML
+    private Button timeAttackButton;
+    @FXML
+    private Button survivalButton;
+    @FXML
     private Label leaderboardLabel;
 
     /**
@@ -95,23 +99,43 @@ public class LeaderBoardCtrl implements Initializable {
     }
 
     /**
-     * refresh the screen to show the leaderboards
+     * refresh the screen to show the Single Player leaderboards
      */
     public void refreshSingle() {
         var players = leaderboardUtils.getPlayerSingleScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
-        leaderboardLabel.setText("Leaderboard-Single");
+        leaderboardLabel.setText("Leaderboard-Singleplayer");
     }
 
     /**
-     * refresh the screen to show the leaderboards
+     * refresh the screen to show the Time Attack leaderboards
+     */
+    public void refreshTimeAttack() {
+        var players = leaderboardUtils.getPlayerTimeAttackScore();
+        data = FXCollections.observableList(players);
+        allPlayers.setItems(data);
+        leaderboardLabel.setText("Leaderboard-TimeAttack");
+    }
+
+    /**
+     * refresh the screen to show the Survival leaderboards
+     */
+    public void refreshSurvival() {
+        var players = leaderboardUtils.getPlayerSurvivalScore();
+        data = FXCollections.observableList(players);
+        allPlayers.setItems(data);
+        leaderboardLabel.setText("Leaderboard-Survival");
+    }
+
+    /**
+     * refresh the screen to show the Multiplayer leaderboards
      */
     public void refreshMulti() {
         var players = leaderboardUtils.getPlayerMultiScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
-        leaderboardLabel.setText("Leaderboard-Multi");
+        leaderboardLabel.setText("Leaderboard-Multiplayer");
     }
 
     /**
@@ -122,7 +146,7 @@ public class LeaderBoardCtrl implements Initializable {
         refreshMulti();
         allPlayers.setItems(data);
         allPlayers.refresh();
-        singleLeaderboard.setText("Single");
+        singleLeaderboard.setText("Singleplayer");
     }
 
     /**
@@ -133,6 +157,28 @@ public class LeaderBoardCtrl implements Initializable {
         refreshSingle();
         allPlayers.setItems(data);
         allPlayers.refresh();
-        multiLeaderboard.setText("Multi");
+        multiLeaderboard.setText("Multiplayer");
+    }
+
+    /**
+     * Show TimeAttackLeaderBoard
+     */
+    public void showTimeAttackLeaderBoard() {
+        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestTimeAttackScore)));
+        refreshTimeAttack();
+        allPlayers.setItems(data);
+        allPlayers.refresh();
+        timeAttackButton.setText("Time Attack");
+    }
+
+    /**
+     * Show SurvivalLeaderBoard
+     */
+    public void showSurvivalLeaderBoard() {
+        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSurvivalScore)));
+        refreshSurvival();
+        allPlayers.setItems(data);
+        allPlayers.refresh();
+        survivalButton.setText("Survival");
     }
 }

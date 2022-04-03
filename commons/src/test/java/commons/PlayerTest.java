@@ -43,10 +43,52 @@ public class PlayerTest {
     }
 
     @Test
+    public void testGetBestPoint() {
+        var p = new Player("abc", 0);
+        p.bestSingleScore = 8;
+        assertEquals(8, p.getBestSingleScore());
+    }
+
+    @Test
     public void testSetBestPoint() {
         var p = new Player("abc", 0);
         p.setBestSingleScore(8);
         assertEquals(8, p.bestSingleScore);
+    }
+
+    @Test
+    public void testSetBestMultiScore() {
+        var p = new Player("abc", 0);
+        p.setBestMultiScore(8);
+        assertEquals(8, p.bestMultiScore);
+    }
+
+    @Test
+    public void testGetBestTimeAttackScore() {
+        var p = new Player("abc", 0);
+        p.bestTimeAttackScore = 8;
+        assertEquals(8, p.getBestTimeAttackScore());
+    }
+
+    @Test
+    public void testSetBestTimeAttackScore() {
+        var p = new Player("abc", 0);
+        p.setBestTimeAttackScore(8);
+        assertEquals(8, p.bestTimeAttackScore);
+    }
+
+    @Test
+    public void testGetBestSurvivalScore() {
+        var p = new Player("abc", 0);
+        p.bestSurvivalScore = 8;
+        assertEquals(8, p.getBestSurvivalScore());
+    }
+
+    @Test
+    public void testSetBestSurvivalScore() {
+        var p = new Player("abc", 0);
+        p.setBestSurvivalScore(8);
+        assertEquals(8, p.bestSurvivalScore);
     }
 
     @Test

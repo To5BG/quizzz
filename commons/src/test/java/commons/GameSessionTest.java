@@ -81,6 +81,12 @@ public class GameSessionTest {
     }
 
     @Test
+    public void testSetQuestionCounter() {
+        s.setQuestionCounter(5);
+        assertSame(5, s.questionCounter);
+    }
+
+    @Test
     public void checkConstructor() {
         assertEquals(SOME_PLAYER, s.players.get(0));
         assertNotNull(s.expectedAnswers);
@@ -126,6 +132,12 @@ public class GameSessionTest {
     public void setTimeJokersTest() {
         s.setTimeJokers(2);
         assertTrue(s.getTimeJokers() == 2);
+    }
+
+    @Test
+    public void setGameRoundsTest() {
+        s.setGameRounds(5);
+        assertSame(5, s.gameRounds);
     }
 
     @Test

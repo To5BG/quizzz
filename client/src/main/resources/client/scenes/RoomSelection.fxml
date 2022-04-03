@@ -1,24 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.layout.AnchorPane?>
-
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane prefHeight="400.0" prefWidth="600.0" styleClass="background" stylesheets="@/CSS/RoomSelection.css"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.scenes.RoomSelectionCtrl">
-    <Button layoutX="41.0" layoutY="43.0" mnemonicParsing="false" onAction="#back" text="Back"/>
+    <Button layoutX="41.0" layoutY="43.0" mnemonicParsing="false" onAction="#back" text="Back">
+        <cursor>
+            <Cursor fx:constant="HAND"/>
+        </cursor>
+    </Button>
     <Button layoutX="30.0" layoutY="300.0" mnemonicParsing="false" onAction="#hostRoom" prefHeight="35.0"
-            prefWidth="104.0" text="Host Room"/>
-    <TableView fx:id="availableRooms" layoutX="180.0" layoutY="30.0" prefHeight="350.0" prefWidth="400.0">
+            prefWidth="104.0" text="Host Room">
+        <cursor>
+            <Cursor fx:constant="HAND"/>
+        </cursor>
+    </Button>
+    <TableView fx:id="availableRooms" layoutX="180.0" layoutY="30.0" prefHeight="350.0" prefWidth="409.0">
         <columns>
-            <TableColumn fx:id="roomNumber" prefWidth="400" text="Game Rooms"/>
+            <TableColumn fx:id="roomNumber" prefWidth="403.0" text="Game Rooms"/>
         </columns>
+        <cursor>
+            <Cursor fx:constant="HAND"/>
+        </cursor>
     </TableView>
     <Button layoutX="30.0" layoutY="220.0" mnemonicParsing="false" onAction="#joinSelectedRoom" prefHeight="35.0"
-            prefWidth="104.0" text="Play"/>
+            prefWidth="104.0" text="Play">
+        <cursor>
+            <Cursor fx:constant="HAND"/>
+        </cursor>
+    </Button>
     <Button layoutX="30.0" layoutY="140.0" mnemonicParsing="false" onAction="#quickJoin" prefHeight="35.0"
-            prefWidth="104.0" text="Quick Join"/>
+            prefWidth="104.0" text="Quick Join">
+        <cursor>
+            <Cursor fx:constant="HAND"/>
+        </cursor>
+    </Button>
 
 
 </AnchorPane>

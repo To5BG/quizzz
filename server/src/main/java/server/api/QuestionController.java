@@ -5,6 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.util.List;
 
 @RestController
@@ -99,9 +104,13 @@ public class QuestionController {
         Evaluation eval = new Evaluation((answer.answers.equals(s.expectedAnswers)) ? 1 : 0,
                 s.currentQuestion.type, List.copyOf(s.expectedAnswers));
 
+        if (s.sessionType == GameSession.SessionType.TIME_ATTACK || s.sessionType == GameSession.SessionType.SURVIVAL) {
+            player.currentPoints += eval.points;
+            return ResponseEntity.ok(eval);
+        }
+
         Evaluation actual = new Evaluation(calculateAnswerPoints(eval, answer, s.difficultyFactor),
                 eval.type, eval.correctAnswers);
-
         /*
         TODO: double points calculated here based on player who submits the answer
         this can be implemented nicely, once the relaying of jokers to other players is implemented, since the server
@@ -109,6 +118,7 @@ public class QuestionController {
         */
 
         player.currentPoints += actual.points;
+        player.previousEval = actual;
 
         return ResponseEntity.ok(actual);
     }
@@ -129,5 +139,32 @@ public class QuestionController {
 
         GameSession s = session.getBody();
         return ResponseEntity.ok(s.expectedAnswers);
+    }
+
+    /**
+     * Fetches the images for the corresponding path.
+     *
+     * @param req The path of the image.
+     * @return The BufferedImage.
+     */
+    @RequestMapping(path = "/image/**", method = RequestMethod.GET)
+    public byte[] fetchImage(HttpServletRequest req) {
+        BufferedImage image;
+        try {
+            String url = ActivityController.ASSET_DIR + req.getRequestURL().toString().split("/image/")[1];
+            image = ImageIO.read(new FileInputStream(url));
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            String[] urlParts = url.split("\\.");
+            String extension = urlParts[urlParts.length - 1];
+            switch (extension) {
+                case "jpg", "png", "jpeg" -> {
+                    ImageIO.write(image, extension, baos);
+                    return baos.toByteArray();
+                }
+                default -> throw new UnsupportedOperationException("Unsupported filetype");
+            }
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

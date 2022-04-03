@@ -3,6 +3,8 @@ package client.scenes;
 import client.utils.*;
 import commons.*;
 import jakarta.ws.rs.BadRequestException;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.Event;
@@ -14,8 +16,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class GameCtrl implements Initializable {
 
@@ -23,9 +27,9 @@ public abstract class GameCtrl implements Initializable {
     protected final static int MIDGAME_BREAK_TIME = 6;
     protected final static int TIMER_UPDATE_INTERVAL_MS = 50;
     protected final static int GAME_ROUND_DELAY = 2;
-    protected final static int IN_GAME_LEADERBOARD_WIDTH = 188;
+    protected final static int IN_GAME_LEADERBOARD_WIDTH = 193;
     protected final static int IN_GAME_COLUSERNAME_WIDTH = 92;
-    protected final static int MID_GAME_LEADERBOARD_WIDTH = 644;
+    protected final static int MID_GAME_LEADERBOARD_WIDTH = 649;
     protected final static int MID_GAME_COLUSERNAME_WIDTH = 548;
 
     @FXML
@@ -72,6 +76,9 @@ public abstract class GameCtrl implements Initializable {
 
     @FXML
     protected TableColumn<Player, Integer> colPoints;
+
+    @FXML
+    protected Label jokerRefreshLabel;
 
     protected WebSocketsUtils webSocketsUtils;
     protected GameSessionUtils gameSessionUtils;
@@ -146,8 +153,12 @@ public abstract class GameCtrl implements Initializable {
         }
 
         try {
-            Image image = new Image("assets/" + q.imagePath);
-            imagePanel.setImage(image);
+            ImageUtils image = new ImageUtils(questionUtils, q.imagePath);
+            image.setOnSucceeded(ev -> {
+                imagePanel.setImage(image.getValue());
+            });
+            Thread t = new Thread(image);
+            t.start();
         } catch (Exception ignore) {
         }
     }
@@ -215,16 +226,26 @@ public abstract class GameCtrl implements Initializable {
         Question q = this.currentQuestion;
         if (q.type != Question.QuestionType.COMPARISON && q.type != Question.QuestionType.EQUIVALENCE) return;
         try {
-            Image defaultImage = new Image("assets/" + q.imagePath);
-            for (int i = 0; i < multiChoiceAnswers.size(); i++) {
-                RadioButton rb = multiChoiceAnswers.get(i);
-                Image image = new Image("assets/" + q.activityPath.get(i));
+            AtomicReference<Image> defaultImage = new AtomicReference<Image>(null);
+            ImageUtils imageConvert = new ImageUtils(questionUtils, q.imagePath);
+            imageConvert.setOnSucceeded(ev -> {
+                defaultImage.set(imageConvert.getValue());
+                for (int i = 0; i < multiChoiceAnswers.size(); i++) {
+                    RadioButton rb = multiChoiceAnswers.get(i);
+                    ImageUtils image = new ImageUtils(questionUtils, q.activityPath.get(i));
+                    image.setOnSucceeded(event -> {
+                        rb.setOnMouseEntered(e -> imagePanel.setImage(image.getValue()));
+                    });
+                    Thread b = new Thread(image);
+                    b.start();
 
-                rb.setOnMouseEntered(e -> imagePanel.setImage(image));
-                if (q.type == Question.QuestionType.EQUIVALENCE) {
-                    rb.setOnMouseExited(e -> imagePanel.setImage(defaultImage));
+                    if (q.type == Question.QuestionType.EQUIVALENCE) {
+                        rb.setOnMouseExited(e -> imagePanel.setImage(defaultImage.get()));
+                    }
                 }
-            }
+            });
+            Thread t = new Thread(imageConvert);
+            t.start();
         } catch (IllegalArgumentException ignore) {
         }
     }
@@ -486,7 +507,10 @@ public abstract class GameCtrl implements Initializable {
         gameSessionUtils.toggleReady(sessionId, true);
     }
 
-    private void handleGameEnd() {
+    /**
+     * Shows the end game screen once the multiplayer game ends. In case of singleplayer, sends the user back to splash
+     */
+    protected void handleGameEnd() {
         try {
             if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showEndScreen();
             else back();
@@ -497,10 +521,14 @@ public abstract class GameCtrl implements Initializable {
         }
     }
 
-    private void handleNextRound() {
+    /**
+     * Proceeds the user onto the next round of the game
+     */
+    protected void handleNextRound() {
         try {
             gameSessionUtils.toggleReady(sessionId, false);
             imagePanel.setImage(null);
+            fetchJokerStates();
             loadQuestion();
         } catch (BadRequestException e) {
             System.out.println("takingover");
@@ -530,11 +558,12 @@ public abstract class GameCtrl implements Initializable {
                 Platform.runLater(() -> {
                     if (currentQuestion == null) return; // happens if shutdown is called before triggering
                     rounds++;
-                    if (rounds == GameSession.GAME_ROUNDS) {
+                    if (rounds == GameSession.gameRounds) {
                         handleGameEnd();
-                    } else if (rounds == GameSession.GAME_ROUNDS / 2 &&
+                    } else if (rounds == GameSession.gameRounds / 2 &&
                             gameSessionUtils.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
                         displayMidGameScreen();
+                        countdown.setOpacity(0);
                     } else {
                         handleNextRound();
                     }
@@ -593,6 +622,7 @@ public abstract class GameCtrl implements Initializable {
         TimeUtils roundTimer = new TimeUtils(MIDGAME_BREAK_TIME, TIMER_UPDATE_INTERVAL_MS);
         roundTimer.setOnSucceeded((event) -> Platform.runLater(() -> {
             removeMidGameLeaderboard();
+            fetchJokerStates();
             loadQuestion();
         }));
 
@@ -717,5 +747,59 @@ public abstract class GameCtrl implements Initializable {
                 return;
         }
         webSocketsUtils.sendEmoji(sessionId, playerId, type);
+    }
+
+    protected String getJokerDisplayName(String jokerName) {
+        String val;
+        switch (jokerName) {
+            case "DoublePointsJoker" -> val = "Double points";
+            case "DecreaseTimeJoker" -> val = "Decrease time";
+            case "RemoveOneAnswerJoker" -> val = "Remove one answer";
+            default -> val = "Unknown";
+        }
+        return val;
+    }
+
+    /**
+     * Fetch joker state from the server and update local state accordingly
+     */
+    public void fetchJokerStates() {
+        // TODO: maybe display animation once joker is refilled.
+        Map<String, Joker.JokerStatus> states = gameSessionUtils.getJokerStates(sessionId, playerId);
+        StringBuilder refreshText = new StringBuilder();
+        int refreshedJokers = 0;
+        for (var joker : states.entrySet()) {
+            switch (joker.getKey()) {
+                case "DoublePointsJoker" -> {
+                    if (doublePointsJoker != (joker.getValue() == Joker.JokerStatus.AVAILABLE)) {
+                        ++refreshedJokers;
+                        doublePointsJoker = true;
+                        refreshText.append(getJokerDisplayName(joker.getKey())).append(", ");
+                    }
+                }
+                case "DecreaseTimeJoker" -> {
+                    if (decreaseTimeJoker != (joker.getValue() == Joker.JokerStatus.AVAILABLE)) {
+                        ++refreshedJokers;
+                        decreaseTimeJoker = true;
+                        refreshText.append(getJokerDisplayName(joker.getKey())).append(", ");
+                    }
+                }
+                case "RemoveOneAnswerJoker" -> {
+                    if (removeOneJoker != (joker.getValue() == Joker.JokerStatus.AVAILABLE)) {
+                        ++refreshedJokers;
+                        removeOneJoker = true;
+                        refreshText.append(getJokerDisplayName(joker.getKey())).append(", ");
+                    }
+                }
+            }
+        }
+        if (refreshText.isEmpty()) return;
+
+        String finalText = String.format("Lucky you, %s joker%s refreshed",
+                refreshText.substring(0, refreshText.length() - 2),
+                (refreshedJokers != 1) ? "s were" : " was");
+
+        jokerRefreshLabel.setText(finalText);
+        new Timeline(new KeyFrame(Duration.seconds(5), e -> jokerRefreshLabel.setText(""))).play();
     }
 }
