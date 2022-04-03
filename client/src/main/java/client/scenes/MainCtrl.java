@@ -45,6 +45,8 @@ public class MainCtrl {
     private Scene leaderBoardScreen;
     private WebViewCtrl webViewCtrl;
     private Scene webViewScreen;
+    private TutorialScreenCtrl tutorialCtrl;
+    private Scene tutorialScreen;
 
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
@@ -53,6 +55,7 @@ public class MainCtrl {
      * @param splash       Controller and Scene pair for the splash screen of the application
      * @param multi        Controller and Scene pair for the multiplayer screen of the application
      * @param leaderboard  Controller and Scene pair for the leaderboard screen of the application
+     * @param tutorial     Controller and Scene pair for the tutorial screen of the application
      */
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
                            Pair<MultiplayerCtrl, Parent> multi,
@@ -60,7 +63,8 @@ public class MainCtrl {
                            Pair<WaitingAreaCtrl, Parent> wait,
                            Pair<SingleplayerCtrl, Parent> single,
                            Pair<LeaderBoardCtrl, Parent> leaderboard,
-                           Pair<WebViewCtrl, Parent> webView) {
+                           Pair<WebViewCtrl, Parent> webView,
+                           Pair<TutorialScreenCtrl, Parent> tutorial) {
         this.primaryStage = primaryStage;
 
         this.splashCtrl = splash.getKey();
@@ -83,6 +87,10 @@ public class MainCtrl {
 
         this.webViewCtrl = webView.getKey();
         this.webViewScreen = new Scene(webView.getValue());
+
+
+        this.tutorialCtrl = tutorial.getKey();
+        this.tutorialScreen = new Scene(tutorial.getValue());
 
         confirmClose();
         showSplash();
@@ -210,6 +218,16 @@ public class MainCtrl {
     }
 
     /**
+     * Sets the current scene to the tutorial screen
+     */
+    public void showTutorial() {
+        tutorialCtrl.initialise();
+        primaryStage.setTitle("Tutorial Screen");
+        primaryStage.setScene(tutorialScreen);
+        tutorialScreen.setOnKeyPressed(e -> tutorialCtrl.keyPressed(e));
+    }
+
+    /**
      * Ask the user for confirmation before closing the app
      */
     public void confirmClose() {
@@ -220,4 +238,5 @@ public class MainCtrl {
             alert.showAndWait().filter(r -> r != ButtonType.OK).ifPresent(r -> evt.consume());
         });
     }
+
 }
