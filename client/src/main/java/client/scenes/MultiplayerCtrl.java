@@ -183,7 +183,6 @@ public class MultiplayerCtrl extends GameCtrl {
                 if (previousPlayerCount < playerCount) {
                     endGameCountdown.resetTimer();
                     Platform.runLater(() -> displayLeaderboard());
-                    System.out.println(endGameCountdown.refreshCounter);
                 }
                 previousPlayerCount = playerCount;
             }
