@@ -24,72 +24,56 @@
             <Font name="Earth Orbiter Punch" size="79.0"/>
         </font>
     </Label>
-    <Button layoutX="105.0" layoutY="393.0" mnemonicParsing="false" onAction="#showSinglePlayer" prefHeight="52.0"
-            prefWidth="178.0" styleClass="gameButton" stylesheets="@/CSS/Splash.css" text="Singleplayer"
-            textFill="WHITE">
-        <font>
-            <Font name="Earth Orbiter Engraved" size="19.0"/>
-        </font>
-        <cursor>
-            <Cursor fx:constant="HAND"/>
-        </cursor>
-    </Button>
-    <Button layoutX="105.0" layoutY="497.0" mnemonicParsing="false" onAction="#showRoomSelection" prefHeight="52.0"
-            prefWidth="178.0" styleClass="gameButton" text="Multiplayer" textFill="WHITE">
-        <font>
-            <Font name="Earth Orbiter Engraved" size="19.0"/>
-        </font>
-        <cursor>
-            <Cursor fx:constant="HAND"/>
-        </cursor>
-    </Button>
-    <Button layoutX="447.0" layoutY="445.0" mnemonicParsing="false" onAction="#showLeaderboard" prefHeight="52.0"
-            prefWidth="178.0" styleClass="gameButton" text="Leaderboard" textFill="WHITE">
-        <font>
-            <Font name="Earth Orbiter Engraved" size="19.0"/>
-        </font>
-        <cursor>
-            <Cursor fx:constant="HAND"/>
-        </cursor>
-    </Button>
-    <Text fx:id="duplUsername" fill="WHITE" layoutX="308.0" layoutY="320.0" opacity="0.0" strokeType="OUTSIDE"
-          strokeWidth="0.0" text="Username already exists. Change to continue" wrappingWidth="270.13665771484375"/>
-    <Text fx:id="invalidUserName" fill="WHITE" layoutX="303.0" layoutY="341.0" opacity="0.0" strokeType="OUTSIDE"
-          strokeWidth="0.0" text="Username should be non-empty, and only contain letters and/or numbers."/>
-    <Text fx:id="failedConnectionAlert" fill="WHITE" layoutX="142.0" layoutY="329.0" opacity="0.0"
-          text="Could not connect!"/>
-    <ImageView fitHeight="323.0" fitWidth="438.0" layoutX="308.0" layoutY="-14.0" pickOnBounds="true"
-               preserveRatio="true">
-        <image>
-            <Image url="@/Image/decoration1.png"/>
-        </image>
-    </ImageView>
-    <Button layoutX="660.0" layoutY="523.0" mnemonicParsing="false" text="?">
-        <cursor>
-            <Cursor fx:constant="HAND"/>
-        </cursor>
-    </Button>
-    <Label layoutX="443.0" layoutY="549.0" prefHeight="17.0" prefWidth="203.0" text="       Produced By OOPP Group 51"
-           textFill="WHITE"/>
-    <ImageView fitHeight="800.0" fitWidth="200.0" layoutX="-150.0" pickOnBounds="true" preserveRatio="true">
-        <image>
-            <Image url="@/Image/decoration3.png"/>
-        </image>
-    </ImageView>
-    <ImageView fitHeight="52.0" fitWidth="54.0" layoutX="50.0" layoutY="393.0" pickOnBounds="true" preserveRatio="true">
-        <image>
-            <Image url="@/Image/decoration16.png"/>
-        </image>
-    </ImageView>
-    <ImageView fitHeight="52.0" fitWidth="54.0" layoutX="50.0" layoutY="497.0" pickOnBounds="true" preserveRatio="true">
-        <image>
-            <Image url="@/Image/decoration16.png"/>
-        </image>
-    </ImageView>
-    <ImageView fitHeight="52.0" fitWidth="54.0" layoutX="391.0" layoutY="445.0" pickOnBounds="true"
-               preserveRatio="true">
-        <image>
-            <Image url="@/Image/decoration16.png"/>
-        </image>
-    </ImageView>
+    <Button layoutX="105.0" layoutY="393.0" mnemonicParsing="false" onAction="#showSinglePlayer" prefHeight="52.0" prefWidth="178.0" styleClass="gameButton" stylesheets="@/CSS/Splash.css" text="Singleplayer" textFill="WHITE">
+      <font>
+         <Font name="Earth Orbiter Engraved" size="19.0" />
+      </font>
+      <cursor>
+         <Cursor fx:constant="HAND" />
+      </cursor></Button>
+    <Button layoutX="105.0" layoutY="497.0" mnemonicParsing="false" onAction="#showRoomSelection" prefHeight="52.0" prefWidth="178.0" styleClass="gameButton" text="Multiplayer" textFill="WHITE">
+      <font>
+         <Font name="Earth Orbiter Engraved" size="19.0" />
+      </font>
+      <cursor>
+         <Cursor fx:constant="HAND" />
+      </cursor></Button>
+    <Button layoutX="447.0" layoutY="445.0" mnemonicParsing="false" onAction="#showLeaderboard" prefHeight="52.0" prefWidth="178.0" styleClass="gameButton" text="Leaderboard" textFill="WHITE">
+      <font>
+         <Font name="Earth Orbiter Engraved" size="19.0" />
+      </font>
+      <cursor>
+         <Cursor fx:constant="HAND" />
+      </cursor></Button>
+    <Text fx:id="duplUsername" fill="WHITE" layoutX="308.0" layoutY="320.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username already exists. Change to continue" wrappingWidth="270.13665771484375" />
+    <Text fx:id="invalidUserName" fill="WHITE" layoutX="303.0" layoutY="341.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username should be non-empty, and only contain letters and/or numbers." />
+    <Text fx:id="failedConnectionAlert" fill="WHITE" layoutX="142.0" layoutY="329.0" opacity="0.0" text="Could not connect!" />
+   <ImageView fitHeight="323.0" fitWidth="438.0" layoutX="308.0" layoutY="-14.0" pickOnBounds="true" preserveRatio="true">
+      <image>
+         <Image url="@/Image/decoration1.png" />
+      </image>
+   </ImageView>
+   <Label layoutX="346.0" layoutY="543.0" prefHeight="17.0" prefWidth="203.0" text="       Produced By OOPP Group 51" textFill="WHITE" />
+   <ImageView fitHeight="800.0" fitWidth="200.0" layoutX="-150.0" pickOnBounds="true" preserveRatio="true">
+      <image>
+         <Image url="@/Image/decoration3.png" />
+      </image>
+   </ImageView>
+   <ImageView fitHeight="52.0" fitWidth="54.0" layoutX="50.0" layoutY="393.0" pickOnBounds="true" preserveRatio="true">
+      <image>
+         <Image url="@/Image/decoration16.png" />
+      </image>
+   </ImageView>
+   <ImageView fitHeight="52.0" fitWidth="54.0" layoutX="50.0" layoutY="497.0" pickOnBounds="true" preserveRatio="true">
+      <image>
+         <Image url="@/Image/decoration16.png" />
+      </image>
+   </ImageView>
+   <ImageView fitHeight="52.0" fitWidth="54.0" layoutX="391.0" layoutY="445.0" pickOnBounds="true" preserveRatio="true">
+      <image>
+         <Image url="@/Image/decoration16.png" />
+      </image>
+   </ImageView>
+    <Button layoutX="596.0" layoutY="525.0" mnemonicParsing="false" onAction="#showWebView" text="Edit activities" />
+   <Button layoutX="641.0" layoutY="491.0" mnemonicParsing="false" onAction="#showTutorial" prefHeight="26.0" prefWidth="42.0" text="?" />
 </AnchorPane>

@@ -53,7 +53,10 @@ public class Main extends Application {
                 (PodiumCtrl.class, "client", "scenes", "PodiumScreen.fxml");
         var endScreen = FXML.load
                 (EndGameScreenCtrl.class, "client", "scenes", "EndGameScreen.fxml");
-
+        var webView = FXML.load
+                (WebViewCtrl.class, "client", "scenes", "WebViewScreen.fxml");
+        var tutorial = FXML.load
+                (TutorialScreenCtrl.class, "client", "scenes", "TutorialScreen.fxml");
 
         primaryStage.setOnHidden(e -> {
             try {
@@ -71,7 +74,8 @@ public class Main extends Application {
         });
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, splash, multiplayer, roomSelection, waitingArea, singleplayer, leaderboard
-                            , podium, endScreen);
+        mainCtrl.initialize(primaryStage, splash, multiplayer, roomSelection,
+                waitingArea, singleplayer, leaderboard, webView, tutorial, 
+                podium, endScreen);
     }
 }

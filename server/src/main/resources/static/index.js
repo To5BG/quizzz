@@ -1,6 +1,6 @@
 /*------------------------- EVENT LISTENERS -------------------------*/
 
-let basePath = "http://localhost:8080/api/activities";
+let basePath = "/api/activities";
 
 addEventListener("load", _ => {
     for (let input of document.querySelectorAll("#inputCont input, #inputCont textarea")) {
@@ -14,6 +14,9 @@ addEventListener("load", _ => {
 
     document.querySelector("#inputCont > #addJsonFile")
         .addEventListener('submit', postJsonFile);
+
+    document.querySelector("#inputCont > #addImageZip")
+        .addEventListener('submit', postZipFile);
 
     document.querySelector("#inputCont > #editOne > form")
         .addEventListener('submit', editActivity);
@@ -43,7 +46,7 @@ function toggleContainer(contName) {
         else container.style.setProperty("opacity", "0");
     }
     for (let sibling of document.querySelectorAll("#inputCont > div")) {
-        sibling.style.setProperty("opacity", "0");
+        sibling.style.setProperty("display", "none");
     }
 }
 
@@ -51,15 +54,15 @@ function toggleInputForm(contName) {
     let children = document.getElementById("inputCont").children;
     for (let container of children) {
         if (container.id === contName) {
-            let newOpacity = 1 - container.style.getPropertyValue("opacity");
-            container.style.setProperty("opacity", newOpacity.toString());
+            const newValue = (container.style.getPropertyValue("display") === 'none' ? 'block' : 'none');
+            container.style.setProperty("display", newValue);
 
             for (let input of container.querySelectorAll("input,textarea")) {
-                if (newOpacity === 0) input.setAttribute("disabled", '');
+                if (newValue === 'none') input.setAttribute("disabled", '');
                 else input.removeAttribute("disabled");
             }
         } else {
-            container.style.setProperty("opacity", "0");
+            container.style.setProperty("display", "none");
             for (let input of container.querySelectorAll("input,textarea")) {
                 input.setAttribute("disabled", '');
             }
@@ -341,4 +344,41 @@ function resetDatabase() {
         });
 }
 
+/*------------------------ UPLOAD ZIP FILE --------------------------*/
 
+async function uploadZip(zipFile) {
+    let url = basePath + "/zip";
+    return await fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/zip'
+        },
+        body: zipFile
+    });
+}
+
+function postZipFile(event) {
+    event.preventDefault();
+
+    let alertMsg = document.querySelector("#alertMsg");
+    let fileReader = new FileReader();
+    fileReader.onload = function () {
+        let res = fileReader.result;
+        try {
+            uploadZip(res)
+                .then(_ => {
+                    alertMsg.textContent = "Uploaded zip of images successfully!";
+                    alertMsg.style.setProperty("color", "green");
+                    refreshTable();
+                }, err => {
+                    console.log("Error! " + err);
+                    alertMsg.textContent = "Failed to load some entries!";
+                    alertMsg.style.setProperty("color", "red");
+                });
+        } catch {
+            alertMsg.textContent = "Could not parse file!";
+            alertMsg.style.setProperty("color", "red");
+        }
+    }
+    fileReader.readAsArrayBuffer(event.target.querySelector("input").files[0]);
+}

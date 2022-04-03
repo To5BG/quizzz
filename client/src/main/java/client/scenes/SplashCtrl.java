@@ -49,6 +49,8 @@ public class SplashCtrl {
     private final WebSocketsUtils webSocketsUtils;
     private final MainCtrl mainCtrl;
 
+    private String url;
+
     @FXML
     private TextField usernameField;
 
@@ -104,6 +106,7 @@ public class SplashCtrl {
             leaderboardUtils.serverConnection = connURL;
             questionUtils.serverConnection = connURL;
             webSocketsUtils.updateConnection(connURL);
+            this.url = connURL;
             return true;
         } catch (Exception e) {
             alertFailedConnection();
@@ -246,6 +249,14 @@ public class SplashCtrl {
     }
 
     /**
+     * Show the edit activities page
+     */
+    public void showWebView() {
+        if (!establishConnection()) return;
+        mainCtrl.showWebView(this.url);
+    }
+
+    /**
      * Autofill the usernameField with the saved username from the 'username.txt' file, if it exists.g
      */
     public void retrieveSavedName() {
@@ -262,5 +273,12 @@ public class SplashCtrl {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Show the tutorial page
+     */
+    public void showTutorial() {
+        mainCtrl.showTutorial();
     }
 }
