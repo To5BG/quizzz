@@ -69,9 +69,12 @@ public class MultiplayerCtrl extends GameCtrl {
     private Label jokerUsage;
 
     private int lastDisconnectIndex;
+    private int lastAdditionIndex;
     private Timer disconnectTimer;
     private int lastJokerIndex;
     private Timer jokerTimer;
+    private Timer endGameTimer;
+    private List<Player> newAdditions;
     private StompSession.Subscription channel;
     private boolean playingAgain;
     private int waitingSkip = 0;
@@ -164,6 +167,48 @@ public class MultiplayerCtrl extends GameCtrl {
                 lastDisconnectIndex = allRemoved.size() - 1;
             }
         }, 0, 2000);
+    }
+
+    /**
+     * Scans for players joining in the end game screen
+     */
+    public void scanForEndGameAddition() {
+        lastAdditionIndex = -1;
+        endGameTimer = new Timer();
+        endGameTimer.scheduleAtFixedRate(new TimerTask() {
+
+            @Override
+            public void run() {
+                List<Player> initialPlayers = gameSessionUtils.getPlayers(sessionId);
+                newAdditions = new ArrayList<Player>();
+                for (int i = lastAdditionIndex + 1; i < initialPlayers.size(); i++) {
+                    newAdditions.add(initialPlayers.get(i));
+                }
+                lastAdditionIndex = initialPlayers.size() - 1;
+            }
+        }, 0, 500);
+        if (!newAdditions.isEmpty()) {
+            displayLeaderboard();
+            if (timerThread != null && timerThread.isAlive()) timerThread.interrupt();
+
+            TimeUtils roundTimer = new TimeUtils(END_GAME_TIME, TIMER_UPDATE_INTERVAL_MS);
+            roundTimer.setTimeBooster(() -> (double) waitingSkip);
+            roundTimer.setOnSucceeded((event) -> {
+                gameSessionUtils.updateStatus(gameSessionUtils.getSession(sessionId),
+                        GameSession.SessionStatus.TRANSFERRING);
+                Platform.runLater(() -> {
+                    if (isPlayingAgain()) {
+                        startGame();
+                    } else {
+                        leaveGame();
+                    }
+                });
+            });
+
+            timeProgress.progressProperty().bind(roundTimer.progressProperty());
+            timerThread = new Thread(roundTimer);
+            timerThread.start();
+        }
     }
 
     /**
@@ -374,26 +419,8 @@ public class MultiplayerCtrl extends GameCtrl {
         status.setText("");
         waitingSkip = 0;
         questionCount.setText("End of game! Play again or go back to main.");
-
-        TimeUtils roundTimer = new TimeUtils(END_GAME_TIME, TIMER_UPDATE_INTERVAL_MS);
-        roundTimer.setTimeBooster(() -> (double) waitingSkip);
-        roundTimer.setOnSucceeded((event) -> {
-            gameSessionUtils.updateStatus(gameSessionUtils.getSession(sessionId),
-                    GameSession.SessionStatus.TRANSFERRING);
-            Platform.runLater(() -> {
-                if (isPlayingAgain()) {
-                    startGame();
-                } else {
-                    leaveGame();
-                }
-            });
-        });
-
-        timeProgress.progressProperty().bind(roundTimer.progressProperty());
-        this.timerThread = new Thread(roundTimer);
-        this.timerThread.start();
-
         gameSessionUtils.toggleReady(sessionId, false);
+        scanForEndGameAddition();
         refresh();
     }
 

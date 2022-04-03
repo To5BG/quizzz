@@ -187,7 +187,6 @@ public class RoomSelectionCtrl implements Initializable {
     public void joinSession(GameSession session) {
         switch (session.sessionStatus) {
             case WAITING_AREA:
-            case PLAY_AGAIN:
                 Player player = gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
                 gameSessionUtils.addPlayer(session.id, player);
                 long waitingId = session.id;
@@ -198,6 +197,12 @@ public class RoomSelectionCtrl implements Initializable {
                             .findFirst().get().id;
                 }
                 mainCtrl.showWaitingArea(playerId, waitingId);
+                notCancel = false;
+                break;
+            case PLAY_AGAIN:
+                Player player2 = gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
+                gameSessionUtils.addPlayer(session.id, player2);
+                mainCtrl.showMultiplayer(session.id, playerId);
                 notCancel = false;
                 break;
             default:
