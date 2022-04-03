@@ -1,0 +1,71 @@
+.background{
+    -fx-background-image: url("/Image/background.png");
+}
+.text-field{
+    -fx-text-fill: white;
+}
+.table-view {
+    -fx-background-color: transparent;
+    -fx-text-alignment: center;
+    -fx-text-fill: white;
+}
+.table-column {
+    -fx-background-color: transparent;
+    -fx-alignment: center;
+    -fx-text-fill: white;
+}
+.table-row-cell {
+    -fx-background-color: transparent;
+    -fx-alignment: center;
+    -fx-text-fill: white;
+}
+.table-view .column-header-background {
+    -fx-background-color:transparent;
+    -fx-text-fill: white;
+}
+.table-view .filler {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+}
+.table-view .scroll-bar{
+    -fx-background-color: transparent;
+}
+.button{
+    -fx-background-color: transparent;
+    -fx-border-color: #00CCFF;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 12px;
+    -fx-text-fill: white;
+    -fx-border-width: 2px;
+}
+.text-field{
+    -fx-background-radius: 12px;
+    -fx-border-color: #00CCFF;
+    -fx-border-radius: 12px;
+    -fx-text-fill: white;
+    -fx-background-color: transparent;
+    -fx-border-width: 2px;
+}
+.label{
+    -fx-text-fill: white;
+}
+.pane{
+    -fx-text-fill: white;
+}
+.scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+.stack-pane .radio-button{
+    -fx-text-fill: white;
+}
+.scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+.table-view .scroll-bar{
+    -fx-background-color: transparent;
+}
+.radio-button {
+    -fx-cursor: hand;
+}
