@@ -69,7 +69,7 @@ public class MultiplayerCtrl extends GameCtrl {
     private Label jokerUsage;
 
     private int lastDisconnectIndex;
-    private int lastAdditionIndex;
+    private int previousPlayerCount;
     private Timer disconnectTimer;
     private int lastJokerIndex;
     private Timer jokerTimer;
@@ -173,20 +173,19 @@ public class MultiplayerCtrl extends GameCtrl {
      * Scans for players joining in the end game screen
      */
     public void scanForEndGameAddition() {
-        lastAdditionIndex = -1;
+        previousPlayerCount = -1;
         endGameTimer = new Timer();
         endGameTimer.scheduleAtFixedRate(new TimerTask() {
 
             @Override
             public void run() {
                 int playerCount = gameSessionUtils.getSession(sessionId).players.size();
-                if (lastAdditionIndex < playerCount) {
-                    System.out.println("count down should be reset");
+                if (previousPlayerCount < playerCount) {
                     endGameCountdown.resetTimer();
                     Platform.runLater(() -> displayLeaderboard());
                     System.out.println(endGameCountdown.refreshCounter);
                 }
-                lastAdditionIndex = playerCount;
+                previousPlayerCount = playerCount;
             }
         }, 0, 500);
     }

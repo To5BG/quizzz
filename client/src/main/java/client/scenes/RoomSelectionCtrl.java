@@ -191,25 +191,21 @@ public class RoomSelectionCtrl implements Initializable {
      * @param session - GameSession to which the player is added.
      */
     public void joinSession(GameSession session) {
+        Player player = gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
+        gameSessionUtils.addPlayer(session.id, player);
+        if (playerId == 0L) {
+            playerId = gameSessionUtils
+                    .getPlayers(session.id)
+                    .stream().filter(p -> p.username.equals(player.username))
+                    .findFirst().get().id;
+        }
+        notCancel = false;
         switch (session.sessionStatus) {
             case WAITING_AREA:
-                Player player = gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
-                gameSessionUtils.addPlayer(session.id, player);
-                long waitingId = session.id;
-                if (playerId == 0L) {
-                    playerId = gameSessionUtils
-                            .getPlayers(waitingId)
-                            .stream().filter(p -> p.username.equals(player.username))
-                            .findFirst().get().id;
-                }
-                mainCtrl.showWaitingArea(playerId, waitingId);
-                notCancel = false;
+                mainCtrl.showWaitingArea(playerId, session.id);
                 break;
             case PLAY_AGAIN:
-                Player player2 = gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
-                gameSessionUtils.addPlayer(session.id, player2);
                 mainCtrl.showMultiplayer(session.id, playerId);
-                notCancel = false;
                 break;
             default:
                 Alert alert = new Alert(Alert.AlertType.WARNING);
