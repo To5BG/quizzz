@@ -30,83 +30,103 @@
                 <Font size="49.0"/>
             </font>
         </Label>
-        <Button layoutY="135.0" mnemonicParsing="false" onAction="#back" prefHeight="271.0" prefWidth="50.0" styleClass="button1" stylesheets="@/CSS/Leaderboard.css" text="BACK" wrapText="true">
-         <font>
-            <Font size="25.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></Button>
-        <Button fx:id="singleLeaderboard" layoutX="525.0" layoutY="163.0" mnemonicParsing="false" onAction="#showSingleLeaderBoard" prefHeight="45.0" prefWidth="109.0" styleClass="button2" stylesheets="@/CSS/Leaderboard.css" text="Single">
-         <font>
-            <Font size="21.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></Button>
-        <Button fx:id="multiLeaderboard" layoutX="525.0" layoutY="235.0" mnemonicParsing="false" onAction="#showMultiLeaderboard" prefHeight="45.0" prefWidth="109.0" styleClass="button2" stylesheets="@/CSS/Leaderboard.css" text="Multi">
-         <font>
-            <Font size="21.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></Button>
-        <Button fx:id="elseLeaderboard" layoutX="525.0" layoutY="308.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="109.0" styleClass="button2" stylesheets="@/CSS/Leaderboard.css" text="Else">
-         <font>
-            <Font size="21.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></Button>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="151.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration7.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="175.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration8.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="199.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration8.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="222.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration10.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="247.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration11.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="270.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration11.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="295.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration12.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="320.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration13.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="344.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration14.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="368.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration15.png" />
-         </image>
-      </ImageView>
+        <Button layoutY="135.0" mnemonicParsing="false" onAction="#back" prefHeight="271.0" prefWidth="50.0"
+                styleClass="button1" stylesheets="@/CSS/Leaderboard.css" text="BACK" wrapText="true">
+            <font>
+                <Font size="25.0"/>
+            </font>
+            <cursor>
+                <Cursor fx:constant="HAND"/>
+            </cursor>
+        </Button>
+        <Button fx:id="singleLeaderboard" layoutX="525.0" layoutY="163.0" mnemonicParsing="false"
+                onAction="#showSingleLeaderBoard" prefHeight="45.0" prefWidth="109.0" styleClass="button2"
+                stylesheets="@/CSS/Leaderboard.css" text="Single">
+            <font>
+                <Font size="21.0"/>
+            </font>
+            <cursor>
+                <Cursor fx:constant="HAND"/>
+            </cursor>
+        </Button>
+        <Button fx:id="multiLeaderboard" layoutX="525.0" layoutY="235.0" mnemonicParsing="false"
+                onAction="#showMultiLeaderboard" prefHeight="45.0" prefWidth="109.0" styleClass="button2"
+                stylesheets="@/CSS/Leaderboard.css" text="Multi">
+            <font>
+                <Font size="21.0"/>
+            </font>
+            <cursor>
+                <Cursor fx:constant="HAND"/>
+            </cursor>
+        </Button>
+        <Button fx:id="elseLeaderboard" layoutX="525.0" layoutY="308.0" mnemonicParsing="false" prefHeight="45.0"
+                prefWidth="109.0" styleClass="button2" stylesheets="@/CSS/Leaderboard.css" text="Else">
+            <font>
+                <Font size="21.0"/>
+            </font>
+            <cursor>
+                <Cursor fx:constant="HAND"/>
+            </cursor>
+        </Button>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="151.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration7.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="175.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration8.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="199.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration8.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="222.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration10.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="247.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration11.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="270.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration11.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="295.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration12.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="320.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration13.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="344.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration14.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="368.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration15.png"/>
+            </image>
+        </ImageView>
     </children>
 </AnchorPane>
