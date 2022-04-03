@@ -105,7 +105,7 @@ public class LeaderBoardCtrl implements Initializable {
         var players = leaderboardUtils.getPlayerSingleScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
-        leaderboardLabel.setText("Leaderboard-Single");
+        leaderboardLabel.setText("Leaderboard-Singleplayer");
     }
 
     /**
@@ -135,7 +135,7 @@ public class LeaderBoardCtrl implements Initializable {
         var players = leaderboardUtils.getPlayerMultiScore();
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
-        leaderboardLabel.setText("Leaderboard-Multi");
+        leaderboardLabel.setText("Leaderboard-Multiplayer");
     }
 
     /**
@@ -146,7 +146,7 @@ public class LeaderBoardCtrl implements Initializable {
         refreshMulti();
         allPlayers.setItems(data);
         allPlayers.refresh();
-        singleLeaderboard.setText("Single");
+        singleLeaderboard.setText("Singleplayer");
     }
 
     /**
@@ -157,7 +157,7 @@ public class LeaderBoardCtrl implements Initializable {
         refreshSingle();
         allPlayers.setItems(data);
         allPlayers.refresh();
-        multiLeaderboard.setText("Multi");
+        multiLeaderboard.setText("Multiplayer");
     }
 
     /**

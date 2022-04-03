@@ -1,115 +1,138 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.Cursor?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
-
-<AnchorPane prefHeight="499.0" prefWidth="633.0" styleClass="background" stylesheets="@/CSS/Leaderboard.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.LeaderBoardCtrl">
+<?import javafx.scene.text.*?>
+<AnchorPane prefHeight="499.0" prefWidth="633.0" styleClass="background" stylesheets="@/CSS/Leaderboard.css"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.scenes.LeaderBoardCtrl">
     <children>
-        <TableView id="allPoints" fx:id="allPlayers" layoutX="109.0" layoutY="125.0" prefHeight="271.0" prefWidth="397.0" styleClass="leaderboardColumn">
+        <TableView id="allPoints" fx:id="allPlayers" layoutX="109.0" layoutY="125.0" prefHeight="271.0"
+                   prefWidth="397.0" styleClass="leaderboardColumn">
             <columns>
-                <TableColumn fx:id="colName" prefWidth="199.0" text="UserName" />
-                <TableColumn fx:id="colPoint" prefWidth="196.0" text="Point" />
+                <TableColumn fx:id="colName" prefWidth="199.0" text="UserName"/>
+                <TableColumn fx:id="colPoint" prefWidth="196.0" text="Point"/>
             </columns>
             <columnResizePolicy>
-                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
             </columnResizePolicy>
         </TableView>
-        <Label fx:id="leaderboardLabel" layoutX="89.0" layoutY="42.0" prefHeight="71.0" prefWidth="489.0" text="LeaderBoard" textFill="#36cde4">
+        <Label fx:id="leaderboardLabel" layoutX="89.0" layoutY="42.0" prefHeight="71.0" prefWidth="489.0"
+               text="LeaderBoard" textFill="#36cde4">
             <font>
                 <Font size="36.0"/>
             </font>
         </Label>
-        <Button layoutY="135.0" mnemonicParsing="false" onAction="#back" prefHeight="271.0" prefWidth="50.0" styleClass="button1" stylesheets="@/CSS/Leaderboard.css" text="BACK" wrapText="true">
-         <font>
-            <Font size="25.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></Button>
-        <Button fx:id="singleLeaderboard" layoutX="525.0" layoutY="163.0" mnemonicParsing="false" onAction="#showSingleLeaderBoard" prefHeight="45.0" prefWidth="109.0" styleClass="button2" stylesheets="@/CSS/Leaderboard.css" text="Single">
-         <font>
-            <Font size="21.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></Button>
-        <Button fx:id="multiLeaderboard" layoutX="525.0" layoutY="235.0" mnemonicParsing="false" onAction="#showMultiLeaderboard" prefHeight="45.0" prefWidth="109.0" styleClass="button2" stylesheets="@/CSS/Leaderboard.css" text="Multi">
-         <font>
-            <Font size="21.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></Button>
-        <Button fx:id="timeAttackButton" layoutX="525.0" layoutY="307.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="109.0" styleClass="button2" stylesheets="@/CSS/Leaderboard.css" text="Time Attack">
-         <font>
-            <Font size="21.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></Button>
-        <Button fx:id="survivalButton" layoutX="525.0" layoutY="379.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="109.0" styleClass="button2" stylesheets="@/CSS/Leaderboard.css" text="Survival">
+        <Button layoutY="135.0" mnemonicParsing="false" onAction="#back" prefHeight="271.0" prefWidth="50.0"
+                styleClass="button1" stylesheets="@/CSS/Leaderboard.css" text="BACK" wrapText="true">
             <font>
-                <Font size="21.0" />
+                <Font size="25.0"/>
             </font>
             <cursor>
-                <Cursor fx:constant="HAND" />
-            </cursor></Button>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="151.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration7.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="175.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration8.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="199.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration8.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="222.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration10.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="247.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration11.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="270.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration11.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="295.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration12.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="320.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration13.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="344.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration14.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="368.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@/Image/decoration15.png" />
-         </image>
-      </ImageView>
+                <Cursor fx:constant="HAND"/>
+            </cursor>
+        </Button>
+        <Button fx:id="singleLeaderboard" layoutX="511.0" layoutY="142.0" mnemonicParsing="false"
+                onAction="#showSingleLeaderBoard" prefHeight="45.0" prefWidth="122.0" styleClass="button2"
+                stylesheets="@/CSS/Leaderboard.css" text="Singleplayer">
+            <font>
+                <Font size="18.0"/>
+            </font>
+            <cursor>
+                <Cursor fx:constant="HAND"/>
+            </cursor>
+        </Button>
+        <Button fx:id="multiLeaderboard" layoutX="511.0" layoutY="203.0" mnemonicParsing="false"
+                onAction="#showMultiLeaderboard" prefHeight="45.0" prefWidth="122.0" styleClass="button2"
+                stylesheets="@/CSS/Leaderboard.css" text="Multiplayer">
+            <font>
+                <Font size="18.0"/>
+            </font>
+            <cursor>
+                <Cursor fx:constant="HAND"/>
+            </cursor>
+        </Button>
+        <Button fx:id="timeAttackButton" layoutX="511.0" layoutY="261.0" mnemonicParsing="false"
+                onAction="#showTimeAttackLeaderBoard" prefHeight="45.0" prefWidth="122.0" styleClass="button2"
+                stylesheets="@/CSS/Leaderboard.css" text="Time Attack">
+            <font>
+                <Font size="18.0"/>
+            </font>
+            <cursor>
+                <Cursor fx:constant="HAND"/>
+            </cursor>
+        </Button>
+        <Button fx:id="survivalButton" layoutX="511.0" layoutY="324.0" mnemonicParsing="false"
+                onAction="#showSurvivalLeaderBoard" prefHeight="45.0" prefWidth="122.0" styleClass="button2"
+                stylesheets="@/CSS/Leaderboard.css" text="Survival">
+            <font>
+                <Font size="18.0"/>
+            </font>
+            <cursor>
+                <Cursor fx:constant="HAND"/>
+            </cursor>
+        </Button>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="151.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration7.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="175.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration8.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="199.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration8.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="222.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration10.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="247.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration11.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="270.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration11.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="295.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration12.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="320.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration13.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="344.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration14.png"/>
+            </image>
+        </ImageView>
+        <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="368.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="@/Image/decoration15.png"/>
+            </image>
+        </ImageView>
     </children>
 </AnchorPane>
