@@ -198,7 +198,7 @@ public class SplashCtrl {
     }
 
     /**
-     * Initialize setup for main controller's showSinglePlayer() method.
+     * Initialize setup for main controller's showGamemodeScreen() method.
      * In case a player enters an invalid/blank username, or if the username is used in an active game session, they are
      * not added to the session, instead being prompted to change their username.
      */
@@ -208,7 +208,17 @@ public class SplashCtrl {
         Optional<Player> playerResult = generatePlayer(newUserName);
         if (playerResult.isEmpty()) return;
 
-        mainCtrl.showGamemodeScreen(playerResult.get());
+        gameSessionUtils.addPlayer(MainCtrl.SELECTION_ID, playerResult.get());
+        long playerId = playerResult.get().id;
+
+        if (playerId == 0L) {
+            playerId = gameSessionUtils
+                    .getPlayers(MainCtrl.SELECTION_ID)
+                    .stream().filter(p -> p.username.equals(newUserName))
+                    .findFirst().get().id;
+        }
+
+        mainCtrl.showGamemodeScreen(playerId);
     }
 
     /**

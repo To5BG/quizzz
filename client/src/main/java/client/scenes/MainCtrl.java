@@ -15,7 +15,6 @@
  */
 package client.scenes;
 
-import commons.Player;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -210,13 +209,13 @@ public class MainCtrl {
     /**
      * Sets the current screen to the gamemode screen and adds a player to it.
      *
-     * @param player The player the entered the gamemodeScreen.
+     * @param playerId The Id of player that entered the gamemodeScreen.
      */
-    public void showGamemodeScreen(Player player) {
+    public void showGamemodeScreen(long playerId) {
         primaryStage.setTitle("Singleplayer gamemodes");
         primaryStage.setScene(gamemodeScreen);
         gamemodeScreen.setOnKeyPressed(e -> gamemodeCtrl.keyPressed(e));
-        gamemodeCtrl.setPlayer(player);
+        gamemodeCtrl.setPlayerId(playerId);
     }
 
 

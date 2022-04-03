@@ -12,12 +12,21 @@ public class GamemodeCtrl {
     private final GameSessionUtils gameSessionUtils;
     private final MainCtrl mainCtrl;
 
-    private Player player;
+    private long playerId;
 
     @Inject
     public GamemodeCtrl(GameSessionUtils gameSessionUtils, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
         this.mainCtrl = mainCtrl;
+    }
+
+    /**
+     * Setter for playerId
+     *
+     * @param playerId - Id for the player
+     */
+    public void setPlayerId(long playerId) {
+        this.playerId = playerId;
     }
 
     /**
@@ -35,7 +44,7 @@ public class GamemodeCtrl {
      * Removes player from session. Also called if controller is closed forcibly
      */
     public void shutdown() {
-        this.player = null;
+        gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
     }
 
     /**
@@ -53,11 +62,11 @@ public class GamemodeCtrl {
      * @return The sessionId of the new session.
      */
     public long createId(GameSession.SessionType type) {
+        Player player = gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
         GameSession newSession = new GameSession(type);
         newSession = gameSessionUtils.addSession(newSession);
-        gameSessionUtils.addPlayer(newSession.id, this.player);
+        gameSessionUtils.addPlayer(newSession.id, player);
 
-        if (this.player.id == 0L) this.player.id = gameSessionUtils.getPlayers(newSession.id).get(0).id;
         return newSession.id;
     }
 
@@ -65,7 +74,8 @@ public class GamemodeCtrl {
      * Starts the default singleplayer game.
      */
     public void showDefault() {
-        mainCtrl.showDefaultSinglePlayer(createId(GameSession.SessionType.SINGLEPLAYER), this.player.id);
+        long sessionId = createId(GameSession.SessionType.SINGLEPLAYER);
+        mainCtrl.showDefaultSinglePlayer(sessionId, playerId);
     }
 
     /**
@@ -74,7 +84,7 @@ public class GamemodeCtrl {
     public void showSurvival() {
         long sessionId = createId(GameSession.SessionType.SURVIVAL);
         gameSessionUtils.setGameRounds(sessionId, Integer.MAX_VALUE);
-        mainCtrl.showSurvival(sessionId, this.player.id);
+        mainCtrl.showSurvival(sessionId, playerId);
     }
 
     /**
@@ -83,10 +93,7 @@ public class GamemodeCtrl {
     public void showTimeAttack() {
         long sessionId = createId(GameSession.SessionType.TIME_ATTACK);
         gameSessionUtils.setGameRounds(sessionId, Integer.MAX_VALUE);
-        mainCtrl.showTimeAttack(sessionId, this.player.id);
+        mainCtrl.showTimeAttack(sessionId, playerId);
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
 }
