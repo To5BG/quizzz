@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
@@ -10,63 +11,66 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-            prefWidth="817.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="client.scenes.MultiplayerCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="817.0" styleClass="background" stylesheets="@/CSS/MultiplayerSession.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.MultiplayerCtrl">
     <children>
-        <Label fx:id="questionPrompt" layoutX="220.0" layoutY="18.0" text="[Question]"/>
-        <Label fx:id="countdown" layoutX="222.0" layoutY="48.0" text="Options:"/>
-        <Button fx:id="leaveButton" layoutX="727.0" layoutY="359.0" mnemonicParsing="false" onAction="#leaveGame"
-                text="Leave"/>
-        <TableView fx:id="leaderboard" layoutX="8.0" layoutY="44.0" opacity="0.0" prefHeight="198.0" prefWidth="644.0">
+        <Label fx:id="questionPrompt" layoutX="192.0" layoutY="58.0" text="[Question]" textFill="WHITE" />
+        <Label fx:id="countdown" layoutX="221.0" layoutY="107.0" text="Options:" textFill="WHITE" />
+        <Button fx:id="leaveButton" layoutX="727.0" layoutY="359.0" mnemonicParsing="false" onAction="#leaveGame" text="Leave" />
+        <TableView fx:id="leaderboard" layoutX="2.0" layoutY="75.0" opacity="0.0" prefHeight="198.0" prefWidth="644.0">
             <columns>
-                <TableColumn fx:id="colRank" prefWidth="35.0" text="rank"/>
-                <TableColumn fx:id="colUserName" prefWidth="548.0" text="player"/>
-                <TableColumn fx:id="colPoints" prefWidth="61.0" text="points"/>
+                <TableColumn fx:id="colRank" prefWidth="35.0" text="rank" />
+                <TableColumn fx:id="colUserName" prefWidth="548.0" text="player" />
+                <TableColumn fx:id="colPoints" prefWidth="61.0" text="points" />
             </columns>
         </TableView>
-        <StackPane fx:id="answerArea" alignment="BASELINE_LEFT" layoutX="220.0" layoutY="65.0" prefHeight="156.0"
-                   prefWidth="235.0"/>
-        <Button fx:id="submitButton" layoutX="567.0" layoutY="252.0" mnemonicParsing="false"
-                onAction="#submitAnswerButton" text="Final Answer"/>
-        <Label fx:id="pointsLabel" layoutX="698.0" layoutY="18.0" text="Points: 0"/>
-        <Label fx:id="questionCount" layoutX="220.0" layoutY="5.0" text="Question: 1"/>
-        <ProgressBar fx:id="timeProgress" layoutX="224.0" layoutY="252.0" prefHeight="20.0" prefWidth="321.0"
-                     progress="0.0"/>
-        <Button fx:id="removeOneButton" layoutX="235.0" layoutY="308.0" mnemonicParsing="false"
-                onAction="#removeOneAnswer" prefHeight="26.0" prefWidth="103.0" text="Remove One Answer">
+        <StackPane fx:id="answerArea" alignment="BASELINE_LEFT" layoutX="221.0" layoutY="131.0" prefHeight="156.0" prefWidth="235.0" styleClass="stack-pane" stylesheets="@/CSS/MultiplayerSession.css" />
+        <Button fx:id="submitButton" layoutX="560.0" layoutY="287.0" mnemonicParsing="false" onAction="#submitAnswerButton" text="Final Answer">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
+        <Label fx:id="pointsLabel" layoutX="698.0" layoutY="18.0" text="Points: 0" textFill="WHITE" />
+        <Label fx:id="questionCount" layoutX="14.0" layoutY="10.0" text="Question: 1" textFill="WHITE" />
+        <ProgressBar fx:id="timeProgress" layoutX="295.0" layoutY="25.0" prefHeight="20.0" prefWidth="321.0" progress="0.0" />
+        <Button fx:id="removeOneButton" layoutX="221.0" layoutY="340.0" mnemonicParsing="false" onAction="#removeOneAnswer" prefHeight="26.0" prefWidth="103.0" text="Remove One Answer">
             <font>
-                <Font size="9.0"/>
+                <Font size="9.0" />
             </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
         </Button>
-        <Button fx:id="decreaseTimeButton" layoutX="395.0" layoutY="308.0" mnemonicParsing="false"
-                onAction="#decreaseTime" prefHeight="26.0" prefWidth="103.0" text="Decrease Time"/>
-        <Button fx:id="doublePointsButton" layoutX="546.0" layoutY="308.0" mnemonicParsing="false"
-                onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points"/>
-        <Label fx:id="jokerRefreshLabel" layoutX="220.0" layoutY="335.0"/>
-        <ImageView fx:id="imagePanel" fitHeight="156.0" fitWidth="177.0" layoutX="463.0" layoutY="66.0"
-                   pickOnBounds="true" preserveRatio="true"/>
-        <ImageView fx:id="emojiFunny" fitHeight="60.0" fitWidth="60.0" layoutX="14.0" layoutY="321.0"
-                   onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
+        <Button fx:id="decreaseTimeButton" layoutX="382.0" layoutY="340.0" mnemonicParsing="false" onAction="#decreaseTime" prefHeight="26.0" prefWidth="103.0" text="Decrease Time">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
+        <Button fx:id="doublePointsButton" layoutX="530.0" layoutY="338.0" mnemonicParsing="false" onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
+        <ImageView fx:id="imagePanel" fitHeight="156.0" fitWidth="169.0" layoutX="479.0" layoutY="107.0" pickOnBounds="true" preserveRatio="true" />
+        <ImageView fx:id="emojiFunny" fitHeight="60.0" fitWidth="60.0" layoutX="14.0" layoutY="323.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
         </ImageView>
-        <Button fx:id="playAgain" layoutX="447.0" layoutY="292.0" mnemonicParsing="false" onAction="#playAgain"
-                prefHeight="25.0" prefWidth="103.0" text="Play again"/>
-        <Label fx:id="status" layoutX="486.0" layoutY="363.0" text="[Status]"/>
-        <Button fx:id="backButton" layoutX="727.0" layoutY="359.0" mnemonicParsing="false" onAction="#back"
-                text="Go Back"/>
-        <ImageView fx:id="emojiSad" fitHeight="60.0" fitWidth="60.0" layoutX="82.0" layoutY="323.0"
-                   onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
+        <Button fx:id="playAgain" layoutX="434.0" layoutY="308.0" mnemonicParsing="false" onAction="#playAgain" prefHeight="26.0" prefWidth="115.0" text="Play again">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
+        <Label fx:id="status" layoutX="477.0" layoutY="373.0" text="[Status]" />
+        <Button fx:id="backButton" layoutX="727.0" layoutY="359.0" mnemonicParsing="false" onAction="#back" text="Go Back">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
+        <ImageView fx:id="emojiSad" fitHeight="60.0" fitWidth="60.0" layoutX="82.0" layoutY="323.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
         </ImageView>
-        <ImageView fx:id="emojiAngry" fitHeight="60.0" fitWidth="60.0" layoutX="148.0" layoutY="323.0"
-                   onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
+        <ImageView fx:id="emojiAngry" fitHeight="60.0" fitWidth="60.0" layoutX="148.0" layoutY="323.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
         </ImageView>
-        <TableView fx:id="emojiList" layoutX="652.0" layoutY="43.0" prefHeight="200.0" prefWidth="151.0">
+        <TableView fx:id="emojiList" layoutX="652.0" layoutY="43.0" prefHeight="200.0" prefWidth="156.0">
             <columns>
-                <TableColumn fx:id="emojiUsername" prefWidth="75.0" sortable="false" text="Username"/>
-                <TableColumn fx:id="emojiImage" prefWidth="75.0" sortable="false" text="Emoji"/>
+                <TableColumn fx:id="emojiUsername" prefWidth="75.0" sortable="false" text="Username" />
+                <TableColumn fx:id="emojiImage" prefWidth="75.0" sortable="false" text="Emoji" />
             </columns>
         </TableView>
-        <Label fx:id="removedPlayers" layoutX="382.0" layoutY="285.0" opacity="0.0" text="Player : DISCONNECTED..."/>
-        <Label fx:id="jokerUsage" layoutX="338.0" layoutY="332.0" prefHeight="17.0" prefWidth="251.0" wrapText="true"/>
+        <Label fx:id="removedPlayers" layoutX="649.0" layoutY="306.0" opacity="0.0" text="Player : DISCONNECTED..." />
+        <Label fx:id="jokerUsage" layoutX="359.0" layoutY="373.0" prefHeight="17.0" prefWidth="251.0" wrapText="true" />
+        <Label fx:id="jokerRefreshLabel" layoutX="221.0" layoutY="373.0" prefHeight="17.0" prefWidth="303.0" />
     </children>
 </AnchorPane>
