@@ -507,7 +507,10 @@ public abstract class GameCtrl implements Initializable {
         gameSessionUtils.toggleReady(sessionId, true);
     }
 
-    private void handleGameEnd() {
+    /**
+     * Shows the end game screen once the multiplayer game ends. In case of singleplayer, sends the user back to splash
+     */
+    protected void handleGameEnd() {
         try {
             if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showEndScreen();
             else back();
@@ -518,7 +521,10 @@ public abstract class GameCtrl implements Initializable {
         }
     }
 
-    private void handleNextRound() {
+    /**
+     * Proceeds the user onto the next round of the game
+     */
+    protected void handleNextRound() {
         try {
             gameSessionUtils.toggleReady(sessionId, false);
             imagePanel.setImage(null);
@@ -552,9 +558,9 @@ public abstract class GameCtrl implements Initializable {
                 Platform.runLater(() -> {
                     if (currentQuestion == null) return; // happens if shutdown is called before triggering
                     rounds++;
-                    if (rounds == GameSession.GAME_ROUNDS) {
+                    if (rounds == GameSession.gameRounds) {
                         handleGameEnd();
-                    } else if (rounds == GameSession.GAME_ROUNDS / 2 &&
+                    } else if (rounds == GameSession.gameRounds / 2 &&
                             gameSessionUtils.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
                         displayMidGameScreen();
                         countdown.setOpacity(0);

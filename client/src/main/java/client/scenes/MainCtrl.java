@@ -40,8 +40,14 @@ public class MainCtrl {
     private Scene roomSelectionScreen;
     private SingleplayerCtrl singlePlayerCtrl;
     private Scene singlePlayerScreen;
+    private TimeAttackCtrl timeAttackCtrl;
+    private Scene timeAttackScreen;
+    private SurvivalCtrl survivalCtrl;
+    private Scene survivalScreen;
     private WaitingAreaCtrl waitingAreaCtrl;
     private Scene waitingAreaScreen;
+    private GamemodeCtrl gamemodeCtrl;
+    private Scene gamemodeScreen;
     private LeaderBoardCtrl leaderBoardCtrl;
     private Scene leaderBoardScreen;
     private WebViewCtrl webViewCtrl;
@@ -55,14 +61,24 @@ public class MainCtrl {
      * @param primaryStage store base stage of the application
      * @param splash       Controller and Scene pair for the splash screen of the application
      * @param multi        Controller and Scene pair for the multiplayer screen of the application
+     * @param rooms        Controller and Scene pair for the room selection screen of the application
+     * @param wait         Controller and Scene pair for the waiting area screen of the application
+     * @param mode         Controller and Scene pair for the gamemode selection screen of the application
+     * @param single       Controller and Scene pair for the default singleplayer gamescreen of the application
+     * @param timeAttack   Controller and Scene pair for the time attack gamescreen of the application
+     * @param survival     Controller and Scene pair for the survival gamescreen of the application
      * @param leaderboard  Controller and Scene pair for the leaderboard screen of the application
+     * @param webView      Controller and Scene pair for the webview screen of the application
      * @param tutorial     Controller and Scene pair for the tutorial screen of the application
      */
     public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
                            Pair<MultiplayerCtrl, Parent> multi,
                            Pair<RoomSelectionCtrl, Parent> rooms,
                            Pair<WaitingAreaCtrl, Parent> wait,
+                           Pair<GamemodeCtrl, Parent> mode,
                            Pair<SingleplayerCtrl, Parent> single,
+                           Pair<TimeAttackCtrl, Parent> timeAttack,
+                           Pair<SurvivalCtrl, Parent> survival,
                            Pair<LeaderBoardCtrl, Parent> leaderboard,
                            Pair<WebViewCtrl, Parent> webView,
                            Pair<TutorialScreenCtrl, Parent> tutorial) {
@@ -80,8 +96,17 @@ public class MainCtrl {
         this.waitingAreaCtrl = wait.getKey();
         this.waitingAreaScreen = new Scene(wait.getValue());
 
+        this.gamemodeCtrl = mode.getKey();
+        this.gamemodeScreen = new Scene(mode.getValue());
+
         this.singlePlayerCtrl = single.getKey();
         this.singlePlayerScreen = new Scene(single.getValue());
+
+        this.timeAttackCtrl = timeAttack.getKey();
+        this.timeAttackScreen = new Scene(timeAttack.getValue());
+
+        this.survivalCtrl = survival.getKey();
+        this.survivalScreen = new Scene(survival.getValue());
 
         this.leaderBoardCtrl = leaderboard.getKey();
         this.leaderBoardScreen = new Scene(leaderboard.getValue());
@@ -187,12 +212,24 @@ public class MainCtrl {
         }, 0, 500);
     }
 
+    /**
+     * Sets the current screen to the gamemode screen and adds a player to it.
+     *
+     * @param playerId The Id of player that entered the gamemodeScreen.
+     */
+    public void showGamemodeScreen(long playerId) {
+        primaryStage.setTitle("Singleplayer gamemodes");
+        primaryStage.setScene(gamemodeScreen);
+        gamemodeScreen.setOnKeyPressed(e -> gamemodeCtrl.keyPressed(e));
+        gamemodeCtrl.setPlayerId(playerId);
+    }
+
 
     /**
      * Sets the current screen to the single player screen.
      */
-    public void showSinglePlayer(long sessionId, long playerId) {
-        primaryStage.setTitle("Singe player game");
+    public void showDefaultSinglePlayer(long sessionId, long playerId) {
+        primaryStage.setTitle("Single player game");
         primaryStage.setScene(singlePlayerScreen);
         singlePlayerScreen.setOnKeyPressed(e -> singlePlayerCtrl.keyPressed(e));
         singlePlayerCtrl.setSessionId(sessionId);
@@ -200,6 +237,32 @@ public class MainCtrl {
         singlePlayerCtrl.fetchJokerStates();
         singlePlayerCtrl.loadQuestion();
         singlePlayerCtrl.refresh();
+    }
+
+    /**
+     * Sets the current screen to the time attack screen.
+     */
+    public void showTimeAttack(long sessionId, long playerId) {
+        primaryStage.setTitle("Time Attack");
+        primaryStage.setScene(timeAttackScreen);
+        timeAttackScreen.setOnKeyPressed(e -> timeAttackCtrl.keyPressed(e));
+        timeAttackCtrl.setSessionId(sessionId);
+        timeAttackCtrl.setPlayerId(playerId);
+        timeAttackCtrl.startTimer();
+        timeAttackCtrl.refresh();
+    }
+
+    /**
+     * Sets the current screen to the survival screen.
+     */
+    public void showSurvival(long sessionId, long playerId) {
+        primaryStage.setTitle("Survival Mode");
+        primaryStage.setScene(survivalScreen);
+        survivalScreen.setOnKeyPressed(e -> survivalCtrl.keyPressed(e));
+        survivalCtrl.setSessionId(sessionId);
+        survivalCtrl.setPlayerId(playerId);
+        survivalCtrl.loadQuestion();
+        survivalCtrl.refresh();
     }
 
     /**
@@ -244,5 +307,4 @@ public class MainCtrl {
             alert.showAndWait().filter(r -> r != ButtonType.OK).ifPresent(r -> evt.consume());
         });
     }
-
 }

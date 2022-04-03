@@ -22,4 +22,18 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
      */
     List<Player> findByOrderByBestMultiScoreDesc();
 
+    /**
+     * the JPA sorting method to return a list of players sorted by their best time attack score
+     *
+     * @return a list of ordered players
+     */
+    List<Player> findByOrderByBestTimeAttackScoreDesc();
+
+    /**
+     * the JPA sorting method to return a list of player sorted by their best survival score
+     *
+     * @return a list of ordered players
+     */
+    List<Player> findByOrderByBestSurvivalScoreDesc();
+
 }
