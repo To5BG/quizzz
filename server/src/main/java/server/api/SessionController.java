@@ -92,6 +92,7 @@ public class SessionController {
 
     /**
      * Update joker states of all players in the given session and award double points if applicable
+     *
      * @param session The session to operate on
      */
     private void updatePlayerJokers(GameSession session) {
@@ -119,6 +120,7 @@ public class SessionController {
 
     /**
      * Set all jokers of all player in the session to AVAILABLE
+     *
      * @param session The session to operate on
      */
     private void grantAllJokers(GameSession session) {
@@ -231,7 +233,8 @@ public class SessionController {
     @GetMapping({"/available"})
     public ResponseEntity<List<GameSession>> getAvailableSessions() {
         var sessions = sm.getValues().stream()
-                .filter(s -> s.sessionType == GameSession.SessionType.WAITING_AREA).toList();
+                .filter(s -> (s.sessionType == GameSession.SessionType.WAITING_AREA ||
+                        s.sessionStatus == GameSession.SessionStatus.PLAY_AGAIN)).toList();
         if (sessions.isEmpty()) return ResponseEntity.ok(null);
         else return ResponseEntity.ok(sessions);
     }
@@ -490,8 +493,9 @@ public class SessionController {
 
     /**
      * Get the state of jokers stored for a given player in a given session
+     *
      * @param sessionId The ID of the session
-     * @param playerId The ID of the player
+     * @param playerId  The ID of the player
      * @return The state of each joker the player has
      */
     @GetMapping("/{sessionId}/{playerId}/jokers")
