@@ -6,6 +6,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 <AnchorPane prefHeight="460.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
+            styleClass="background" stylesheets="@/CSS/Baseline.css"
             fx:controller="client.scenes.TutorialScreenCtrl">
     <children>
         <Line fx:id="leftUp" endX="55" endY="5" layoutX="-5.0" layoutY="220.0" startX="30" startY="30"

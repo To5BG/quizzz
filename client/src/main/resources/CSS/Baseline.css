@@ -37,6 +37,8 @@
 }
 
 .gameButton{
+    -fx-font-family: "Earth Orbiter Punch";
+    -fx-font-size: 15px;
     -fx-border-color: #84ba84;
     -fx-border-width: 5;
 }
