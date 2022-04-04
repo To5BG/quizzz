@@ -1,0 +1,95 @@
+@font-face {
+    font-family: 'Earth Orbiter Punch';
+    src: url('../Fonts/earthorbiterpunch.ttf');
+}
+
+
+* {
+    -fx-background-color: transparent;
+    -fx-text-alignment: center;
+    -fx-border-color: transparent;
+    -fx-text-fill: white;
+}
+
+.background{
+    -fx-background-image: url("/Image/background.png");
+}
+
+.title{
+    -fx-font-family: 'Earth Orbiter Punch';
+}
+
+.text-field{
+    -fx-background-radius: 12px;
+    -fx-border-color: #00CCFF;
+    -fx-border-radius: 12px;
+    -fx-background-color: transparent;
+    -fx-border-width: 2px;
+}
+
+.button{
+    -fx-background-color: transparent;
+    -fx-border-color: #00CCFF;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 12px;
+    -fx-border-width: 2px;
+    -fx-cursor: hand;
+}
+
+.gameButton{
+    -fx-border-color: #84ba84;
+    -fx-border-width: 5;
+}
+
+/*  Answer   */
+.radio-button {
+    -fx-fill: white;
+    -fx-cursor: hand;
+}
+.radio-button .radio {
+    -fx-border-radius: 10px;
+    -fx-border-width: 1;
+    -fx-border-color: white;
+}
+.radio-button:hover .radio {
+    -fx-border-color: darkgrey;
+}
+.radio-button:selected .radio {
+    -fx-border-color: #00CCFF;
+}
+
+/*  Timer   */
+.progress-bar > .bar {
+    -fx-background-color: #00CCFF;
+    -fx-background-insets: 2;
+    -fx-background-radius: 10;
+}
+
+.progress-bar > .track {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+}
+
+/*  All tables   */
+.table {
+    -fx-border-color: transparent;
+}
+.table-column {
+    -fx-alignment: center;
+}
+.table-cell {
+    -fx-border-width: 0 1 0 1;
+    -fx-border-color: white;
+}
+.table-view .column-header-background {
+    -fx-border-width: 1;
+    -fx-border-color: white;
+}
+.table-row-cell:selected {
+    -fx-border-width: 3;
+    -fx-border-color: #00CCFF;
+}
+.scroll-bar:horizontal {
+    -fx-border-width: 0;
+    -fx-background-color: transparent;
+}

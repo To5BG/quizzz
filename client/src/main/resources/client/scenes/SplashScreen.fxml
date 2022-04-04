@@ -6,13 +6,13 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="576.0"
-            prefWidth="720.0" styleClass="background" stylesheets="@/CSS/Splash.css" xmlns="http://javafx.com/javafx/17"
+            prefWidth="720.0" styleClass="background" stylesheets="@/CSS/Baseline.css" xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.SplashCtrl">
     <TextField fx:id="usernameField" alignment="CENTER" layoutX="109.0" layoutY="269.0" prefHeight="38.0"
-               prefWidth="170.0" promptText="Enter a username" styleClass="username" stylesheets="@/CSS/Splash.css"/>
+               prefWidth="170.0" promptText="Enter a username" styleClass="username" stylesheets="@/CSS/Baseline.css"/>
     <TextField fx:id="connectionField" alignment="CENTER" layoutX="109.0" layoutY="336.0" prefHeight="38.0"
                prefWidth="170.0" promptText="http://localhost:8080/" styleClass="connect"
-               stylesheets="@/CSS/Splash.css"/>
+               stylesheets="@/CSS/Baseline.css"/>
     <Label layoutX="62.0" layoutY="152.0" prefHeight="81.0" prefWidth="516.0" styleClass="title" text="QUIZZZZ"
            textFill="#33b5f2">
         <font>
@@ -20,7 +20,7 @@
         </font>
     </Label>
     <Button layoutX="105.0" layoutY="393.0" mnemonicParsing="false" onAction="#showGamemodeScreen" prefHeight="52.0"
-            prefWidth="178.0" styleClass="gameButton" stylesheets="@/CSS/Splash.css" text="Singleplayer"
+            prefWidth="178.0" styleClass="gameButton" stylesheets="@/CSS/Baseline.css" text="Singleplayer"
             textFill="WHITE">
         <font>
             <Font name="Earth Orbiter Engraved" size="19.0"/>

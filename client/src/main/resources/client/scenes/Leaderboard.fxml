@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
-<AnchorPane prefHeight="499.0" prefWidth="633.0" styleClass="background" stylesheets="@/CSS/Leaderboard.css"
+<AnchorPane prefHeight="499.0" prefWidth="633.0" styleClass="background" stylesheets="@/CSS/Baseline.css"
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.scenes.LeaderBoardCtrl">
     <children>
@@ -26,7 +26,7 @@
             </font>
         </Label>
         <Button layoutY="135.0" mnemonicParsing="false" onAction="#back" prefHeight="271.0" prefWidth="50.0"
-                styleClass="button1" stylesheets="@/CSS/Leaderboard.css" text="BACK" wrapText="true">
+                styleClass="button1" stylesheets="@/CSS/Baseline.css" text="BACK" wrapText="true">
             <font>
                 <Font size="25.0"/>
             </font>
@@ -36,7 +36,7 @@
         </Button>
         <Button fx:id="singleLeaderboard" layoutX="511.0" layoutY="142.0" mnemonicParsing="false"
                 onAction="#showSingleLeaderBoard" prefHeight="45.0" prefWidth="122.0" styleClass="button2"
-                stylesheets="@/CSS/Leaderboard.css" text="Singleplayer">
+                stylesheets="@/CSS/Baseline.css" text="Singleplayer">
             <font>
                 <Font size="18.0"/>
             </font>
@@ -46,7 +46,7 @@
         </Button>
         <Button fx:id="multiLeaderboard" layoutX="511.0" layoutY="203.0" mnemonicParsing="false"
                 onAction="#showMultiLeaderboard" prefHeight="45.0" prefWidth="122.0" styleClass="button2"
-                stylesheets="@/CSS/Leaderboard.css" text="Multiplayer">
+                stylesheets="@/CSS/Baseline.css" text="Multiplayer">
             <font>
                 <Font size="18.0"/>
             </font>
@@ -56,7 +56,7 @@
         </Button>
         <Button fx:id="timeAttackButton" layoutX="511.0" layoutY="261.0" mnemonicParsing="false"
                 onAction="#showTimeAttackLeaderBoard" prefHeight="45.0" prefWidth="122.0" styleClass="button2"
-                stylesheets="@/CSS/Leaderboard.css" text="Time Attack">
+                stylesheets="@/CSS/Baseline.css" text="Time Attack">
             <font>
                 <Font size="18.0"/>
             </font>
@@ -66,7 +66,7 @@
         </Button>
         <Button fx:id="survivalButton" layoutX="511.0" layoutY="324.0" mnemonicParsing="false"
                 onAction="#showSurvivalLeaderBoard" prefHeight="45.0" prefWidth="122.0" styleClass="button2"
-                stylesheets="@/CSS/Leaderboard.css" text="Survival">
+                stylesheets="@/CSS/Baseline.css" text="Survival">
             <font>
                 <Font size="18.0"/>
             </font>

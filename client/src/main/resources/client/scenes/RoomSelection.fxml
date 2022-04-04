@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.layout.AnchorPane?>
-<AnchorPane prefHeight="400.0" prefWidth="600.0" styleClass="background" stylesheets="@/CSS/RoomSelection.css"
+<AnchorPane prefHeight="400.0" prefWidth="600.0" styleClass="background" stylesheets="@/CSS/Baseline.css"
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.scenes.RoomSelectionCtrl">
     <Button layoutX="41.0" layoutY="43.0" mnemonicParsing="false" onAction="#back" text="Back">
