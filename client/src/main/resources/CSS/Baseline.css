@@ -11,15 +11,15 @@
     -fx-text-fill: white;
 }
 
-.background{
+.background {
     -fx-background-image: url("/Image/background.png");
 }
 
-.title{
+.title {
     -fx-font-family: 'Earth Orbiter Punch';
 }
 
-.text-field{
+.text-field {
     -fx-background-radius: 12px;
     -fx-border-color: #00CCFF;
     -fx-border-radius: 12px;
@@ -27,7 +27,7 @@
     -fx-border-width: 2px;
 }
 
-.button{
+.button {
     -fx-background-color: transparent;
     -fx-border-color: #00CCFF;
     -fx-background-radius: 10px;
@@ -36,7 +36,7 @@
     -fx-cursor: hand;
 }
 
-.gameButton{
+.gameButton {
     -fx-font-family: "Earth Orbiter Punch";
     -fx-font-size: 15px;
     -fx-border-color: #84ba84;
@@ -48,14 +48,17 @@
     -fx-fill: white;
     -fx-cursor: hand;
 }
+
 .radio-button .radio {
     -fx-border-radius: 10px;
     -fx-border-width: 1;
     -fx-border-color: white;
 }
+
 .radio-button:hover .radio {
     -fx-border-color: darkgrey;
 }
+
 .radio-button:selected .radio {
     -fx-border-color: #00CCFF;
 }
@@ -76,21 +79,26 @@
 .table {
     -fx-border-color: transparent;
 }
+
 .table-column {
     -fx-alignment: center;
 }
+
 .table-cell {
     -fx-border-width: 0 1 0 1;
     -fx-border-color: white;
 }
+
 .table-view .column-header-background {
     -fx-border-width: 1;
     -fx-border-color: white;
 }
+
 .table-row-cell:selected {
     -fx-border-width: 3;
     -fx-border-color: #00CCFF;
 }
+
 .scroll-bar:horizontal {
     -fx-border-width: 0;
     -fx-background-color: transparent;
