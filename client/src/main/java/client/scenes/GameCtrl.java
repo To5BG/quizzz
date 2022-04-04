@@ -147,6 +147,7 @@ public abstract class GameCtrl implements Initializable {
      */
     protected void renderGeneralInformation(Question q) {
         this.questionPrompt.setText(q.prompt);
+        this.questionPrompt.setStyle("-fx-text-alignment: left");
         if (q.type != Question.QuestionType.RANGE_GUESS && q.type != Question.QuestionType.EQUIVALENCE &&
                 q.type != Question.QuestionType.MULTIPLE_CHOICE) {
             return;
@@ -217,6 +218,7 @@ public abstract class GameCtrl implements Initializable {
             multiChoiceAnswers.add(choice);
             answerArea.getChildren().add(choice);
         }
+        answerArea.setStyle("-fx-text-alignment: left");
     }
 
     /**
