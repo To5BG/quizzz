@@ -4,16 +4,13 @@ import client.utils.GameSessionUtils;
 import com.google.inject.Inject;
 import commons.Player;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 
-import java.net.URL;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.ResourceBundle;
 
-public class PodiumCtrl implements Initializable {
+public class PodiumCtrl {
 
     private final GameSessionUtils gameSessionUtils;
     private final MainCtrl mainCtrl;
@@ -37,11 +34,6 @@ public class PodiumCtrl implements Initializable {
     public PodiumCtrl(GameSessionUtils gameSessionUtils, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
         this.mainCtrl = mainCtrl;
-    }
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-
     }
 
     /**

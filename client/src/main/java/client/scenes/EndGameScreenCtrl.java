@@ -2,22 +2,29 @@ package client.scenes;
 
 import client.utils.*;
 import com.google.inject.Inject;
+import commons.Emoji;
 import commons.GameSession;
 import commons.Player;
 import jakarta.ws.rs.BadRequestException;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.util.Callback;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.nio.file.Path;
+import java.util.*;
 
 import static client.scenes.GameCtrl.TIMER_UPDATE_INTERVAL_MS;
 
@@ -29,6 +36,8 @@ public class EndGameScreenCtrl implements Initializable {
     private final QuestionUtils questionUtils;
     private final WebSocketsUtils webSocketsUtils;
     private final MainCtrl mainCtrl;
+    private final ObservableList<Emoji> sessionEmojis;
+    private final List<Image> emojiImages;
     @FXML
     protected Button playAgain;
     @FXML
@@ -47,11 +56,24 @@ public class EndGameScreenCtrl implements Initializable {
     protected TableColumn<Player, String> colUserName;
     @FXML
     protected TableColumn<Player, Integer> colPoints;
+    @FXML
+    private TableView<Emoji> emojiList;
+    @FXML
+    private TableColumn<Emoji, String> emojiUsername;
+    @FXML
+    private TableColumn<Emoji, ImageView> emojiImage;
+    @FXML
+    private ImageView emojiFunny;
+    @FXML
+    private ImageView emojiSad;
+    @FXML
+    private ImageView emojiAngry;
     protected Thread timerThread;
     private long sessionId;
     private long playerId;
     private int waitingSkip = 0;
     private boolean playingAgain;
+    private StompSession.Subscription channelEnd;
 
 
     @Inject
@@ -62,6 +84,16 @@ public class EndGameScreenCtrl implements Initializable {
         this.webSocketsUtils = webSocketsUtils;
         this.questionUtils = questionUtils;
         this.mainCtrl = mainCtrl;
+        sessionEmojis = FXCollections.observableArrayList();
+        emojiImages = new ArrayList<Image>();
+        String[] emojiFileNames = {"funny", "sad", "angry"};
+        ClassLoader cl = getClass().getClassLoader();
+        for (String fileName : emojiFileNames) {
+            URL location = cl.getResource(
+                    Path.of("", "client", "scenes", "emojis", fileName + ".png").toString());
+
+            emojiImages.add(new Image(location.toString()));
+        }
     }
 
     @Override
@@ -87,6 +119,25 @@ public class EndGameScreenCtrl implements Initializable {
         count.setText("Waiting for game to start...");
         count.setOpacity(1);
         leave.setOpacity(1);
+
+        emojiUsername.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().username));
+        emojiImage.setCellValueFactory(e -> {
+            Image picture;
+            switch (e.getValue().emoji) {
+                case FUNNY -> picture = emojiImages.get(0);
+                case SAD -> picture = emojiImages.get(1);
+                default -> picture = emojiImages.get(2);
+            }
+
+            ImageView iv = new ImageView(picture);
+            iv.setFitHeight(30);
+            iv.setFitWidth(30);
+            return new SimpleObjectProperty<ImageView>(iv);
+        });
+
+        emojiFunny.setImage(emojiImages.get(0));
+        emojiSad.setImage(emojiImages.get(1));
+        emojiAngry.setImage(emojiImages.get(2));
     }
 
     /**
@@ -112,8 +163,7 @@ public class EndGameScreenCtrl implements Initializable {
                             count.setText(gameSessionUtils.getSession(sessionId).playersReady.get() + " / " +
                                     gameSessionUtils.getSession(sessionId).players.size()
                                     + " players want to play again");
-                        }
-                        if (gameSessionUtils.getSession(sessionId).sessionStatus
+                        } else if (gameSessionUtils.getSession(sessionId).sessionStatus
                                 == GameSession.SessionStatus.TRANSFERRING) {
                             cancel();
                         }
@@ -123,10 +173,6 @@ public class EndGameScreenCtrl implements Initializable {
                 });
             }
 
-            @Override
-            public boolean cancel() {
-                return super.cancel();
-            }
         }, 0, 100);
     }
 
@@ -145,6 +191,7 @@ public class EndGameScreenCtrl implements Initializable {
             setPlayerId(0);
         }
         setSessionId(0);
+        channelEnd.unsubscribe();
     }
 
     /**
@@ -202,6 +249,7 @@ public class EndGameScreenCtrl implements Initializable {
         leaderboard.setItems(data);
 
         TimeUtils roundTimer = new TimeUtils(END_GAME_TIME, TIMER_UPDATE_INTERVAL_MS);
+        registerForEmojiUpdates();
         roundTimer.setTimeBooster(() -> (double) waitingSkip);
         roundTimer.setOnSucceeded((event) -> {
             gameSessionUtils.updateStatus(gameSessionUtils.getSession(sessionId),
@@ -284,5 +332,43 @@ public class EndGameScreenCtrl implements Initializable {
      */
     public void setPlayerId(long playerId) {
         this.playerId = playerId;
+    }
+
+    /**
+     * Register the client to receive emoji reactions from other players
+     */
+    public void registerForEmojiUpdates() {
+        sessionEmojis.clear();
+        emojiList.setItems(sessionEmojis);
+
+        channelEnd = this.webSocketsUtils.registerForEmojiUpdates(emoji -> {
+            sessionEmojis.add(emoji);
+            Platform.runLater(() -> emojiList.scrollTo(sessionEmojis.size() - 1));
+        }, this.sessionId);
+    }
+
+    /**
+     * Generic event handler for clicking on an emoji
+     *
+     * @param ev The event information
+     */
+    public void emojiEventHandler(Event ev) {
+        Node source = (Node) ev.getSource();
+        String nodeId = source.getId();
+        Emoji.EmojiType type;
+        switch (nodeId) {
+            case "emojiFunny":
+                type = Emoji.EmojiType.FUNNY;
+                break;
+            case "emojiSad":
+                type = Emoji.EmojiType.SAD;
+                break;
+            case "emojiAngry":
+                type = Emoji.EmojiType.ANGRY;
+                break;
+            default:
+                return;
+        }
+        webSocketsUtils.sendEmoji(sessionId, playerId, type);
     }
 }

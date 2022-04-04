@@ -7,47 +7,47 @@
 <?import javafx.scene.text.Font?>
 
 
-<AnchorPane prefHeight="338.0" prefWidth="600.0" styleClass="background" stylesheets="@../../CSS/PodiumScreen.css"
+<AnchorPane prefHeight="338.0" prefWidth="600.0" styleClass="background" stylesheets="@/CSS/PodiumScreen.css"
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.scenes.PodiumCtrl">
     <children>
         <ImageView fitHeight="347.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true">
             <image>
-                <Image url="@../../Image/background2.png"/>
+                <Image url="@/Image/background2.png"/>
             </image>
         </ImageView>
         <Label fx:id="point3" layoutX="76.0" layoutY="215.0" prefHeight="29.0" prefWidth="139.0" styleClass="number3"
-               stylesheets="@../../CSS/PodiumScreen.css" textFill="WHITE">
+               stylesheets="@/CSS/PodiumScreen.css" textFill="WHITE">
             <font>
                 <Font size="24.0"/>
             </font>
         </Label>
         <Label fx:id="name3" layoutX="76.0" layoutY="179.0" prefHeight="29.0" prefWidth="139.0" styleClass="number3"
-               stylesheets="@../../CSS/PodiumScreen.css" textFill="WHITE">
+               stylesheets="@/CSS/PodiumScreen.css" textFill="WHITE">
             <font>
                 <Font size="24.0"/>
             </font>
         </Label>
         <Label fx:id="point1" layoutX="221.0" layoutY="138.0" prefHeight="29.0" prefWidth="139.0" styleClass="number1"
-               stylesheets="@../../CSS/PodiumScreen.css" textFill="WHITE">
+               stylesheets="@/CSS/PodiumScreen.css" textFill="WHITE">
             <font>
                 <Font size="24.0"/>
             </font>
         </Label>
         <Label fx:id="name1" layoutX="221.0" layoutY="102.0" prefHeight="29.0" prefWidth="139.0" styleClass="number1"
-               stylesheets="@../../CSS/PodiumScreen.css" textFill="WHITE">
+               stylesheets="@/CSS/PodiumScreen.css" textFill="WHITE">
             <font>
                 <Font size="24.0"/>
             </font>
         </Label>
         <Label fx:id="point2" layoutX="366.0" layoutY="182.0" prefHeight="29.0" prefWidth="139.0" styleClass="number2"
-               stylesheets="@../../CSS/PodiumScreen.css" textFill="WHITE">
+               stylesheets="@/CSS/PodiumScreen.css" textFill="WHITE">
             <font>
                 <Font size="24.0"/>
             </font>
         </Label>
         <Label fx:id="name2" layoutX="366.0" layoutY="146.0" prefHeight="29.0" prefWidth="139.0" styleClass="number2"
-               stylesheets="@../../CSS/PodiumScreen.css" textFill="WHITE">
+               stylesheets="@/CSS/PodiumScreen.css" textFill="WHITE">
             <font>
                 <Font size="24.0"/>
             </font>
@@ -55,18 +55,18 @@
         <ImageView fitHeight="116.0" fitWidth="139.0" layoutX="95.0" layoutY="66.0" pickOnBounds="true"
                    preserveRatio="true">
             <image>
-                <Image url="@../../Image/decoration18.png"/>
+                <Image url="@/Image/decoration18.png"/>
             </image>
         </ImageView>
         <ImageView fitHeight="116.0" fitWidth="139.0" layoutX="248.0" pickOnBounds="true" preserveRatio="true">
             <image>
-                <Image url="@../../Image/decoration17.png"/>
+                <Image url="@/Image/decoration17.png"/>
             </image>
         </ImageView>
         <ImageView fitHeight="116.0" fitWidth="139.0" layoutX="384.0" layoutY="38.0" pickOnBounds="true"
                    preserveRatio="true">
             <image>
-                <Image url="@../../Image/decoration19.png"/>
+                <Image url="@/Image/decoration19.png"/>
             </image>
         </ImageView>
     </children>
