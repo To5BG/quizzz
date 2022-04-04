@@ -13,7 +13,6 @@
         <cursor>
             <Cursor fx:constant="HAND"/>
         </cursor>
-    </Button>
     <TableView fx:id="currentPlayers" layoutX="41.0" layoutY="105.0" prefHeight="229.0" prefWidth="299.0">
         <columns>
             <TableColumn fx:id="userName" prefWidth="296.0" text="Players"/>

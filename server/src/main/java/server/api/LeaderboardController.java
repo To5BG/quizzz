@@ -179,7 +179,7 @@ public class LeaderboardController {
     }
 
     /**
-     * Updates best points of a player entry
+     * Updates best singleplayer points of a player entry
      *
      * @param playerId Id of player
      * @param points   Point count to be updated with
@@ -199,7 +199,7 @@ public class LeaderboardController {
     }
 
     /**
-     * Updates best points of a player entry
+     * Updates best multiplayer points of a player entry
      *
      * @param playerId Id of player
      * @param points   Point count to be updated with
@@ -210,12 +210,50 @@ public class LeaderboardController {
                                                        @RequestBody int points) {
         if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
         Player updatedPlayer = repo.findById(playerId).get();
-        updatedPlayer.setBestMultiScore(points);
-        repo.save(updatedPlayer);
         if (points > updatedPlayer.getBestMultiScore()) {
             updatedPlayer.setBestMultiScore(points);
             repo.save(updatedPlayer);
             multiChangesToCommit = true;
+        }
+        return ResponseEntity.ok(updatedPlayer);
+    }
+
+    /**
+     * Updates best survival points of a player entry
+     *
+     * @param playerId Id of player
+     * @param points   Point count to be updated with
+     * @return Updated player entity
+     */
+    @PutMapping("/{id}/bestsurvivalscore")
+    public ResponseEntity<Player> updateBestSurvivalScore(@PathVariable("id") long playerId,
+                                                       @RequestBody int points) {
+        if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
+        Player updatedPlayer = repo.findById(playerId).get();
+        if (points > updatedPlayer.getBestSurvivalScore()) {
+            updatedPlayer.setBestSurvivalScore(points);
+            repo.save(updatedPlayer);
+            listeners.forEach((k, l) -> l.accept(Pair.of("survival", this.getPlayerSurvivalScores().getBody())));
+        }
+        return ResponseEntity.ok(updatedPlayer);
+    }
+
+    /**
+     * Updates best time attack points of a player entry
+     *
+     * @param playerId Id of player
+     * @param points   Point count to be updated with
+     * @return Updated player entity
+     */
+    @PutMapping("/{id}/besttimeattackscore")
+    public ResponseEntity<Player> updateBestTimeAttackScore(@PathVariable("id") long playerId,
+                                                       @RequestBody int points) {
+        if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
+        Player updatedPlayer = repo.findById(playerId).get();
+        if (points > updatedPlayer.getBestTimeAttackScore()) {
+            updatedPlayer.setBestTimeAttackScore(points);
+            repo.save(updatedPlayer);
+            listeners.forEach((k, l) -> l.accept(Pair.of("timeAttack", this.getPlayerTimeAttackScores().getBody())));
         }
         return ResponseEntity.ok(updatedPlayer);
     }

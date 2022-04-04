@@ -42,11 +42,11 @@ public class QuestionGeneratorTest {
     public void testGenerateSurvivalQuestionInternalRng() {
         double difficulty = 1;
         Pair<Question, List<Long>> res = QuestionGenerator.generateSurvivalQuestion(difficulty, ctrl);
-        assertNotNull(res.getKey());
-        assertNotNull(res.getValue());
-        assertTrue(res.getValue().size() >= 1);
-        assertNotEquals(Question.QuestionType.UNKNOWN, res.getKey().type);
-        assertNotEquals(Question.QuestionType.RANGE_GUESS, res.getKey().type);
+        assertNotNull(res.getFirst());
+        assertNotNull(res.getSecond());
+        assertTrue(res.getSecond().size() >= 1);
+        assertNotEquals(Question.QuestionType.UNKNOWN, res.getFirst().type);
+        assertNotEquals(Question.QuestionType.RANGE_GUESS, res.getFirst().type);
     }
 
     @Test

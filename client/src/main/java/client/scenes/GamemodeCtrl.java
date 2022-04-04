@@ -7,7 +7,7 @@ import javafx.scene.input.KeyEvent;
 
 import javax.inject.Inject;
 
-public class GamemodeCtrl {
+public class GamemodeCtrl extends SceneCtrl{
 
     private final GameSessionUtils gameSessionUtils;
     private final MainCtrl mainCtrl;

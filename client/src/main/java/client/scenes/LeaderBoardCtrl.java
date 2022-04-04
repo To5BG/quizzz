@@ -40,6 +40,7 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
     private final LongPollingUtils longPollUtils;
     private final MainCtrl mainCtrl;
 
+    // Separate statistics to different tables - reduce client processing overhead
     @FXML
     private TableView<Player> allPlayersSingleplayer;
     @FXML
@@ -55,13 +56,28 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
     private TableColumn<Player, String> colPointMultiplayer;
 
     @FXML
-    private Button singleLeaderboard;
+    private TableView<Player> allPlayersTimeAttack;
     @FXML
-    private Button multiLeaderboard;
+    private TableColumn<Player, String> colNameTimeAttack;
     @FXML
-    private Button timeAttackButton;
+    private TableColumn<Player, String> colPointTimeAttack;
+
+    @FXML
+    private TableView<Player> allPlayersSurvival;
+    @FXML
+    private TableColumn<Player, String> colNameSurvival;
+    @FXML
+    private TableColumn<Player, String> colPointSurvival;
+
+    @FXML
+    private Button singleButton;
+    @FXML
+    private Button multiButton;
     @FXML
     private Button survivalButton;
+    @FXML
+    private Button timeAttackButton;
+
     @FXML
     private Label leaderboardLabel;
 
@@ -90,10 +106,25 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
         colNameSingleplayer.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
         colPointSingleplayer
                 .setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
+
         colNameMultiplayer.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
         colPointMultiplayer
                 .setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestMultiScore)));
-        showSingleLeaderboard();
+
+        colNameSurvival.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
+        colPointSurvival
+                .setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSurvivalScore)));
+
+        colNameTimeAttack.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
+        colPointTimeAttack
+                .setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestTimeAttackScore)));
+
+        singleButton.setOnAction(e -> showLeaderboard("single"));
+        multiButton.setOnAction(e -> showLeaderboard("multi"));
+        survivalButton.setOnAction(e -> showLeaderboard("survival"));
+        timeAttackButton.setOnAction(e -> showLeaderboard("timeAttack"));
+
+        showLeaderboard("single");
     }
 
     /**
@@ -119,49 +150,41 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
             case ESCAPE -> back();
-            case DIGIT1 -> showSingleLeaderboard();
-            case DIGIT2 -> showMultiLeaderboard();
+            case DIGIT1 -> showLeaderboard("single");
+            case DIGIT2 -> showLeaderboard("multi");
+            case DIGIT3 -> showLeaderboard("survival");
+            case DIGIT4 -> showLeaderboard("timeAttack");
         }
     }
 
     /**
-     * Show MultiPlayerLeaderBoard
+     * Shows proper leaderboard based on provided identifier
+     *
+     * @param leaderboard String identifier for leaderboard to toggle
      */
-    public void showMultiLeaderboard() {
+    public void showLeaderboard(String leaderboard) {
         allPlayersSingleplayer.setOpacity(0);
-        allPlayersMultiplayer.setOpacity(1);
-        multiLeaderboard.setText("Multiplayer");
-        leaderboardLabel.setText("Leaderboard-Multiplayer");
-    }
-
-    /**
-     * Show SinglePlayerLeaderBoard
-     */
-    public void showSingleLeaderboard() {
-        allPlayersSingleplayer.setOpacity(1);
         allPlayersMultiplayer.setOpacity(0);
-        singleLeaderboard.setText("Singleplayer");
-        leaderboardLabel.setText("Leaderboard-Singleplayer");
-    }
-
-    /**
-     * Show SinglePlayerLeaderBoard
-     */
-    public void showTimeAttackLeaderboard() {
-        allPlayersSingleplayer.setOpacity(1);
-        allPlayersMultiplayer.setOpacity(0);
-        timeAttackButton.setText("Time Attack");
-        leaderboardLabel.setText("Leaderboard-TimeAttack");
-    }
-
-    /**
-     * Show SinglePlayerLeaderBoard
-     */
-    public void showSurvivalLeaderboard() {
-        allPlayersSingleplayer.setOpacity(1);
-        allPlayersMultiplayer.setOpacity(0);
-        survivalButton.setText("Survival");
-        leaderboardLabel.setText("Leaderboard-Survival");
+        allPlayersSurvival.setOpacity(0);
+        allPlayersTimeAttack.setOpacity(0);
+        switch (leaderboard) {
+            case "single" -> {
+                allPlayersSingleplayer.setOpacity(1);
+                leaderboardLabel.setText("Leaderboard-Singleplayer");
+            }
+            case "multi" -> {
+                allPlayersMultiplayer.setOpacity(1);
+                leaderboardLabel.setText("Leaderboard-Multiplayer");
+            }
+            case "survival" -> {
+                allPlayersSurvival.setOpacity(1);
+                leaderboardLabel.setText("Leaderboard-Survival");
+            }
+            case "timeAttack" -> {
+                allPlayersTimeAttack.setOpacity(1);
+                leaderboardLabel.setText("Leaderboard-TimeAttack");
+            }
+        }
     }
 
     /**
@@ -175,6 +198,14 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
         players = FXCollections.observableList(leaderboardUtils.getPlayerMultiScore());
         allPlayersMultiplayer.setItems(players);
         allPlayersMultiplayer.refresh();
+
+        players = FXCollections.observableList(leaderboardUtils.getPlayerSurvivalScore());
+        allPlayersSurvival.setItems(players);
+        allPlayersSurvival.refresh();
+
+        players = FXCollections.observableList(leaderboardUtils.getPlayerTimeAttackScore());
+        allPlayersTimeAttack.setItems(players);
+        allPlayersTimeAttack.refresh();
     }
 
     /**
@@ -193,6 +224,14 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
             case "[multi]" -> {
                 allPlayersMultiplayer.setItems(FXCollections.observableList(update.getValue()));
                 allPlayersMultiplayer.refresh();
+            }
+            case "[survival]" -> {
+                allPlayersSurvival.setItems(FXCollections.observableList(update.getValue()));
+                allPlayersSurvival.refresh();
+            }
+            case "[timeAttack]" -> {
+                allPlayersTimeAttack.setItems(FXCollections.observableList(update.getValue()));
+                allPlayersTimeAttack.refresh();
             }
         }
     }
