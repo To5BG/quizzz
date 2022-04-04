@@ -185,6 +185,20 @@ public class RoomSelectionCtrl implements Initializable {
     }
 
     /**
+     * Finds the player ID of the player from the specified session using the username
+     *
+     * @param sessionId - session ID of the session
+     * @param username - username of the player whose ID is to be determined
+     * @return player's ID
+     */
+    public long findPlayerIdByUsername(long sessionId, String username) {
+        return gameSessionUtils
+                .getPlayers(sessionId)
+                .stream().filter(p -> p.username.equals(username))
+                .findFirst().get().id;
+    }
+
+    /**
      * Initialize setup for main controller's showWaitingArea() method. Player is added to the specified session if the
      * game session is of the status Play Again or Waiting Room. If not, the user is not added, simply alerted
      *
@@ -192,20 +206,16 @@ public class RoomSelectionCtrl implements Initializable {
      */
     public void joinSession(GameSession session) {
         Player player = gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
-        if (playerId == 0L) {
-            playerId = gameSessionUtils
-                    .getPlayers(session.id)
-                    .stream().filter(p -> p.username.equals(player.username))
-                    .findFirst().get().id;
-        }
         notCancel = false;
         switch (session.sessionStatus) {
             case WAITING_AREA:
                 gameSessionUtils.addPlayer(session.id, player);
+                if (playerId == 0L) playerId = findPlayerIdByUsername(session.id, player.username);
                 mainCtrl.showWaitingArea(playerId, session.id);
                 break;
             case PLAY_AGAIN:
                 gameSessionUtils.addPlayer(session.id, player);
+                if (playerId == 0L) playerId = findPlayerIdByUsername(session.id, player.username);
                 mainCtrl.showMultiplayer(session.id, playerId);
                 break;
             default:
