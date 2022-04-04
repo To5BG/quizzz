@@ -152,7 +152,7 @@ public class MainCtrl {
         multiplayerCtrl.scanForJokerUsage();
         if (multiplayerCtrl.gameSessionUtils.getSession(sessionId).sessionStatus ==
                 GameSession.SessionStatus.PLAY_AGAIN) {
-            multiplayerCtrl.showEndScreen();
+            multiplayerCtrl.showEndScreen(false);
             return;
         }
         multiplayerCtrl.loadQuestion();

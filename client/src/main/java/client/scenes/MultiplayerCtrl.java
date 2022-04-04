@@ -382,11 +382,13 @@ public class MultiplayerCtrl extends GameCtrl {
     }
 
     /**
-     * Show leaderboard at the end of the game and reveals the back button as well as the playAgain button. Starts timer
-     * and after 20 seconds a new game starts if enough players want to play again.
+     * Show leaderboard at the end of the game and reveals back and play again buttons. Starts time and after 20 seconds
+     * a new game starts if enough players want to play again.
+     *
+     * @param sentFromGame - True iff the user is sent to the end screen after a game, false otherwise
      */
     @Override
-    public void showEndScreen() {
+    public void showEndScreen(boolean sentFromGame) {
         displayLeaderboard();
         countdown.setOpacity(0);
         backButton.setOpacity(0);
@@ -398,7 +400,9 @@ public class MultiplayerCtrl extends GameCtrl {
         status.setText("");
         waitingSkip = 0;
         questionCount.setText("End of game! Play again or go back to main.");
-        gameSessionUtils.toggleReady(sessionId, false);
+        if (sentFromGame) {
+            gameSessionUtils.toggleReady(sessionId, false);
+        }
         endGameCountdown = new TimeUtils(END_GAME_TIME, TIMER_UPDATE_INTERVAL_MS);
         endGameCountdown.setTimeBooster(() -> (double) waitingSkip);
         endGameCountdown.setOnSucceeded((event) -> {
