@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
@@ -15,52 +14,32 @@
         <Button fx:id="submitButton" alignment="CENTER" layoutX="462.0" layoutY="269.0" mnemonicParsing="false"
                 onAction="#submitAnswerButton" prefHeight="34.0" prefWidth="93.0" text="Final Answer" textFill="WHITE"
                 AnchorPane.bottomAnchor="97.0" AnchorPane.leftAnchor="462.0" AnchorPane.rightAnchor="45.0"
-                AnchorPane.topAnchor="269.0">
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
-        </Button>
+                AnchorPane.topAnchor="269.0"/>
         <Label fx:id="pointsLabel" layoutX="497.0" layoutY="46.0" styleClass="text" text="Points: 0"/>
         <Label fx:id="questionCount" layoutX="20.0" layoutY="24.0" styleClass="text" text="Question: 1"/>
         <ProgressBar fx:id="timeProgress" layoutX="140.0" layoutY="34.0" prefHeight="20.0" prefWidth="321.0"
                      progress="0.0"/>
         <Button alignment="CENTER" layoutX="521.0" layoutY="355.0" mnemonicParsing="false" onAction="#back"
-                text="Go Back" textFill="WHITE">
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
-        </Button>
+                text="Go Back" textFill="WHITE"/>
         <Button fx:id="removeOneButton" alignment="CENTER" layoutX="20.0" layoutY="319.0" mnemonicParsing="false"
                 onAction="#removeOneAnswer" prefHeight="34.0" prefWidth="144.0" text="Remove One Answer"
-                textFill="WHITE">
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
-        </Button>
+                textFill="WHITE"/>
         <Button fx:id="decreaseTimeButton" alignment="CENTER" layoutX="189.0" layoutY="317.0" mnemonicParsing="false"
-                onAction="#increaseTime" prefHeight="34.0" prefWidth="114.0" text="Increase Time" textFill="WHITE">
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
-        </Button>
+                onAction="#increaseTime" prefHeight="34.0" prefWidth="114.0" text="Increase Time" textFill="WHITE"/>
         <Button fx:id="doublePointsButton" alignment="CENTER" layoutX="340.0" layoutY="317.0" mnemonicParsing="false"
-                onAction="#doublePoints" prefHeight="34.0" prefWidth="108.0" text="Double Points" textFill="WHITE">
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
-        </Button>
+                onAction="#doublePoints" prefHeight="34.0" prefWidth="108.0" text="Double Points" textFill="WHITE"/>
         <Accordion layoutX="498.0" layoutY="79.0"/>
-        <TitledPane animated="true" layoutY="80.0" prefHeight="185.0" prefWidth="144.0" styleClass="TitledPane"
+        <TitledPane animated="true" layoutY="80.0" prefHeight="185.0" prefWidth="160.0" styleClass="TitledPane"
                     stylesheets="@/CSS/Baseline.css" text="LeaderBoard" textFill="WHITE">
             <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="160.0">
                     <children>
-                        <TableView fx:id="allPlayers" layoutY="1.0" prefHeight="156.0" prefWidth="162.0"
+                        <TableView fx:id="allPlayers" layoutY="1.0" prefHeight="160.0" prefWidth="145.0"
                                    stylesheets="@/CSS/Baseline.css">
                             <columns>
-                                <TableColumn id="column-header-background" fx:id="colName" prefWidth="73.0"
+                                <TableColumn id="column-header-background" fx:id="colName" prefWidth="70.0"
                                              styleClass="column" text="Player"/>
-                                <TableColumn fx:id="colPoint" prefWidth="77.0" styleClass="column" text="Point"/>
+                                <TableColumn fx:id="colPoint" prefWidth="70.0" styleClass="column" text="Point"/>
                             </columns>
                         </TableView>
                     </children>

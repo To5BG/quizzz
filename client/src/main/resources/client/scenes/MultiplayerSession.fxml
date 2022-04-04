@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
@@ -25,11 +24,7 @@
         <StackPane fx:id="answerArea" alignment="BASELINE_LEFT" layoutX="221.0" layoutY="131.0" prefHeight="156.0"
                    prefWidth="235.0" styleClass="stack-pane" stylesheets="@/CSS/Baseline.css"/>
         <Button fx:id="submitButton" layoutX="560.0" layoutY="287.0" mnemonicParsing="false"
-                onAction="#submitAnswerButton" text="Final Answer">
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
-        </Button>
+                onAction="#submitAnswerButton" text="Final Answer"/>
         <Label fx:id="pointsLabel" layoutX="698.0" layoutY="18.0" text="Points: 0" textFill="WHITE"/>
         <Label fx:id="questionCount" layoutX="14.0" layoutY="10.0" text="Question: 1" textFill="WHITE"/>
         <ProgressBar fx:id="timeProgress" layoutX="295.0" layoutY="25.0" prefHeight="20.0" prefWidth="321.0"
@@ -39,21 +34,12 @@
             <font>
                 <Font size="9.0"/>
             </font>
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
         </Button>
         <Button fx:id="decreaseTimeButton" layoutX="382.0" layoutY="340.0" mnemonicParsing="false"
                 onAction="#decreaseTime" prefHeight="26.0" prefWidth="103.0" text="Decrease Time">
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
         </Button>
         <Button fx:id="doublePointsButton" layoutX="530.0" layoutY="338.0" mnemonicParsing="false"
                 onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points">
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
         </Button>
         <ImageView fx:id="imagePanel" fitHeight="156.0" fitWidth="169.0" layoutX="479.0" layoutY="107.0"
                    pickOnBounds="true" preserveRatio="true"/>
@@ -62,16 +48,10 @@
         </ImageView>
         <Button fx:id="playAgain" layoutX="434.0" layoutY="308.0" mnemonicParsing="false" onAction="#playAgain"
                 prefHeight="26.0" prefWidth="115.0" text="Play again">
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
         </Button>
         <Label fx:id="status" layoutX="477.0" layoutY="373.0" text="[Status]"/>
         <Button fx:id="backButton" layoutX="727.0" layoutY="359.0" mnemonicParsing="false" onAction="#back"
                 text="Go Back">
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
         </Button>
         <ImageView fx:id="emojiSad" fitHeight="60.0" fitWidth="60.0" layoutX="82.0" layoutY="323.0"
                    onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">

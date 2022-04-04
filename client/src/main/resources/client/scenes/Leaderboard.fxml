@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
@@ -30,9 +29,6 @@
             <font>
                 <Font size="25.0"/>
             </font>
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
         </Button>
         <Button fx:id="singleLeaderboard" layoutX="511.0" layoutY="142.0" mnemonicParsing="false"
                 onAction="#showSingleLeaderBoard" prefHeight="45.0" prefWidth="122.0" styleClass="button2"
@@ -40,9 +36,6 @@
             <font>
                 <Font size="18.0"/>
             </font>
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
         </Button>
         <Button fx:id="multiLeaderboard" layoutX="511.0" layoutY="203.0" mnemonicParsing="false"
                 onAction="#showMultiLeaderboard" prefHeight="45.0" prefWidth="122.0" styleClass="button2"
@@ -50,9 +43,6 @@
             <font>
                 <Font size="18.0"/>
             </font>
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
         </Button>
         <Button fx:id="timeAttackButton" layoutX="511.0" layoutY="261.0" mnemonicParsing="false"
                 onAction="#showTimeAttackLeaderBoard" prefHeight="45.0" prefWidth="122.0" styleClass="button2"
@@ -60,9 +50,6 @@
             <font>
                 <Font size="18.0"/>
             </font>
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
         </Button>
         <Button fx:id="survivalButton" layoutX="511.0" layoutY="324.0" mnemonicParsing="false"
                 onAction="#showSurvivalLeaderBoard" prefHeight="45.0" prefWidth="122.0" styleClass="button2"
@@ -70,9 +57,6 @@
             <font>
                 <Font size="18.0"/>
             </font>
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
         </Button>
         <ImageView fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="151.0" pickOnBounds="true"
                    preserveRatio="true">
