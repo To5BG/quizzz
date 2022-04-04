@@ -314,7 +314,7 @@ public class MultiplayerCtrl extends GameCtrl {
         channel.unsubscribe();
         super.shutdown();
         disconnectTimer.cancel();
-        endGameTimer.cancel();
+        if (endGameTimer != null) endGameTimer.cancel();
         lastDisconnectIndex = -1;
         jokerTimer.cancel();
         lastJokerIndex = -1;
