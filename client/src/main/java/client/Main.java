@@ -49,7 +49,10 @@ public class Main extends Application {
                 FXML.load(WaitingAreaCtrl.class, "client", "scenes", "WaitingAreaScreen.fxml"),
                 FXML.load(LeaderBoardCtrl.class, "client", "scenes", "Leaderboard.fxml"),
                 FXML.load(WebViewCtrl.class, "client", "scenes", "WebViewScreen.fxml"),
-                FXML.load(TutorialScreenCtrl.class, "client", "scenes", "TutorialScreen.fxml")
+                FXML.load(TutorialScreenCtrl.class, "client", "scenes", "TutorialScreen.fxml"),
+                FXML.load(GamemodeCtrl.class, "client", "scenes", "GamemodeScreen.fxml"),
+                FXML.load(TimeAttackCtrl.class, "client", "scenes", "TimeAttackScreen.fxml"),
+                FXML.load(SurvivalCtrl.class, "client", "scenes", "SurvivalScreen.fxml")
         ));
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);

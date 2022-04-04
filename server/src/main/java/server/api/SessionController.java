@@ -55,7 +55,9 @@ public class SessionController {
     public void updateQuestion(GameSession session) {
         session.difficultyFactor = session.questionCounter / 4 + 1;
         session.questionCounter++;
-        Pair<Question, List<Long>> res = QuestionGenerator.generateQuestion(session.difficultyFactor, activityCtrl);
+        Pair<Question, List<Long>> res = (session.sessionType == GameSession.SessionType.SURVIVAL) ?
+                QuestionGenerator.generateSurvivalQuestion(session.difficultyFactor, activityCtrl) :
+                QuestionGenerator.generateQuestion(session.difficultyFactor, activityCtrl);
         session.currentQuestion = res.getFirst();
         session.expectedAnswers.clear();
         session.expectedAnswers.addAll(res.getSecond());
@@ -69,27 +71,45 @@ public class SessionController {
      */
     public void endSession(GameSession session) {
         session.playersReady.set(0);
-        if (session.sessionType == GameSession.SessionType.SINGLEPLAYER) {
-            Player p = session.getPlayers().get(0);
-            leaderboardCtrl.updateBestSingleScore(p.id, p.currentPoints);
-            System.out.println("removing session");
-            removeSession(session.id);
-        } else {
-            for (Player p : session.players) leaderboardCtrl.updateBestMultiScore(p.id, p.currentPoints);
-            leaderboardCtrl.commitMultiplayerUpdates();
+        switch (session.sessionType) {
+            case SINGLEPLAYER, SURVIVAL, TIME_ATTACK -> {
+                Player p = session.getPlayers().get(0);
+                updateHighscore(p, session.sessionType);
+                p.setCurrentPoints(0);
+                repo.save(p);
+                removeSession(session.id);
+            }
+            default -> {
+                for (Player p : session.players) leaderboardCtrl.updateBestMultiScore(p.id, p.currentPoints);
+                leaderboardCtrl.commitMultiplayerUpdates();
 
-            session.setSessionStatus(GameSession.SessionStatus.PAUSED);
-            Thread t = new Thread(() -> {
-                try {
-                    Thread.sleep(1000L);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-                session.setSessionStatus(GameSession.SessionStatus.PLAY_AGAIN);
+                session.setSessionStatus(GameSession.SessionStatus.PAUSED);
+                Thread t = new Thread(() -> {
+                    try {
+                        Thread.sleep(1000L);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                    session.setSessionStatus(GameSession.SessionStatus.PLAY_AGAIN);
+                    updateSession(session);
+                });
+                t.start();
                 updateSession(session);
-            });
-            t.start();
-            updateSession(session);
+            }
+        }
+    }
+
+    /**
+     * Sets the new highscore of a player if the current score is higher than the current highscore.
+     *
+     * @param p           The player.
+     * @param sessionType The gamemode the player played.
+     */
+    public void updateHighscore(Player p, GameSession.SessionType sessionType) {
+        switch (sessionType) {
+            case SINGLEPLAYER -> leaderboardCtrl.updateBestSingleScore(p.id, p.currentPoints);
+            case SURVIVAL -> leaderboardCtrl.updateBestSurvivalScore(p.id, p.currentPoints);
+            case TIME_ATTACK -> leaderboardCtrl.updateBestTimeAttackScore(p.id, p.currentPoints);
         }
     }
 
@@ -141,14 +161,13 @@ public class SessionController {
         updateTimeJokers(session.id, 0);
         updatePlayerJokers(session);
         if (session.sessionStatus == GameSession.SessionStatus.PLAY_AGAIN) {
+            session.setQuestionCounter(0);
             // Session end screen after final round
-            session.resetQuestionCounter();
             for (Player p : session.players) {
                 p.currentPoints = 0;
             }
             updateSession(session);
-        } else if (session.questionCounter == GameSession.GAME_ROUNDS) {
-            // Session final round
+        } else if (session.questionCounter == GameSession.gameRounds) {
             endSession(session);
         } else if (session.questionCounter == 0) {
             // Session first round
@@ -459,17 +478,18 @@ public class SessionController {
     }
 
     /**
-     * Sets the questionCounter of a session to zero.
+     * Sets the questionCounter of a session.
      *
      * @param sessionId The current session.
      * @return The updated session.
      */
-    @GetMapping("/{id}/reset")
-    public ResponseEntity<GameSession> resetQuestionCounter(@PathVariable("id") long sessionId) {
+    @PutMapping("/{id}/set")
+    public ResponseEntity<GameSession> setQuestionCounter(@PathVariable("id") long sessionId, @RequestBody int count) {
         if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = sm.getById(sessionId);
 
-        session.resetQuestionCounter();
+        session.setQuestionCounter(count);
+        updateSession(session);
         return ResponseEntity.ok(session);
     }
 
@@ -518,6 +538,22 @@ public class SessionController {
 
         session.addUsedJoker(joker);
         return ResponseEntity.ok(joker);
+    }
+
+    /**
+     * Sets the game rounds of a session
+     *
+     * @param sessionId Id of the session
+     * @param rounds    Number of rounds to be set
+     * @return The updated session
+     */
+    @PutMapping("{id}/rounds")
+    public ResponseEntity<GameSession> setGameRounds(@PathVariable("id") long sessionId, @RequestBody int rounds) {
+        if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
+        GameSession session = sm.getById(sessionId);
+        session.setGameRounds(rounds);
+        updateSession(session);
+        return ResponseEntity.ok(session);
     }
 
     /**

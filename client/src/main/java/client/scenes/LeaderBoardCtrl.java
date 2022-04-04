@@ -59,6 +59,10 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
     @FXML
     private Button multiLeaderboard;
     @FXML
+    private Button timeAttackButton;
+    @FXML
+    private Button survivalButton;
+    @FXML
     private Label leaderboardLabel;
 
     /**
@@ -126,8 +130,8 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
     public void showMultiLeaderboard() {
         allPlayersSingleplayer.setOpacity(0);
         allPlayersMultiplayer.setOpacity(1);
-        leaderboardLabel.setText("Leaderboard-Multi");
-        singleLeaderboard.setText("Single");
+        multiLeaderboard.setText("Multiplayer");
+        leaderboardLabel.setText("Leaderboard-Multiplayer");
     }
 
     /**
@@ -136,8 +140,28 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
     public void showSingleLeaderboard() {
         allPlayersSingleplayer.setOpacity(1);
         allPlayersMultiplayer.setOpacity(0);
-        leaderboardLabel.setText("Leaderboard-Single");
-        multiLeaderboard.setText("Multi");
+        singleLeaderboard.setText("Singleplayer");
+        leaderboardLabel.setText("Leaderboard-Singleplayer");
+    }
+
+    /**
+     * Show SinglePlayerLeaderBoard
+     */
+    public void showTimeAttackLeaderboard() {
+        allPlayersSingleplayer.setOpacity(1);
+        allPlayersMultiplayer.setOpacity(0);
+        timeAttackButton.setText("Time Attack");
+        leaderboardLabel.setText("Leaderboard-TimeAttack");
+    }
+
+    /**
+     * Show SinglePlayerLeaderBoard
+     */
+    public void showSurvivalLeaderboard() {
+        allPlayersSingleplayer.setOpacity(1);
+        allPlayersMultiplayer.setOpacity(0);
+        survivalButton.setText("Survival");
+        leaderboardLabel.setText("Leaderboard-Survival");
     }
 
     /**

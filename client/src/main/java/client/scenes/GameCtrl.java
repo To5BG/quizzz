@@ -27,9 +27,9 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
     protected final static int MIDGAME_BREAK_TIME = 6;
     protected final static int TIMER_UPDATE_INTERVAL_MS = 50;
     protected final static int GAME_ROUND_DELAY = 2;
-    protected final static int IN_GAME_LEADERBOARD_WIDTH = 188;
+    protected final static int IN_GAME_LEADERBOARD_WIDTH = 193;
     protected final static int IN_GAME_COLUSERNAME_WIDTH = 92;
-    protected final static int MID_GAME_LEADERBOARD_WIDTH = 644;
+    protected final static int MID_GAME_LEADERBOARD_WIDTH = 649;
     protected final static int MID_GAME_COLUSERNAME_WIDTH = 548;
 
     @FXML
@@ -507,7 +507,10 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
         gameSessionUtils.toggleReady(sessionId, true);
     }
 
-    private void handleGameEnd() {
+    /**
+     * Shows the end game screen once the multiplayer game ends. In case of singleplayer, sends the user back to splash
+     */
+    protected void handleGameEnd() {
         try {
             if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showEndScreen();
             else back();
@@ -518,7 +521,10 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
         }
     }
 
-    private void handleNextRound() {
+    /**
+     * Proceeds the user onto the next round of the game
+     */
+    protected void handleNextRound() {
         try {
             gameSessionUtils.toggleReady(sessionId, false);
             imagePanel.setImage(null);
@@ -552,11 +558,12 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
                 Platform.runLater(() -> {
                     if (currentQuestion == null) return; // happens if shutdown is called before triggering
                     rounds++;
-                    if (rounds == GameSession.GAME_ROUNDS) {
+                    if (rounds == GameSession.gameRounds) {
                         handleGameEnd();
-                    } else if (rounds == GameSession.GAME_ROUNDS / 2 &&
+                    } else if (rounds == GameSession.gameRounds / 2 &&
                             gameSessionUtils.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
                         displayMidGameScreen();
+                        countdown.setOpacity(0);
                     } else {
                         handleNextRound();
                     }

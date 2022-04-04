@@ -39,6 +39,17 @@ public class QuestionGeneratorTest {
     }
 
     @Test
+    public void testGenerateSurvivalQuestionInternalRng() {
+        double difficulty = 1;
+        Pair<Question, List<Long>> res = QuestionGenerator.generateSurvivalQuestion(difficulty, ctrl);
+        assertNotNull(res.getKey());
+        assertNotNull(res.getValue());
+        assertTrue(res.getValue().size() >= 1);
+        assertNotEquals(Question.QuestionType.UNKNOWN, res.getKey().type);
+        assertNotEquals(Question.QuestionType.RANGE_GUESS, res.getKey().type);
+    }
+
+    @Test
     public void testGenerateComparison() {
         double difficulty = 1;
         Pair<Question, List<Long>> res =

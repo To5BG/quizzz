@@ -211,6 +211,12 @@ public class SessionControllerTest {
     }
 
     @Test
+    public void setQuestionCounterTest() {
+        first.setQuestionCounter(5);
+        assertTrue(first.questionCounter == 5);
+    }
+
+    @Test
     public void updateTimeJokersTest() {
         sut.addSession(first);
         //Number of jokers is 0 at first
@@ -221,6 +227,13 @@ public class SessionControllerTest {
         assertTrue(first.timeJokers == 1);
     }
 
+    @Test
+    public void setGameRoundsTest() {
+        first.setGameRounds(10);
+        assertTrue(first.gameRounds == 10);
+    }
+
+    @Test
     public void setPlayerReadyTest() {
         sut.addSession(first);
         sut.addPlayer(first.id, new Player("test", 0));
