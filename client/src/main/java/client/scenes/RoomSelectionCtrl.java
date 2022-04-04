@@ -188,7 +188,7 @@ public class RoomSelectionCtrl implements Initializable {
      * Finds the player ID of the player from the specified session using the username
      *
      * @param sessionId - session ID of the session
-     * @param username - username of the player whose ID is to be determined
+     * @param username  - username of the player whose ID is to be determined
      * @return player's ID
      */
     public long findPlayerIdByUsername(long sessionId, String username) {
@@ -199,23 +199,31 @@ public class RoomSelectionCtrl implements Initializable {
     }
 
     /**
-     * Initialize setup for main controller's showWaitingArea() method. Player is added to the specified session if the
-     * game session is of the status Play Again or Waiting Room. If not, the user is not added, simply alerted
+     * Adds the player to the specified game session
+     *
+     * @param session - session to join
+     */
+    private void addPlayerToSession(GameSession session) {
+        Player player = gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
+        gameSessionUtils.addPlayer(session.id, player);
+        if (playerId == 0L) playerId = findPlayerIdByUsername(session.id, player.username);
+        notCancel = false;
+    }
+
+    /**
+     * Player is added to the specified session if the game session is of the status Play Again or Waiting Room.
+     * If not, the user is not added, simply alerted.
      *
      * @param session - GameSession to which the player is added.
      */
     public void joinSession(GameSession session) {
-        Player player = gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
-        notCancel = false;
         switch (session.sessionStatus) {
             case WAITING_AREA:
-                gameSessionUtils.addPlayer(session.id, player);
-                if (playerId == 0L) playerId = findPlayerIdByUsername(session.id, player.username);
+                addPlayerToSession(session);
                 mainCtrl.showWaitingArea(playerId, session.id);
                 break;
             case PLAY_AGAIN:
-                gameSessionUtils.addPlayer(session.id, player);
-                if (playerId == 0L) playerId = findPlayerIdByUsername(session.id, player.username);
+                addPlayerToSession(session);
                 mainCtrl.showMultiplayer(session.id, playerId);
                 break;
             default:
