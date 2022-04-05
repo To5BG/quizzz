@@ -34,7 +34,7 @@
                 onAction="#showSingleLeaderBoard" prefHeight="45.0" prefWidth="122.0" styleClass="button2"
                 stylesheets="@/CSS/Baseline.css" text="Singleplayer">
             <font>
-                <Font size="18.0"/>
+                <Font size="15.0"/>
             </font>
         </Button>
         <Button fx:id="multiLeaderboard" layoutX="511.0" layoutY="203.0" mnemonicParsing="false"
@@ -48,7 +48,7 @@
                 onAction="#showTimeAttackLeaderBoard" prefHeight="45.0" prefWidth="122.0" styleClass="button2"
                 stylesheets="@/CSS/Baseline.css" text="Time Attack">
             <font>
-                <Font size="18.0"/>
+                <Font size="15.0"/>
             </font>
         </Button>
         <Button fx:id="survivalButton" layoutX="511.0" layoutY="324.0" mnemonicParsing="false"

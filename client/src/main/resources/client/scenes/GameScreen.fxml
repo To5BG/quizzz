@@ -15,7 +15,7 @@
                 onAction="#submitAnswerButton" prefHeight="34.0" prefWidth="93.0" text="Final Answer" textFill="WHITE"
                 AnchorPane.bottomAnchor="97.0" AnchorPane.leftAnchor="462.0" AnchorPane.rightAnchor="45.0"
                 AnchorPane.topAnchor="269.0"/>
-        <Label fx:id="pointsLabel" layoutX="497.0" layoutY="46.0" styleClass="text" text="Points: 0"/>
+        <Label fx:id="pointsLabel" layoutX="497.0" layoutY="24.0" styleClass="text" text="Points: 0"/>
         <Label fx:id="questionCount" layoutX="20.0" layoutY="24.0" styleClass="text" text="Question: 1"/>
         <ProgressBar fx:id="timeProgress" layoutX="140.0" layoutY="34.0" prefHeight="20.0" prefWidth="321.0"
                      progress="0.0"/>
