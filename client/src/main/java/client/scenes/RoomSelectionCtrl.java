@@ -12,7 +12,9 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
-import java.util.*;
+import java.util.List;
+import java.util.Random;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class RoomSelectionCtrl implements Initializable {
@@ -123,6 +125,7 @@ public class RoomSelectionCtrl implements Initializable {
             alert.setTitle("No room selected");
             alert.setHeaderText("You have not selected a room");
             alert.setContentText("Choose a room to continue");
+            mainCtrl.addCSS(alert);
             alert.show();
             return;
         }
@@ -140,6 +143,7 @@ public class RoomSelectionCtrl implements Initializable {
             alert.setTitle("Invalid ID");
             alert.setHeaderText("You have entered an invalid game session ID");
             alert.setContentText("Please enter a valid session ID to continue");
+            mainCtrl.addCSS(alert);
             alert.show();
             return;
         }
@@ -163,6 +167,7 @@ public class RoomSelectionCtrl implements Initializable {
         } catch (NumberFormatException e) {
             return false;
         }
+        if (availableRooms.getItems() == null) return false;
         for (GameSession gs : availableRooms.getItems()) {
             if (gs.id == sessionId) return true;
         }
@@ -231,6 +236,7 @@ public class RoomSelectionCtrl implements Initializable {
                 alert.setTitle("Ongoing game");
                 alert.setHeaderText("The selected game session is still going on");
                 alert.setContentText("You can wait for it to get over, or join a new game");
+                mainCtrl.addCSS(alert);
                 alert.show();
         }
     }
