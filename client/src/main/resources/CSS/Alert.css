@@ -1,6 +1,7 @@
 * {
     -fx-background-image: url("/Image/background.png");
     -fx-text-fill: white;
+    -fx-background-insets: 0, 0, 0, 0;
 
 }
 
