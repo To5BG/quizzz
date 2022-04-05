@@ -23,13 +23,16 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.util.Callback;
 
 import java.net.URL;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.List;
 import java.util.ResourceBundle;
 import org.apache.commons.lang3.tuple.Pair;
@@ -39,6 +42,27 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
     private final LeaderboardUtils leaderboardUtils;
     private final LongPollingUtils longPollUtils;
     private final MainCtrl mainCtrl;
+    @FXML
+    protected ImageView battery0;
+    @FXML
+    protected ImageView battery1;
+    @FXML
+    protected ImageView battery2;
+    @FXML
+    protected ImageView battery3;
+    @FXML
+    protected ImageView battery4;
+    @FXML
+    protected ImageView battery5;
+    @FXML
+    protected ImageView battery6;
+    @FXML
+    protected ImageView battery7;
+    @FXML
+    protected ImageView battery8;
+    @FXML
+    protected ImageView battery9;
+    private ObservableList<Player> data;
 
     // Separate statistics to different tables - reduce client processing overhead
     @FXML
@@ -49,6 +73,10 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
     private TableColumn<Player, String> colPointSingleplayer;
 
     @FXML
+    private TableView<Player> allPlayers;
+    @FXML
+    private TableColumn<Player, Integer> colBattery;
+
     private TableView<Player> allPlayersMultiplayer;
     @FXML
     private TableColumn<Player, String> colNameMultiplayer;
@@ -81,6 +109,9 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
     @FXML
     private Label leaderboardLabel;
 
+    private List<Image> batteries;
+
+
     /**
      * constructor of the leaderboard
      *
@@ -93,6 +124,15 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
         this.leaderboardUtils = leaderboardUtils;
         this.longPollUtils = longPollUtils;
         this.mainCtrl = mainCtrl;
+        ClassLoader cl = getClass().getClassLoader();
+        batteries = new ArrayList<>();
+        for (int i = 0; i < 9; ++i) {
+            URL location = cl.getResource(
+                    Path.of("", "Image", "decoration" + (7 + i) + ".png").toString());
+
+            batteries.add(new Image(location.toString()));
+        }
+
     }
 
     /**
@@ -103,6 +143,28 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        colBattery.setCellFactory(new Callback<>() {
+            @Override
+            public TableCell<Player, Integer> call(TableColumn<Player, Integer> param) {
+                return new TableCell<>() {
+                    @Override
+                    protected void updateItem(Integer item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) setGraphic(null);
+                        else {
+                            int rank = this.getTableRow().getIndex();
+                            Image img = batteries.get(Math.min(rank, batteries.size() - 1));
+                            ImageView display = new ImageView(img);
+                            display.setFitHeight(26.0);
+                            display.setFitWidth(50.0);
+                            display.setPreserveRatio(true);
+                            setGraphic(display);
+                        }
+                    }
+                };
+            }
+        });
+
         colNameSingleplayer.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
         colPointSingleplayer
                 .setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
@@ -133,6 +195,7 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
     public void shutdown() {
         longPollUtils.haltUpdates("leaderboard");
     }
+
 
     /**
      * {@inheritDoc}

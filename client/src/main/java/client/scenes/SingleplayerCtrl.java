@@ -71,6 +71,7 @@ public class SingleplayerCtrl extends GameCtrl {
         alert.setTitle("Game Over");
         alert.setHeaderText("You have been redirected to the splash screen");
         alert.setContentText("Your score was : " + points);
+        mainCtrl.addCSS(alert);
         alert.show();
         super.handleGameEnd();
     }
