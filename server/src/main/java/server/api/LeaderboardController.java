@@ -192,6 +192,7 @@ public class LeaderboardController {
         Player updatedPlayer = repo.findById(playerId).get();
         if (points > updatedPlayer.getBestSingleScore()) {
             updatedPlayer.setBestSingleScore(points);
+            updatedPlayer.setCurrentPoints(0);
             repo.save(updatedPlayer);
             listeners.forEach((k, l) -> l.accept(Pair.of("single", this.getPlayerSingleScores().getBody())));
         }
@@ -212,6 +213,7 @@ public class LeaderboardController {
         Player updatedPlayer = repo.findById(playerId).get();
         if (points > updatedPlayer.getBestMultiScore()) {
             updatedPlayer.setBestMultiScore(points);
+            updatedPlayer.setCurrentPoints(0);
             repo.save(updatedPlayer);
             multiChangesToCommit = true;
         }
@@ -232,6 +234,7 @@ public class LeaderboardController {
         Player updatedPlayer = repo.findById(playerId).get();
         if (points > updatedPlayer.getBestSurvivalScore()) {
             updatedPlayer.setBestSurvivalScore(points);
+            updatedPlayer.setCurrentPoints(0);
             repo.save(updatedPlayer);
             listeners.forEach((k, l) -> l.accept(Pair.of("survival", this.getPlayerSurvivalScores().getBody())));
         }
@@ -250,8 +253,12 @@ public class LeaderboardController {
                                                        @RequestBody int points) {
         if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
         Player updatedPlayer = repo.findById(playerId).get();
+        System.out.println(points);
+        System.out.println(playerId);
+        System.out.println(updatedPlayer.getBestTimeAttackScore());
         if (points > updatedPlayer.getBestTimeAttackScore()) {
             updatedPlayer.setBestTimeAttackScore(points);
+            updatedPlayer.setCurrentPoints(0);
             repo.save(updatedPlayer);
             listeners.forEach((k, l) -> l.accept(Pair.of("timeAttack", this.getPlayerTimeAttackScores().getBody())));
         }
@@ -268,7 +275,7 @@ public class LeaderboardController {
     @GetMapping("/updates")
     public DeferredResult<ResponseEntity<List<Player>>> getLeaderboardUpdates() {
         var emptyContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        var res = new DeferredResult<ResponseEntity<List<Player>>>(1000L, emptyContent);
+        var res = new DeferredResult<ResponseEntity<List<Player>>>(3000L, emptyContent);
 
         var k = new Object();
         listeners.put(k, p -> {

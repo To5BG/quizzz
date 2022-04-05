@@ -103,11 +103,11 @@ public class LongPollingUtils {
             switch (scene) {
                 case "waitingArea" -> {
                     execWaitingArea.shutdownNow();
-                    execWaitingArea.awaitTermination(2, TimeUnit.SECONDS);
+                    execWaitingArea.awaitTermination(1, TimeUnit.SECONDS);
                 }
                 case "selectionRoom" -> {
                     execSelectionRoom.shutdownNow();
-                    execSelectionRoom.awaitTermination(2, TimeUnit.SECONDS);
+                    execSelectionRoom.awaitTermination(1, TimeUnit.SECONDS);
                 }
                 case "leaderboard" -> {
                     execLeaderboard.shutdownNow();

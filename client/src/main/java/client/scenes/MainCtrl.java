@@ -16,7 +16,6 @@
 package client.scenes;
 
 import commons.GameSession;
-import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -27,8 +26,6 @@ import javafx.util.Pair;
 
 import java.util.List;
 import java.nio.file.Path;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainCtrl {
 

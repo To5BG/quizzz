@@ -26,7 +26,7 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
         super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
 
 
-        this.initialTime = 60L;
+        this.initialTime = 10L;
     }
 
     /**
@@ -53,7 +53,7 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
      */
     @Override
     public void reset() {
-        this.initialTime = 60L;
+        this.initialTime = 10L;
         super.reset();
     }
 

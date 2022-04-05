@@ -82,7 +82,6 @@ public class WaitingAreaCtrl extends SceneCtrl implements Initializable {
         Player player = gameSessionUtils.removePlayer(waitingId, playerId);
         gameSessionUtils.addPlayer(MainCtrl.SELECTION_ID, player);
         backButton.setDisable(true);
-        //delay blocking haltUpdates() until screen is shown
         Platform.runLater(() -> longPollUtils.haltUpdates("waitingArea"));
         backButton.setDisable(false);
     }

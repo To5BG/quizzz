@@ -12,7 +12,7 @@
         <TableView id="allPoints" fx:id="allPlayersSingleplayer" layoutX="89.0" layoutY="99.0" prefHeight="310.0"
                    prefWidth="412.0">
             <columns>
-                <TableColumn fx:id="colBattery" prefWidth="199.0" text="Rank"/>
+                <TableColumn fx:id="colBatterySingleplayer" prefWidth="199.0" text="Rank"/>
                 <TableColumn fx:id="colNameSingleplayer" prefWidth="199.0" text="UserName"/>
                 <TableColumn fx:id="colPointSingleplayer" prefWidth="196.0" text="Point"/>
             </columns>
@@ -23,7 +23,7 @@
         <TableView id="allPoints" fx:id="allPlayersMultiplayer" layoutX="89.0" layoutY="99.0" prefHeight="310.0"
                    prefWidth="412.0">
             <columns>
-                <TableColumn fx:id="colBattery" prefWidth="199.0" text="Rank"/>
+                <TableColumn fx:id="colBatteryMultiplayer" prefWidth="199.0" text="Rank"/>
                 <TableColumn fx:id="colNameMultiplayer" prefWidth="199.0" text="UserName"/>
                 <TableColumn fx:id="colPointMultiplayer" prefWidth="196.0" text="Point"/>
             </columns>
@@ -34,7 +34,7 @@
         <TableView id="allPoints" fx:id="allPlayersSurvival" layoutX="89.0" layoutY="99.0" prefHeight="310.0"
                    prefWidth="412.0">
             <columns>
-                <TableColumn fx:id="colBattery" prefWidth="199.0" text="Rank"/>
+                <TableColumn fx:id="colBatterySurvival" prefWidth="199.0" text="Rank"/>
                 <TableColumn fx:id="colNameSurvival" prefWidth="199.0" text="UserName"/>
                 <TableColumn fx:id="colPointSurvival" prefWidth="196.0" text="Point"/>
             </columns>
@@ -45,7 +45,7 @@
         <TableView id="allPoints" fx:id="allPlayersTimeAttack" layoutX="89.0" layoutY="99.0" prefHeight="310.0"
                    prefWidth="412.0">
             <columns>
-                <TableColumn fx:id="colBattery" prefWidth="199.0" text="Rank"/>
+                <TableColumn fx:id="colBatteryTimeAttack" prefWidth="199.0" text="Rank"/>
                 <TableColumn fx:id="colNameTimeAttack" prefWidth="199.0" text="UserName"/>
                 <TableColumn fx:id="colPointTimeAttack" prefWidth="196.0" text="Point"/>
             </columns>
@@ -81,14 +81,14 @@
         </Button>
         <Button fx:id="survivalButton" layoutX="511.0" layoutY="261.0" mnemonicParsing="false"
                 prefHeight="45.0" prefWidth="122.0" styleClass="button2"
-                stylesheets="@/CSS/Baseline.css" text="Time Attack">
+                stylesheets="@/CSS/Baseline.css" text="Survival">
             <font>
                 <Font size="18.0"/>
             </font>
         </Button>
         <Button fx:id="timeAttackButton" layoutX="511.0" layoutY="324.0" mnemonicParsing="false"
                 prefHeight="45.0" prefWidth="122.0" styleClass="button2"
-                stylesheets="@/CSS/Baseline.css" text="Survival">
+                stylesheets="@/CSS/Baseline.css" text="Time Attack">
             <font>
                 <Font size="18.0"/>
             </font>

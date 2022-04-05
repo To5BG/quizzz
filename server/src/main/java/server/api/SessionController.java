@@ -75,8 +75,6 @@ public class SessionController {
             case SINGLEPLAYER, SURVIVAL, TIME_ATTACK -> {
                 Player p = session.getPlayers().get(0);
                 updateHighscore(p, session.sessionType);
-                p.setCurrentPoints(0);
-                repo.save(p);
                 removeSession(session.id);
             }
             default -> {
@@ -587,7 +585,7 @@ public class SessionController {
     @GetMapping("/updates/selectionroom")
     public DeferredResult<ResponseEntity<GameSession>> getSelectionRoomUpdates() {
         var emptyContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        var res = new DeferredResult<ResponseEntity<GameSession>>(1000L, emptyContent);
+        var res = new DeferredResult<ResponseEntity<GameSession>>(2000L, emptyContent);
 
         var k = new Object();
         listenersSelectionRoom.put(k, p -> {
@@ -607,7 +605,7 @@ public class SessionController {
     @GetMapping("/updates/waitingarea/{sessionId}")
     public DeferredResult<ResponseEntity<String>> getWaitingAreaUpdates(@PathVariable Long sessionId) {
         var emptyContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        var res = new DeferredResult<ResponseEntity<String>>(1000L, emptyContent);
+        var res = new DeferredResult<ResponseEntity<String>>(2000L, emptyContent);
 
         var k = Pair.of(new Object(), sessionId);
         listenersWaitingArea.put(k, p -> res.setResult(ResponseEntity.ok(p)));

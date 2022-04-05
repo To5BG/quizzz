@@ -14,10 +14,10 @@ import javafx.scene.input.KeyEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
 
@@ -205,10 +205,12 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
         switch (session.sessionStatus) {
             case WAITING_AREA:
                 addPlayerToSession(session);
+                longPollUtils.haltUpdates("selectionRoom");
                 mainCtrl.showWaitingArea(playerId, session.id);
                 break;
             case PLAY_AGAIN:
                 addPlayerToSession(session);
+                longPollUtils.haltUpdates("selectionRoom");
                 mainCtrl.showMultiplayer(session.id, playerId);
                 break;
             default:
@@ -228,7 +230,9 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
      */
     public void refresh(Pair<String, GameSession> update) {
         if (update == null) {
-            availableRooms.setItems(FXCollections.observableList(gameSessionUtils.getAvailableSessions()));
+            List<GameSession> availableSessions = gameSessionUtils.getAvailableSessions();
+            if (availableSessions == null) availableSessions = new ArrayList<>();
+            availableRooms.setItems(FXCollections.observableList(availableSessions));
             return;
         }
         String op = update.getKey();
@@ -257,3 +261,4 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
         longPollUtils.registerForSelectionRoomUpdates(this::refresh);
     }
 }
+

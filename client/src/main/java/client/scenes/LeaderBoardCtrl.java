@@ -33,7 +33,6 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.List;
 import java.util.ResourceBundle;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -42,60 +41,44 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
     private final LeaderboardUtils leaderboardUtils;
     private final LongPollingUtils longPollUtils;
     private final MainCtrl mainCtrl;
-    @FXML
-    protected ImageView battery0;
-    @FXML
-    protected ImageView battery1;
-    @FXML
-    protected ImageView battery2;
-    @FXML
-    protected ImageView battery3;
-    @FXML
-    protected ImageView battery4;
-    @FXML
-    protected ImageView battery5;
-    @FXML
-    protected ImageView battery6;
-    @FXML
-    protected ImageView battery7;
-    @FXML
-    protected ImageView battery8;
-    @FXML
-    protected ImageView battery9;
-    private ObservableList<Player> data;
+    private List<Image> batteries;
 
     // Separate statistics to different tables - reduce client processing overhead
     @FXML
     private TableView<Player> allPlayersSingleplayer;
+    @FXML
+    private TableColumn<Player, Integer> colBatterySingleplayer;
     @FXML
     private TableColumn<Player, String> colNameSingleplayer;
     @FXML
     private TableColumn<Player, String> colPointSingleplayer;
 
     @FXML
-    private TableView<Player> allPlayers;
-    @FXML
-    private TableColumn<Player, Integer> colBattery;
-
     private TableView<Player> allPlayersMultiplayer;
+    @FXML
+    private TableColumn<Player, Integer> colBatteryMultiplayer;
     @FXML
     private TableColumn<Player, String> colNameMultiplayer;
     @FXML
     private TableColumn<Player, String> colPointMultiplayer;
 
     @FXML
-    private TableView<Player> allPlayersTimeAttack;
-    @FXML
-    private TableColumn<Player, String> colNameTimeAttack;
-    @FXML
-    private TableColumn<Player, String> colPointTimeAttack;
-
-    @FXML
     private TableView<Player> allPlayersSurvival;
+    @FXML
+    private TableColumn<Player, Integer> colBatterySurvival;
     @FXML
     private TableColumn<Player, String> colNameSurvival;
     @FXML
     private TableColumn<Player, String> colPointSurvival;
+
+    @FXML
+    private TableView<Player> allPlayersTimeAttack;
+    @FXML
+    private TableColumn<Player, Integer> colBatteryTimeAttack;
+    @FXML
+    private TableColumn<Player, String> colNameTimeAttack;
+    @FXML
+    private TableColumn<Player, String> colPointTimeAttack;
 
     @FXML
     private Button singleButton;
@@ -105,12 +88,8 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
     private Button survivalButton;
     @FXML
     private Button timeAttackButton;
-
     @FXML
     private Label leaderboardLabel;
-
-    private List<Image> batteries;
-
 
     /**
      * constructor of the leaderboard
@@ -143,7 +122,41 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        colBattery.setCellFactory(new Callback<>() {
+
+        colBatterySingleplayer.setCellFactory(getBatteryCellFactory());
+        colNameSingleplayer.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
+        colPointSingleplayer
+                .setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
+
+        colBatteryMultiplayer.setCellFactory(getBatteryCellFactory());
+        colNameMultiplayer.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
+        colPointMultiplayer
+                .setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestMultiScore)));
+
+        colBatterySurvival.setCellFactory(getBatteryCellFactory());
+        colNameSurvival.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
+        colPointSurvival
+                .setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSurvivalScore)));
+
+        colBatteryTimeAttack.setCellFactory(getBatteryCellFactory());
+        colNameTimeAttack.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
+        colPointTimeAttack
+                .setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestTimeAttackScore)));
+
+        singleButton.setOnAction(e -> showLeaderboard("single"));
+        multiButton.setOnAction(e -> showLeaderboard("multi"));
+        survivalButton.setOnAction(e -> showLeaderboard("survival"));
+        timeAttackButton.setOnAction(e -> showLeaderboard("timeAttack"));
+
+        showLeaderboard("single");
+    }
+
+    /**
+     * Getter for a cell factory with battery images
+     * @return Callback object to assign as a cell factory for the battery column
+     */
+    public Callback<TableColumn<Player, Integer>, TableCell<Player, Integer>> getBatteryCellFactory() {
+        return new Callback<>() {
             @Override
             public TableCell<Player, Integer> call(TableColumn<Player, Integer> param) {
                 return new TableCell<>() {
@@ -163,30 +176,7 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
                     }
                 };
             }
-        });
-
-        colNameSingleplayer.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
-        colPointSingleplayer
-                .setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
-
-        colNameMultiplayer.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
-        colPointMultiplayer
-                .setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestMultiScore)));
-
-        colNameSurvival.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
-        colPointSurvival
-                .setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSurvivalScore)));
-
-        colNameTimeAttack.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
-        colPointTimeAttack
-                .setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestTimeAttackScore)));
-
-        singleButton.setOnAction(e -> showLeaderboard("single"));
-        multiButton.setOnAction(e -> showLeaderboard("multi"));
-        survivalButton.setOnAction(e -> showLeaderboard("survival"));
-        timeAttackButton.setOnAction(e -> showLeaderboard("timeAttack"));
-
-        showLeaderboard("single");
+        };
     }
 
     /**
@@ -300,7 +290,7 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
     }
 
     /**
-     * Registers clients for leaderboard updates
+     * Show SurvivalLeaderBoard
      */
     public void registerForUpdates() {
         longPollUtils.registerForLeaderboardUpdates(this::refresh);
