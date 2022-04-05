@@ -7,13 +7,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class PodiumCtrl {
 
     private final GameSessionUtils gameSessionUtils;
     private final MainCtrl mainCtrl;
+
+    private long playerId;
 
     @FXML
     private Label point3;
@@ -44,12 +45,7 @@ public class PodiumCtrl {
     public void createPodium(long sessionId) {
         playerList = gameSessionUtils.getPlayers(sessionId);
 
-        Collections.sort(playerList, new Comparator<Player>() {
-            @Override
-            public int compare(Player p1, Player p2) {
-                return p2.getCurrentPoints() - p1.getCurrentPoints();
-            }
-        });
+        Collections.sort(playerList, (p1, p2) -> p2.getCurrentPoints() - p1.getCurrentPoints());
 
         var player1 = playerList.get(0);
         name1.setText(player1.username);
@@ -68,4 +64,20 @@ public class PodiumCtrl {
 
     }
 
+    /**
+     * Removes player from session. Also called if controller is closed forcibly
+     */
+    public void shutdown() {
+        gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
+    }
+
+
+    /**
+     * Setter for playerId
+     *
+     * @param playerId - Id for the player
+     */
+    public void setPlayerId(long playerId) {
+        this.playerId = playerId;
+    }
 }

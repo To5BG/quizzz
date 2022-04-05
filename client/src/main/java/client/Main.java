@@ -37,32 +37,19 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
 
-        var splash = FXML.load
-                (SplashCtrl.class, "client", "scenes", "SplashScreen.fxml");
-        var multiplayer = FXML.load
-                (MultiplayerCtrl.class, "client", "scenes", "MultiplayerSession.fxml");
-        var singleplayer = FXML.load
-                (SingleplayerCtrl.class, "client", "scenes", "GameScreen.fxml");
-        var timeAttack = FXML.load
-                (TimeAttackCtrl.class, "client", "scenes", "TimeAttackScreen.fxml");
-        var survival = FXML.load
-                (SurvivalCtrl.class, "client", "scenes", "SurvivalScreen.fxml");
-        var roomSelection = FXML.load
-                (RoomSelectionCtrl.class, "client", "scenes", "RoomSelection.fxml");
-        var waitingArea = FXML.load
-                (WaitingAreaCtrl.class, "client", "scenes", "WaitingAreaScreen.fxml");
-        var mode = FXML.load
-                (GamemodeCtrl.class, "client", "scenes", "GamemodeScreen.fxml");
-        var leaderboard = FXML.load
-                (LeaderBoardCtrl.class, "client", "scenes", "Leaderboard.fxml");
-        var podium = FXML.load
-                (PodiumCtrl.class, "client", "scenes", "PodiumScreen.fxml");
-        var endScreen = FXML.load
-                (EndGameScreenCtrl.class, "client", "scenes", "EndGameScreen.fxml");
-        var webView = FXML.load
-                (WebViewCtrl.class, "client", "scenes", "WebViewScreen.fxml");
-        var tutorial = FXML.load
-                (TutorialScreenCtrl.class, "client", "scenes", "TutorialScreen.fxml");
+        var splash = FXML.load(SplashCtrl.class, "client", "scenes", "SplashScreen.fxml");
+        var multiplayer = FXML.load(MultiplayerCtrl.class, "client", "scenes", "MultiplayerSession.fxml");
+        var singleplayer = FXML.load(SingleplayerCtrl.class, "client", "scenes", "GameScreen.fxml");
+        var timeAttack = FXML.load(TimeAttackCtrl.class, "client", "scenes", "TimeAttackScreen.fxml");
+        var survival = FXML.load(SurvivalCtrl.class, "client", "scenes", "SurvivalScreen.fxml");
+        var roomSelection = FXML.load(RoomSelectionCtrl.class, "client", "scenes", "RoomSelection.fxml");
+        var waitingArea = FXML.load(WaitingAreaCtrl.class, "client", "scenes", "WaitingAreaScreen.fxml");
+        var mode = FXML.load(GamemodeCtrl.class, "client", "scenes", "GamemodeScreen.fxml");
+        var leaderboard = FXML.load(LeaderBoardCtrl.class, "client", "scenes", "Leaderboard.fxml");
+        var podium = FXML.load(PodiumCtrl.class, "client", "scenes", "PodiumScreen.fxml");
+        var endScreen = FXML.load(EndGameScreenCtrl.class, "client", "scenes", "EndGameScreen.fxml");
+        var webView = FXML.load(WebViewCtrl.class, "client", "scenes", "WebViewScreen.fxml");
+        var tutorial = FXML.load(TutorialScreenCtrl.class, "client", "scenes", "TutorialScreen.fxml");
 
         primaryStage.setOnHidden(e -> {
             try {
@@ -80,6 +67,14 @@ public class Main extends Application {
                             try {
                                 roomSelection.getKey().shutdown();
                             } catch (Exception exit5) {
+                                try {
+                                    podium.getKey().shutdown();
+                                } catch (Exception exit6) {
+                                    try {
+                                        endScreen.getKey().shutdown();
+                                    } catch (Exception exit7) {
+                                    }
+                                }
                             }
                         }
                     }
@@ -88,7 +83,7 @@ public class Main extends Application {
         });
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, splash, multiplayer, singleplayer, timeAttack,
-                survival, roomSelection, waitingArea, mode, leaderboard, podium, endScreen, webView, tutorial);
+        mainCtrl.initialize(primaryStage, splash, multiplayer, singleplayer, timeAttack, survival,
+                roomSelection, waitingArea, mode, leaderboard, podium, endScreen, webView, tutorial);
     }
 }

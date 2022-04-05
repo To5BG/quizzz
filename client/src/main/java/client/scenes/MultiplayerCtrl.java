@@ -292,7 +292,7 @@ public class MultiplayerCtrl extends GameCtrl {
     @Override
     public void showPodiumScreen(long sessionId) throws InterruptedException {
         gameSessionUtils.toggleReady(sessionId, false);
-        mainCtrl.showPodiumScreen(this.sessionId);
+        mainCtrl.showPodiumScreen(this.sessionId, playerId);
 
         TimeUtils timer = new TimeUtils(10L, TIMER_UPDATE_INTERVAL_MS);
         timer.setOnSucceeded((event) -> {

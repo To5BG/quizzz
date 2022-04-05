@@ -77,7 +77,6 @@ public class SessionController {
             default -> {
                 for (Player p : session.players) {
                     p.setBestMultiScore(Math.max(p.bestMultiScore, p.currentPoints));
-                    p.setCurrentPoints(0);
                     repo.save(p);
                 }
                 session.setSessionStatus(GameSession.SessionStatus.PAUSED);

@@ -321,10 +321,11 @@ public class MainCtrl {
      *
      * @param sessionId the id of the current game session
      */
-    public void showPodiumScreen(long sessionId) {
+    public void showPodiumScreen(long sessionId, long playerId) {
         primaryStage.setTitle("Podium");
         primaryStage.setScene(podiumScreen);
         podiumCtrl.createPodium(sessionId);
+        podiumCtrl.setPlayerId(playerId);
     }
 
     /**
