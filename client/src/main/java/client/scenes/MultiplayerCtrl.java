@@ -20,7 +20,6 @@ import com.google.inject.Inject;
 import commons.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -38,12 +37,6 @@ import java.util.*;
 
 public class MultiplayerCtrl extends GameCtrl {
 
-    @FXML
-    private TableView<Emoji> emojiList;
-    @FXML
-    private TableColumn<Emoji, String> emojiUsername;
-    @FXML
-    private TableColumn<Emoji, ImageView> emojiImage;
     @FXML
     private ImageView emojiFunny;
     @FXML
@@ -131,14 +124,17 @@ public class MultiplayerCtrl extends GameCtrl {
         playAgain.setOpacity(0);
         status.setOpacity(0);
 
-        emojiUsername.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().username));
-        emojiImage.setCellValueFactory(e -> new SimpleObjectProperty<>(emojiToImage(e.getValue(), 30)));
-
         emojiFunny.setImage(emojiImages.get(0));
         emojiSad.setImage(emojiImages.get(1));
         emojiAngry.setImage(emojiImages.get(2));
     }
 
+    /**
+     * Initialize an ImageView node for an emoji
+     * @param e Emoji to use for an imageview
+     * @param dimension Size of imageview (even dimensions for width and height)
+     * @return An ImageView node
+     */
     public ImageView emojiToImage(Emoji e, int dimension) {
         Image picture;
         switch (e.emoji) {
@@ -329,11 +325,7 @@ public class MultiplayerCtrl extends GameCtrl {
      * Register the client to receive emoji reactions from other players
      */
     public void registerForEmojiUpdates() {
-        sessionEmojis.clear();
-        emojiList.setItems(sessionEmojis);
         channel = this.webSocketsUtils.registerForEmojiUpdates(emoji -> {
-            sessionEmojis.add(emoji);
-            Platform.runLater(() -> emojiList.scrollTo(sessionEmojis.size() - 1));
             Platform.runLater(() -> gameAnimation.startEmojiAnimation(
                     emojiToImage(emoji, 60), emoji.username, emojiArea));
         }, this.sessionId);

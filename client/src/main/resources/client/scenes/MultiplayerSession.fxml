@@ -49,12 +49,6 @@
         </ImageView>
         <ImageView fx:id="emojiAngry" fitHeight="60.0" fitWidth="60.0" layoutX="148.0" layoutY="323.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
         </ImageView>
-        <TableView fx:id="emojiList" layoutX="652.0" layoutY="43.0" prefHeight="200.0" prefWidth="156.0">
-            <columns>
-                <TableColumn fx:id="emojiUsername" prefWidth="75.0" sortable="false" text="Username" />
-                <TableColumn fx:id="emojiImage" prefWidth="75.0" sortable="false" text="Emoji" />
-            </columns>
-        </TableView>
         <Pane fx:id="emojiArea" layoutX="2.0" layoutY="249.0" prefHeight="76.0" prefWidth="321.0" />
         <Label fx:id="removedPlayers" layoutX="649.0" layoutY="306.0" opacity="0.0" text="Player : DISCONNECTED..." />
         <Label fx:id="jokerUsage" layoutX="359.0" layoutY="373.0" prefHeight="17.0" prefWidth="251.0" wrapText="true" />
