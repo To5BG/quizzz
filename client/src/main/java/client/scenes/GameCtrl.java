@@ -526,7 +526,10 @@ public abstract class GameCtrl implements Initializable {
         }
     }
 
-    private void handleNextRound() {
+    /**
+     * Proceeds the user onto the next round of the game
+     */
+    protected void handleNextRound() {
         try {
             gameSessionUtils.toggleReady(sessionId, false);
             imagePanel.setImage(null);

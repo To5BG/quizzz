@@ -50,7 +50,9 @@ public class SessionController {
     public void updateQuestion(GameSession session) {
         session.difficultyFactor = session.questionCounter / 4 + 1;
         session.questionCounter++;
-        Pair<Question, List<Long>> res = QuestionGenerator.generateQuestion(session.difficultyFactor, activityCtrl);
+        Pair<Question, List<Long>> res = (session.sessionType == GameSession.SessionType.SURVIVAL) ?
+                QuestionGenerator.generateSurvivalQuestion(session.difficultyFactor, activityCtrl) :
+                QuestionGenerator.generateQuestion(session.difficultyFactor, activityCtrl);
         session.currentQuestion = res.getKey();
         session.expectedAnswers.clear();
         session.expectedAnswers.addAll(res.getValue());
@@ -64,34 +66,53 @@ public class SessionController {
      */
     public void endSession(GameSession session) {
         session.playersReady.set(0);
-        if (session.sessionType == GameSession.SessionType.SINGLEPLAYER) {
-            Player p = session.getPlayers().get(0);
-            p.bestSingleScore = Math.max(p.bestSingleScore, p.currentPoints);
-            repo.save(p);
-            System.out.println("removing session");
-            removeSession(session.id);
-        } else {
-            for (Player p : session.players) {
-                p.bestMultiScore = Math.max(p.bestMultiScore, p.currentPoints);
+        switch (session.sessionType) {
+            case SINGLEPLAYER, SURVIVAL, TIME_ATTACK -> {
+                Player p = session.getPlayers().get(0);
+                setHighScore(p, session.sessionType);
+                p.setCurrentPoints(0);
                 repo.save(p);
+                removeSession(session.id);
             }
-            session.setSessionStatus(GameSession.SessionStatus.PAUSED);
-            Thread t = new Thread(() -> {
-                try {
-                    Thread.sleep(1000L);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
+            default -> {
+                for (Player p : session.players) {
+                    p.setBestMultiScore(Math.max(p.bestMultiScore, p.currentPoints));
+                    p.setCurrentPoints(0);
+                    repo.save(p);
                 }
-                session.setSessionStatus(GameSession.SessionStatus.PLAY_AGAIN);
+                session.setSessionStatus(GameSession.SessionStatus.PAUSED);
+                Thread t = new Thread(() -> {
+                    try {
+                        Thread.sleep(1000L);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                    session.setSessionStatus(GameSession.SessionStatus.PLAY_AGAIN);
+                    updateSession(session);
+                });
+                t.start();
                 updateSession(session);
-            });
-            t.start();
-            updateSession(session);
+            }
+        }
+    }
+
+    /**
+     * Sets the new highscore of a player if the current score is higher than the current highscore.
+     *
+     * @param p           The player.
+     * @param sessionType The gamemode the player played.
+     */
+    public void setHighScore(Player p, GameSession.SessionType sessionType) {
+        switch (sessionType) {
+            case SINGLEPLAYER -> p.setBestSingleScore(Math.max(p.bestSingleScore, p.currentPoints));
+            case SURVIVAL -> p.setBestSurvivalScore(Math.max(p.bestSurvivalScore, p.currentPoints));
+            case TIME_ATTACK -> p.setBestTimeAttackScore(Math.max(p.bestTimeAttackScore, p.currentPoints));
         }
     }
 
     /**
      * Update joker states of all players in the given session and award double points if applicable
+     *
      * @param session The session to operate on
      */
     private void updatePlayerJokers(GameSession session) {
@@ -119,6 +140,7 @@ public class SessionController {
 
     /**
      * Set all jokers of all player in the session to AVAILABLE
+     *
      * @param session The session to operate on
      */
     private void grantAllJokers(GameSession session) {
@@ -136,14 +158,13 @@ public class SessionController {
         updateTimeJokers(session.id, 0);
         updatePlayerJokers(session);
         if (session.sessionStatus == GameSession.SessionStatus.PLAY_AGAIN) {
+            session.setQuestionCounter(0);
             // Session end screen after final round
-            session.resetQuestionCounter();
             for (Player p : session.players) {
                 p.currentPoints = 0;
             }
             updateSession(session);
-        } else if (session.questionCounter == GameSession.GAME_ROUNDS) {
-            // Session final round
+        } else if (session.questionCounter == GameSession.gameRounds) {
             endSession(session);
         } else if (session.questionCounter == 0) {
             // Session first round
@@ -427,17 +448,18 @@ public class SessionController {
     }
 
     /**
-     * Sets the questionCounter of a session to zero.
+     * Sets the questionCounter of a session.
      *
      * @param sessionId The current session.
      * @return The updated session.
      */
-    @GetMapping("/{id}/reset")
-    public ResponseEntity<GameSession> resetQuestionCounter(@PathVariable("id") long sessionId) {
+    @PutMapping("/{id}/set")
+    public ResponseEntity<GameSession> setQuestionCounter(@PathVariable("id") long sessionId, @RequestBody int count) {
         if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = sm.getById(sessionId);
 
-        session.resetQuestionCounter();
+        session.setQuestionCounter(count);
+        updateSession(session);
         return ResponseEntity.ok(session);
     }
 
@@ -489,9 +511,26 @@ public class SessionController {
     }
 
     /**
+     * Sets the game rounds of a session
+     *
+     * @param sessionId Id of the session
+     * @param rounds    Number of rounds to be set
+     * @return The updated session
+     */
+    @PutMapping("{id}/rounds")
+    public ResponseEntity<GameSession> setGameRounds(@PathVariable("id") long sessionId, @RequestBody int rounds) {
+        if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
+        GameSession session = sm.getById(sessionId);
+        session.setGameRounds(rounds);
+        updateSession(session);
+        return ResponseEntity.ok(session);
+    }
+
+    /**
      * Get the state of jokers stored for a given player in a given session
+     *
      * @param sessionId The ID of the session
-     * @param playerId The ID of the player
+     * @param playerId  The ID of the player
      * @return The state of each joker the player has
      */
     @GetMapping("/{sessionId}/{playerId}/jokers")

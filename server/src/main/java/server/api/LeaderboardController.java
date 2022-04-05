@@ -1,14 +1,13 @@
 package server.api;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import commons.Player;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import server.database.PlayerRepository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static server.Config.isNullOrEmpty;
 
@@ -47,6 +46,34 @@ public class LeaderboardController {
     public ResponseEntity<List<Player>> getPlayerSingleScores() {
         var list = repo.findByOrderByBestSingleScoreDesc().stream()
                 .filter(player -> player.getBestSingleScore() != 0)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(list);
+    }
+
+    /**
+     * Deliver all Player data in the DB
+     * sorted by best time attack mode score, excluding all players with 0 score
+     *
+     * @return a list of all data about players for time attack mode
+     */
+    @GetMapping(path = {"/timeAttack"})
+    public ResponseEntity<List<Player>> getPlayerTimeAttackScores() {
+        var list = repo.findByOrderByBestTimeAttackScoreDesc().stream()
+                .filter(player -> player.getBestTimeAttackScore() != 0)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(list);
+    }
+
+    /**
+     * Deliver all player data in the DB
+     * sorted by best survival mode score, excluding all players with a 0 score
+     *
+     * @return a list of all data about players for survival mode
+     */
+    @GetMapping(path = {"/survival"})
+    public ResponseEntity<List<Player>> getPlayerSurvivalScores() {
+        var list = repo.findByOrderByBestSurvivalScoreDesc().stream()
+                .filter(player -> player.getBestSurvivalScore() != 0)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(list);
     }

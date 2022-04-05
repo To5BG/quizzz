@@ -104,9 +104,13 @@ public class QuestionController {
         Evaluation eval = new Evaluation((answer.answers.equals(s.expectedAnswers)) ? 1 : 0,
                 s.currentQuestion.type, List.copyOf(s.expectedAnswers));
 
+        if (s.sessionType == GameSession.SessionType.TIME_ATTACK || s.sessionType == GameSession.SessionType.SURVIVAL) {
+            player.currentPoints += eval.points;
+            return ResponseEntity.ok(eval);
+        }
+
         Evaluation actual = new Evaluation(calculateAnswerPoints(eval, answer, s.difficultyFactor),
                 eval.type, eval.correctAnswers);
-
         /*
         TODO: double points calculated here based on player who submits the answer
         this can be implemented nicely, once the relaying of jokers to other players is implemented, since the server
