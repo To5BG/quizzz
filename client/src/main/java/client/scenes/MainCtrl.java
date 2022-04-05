@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import commons.GameSession;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -136,7 +137,7 @@ public class MainCtrl {
 
     /**
      * Sets the current screen to the multiplayer screen and adds the player to the game session DB. Loads the first
-     * question.
+     * question. If the session is in the Play Again status, simply adds the player to the end game screen
      *
      * @param sessionId Id of session to be joined
      * @param playerId  Id of player that is about to join
@@ -149,9 +150,14 @@ public class MainCtrl {
         multiplayerCtrl.setPlayerId(playerId);
         multiplayerCtrl.registerForEmojiUpdates();
         multiplayerCtrl.fetchJokerStates();
-        multiplayerCtrl.loadQuestion();
         multiplayerCtrl.scanForDisconnect();
         multiplayerCtrl.scanForJokerUsage();
+        if (multiplayerCtrl.gameSessionUtils.getSession(sessionId).sessionStatus ==
+                GameSession.SessionStatus.PLAY_AGAIN) {
+            multiplayerCtrl.showEndScreen(false);
+            return;
+        }
+        multiplayerCtrl.loadQuestion();
     }
 
     /**
