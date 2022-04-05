@@ -164,11 +164,6 @@ public class MainCtrl {
         multiplayerCtrl.fetchJokerStates();
         multiplayerCtrl.scanForDisconnect();
         multiplayerCtrl.scanForJokerUsage();
-        if (multiplayerCtrl.gameSessionUtils.getSession(sessionId).sessionStatus ==
-                GameSession.SessionStatus.PLAY_AGAIN) {
-            multiplayerCtrl.showEndScreen(false);
-            return;
-        }
         multiplayerCtrl.loadQuestion();
     }
 
