@@ -17,11 +17,7 @@ package client.scenes;
 
 import client.utils.*;
 import com.google.inject.Inject;
-import commons.Emoji;
-import commons.GameSession;
-import commons.Joker;
-import commons.Player;
-import commons.Question;
+import commons.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -41,6 +37,7 @@ import java.util.*;
 
 public class MultiplayerCtrl extends GameCtrl {
 
+    private final static long END_GAME_TIME = 60L;
     private final ObservableList<Emoji> sessionEmojis;
     private final List<Image> emojiImages;
     @FXML
@@ -67,7 +64,6 @@ public class MultiplayerCtrl extends GameCtrl {
     private Label removedPlayers;
     @FXML
     private Label jokerUsage;
-
     private int lastDisconnectIndex;
     private Timer disconnectTimer;
     private int lastJokerIndex;
@@ -75,7 +71,6 @@ public class MultiplayerCtrl extends GameCtrl {
     private StompSession.Subscription channel;
     private boolean playingAgain;
     private int waitingSkip = 0;
-    private final static long END_GAME_TIME = 60L;
     private List<Joker> usedJokers;
 
     @Inject
@@ -419,6 +414,7 @@ public class MultiplayerCtrl extends GameCtrl {
                         alert.setTitle("Unable to start new game!");
                         alert.setHeaderText("There are too few people to play again:");
                         alert.setContentText("Please join a fresh game to play with more people!");
+                        mainCtrl.addCSS(alert);
                         alert.showAndWait();
                     }
                 });

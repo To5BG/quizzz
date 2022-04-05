@@ -490,6 +490,8 @@ public abstract class GameCtrl implements Initializable {
                         alert.setHeaderText("Invalid answer");
                         alert.setContentText("You should only enter an integer number");
                         alert.show();
+                        mainCtrl.addCSS(alert);
+
                         return;
                     } else {
                         ans.addAnswer(0);

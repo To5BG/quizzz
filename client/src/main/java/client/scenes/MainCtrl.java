@@ -20,9 +20,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.nio.file.Path;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -298,7 +300,21 @@ public class MainCtrl {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirm Close");
             alert.setHeaderText("Close the program?");
+            addCSS(alert);
+
             alert.showAndWait().filter(r -> r != ButtonType.OK).ifPresent(r -> evt.consume());
         });
+    }
+
+    /**
+     * Add Alert.css stylesheet to the alert
+     *
+     * @param alert - Alert to which to add css
+     */
+    public void addCSS(Alert alert) {
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(
+                String.valueOf(getClass().getClassLoader().getResource(Path.of("", "CSS", "Alert.css").toString())));
+
     }
 }
