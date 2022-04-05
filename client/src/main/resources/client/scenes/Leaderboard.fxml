@@ -10,7 +10,7 @@
         <TableView id="allPoints" fx:id="allPlayers" layoutX="109.0" layoutY="125.0" prefHeight="271.0"
                    prefWidth="397.0" styleClass="leaderboardColumn">
             <columns>
-                <TableColumn fx:id="colBattery" prefWidth="199.0" text="UserName"/>
+                <TableColumn fx:id="colBattery" prefWidth="199.0" text="Rank"/>
                 <TableColumn fx:id="colName" prefWidth="199.0" text="UserName"/>
                 <TableColumn fx:id="colPoint" prefWidth="196.0" text="Point"/>
             </columns>
