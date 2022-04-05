@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
 <AnchorPane prefHeight="499.0" prefWidth="633.0" styleClass="background" stylesheets="@/CSS/Baseline.css"
@@ -11,6 +10,7 @@
         <TableView id="allPoints" fx:id="allPlayers" layoutX="109.0" layoutY="125.0" prefHeight="271.0"
                    prefWidth="397.0" styleClass="leaderboardColumn">
             <columns>
+                <TableColumn fx:id="colBattery" prefWidth="199.0" text="UserName"/>
                 <TableColumn fx:id="colName" prefWidth="199.0" text="UserName"/>
                 <TableColumn fx:id="colPoint" prefWidth="196.0" text="Point"/>
             </columns>
@@ -58,65 +58,5 @@
                 <Font size="18.0"/>
             </font>
         </Button>
-        <ImageView fx:id="battery0" fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="151.0" opacity="0.0"
-                   pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@/Image/decoration7.png"/>
-            </image>
-        </ImageView>
-        <ImageView fx:id="battery1" fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="175.0" opacity="0.0"
-                   pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@/Image/decoration8.png"/>
-            </image>
-        </ImageView>
-        <ImageView fx:id="battery2" fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="199.0" opacity="0.0"
-                   pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@/Image/decoration8.png"/>
-            </image>
-        </ImageView>
-        <ImageView fx:id="battery3" fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="222.0" opacity="0.0"
-                   pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@/Image/decoration10.png"/>
-            </image>
-        </ImageView>
-        <ImageView fx:id="battery4" fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="247.0" opacity="0.0"
-                   pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@/Image/decoration11.png"/>
-            </image>
-        </ImageView>
-        <ImageView fx:id="battery5" fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="270.0" opacity="0.0"
-                   pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@/Image/decoration11.png"/>
-            </image>
-        </ImageView>
-        <ImageView fx:id="battery6" fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="295.0" opacity="0.0"
-                   pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@/Image/decoration12.png"/>
-            </image>
-        </ImageView>
-        <ImageView fx:id="battery7" fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="320.0" opacity="0.0"
-                   pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@/Image/decoration13.png"/>
-            </image>
-        </ImageView>
-        <ImageView fx:id="battery8" fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="344.0" opacity="0.0"
-                   pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@/Image/decoration14.png"/>
-            </image>
-        </ImageView>
-        <ImageView fx:id="battery9" fitHeight="26.0" fitWidth="50.0" layoutX="84.0" layoutY="368.0" opacity="0.0"
-                   pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@/Image/decoration15.png"/>
-            </image>
-        </ImageView>
     </children>
 </AnchorPane>

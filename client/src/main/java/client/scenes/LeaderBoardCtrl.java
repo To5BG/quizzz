@@ -23,14 +23,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.util.Callback;
 
 import java.net.URL;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -62,6 +63,8 @@ public class LeaderBoardCtrl implements Initializable {
     @FXML
     private TableView<Player> allPlayers;
     @FXML
+    private TableColumn<Player, Integer> colBattery;
+    @FXML
     private TableColumn<Player, String> colName;
     @FXML
     private TableColumn<Player, String> colPoint;
@@ -75,7 +78,7 @@ public class LeaderBoardCtrl implements Initializable {
     private Button survivalButton;
     @FXML
     private Label leaderboardLabel;
-    private List<ImageView> batteries;
+    private List<Image> batteries;
 
 
     /**
@@ -88,6 +91,15 @@ public class LeaderBoardCtrl implements Initializable {
     public LeaderBoardCtrl(LeaderboardUtils leaderboardUtils, MainCtrl mainCtrl) {
         this.leaderboardUtils = leaderboardUtils;
         this.mainCtrl = mainCtrl;
+        ClassLoader cl = getClass().getClassLoader();
+        batteries = new ArrayList<>();
+        for (int i = 0; i < 9; ++i) {
+            URL location = cl.getResource(
+                    Path.of("", "Image", "decoration" + (7 + i) + ".png").toString());
+
+            batteries.add(new Image(location.toString()));
+        }
+
     }
 
     /**
@@ -100,8 +112,28 @@ public class LeaderBoardCtrl implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         colName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
         colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
-        batteries = List.of(battery0, battery1, battery2, battery3,
-                battery4, battery5, battery6, battery7, battery8, battery9);
+        colBattery.setCellFactory(new Callback<>() {
+            @Override
+            public TableCell<Player, Integer> call(TableColumn<Player, Integer> param) {
+                return new TableCell<>() {
+                    @Override
+                    protected void updateItem(Integer item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) setGraphic(null);
+                        else {
+                            int rank = this.getTableRow().getIndex();
+                            Image img = batteries.get(Math.min(rank, batteries.size() - 1));
+                            ImageView display = new ImageView(img);
+                            display.setFitHeight(26.0);
+                            display.setFitWidth(50.0);
+                            display.setPreserveRatio(true);
+                            setGraphic(display);
+                        }
+                    }
+                };
+            }
+        });
+
     }
 
 
@@ -131,7 +163,6 @@ public class LeaderBoardCtrl implements Initializable {
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
         leaderboardLabel.setText("Leaderboard-Singleplayer");
-        showBatteries();
     }
 
     /**
@@ -142,7 +173,6 @@ public class LeaderBoardCtrl implements Initializable {
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
         leaderboardLabel.setText("Leaderboard-TimeAttack");
-        showBatteries();
     }
 
     /**
@@ -153,7 +183,6 @@ public class LeaderBoardCtrl implements Initializable {
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
         leaderboardLabel.setText("Leaderboard-Survival");
-        showBatteries();
     }
 
     /**
@@ -164,8 +193,6 @@ public class LeaderBoardCtrl implements Initializable {
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
         leaderboardLabel.setText("Leaderboard-Multiplayer");
-        resetBatteries();
-        showBatteries();
     }
 
     /**
@@ -210,27 +237,5 @@ public class LeaderBoardCtrl implements Initializable {
         allPlayers.setItems(data);
         allPlayers.refresh();
         survivalButton.setText("Survival");
-    }
-
-    /**
-     * Show the number of batteries based on how many people are in the leaderboard
-     */
-    private void showBatteries() {
-        resetBatteries();
-        int size;
-        if (data == null || data.isEmpty()) size = 0;
-        else size = Math.min(data.size(), 10);
-        for (int i = 0; i < size; i++) {
-            batteries.get(i).setOpacity(1);
-        }
-    }
-
-    /**
-     * Make all batteries not visible
-     */
-    private void resetBatteries() {
-        for (int i = 0; i < 10; i++) {
-            batteries.get(i).setOpacity(0);
-        }
     }
 }
