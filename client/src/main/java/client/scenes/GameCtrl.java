@@ -563,10 +563,10 @@ public abstract class GameCtrl implements Initializable {
                 Platform.runLater(() -> {
                     if (currentQuestion == null) return; // happens if shutdown is called before triggering
                     rounds++;
-                    if (rounds == GameSession.GAME_ROUNDS) {
+                    if (rounds == GameSession.gameRounds) {
                         handleGamePodium();
                         //handleGameEnd();
-                    } else if (rounds == GameSession.GAME_ROUNDS / 2 &&
+                    } else if (rounds == GameSession.gameRounds / 2 &&
                             gameSessionUtils.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
                         displayMidGameScreen();
                         countdown.setOpacity(0);

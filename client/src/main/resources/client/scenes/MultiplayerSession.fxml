@@ -12,8 +12,6 @@
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.scenes.MultiplayerCtrl">
     <children>
-        <Button fx:id="leaveButton" layoutX="727.0" layoutY="359.0" mnemonicParsing="false" onAction="#leaveGame"
-                text="Leave"/>
         <TableView fx:id="leaderboard" layoutX="2.0" layoutY="75.0" opacity="0.0" prefHeight="198.0" prefWidth="644.0">
         <Label fx:id="questionPrompt" layoutX="192.0" layoutY="58.0" text="[Question]" textFill="WHITE"/>
         <Label fx:id="countdown" layoutX="221.0" layoutY="107.0" text="Options:" textFill="WHITE"/>

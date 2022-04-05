@@ -6,6 +6,7 @@ import client.utils.QuestionUtils;
 import client.utils.WebSocketsUtils;
 import commons.Joker;
 import commons.Player;
+import jakarta.ws.rs.BadRequestException;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -63,19 +64,6 @@ public class SingleplayerCtrl extends GameCtrl {
     }
 
     /**
-     * Sends player to splash screen, along with an alert that the game has ended, with their points total
-     */
-    @Override
-    public void handleGameEnd() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Game Over");
-        alert.setHeaderText("You have been redirected to the splash screen");
-        alert.setContentText("Your score was : " + points);
-        alert.show();
-        super.handleGameEnd();
-    }
-
-    /**
      * Empty method because singleplayer mode does not have a podium screen.
      *
      * @param sessionId
@@ -128,4 +116,24 @@ public class SingleplayerCtrl extends GameCtrl {
         if (jokerName.equals("DecreaseTimeJoker")) return "Increase time";
         return super.getJokerDisplayName(jokerName);
     }
+
+    /**
+     * Sends player to splash screen, along with an alert that the game has ended, with their points total
+     */
+    public void handleGameEnd() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Game Over");
+        alert.setHeaderText("You have been redirected to the splash screen");
+        alert.setContentText("Your score was : " + points);
+        alert.show();
+        handleGameEnd();
+        try {
+            back();
+        } catch (BadRequestException ex) {
+            setPlayerId(0);
+            setSessionId(0);
+            back();
+        }
+    }
+
 }

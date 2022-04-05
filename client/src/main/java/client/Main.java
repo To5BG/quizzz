@@ -84,8 +84,7 @@ public class Main extends Application {
         });
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, splash, multiplayer, roomSelection,
-                waitingArea, mode, singleplayer, timeAttack, survival, 
-                leaderboard, podium, endScreen, webView, tutorial);
+        mainCtrl.initialize(primaryStage, splash, multiplayer, singleplayer, timeAttack,
+                survival, roomSelection, waitingArea, mode, leaderboard, podium, endScreen, webView, tutorial);
     }
 }
