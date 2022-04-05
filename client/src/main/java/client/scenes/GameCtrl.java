@@ -388,7 +388,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
     /**
      * Abstract method that gets called to show the end game screen for multiplayer sessions.
      */
-    abstract public void showEndScreen();
+    abstract public void showEndScreen(boolean sentFromGame);
 
     /**
      * {@inheritDoc}
@@ -512,7 +512,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      */
     protected void handleGameEnd() {
         try {
-            if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showEndScreen();
+            if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showEndScreen(true);
             else back();
         } catch (BadRequestException ex) {
             setPlayerId(0);

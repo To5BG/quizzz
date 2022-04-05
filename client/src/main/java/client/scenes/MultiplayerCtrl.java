@@ -69,9 +69,12 @@ public class MultiplayerCtrl extends GameCtrl {
     private Label jokerUsage;
 
     private int lastDisconnectIndex;
+    private int previousPlayerCount;
     private Timer disconnectTimer;
     private int lastJokerIndex;
     private Timer jokerTimer;
+    private Timer endGameTimer;
+    private TimeUtils endGameCountdown;
     private StompSession.Subscription channel;
     private boolean playingAgain;
     private int waitingSkip = 0;
@@ -168,6 +171,26 @@ public class MultiplayerCtrl extends GameCtrl {
                 }
             }
         }, 0, 2000);
+    }
+
+    /**
+     * Scans for players joining in the end game screen
+     */
+    public void scanForEndGameAddition() {
+        previousPlayerCount = -1;
+        endGameTimer = new Timer();
+        endGameTimer.scheduleAtFixedRate(new TimerTask() {
+
+            @Override
+            public void run() {
+                int playerCount = gameSessionUtils.getSession(sessionId).players.size();
+                if (previousPlayerCount < playerCount) {
+                    endGameCountdown.resetTimer();
+                    Platform.runLater(() -> displayLeaderboard());
+                }
+                previousPlayerCount = playerCount;
+            }
+        }, 0, 500);
     }
 
     /**
@@ -295,6 +318,7 @@ public class MultiplayerCtrl extends GameCtrl {
         channel.unsubscribe();
         super.shutdown();
         disconnectTimer.cancel();
+        if (endGameTimer != null) endGameTimer.cancel();
         lastDisconnectIndex = -1;
         jokerTimer.cancel();
         lastJokerIndex = -1;
@@ -362,11 +386,13 @@ public class MultiplayerCtrl extends GameCtrl {
     }
 
     /**
-     * Show leaderboard at the end of the game and reveals the back button as well as the playAgain button. Starts timer
-     * and after 20 seconds a new game starts if enough players want to play again.
+     * Show leaderboard at the end of the game and reveals back and play again buttons. Starts time and after 20 seconds
+     * a new game starts if enough players want to play again.
+     *
+     * @param sentFromGame - True iff the user is sent to the end screen after a game, false otherwise
      */
     @Override
-    public void showEndScreen() {
+    public void showEndScreen(boolean sentFromGame) {
         displayLeaderboard();
         countdown.setOpacity(0);
         backButton.setOpacity(0);
@@ -378,10 +404,13 @@ public class MultiplayerCtrl extends GameCtrl {
         status.setText("");
         waitingSkip = 0;
         questionCount.setText("End of game! Play again or go back to main.");
-
-        TimeUtils roundTimer = new TimeUtils(END_GAME_TIME, TIMER_UPDATE_INTERVAL_MS);
-        roundTimer.setTimeBooster(() -> (double) waitingSkip);
-        roundTimer.setOnSucceeded((event) -> {
+        if (sentFromGame) {
+            gameSessionUtils.toggleReady(sessionId, false);
+        }
+        endGameCountdown = new TimeUtils(END_GAME_TIME, TIMER_UPDATE_INTERVAL_MS);
+        endGameCountdown.setTimeBooster(() -> (double) waitingSkip);
+        endGameCountdown.setOnSucceeded((event) -> {
+            endGameTimer.cancel();
             gameSessionUtils.updateStatus(gameSessionUtils.getSession(sessionId),
                     GameSession.SessionStatus.TRANSFERRING);
             Platform.runLater(() -> {
@@ -393,11 +422,10 @@ public class MultiplayerCtrl extends GameCtrl {
             });
         });
 
-        timeProgress.progressProperty().bind(roundTimer.progressProperty());
-        this.timerThread = new Thread(roundTimer);
-        this.timerThread.start();
-
-        gameSessionUtils.toggleReady(sessionId, false);
+        timeProgress.progressProperty().bind(endGameCountdown.progressProperty());
+        timerThread = new Thread(endGameCountdown);
+        timerThread.start();
+        scanForEndGameAddition();
         refresh();
     }
 
