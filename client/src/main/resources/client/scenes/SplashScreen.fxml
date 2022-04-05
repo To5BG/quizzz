@@ -48,17 +48,19 @@
             <Image url="@/Image/decoration3.png"/>
         </image>
     </ImageView>
-    <ImageView fitHeight="52.0" fitWidth="54.0" layoutX="50.0" layoutY="393.0" pickOnBounds="true" preserveRatio="true">
+    <ImageView fx:id="imagePlug1" fitHeight="52.0" fitWidth="54.0" layoutX="50.0" layoutY="393.0" pickOnBounds="true"
+               preserveRatio="true">
         <image>
             <Image url="@/Image/decoration16.png"/>
         </image>
     </ImageView>
-    <ImageView fitHeight="52.0" fitWidth="54.0" layoutX="50.0" layoutY="497.0" pickOnBounds="true" preserveRatio="true">
+    <ImageView fx:id="imagePlug2" fitHeight="52.0" fitWidth="54.0" layoutX="50.0" layoutY="497.0" pickOnBounds="true"
+               preserveRatio="true">
         <image>
             <Image url="@/Image/decoration16.png"/>
         </image>
     </ImageView>
-    <ImageView fitHeight="52.0" fitWidth="54.0" layoutX="391.0" layoutY="445.0" pickOnBounds="true"
+    <ImageView fx:id="imagePlug3" fitHeight="52.0" fitWidth="54.0" layoutX="391.0" layoutY="445.0" pickOnBounds="true"
                preserveRatio="true">
         <image>
             <Image url="@/Image/decoration16.png"/>

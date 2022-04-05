@@ -28,6 +28,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -70,6 +71,13 @@ public class SplashCtrl implements Initializable {
     @FXML
     private Text failedConnectionAlert;
 
+    @FXML
+    private ImageView imagePlug1;
+    @FXML
+    private ImageView imagePlug2;
+    @FXML
+    private ImageView imagePlug3;
+
     @Inject
     public SplashCtrl(GameSessionUtils gameSessionUtils, LeaderboardUtils leaderboardUtils,
                       QuestionUtils questionUtils, WebSocketsUtils webSocketsUtils, MainCtrl mainCtrl) {
@@ -86,7 +94,8 @@ public class SplashCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        gameAnimation.startBatteryAnimation(List.of(singleplayerButton, multiplayerButton, leaderboardButton));
+        gameAnimation.startBatteryAnimation(List.of(singleplayerButton, multiplayerButton, leaderboardButton),
+                List.of(imagePlug1, imagePlug2, imagePlug3));
     }
 
     /**
