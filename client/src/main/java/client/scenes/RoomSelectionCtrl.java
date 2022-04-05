@@ -224,7 +224,7 @@ public class RoomSelectionCtrl implements Initializable {
                 break;
             case PLAY_AGAIN:
                 addPlayerToSession(session);
-                mainCtrl.showMultiplayer(session.id, playerId);
+                mainCtrl.showEndGameScreen(session.id, playerId);
                 break;
             default:
                 Alert alert = new Alert(Alert.AlertType.WARNING);

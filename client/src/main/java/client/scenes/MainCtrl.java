@@ -321,10 +321,10 @@ public class MainCtrl {
      *
      * @param sessionId the id of the current game session
      */
-    public void showPodiumScreen(Long sessionId) {
+    public void showPodiumScreen(long sessionId) {
         primaryStage.setTitle("Podium");
         primaryStage.setScene(podiumScreen);
-        podiumCtrl.creatPodium(sessionId);
+        podiumCtrl.createPodium(sessionId);
     }
 
     /**
@@ -332,7 +332,7 @@ public class MainCtrl {
      *
      * @param sessionId The id of the current game session
      */
-    public void showEndGameScreen(Long sessionId, long playerId) {
+    public void showEndGameScreen(long sessionId, long playerId) {
         primaryStage.setTitle("End of game");
         primaryStage.setScene(endGameScreen);
         endGameScreenCtrl.setPlayerId(playerId);

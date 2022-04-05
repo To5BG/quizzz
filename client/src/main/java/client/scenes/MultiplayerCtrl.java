@@ -60,7 +60,7 @@ public class MultiplayerCtrl extends GameCtrl {
     private Label jokerUsage;
 
     private int lastDisconnectIndex;
-    private int previousPlayerCount;
+
     private Timer disconnectTimer;
     private int lastJokerIndex;
     private Timer jokerTimer;
@@ -155,25 +155,7 @@ public class MultiplayerCtrl extends GameCtrl {
         }, 0, 2000);
     }
 
-    /**
-     * Scans for players joining in the end game screen
-     */
-    public void scanForEndGameAddition() {
-        previousPlayerCount = -1;
-        endGameTimer = new Timer();
-        endGameTimer.scheduleAtFixedRate(new TimerTask() {
 
-            @Override
-            public void run() {
-                int playerCount = gameSessionUtils.getSession(sessionId).players.size();
-                if (previousPlayerCount < playerCount) {
-                    endGameCountdown.resetTimer();
-                    Platform.runLater(() -> displayLeaderboard());
-                }
-                previousPlayerCount = playerCount;
-            }
-        }, 0, 500);
-    }
 
     /**
      * Displays the player(s) who got disconnected
@@ -309,12 +291,12 @@ public class MultiplayerCtrl extends GameCtrl {
 
     @Override
     public void showPodiumScreen(long sessionId) throws InterruptedException {
+        gameSessionUtils.toggleReady(sessionId, false);
         mainCtrl.showPodiumScreen(this.sessionId);
 
         TimeUtils timer = new TimeUtils(10L, TIMER_UPDATE_INTERVAL_MS);
         timer.setOnSucceeded((event) -> {
             Platform.runLater(() -> {
-                System.out.println("111");
                 mainCtrl.showEndGameScreen(sessionId, playerId);
             });
         });

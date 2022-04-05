@@ -26,14 +26,12 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.*;
 
-import static client.scenes.GameCtrl.TIMER_UPDATE_INTERVAL_MS;
+import static client.scenes.GameCtrl.*;
 
 public class EndGameScreenCtrl implements Initializable {
 
     private final static long END_GAME_TIME = 60L;
     private final GameSessionUtils gameSessionUtils;
-    private final LeaderboardUtils leaderboardUtils;
-    private final QuestionUtils questionUtils;
     private final WebSocketsUtils webSocketsUtils;
     private final MainCtrl mainCtrl;
     private final ObservableList<Emoji> sessionEmojis;
@@ -68,21 +66,21 @@ public class EndGameScreenCtrl implements Initializable {
     private ImageView emojiSad;
     @FXML
     private ImageView emojiAngry;
+    private int previousPlayerCount;
     protected Thread timerThread;
     private long sessionId;
     private long playerId;
     private int waitingSkip = 0;
     private boolean playingAgain;
+    private Timer endGameTimer;
+    private TimeUtils roundTimer;
     private StompSession.Subscription channelEnd;
 
 
     @Inject
-    public EndGameScreenCtrl(GameSessionUtils gameSessionUtils, WebSocketsUtils webSocketsUtils,
-                             LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
+    public EndGameScreenCtrl(GameSessionUtils gameSessionUtils, WebSocketsUtils webSocketsUtils, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
-        this.leaderboardUtils = leaderboardUtils;
         this.webSocketsUtils = webSocketsUtils;
-        this.questionUtils = questionUtils;
         this.mainCtrl = mainCtrl;
         sessionEmojis = FXCollections.observableArrayList();
         emojiImages = new ArrayList<Image>();
@@ -243,12 +241,12 @@ public class EndGameScreenCtrl implements Initializable {
      * Starts the timer and sets all players unready.
      */
     public void showEndScreen() {
-        gameSessionUtils.toggleReady(sessionId, false);
+        //gameSessionUtils.toggleReady(sessionId, false);
         var players = gameSessionUtils.getPlayers(sessionId);
         var data = FXCollections.observableList(players);
         leaderboard.setItems(data);
 
-        TimeUtils roundTimer = new TimeUtils(END_GAME_TIME, TIMER_UPDATE_INTERVAL_MS);
+        roundTimer = new TimeUtils(END_GAME_TIME, TIMER_UPDATE_INTERVAL_MS);
         registerForEmojiUpdates();
         roundTimer.setTimeBooster(() -> (double) waitingSkip);
         roundTimer.setOnSucceeded((event) -> {
@@ -266,6 +264,7 @@ public class EndGameScreenCtrl implements Initializable {
         progressBar.progressProperty().bind(roundTimer.progressProperty());
         this.timerThread = new Thread(roundTimer);
         this.timerThread.start();
+        scanForEndGameAddition();
         refresh();
     }
 
@@ -371,4 +370,43 @@ public class EndGameScreenCtrl implements Initializable {
         }
         webSocketsUtils.sendEmoji(sessionId, playerId, type);
     }
+
+    /**
+     * Scans for players joining in the end game screen
+     */
+    public void scanForEndGameAddition() {
+        previousPlayerCount = -1;
+        endGameTimer = new Timer();
+        endGameTimer.scheduleAtFixedRate(new TimerTask() {
+
+            @Override
+            public void run() {
+                int playerCount = gameSessionUtils.getSession(sessionId).players.size();
+                if (previousPlayerCount < playerCount) {
+                    roundTimer.resetTimer();
+                    Platform.runLater(() -> displayLeaderboard());
+                }
+                previousPlayerCount = playerCount;
+            }
+        }, 0, 500);
+    }
+
+    /**
+     * Displays the current session's leaderboard and hides the question screen attributes
+     */
+    public void displayLeaderboard() {
+        renderLeaderboard();
+        leaderboard.setOpacity(1);
+    }
+
+    /**
+     * Updates the items in the leaderboard and makes sure the leaderboard remains visible
+     */
+    public void renderLeaderboard() {
+        var players = gameSessionUtils.getPlayers(sessionId);
+        var data = FXCollections.observableList(players);
+        leaderboard.setItems(data);
+        leaderboard.setOpacity(1);
+    }
+
 }
