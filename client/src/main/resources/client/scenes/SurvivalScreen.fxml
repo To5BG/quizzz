@@ -15,7 +15,7 @@
                    prefWidth="203.0"/>
         <Button fx:id="submitButton" layoutX="335.0" layoutY="290.0" mnemonicParsing="false"
                 onAction="#submitAnswerButton" text="Final Answer"/>
-        <Label fx:id="livesLabel" layoutX="493.0" layoutY="31.0" text="Lives: 3">
+        <Label fx:id="livesLabel" layoutX="492.0" layoutY="31.0" text="Lives: 3">
             <font>
                 <Font name="System Bold" size="16.0"/>
             </font>

@@ -25,8 +25,8 @@
         </TableView>
         <StackPane fx:id="answerArea" alignment="BASELINE_LEFT" layoutX="221.0" layoutY="131.0" prefHeight="156.0" prefWidth="235.0" styleClass="stack-pane" stylesheets="@/CSS/Baseline.css" />
         <Button fx:id="submitButton" layoutX="560.0" layoutY="287.0" mnemonicParsing="false" onAction="#submitAnswerButton" text="Final Answer" />
-        <Label fx:id="pointsLabel" layoutX="698.0" layoutY="18.0" text="Points: 0" textFill="WHITE" />
-        <Label fx:id="questionCount" layoutX="14.0" layoutY="10.0" text="Question: 1" textFill="WHITE" />
+        <Label fx:id="pointsLabel" layoutX="698.0" layoutY="14.0" text="Points: 0" textFill="WHITE" />
+        <Label fx:id="questionCount" layoutX="14.0" layoutY="14.0" text="Question: 1" textFill="WHITE" />
         <ProgressBar fx:id="timeProgress" layoutX="295.0" layoutY="25.0" prefHeight="20.0" prefWidth="321.0" progress="0.0" />
         <Button fx:id="removeOneButton" layoutX="221.0" layoutY="340.0" mnemonicParsing="false" onAction="#removeOneAnswer" prefHeight="26.0" prefWidth="103.0" text="Remove One Answer">
             <font>
