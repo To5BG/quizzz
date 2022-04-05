@@ -60,9 +60,12 @@ public class MultiplayerCtrl extends GameCtrl {
     private Label jokerUsage;
 
     private int lastDisconnectIndex;
+    private int previousPlayerCount;
     private Timer disconnectTimer;
     private int lastJokerIndex;
     private Timer jokerTimer;
+    private Timer endGameTimer;
+    private TimeUtils endGameCountdown;
     private StompSession.Subscription channel;
 
     private List<Joker> usedJokers;
@@ -150,6 +153,26 @@ public class MultiplayerCtrl extends GameCtrl {
                 lastDisconnectIndex = allRemoved.size() - 1;
             }
         }, 0, 2000);
+    }
+
+    /**
+     * Scans for players joining in the end game screen
+     */
+    public void scanForEndGameAddition() {
+        previousPlayerCount = -1;
+        endGameTimer = new Timer();
+        endGameTimer.scheduleAtFixedRate(new TimerTask() {
+
+            @Override
+            public void run() {
+                int playerCount = gameSessionUtils.getSession(sessionId).players.size();
+                if (previousPlayerCount < playerCount) {
+                    endGameCountdown.resetTimer();
+                    Platform.runLater(() -> displayLeaderboard());
+                }
+                previousPlayerCount = playerCount;
+            }
+        }, 0, 500);
     }
 
     /**
@@ -254,6 +277,7 @@ public class MultiplayerCtrl extends GameCtrl {
         channel.unsubscribe();
         super.shutdown();
         disconnectTimer.cancel();
+        if (endGameTimer != null) endGameTimer.cancel();
         lastDisconnectIndex = -1;
         jokerTimer.cancel();
         lastJokerIndex = -1;

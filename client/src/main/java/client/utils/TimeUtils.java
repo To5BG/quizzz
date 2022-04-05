@@ -8,17 +8,18 @@ public class TimeUtils extends Task<Void> {
     private final long maxTime;
     private final long updateInterval;
     private Producer<Double> getTimeBoost;
+    public double refreshCounter;
 
     public TimeUtils(long duration, long updateInterval) {
         super();
         this.maxTime = duration;
         this.updateInterval = updateInterval;
         this.getTimeBoost = () -> 0.0;
+        refreshCounter = 0.0;
     }
 
     @Override
     protected Void call() throws Exception {
-        double refreshCounter = 0;
         long gameRoundMs = maxTime * 1000;
         double timeElapsed = 0;
         while (timeElapsed < gameRoundMs) {
@@ -40,5 +41,12 @@ public class TimeUtils extends Task<Void> {
 
     public void setTimeBooster(Producer<Double> booster) {
         this.getTimeBoost = booster;
+    }
+
+    /**
+     * Resets the timer
+     */
+    public void resetTimer() {
+        refreshCounter = 0.0;
     }
 }

@@ -77,6 +77,10 @@ public class Main extends Application {
                         try {
                             singleplayer.getKey().shutdown();
                         } catch (Exception exit4) {
+                            try {
+                                roomSelection.getKey().shutdown();
+                            } catch (Exception exit5) {
+                            }
                         }
                     }
                 }
