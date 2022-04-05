@@ -27,18 +27,38 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class LeaderBoardCtrl implements Initializable {
 
     private final LeaderboardUtils leaderboardUtils;
     private final MainCtrl mainCtrl;
-
+    @FXML
+    protected ImageView battery0;
+    @FXML
+    protected ImageView battery1;
+    @FXML
+    protected ImageView battery2;
+    @FXML
+    protected ImageView battery3;
+    @FXML
+    protected ImageView battery4;
+    @FXML
+    protected ImageView battery5;
+    @FXML
+    protected ImageView battery6;
+    @FXML
+    protected ImageView battery7;
+    @FXML
+    protected ImageView battery8;
+    @FXML
+    protected ImageView battery9;
     private ObservableList<Player> data;
-
     @FXML
     private TableView<Player> allPlayers;
     @FXML
@@ -55,6 +75,8 @@ public class LeaderBoardCtrl implements Initializable {
     private Button survivalButton;
     @FXML
     private Label leaderboardLabel;
+    private List<ImageView> batteries;
+
 
     /**
      * constructor of the leaderboard
@@ -78,7 +100,10 @@ public class LeaderBoardCtrl implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         colName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
         colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
+        batteries = List.of(battery0, battery1, battery2, battery3,
+                battery4, battery5, battery6, battery7, battery8, battery9);
     }
+
 
     /**
      * Created for be 'Back' button which makes the player back to the splash screen
@@ -106,6 +131,7 @@ public class LeaderBoardCtrl implements Initializable {
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
         leaderboardLabel.setText("Leaderboard-Singleplayer");
+        showBatteries();
     }
 
     /**
@@ -116,6 +142,7 @@ public class LeaderBoardCtrl implements Initializable {
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
         leaderboardLabel.setText("Leaderboard-TimeAttack");
+        showBatteries();
     }
 
     /**
@@ -126,6 +153,7 @@ public class LeaderBoardCtrl implements Initializable {
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
         leaderboardLabel.setText("Leaderboard-Survival");
+        showBatteries();
     }
 
     /**
@@ -136,6 +164,8 @@ public class LeaderBoardCtrl implements Initializable {
         data = FXCollections.observableList(players);
         allPlayers.setItems(data);
         leaderboardLabel.setText("Leaderboard-Multiplayer");
+        resetBatteries();
+        showBatteries();
     }
 
     /**
@@ -180,5 +210,27 @@ public class LeaderBoardCtrl implements Initializable {
         allPlayers.setItems(data);
         allPlayers.refresh();
         survivalButton.setText("Survival");
+    }
+
+    /**
+     * Show the number of batteries based on how many people are in the leaderboard
+     */
+    private void showBatteries() {
+        resetBatteries();
+        int size;
+        if (data == null || data.isEmpty()) size = 0;
+        else size = Math.min(data.size(), 10);
+        for (int i = 0; i < size; i++) {
+            batteries.get(i).setOpacity(1);
+        }
+    }
+
+    /**
+     * Make all batteries not visible
+     */
+    private void resetBatteries() {
+        for (int i = 0; i < 10; i++) {
+            batteries.get(i).setOpacity(0);
+        }
     }
 }
