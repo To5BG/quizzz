@@ -28,6 +28,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.util.Callback;
 import org.springframework.messaging.simp.stomp.StompSession;
 
@@ -37,9 +38,6 @@ import java.util.*;
 
 public class MultiplayerCtrl extends GameCtrl {
 
-    private final static long END_GAME_TIME = 60L;
-    private final ObservableList<Emoji> sessionEmojis;
-    private final List<Image> emojiImages;
     @FXML
     private TableView<Emoji> emojiList;
     @FXML
@@ -64,6 +62,9 @@ public class MultiplayerCtrl extends GameCtrl {
     private Label removedPlayers;
     @FXML
     private Label jokerUsage;
+    @FXML
+    private Pane emojiArea;
+
     private int lastDisconnectIndex;
     private int previousPlayerCount;
     private Timer disconnectTimer;
@@ -74,12 +75,19 @@ public class MultiplayerCtrl extends GameCtrl {
     private StompSession.Subscription channel;
     private boolean playingAgain;
     private int waitingSkip = 0;
+    private final static long END_GAME_TIME = 60L;
+    private final ObservableList<Emoji> sessionEmojis;
+    private final List<Image> emojiImages;
+    private final GameAnimation gameAnimation;
     private List<Joker> usedJokers;
 
     @Inject
     public MultiplayerCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
-                           LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
+                           LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils,
+                           GameAnimation gameAnimation, MainCtrl mainCtrl) {
         super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
+        this.gameAnimation = gameAnimation;
+
         sessionEmojis = FXCollections.observableArrayList();
         emojiImages = new ArrayList<Image>();
         String[] emojiFileNames = {"funny", "sad", "angry"};
@@ -124,23 +132,25 @@ public class MultiplayerCtrl extends GameCtrl {
         status.setOpacity(0);
 
         emojiUsername.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().username));
-        emojiImage.setCellValueFactory(e -> {
-            Image picture;
-            switch (e.getValue().emoji) {
-                case FUNNY -> picture = emojiImages.get(0);
-                case SAD -> picture = emojiImages.get(1);
-                default -> picture = emojiImages.get(2);
-            }
-
-            ImageView iv = new ImageView(picture);
-            iv.setFitHeight(30);
-            iv.setFitWidth(30);
-            return new SimpleObjectProperty<ImageView>(iv);
-        });
+        emojiImage.setCellValueFactory(e -> new SimpleObjectProperty<>(emojiToImage(e.getValue(), 30)));
 
         emojiFunny.setImage(emojiImages.get(0));
         emojiSad.setImage(emojiImages.get(1));
         emojiAngry.setImage(emojiImages.get(2));
+    }
+
+    public ImageView emojiToImage(Emoji e, int dimension) {
+        Image picture;
+        switch (e.emoji) {
+            case FUNNY -> picture = emojiImages.get(0);
+            case SAD -> picture = emojiImages.get(1);
+            default -> picture = emojiImages.get(2);
+        }
+
+        ImageView iv = new ImageView(picture);
+        iv.setFitHeight(dimension);
+        iv.setFitWidth(dimension);
+        return iv;
     }
 
     /**
@@ -321,10 +331,11 @@ public class MultiplayerCtrl extends GameCtrl {
     public void registerForEmojiUpdates() {
         sessionEmojis.clear();
         emojiList.setItems(sessionEmojis);
-
         channel = this.webSocketsUtils.registerForEmojiUpdates(emoji -> {
             sessionEmojis.add(emoji);
             Platform.runLater(() -> emojiList.scrollTo(sessionEmojis.size() - 1));
+            Platform.runLater(() -> gameAnimation.startEmojiAnimation(
+                    emojiToImage(emoji, 60), emoji.username, emojiArea));
         }, this.sessionId);
     }
 

@@ -1,6 +1,5 @@
 package client.scenes;
 
-
 import javafx.animation.*;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -8,6 +7,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
@@ -58,6 +58,56 @@ public class GameAnimation {
                 animation.play();
             });
         }
+    }
+
+    /**
+     * Make a randomized emoji stream when emojis are used
+     * @param emoji Emoji to be displayed
+     */
+    public void startEmojiAnimation(ImageView emoji, String username, Pane area) {
+        area.getChildren().add(emoji);
+        FadeTransition fadeTransition = emojiFadeTransition(emoji);
+        TranslateTransition translateTransition = emojiTranslateTransition(emoji);
+
+        ParallelTransition pt = new ParallelTransition();
+        pt.getChildren().addAll(
+                fadeTransition,
+                translateTransition
+        );
+        pt.play();
+        pt.setOnFinished(e -> area.getChildren().remove(emoji));
+    }
+
+    /**
+     * Returns a new FadeTransition for emojis
+     * @param emoji Emoji to fade
+     * @return FadeTransition object
+     */
+    private FadeTransition emojiFadeTransition(ImageView emoji) {
+        FadeTransition fadeTransition = new FadeTransition();
+        fadeTransition.setNode(emoji);
+        fadeTransition.setDuration(Duration.millis(1000));
+        fadeTransition.setInterpolator(Interpolator.EASE_IN);
+        fadeTransition.setFromValue(1);
+        fadeTransition.setToValue(0);
+        return fadeTransition;
+    }
+
+    /**
+     * Returns a new TranslateTransition for emojis
+     * @param emoji Emoji to translate
+     * @return TranslateTransition object
+     */
+    private TranslateTransition emojiTranslateTransition(ImageView emoji) {
+        TranslateTransition translateTransition = new TranslateTransition();
+        translateTransition.setNode(emoji);
+        translateTransition.setDuration(Duration.millis(1000));
+        translateTransition.setInterpolator(Interpolator.EASE_OUT);
+        translateTransition.setFromX(0);
+        translateTransition.setFromY(40);
+        translateTransition.setToY(80*(1-Math.random()));
+        translateTransition.setToX(150);
+        return translateTransition;
     }
 
     private Timeline plugInAnimation(ImageView plug) {
