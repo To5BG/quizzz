@@ -41,7 +41,7 @@ public class PodiumCtrl {
      *
      * @param sessionId the id of the given session
      */
-    public void creatPodium(Long sessionId) {
+    public void creatPodium(long sessionId) {
         playerList = gameSessionUtils.getPlayers(sessionId);
 
         Collections.sort(playerList, new Comparator<Player>() {

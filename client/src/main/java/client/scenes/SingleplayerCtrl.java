@@ -120,20 +120,14 @@ public class SingleplayerCtrl extends GameCtrl {
     /**
      * Sends player to splash screen, along with an alert that the game has ended, with their points total
      */
-    public void handleGameEnd() {
+    @Override
+    public void handleGamePodium() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Game Over");
         alert.setHeaderText("You have been redirected to the splash screen");
         alert.setContentText("Your score was : " + points);
         alert.show();
-        handleGameEnd();
-        try {
-            back();
-        } catch (BadRequestException ex) {
-            setPlayerId(0);
-            setSessionId(0);
-            back();
-        }
+        back();
     }
 
 }

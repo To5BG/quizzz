@@ -18,6 +18,7 @@ package client.scenes;
 import client.utils.*;
 import com.google.inject.Inject;
 import commons.*;
+import jakarta.ws.rs.BadRequestException;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -289,6 +290,7 @@ public class MultiplayerCtrl extends GameCtrl {
         TimeUtils timer = new TimeUtils(10L, TIMER_UPDATE_INTERVAL_MS);
         timer.setOnSucceeded((event) -> {
             Platform.runLater(() -> {
+                System.out.println("111");
                 mainCtrl.showEndGameScreen(sessionId, playerId);
             });
         });
@@ -296,6 +298,12 @@ public class MultiplayerCtrl extends GameCtrl {
         timeProgress.progressProperty().bind(timer.progressProperty());
         this.timerThread = new Thread(timer);
         this.timerThread.start();
+        reset();
+        channel.unsubscribe();
+        disconnectTimer.cancel();
+        lastDisconnectIndex = -1;
+        jokerTimer.cancel();
+        lastJokerIndex = -1;
     }
 
     /**
@@ -338,5 +346,19 @@ public class MultiplayerCtrl extends GameCtrl {
         temp = temp.substring(0, temp.length() - 2);
         jokerUsage.setText(temp);
         jokerUsage.setOpacity(1.0);
+    }
+
+    @Override
+    public void handleGamePodium() {
+        try {
+            if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showPodiumScreen(sessionId);
+            else back();
+        } catch (BadRequestException ex) {
+            setPlayerId(0);
+            setSessionId(0);
+            back();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

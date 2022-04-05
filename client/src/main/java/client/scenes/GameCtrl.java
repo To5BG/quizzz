@@ -513,18 +513,7 @@ public abstract class GameCtrl implements Initializable {
     /**
      * the method to handle the podium part of a game
      */
-    private void handleGamePodium() {
-        try {
-            if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showPodiumScreen(sessionId);
-            else back();
-        } catch (BadRequestException ex) {
-            setPlayerId(0);
-            setSessionId(0);
-            back();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+    public abstract void handleGamePodium();
 
     /**
      * Proceeds the user onto the next round of the game
@@ -565,7 +554,6 @@ public abstract class GameCtrl implements Initializable {
                     rounds++;
                     if (rounds == GameSession.gameRounds) {
                         handleGamePodium();
-                        //handleGameEnd();
                     } else if (rounds == GameSession.gameRounds / 2 &&
                             gameSessionUtils.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
                         displayMidGameScreen();
