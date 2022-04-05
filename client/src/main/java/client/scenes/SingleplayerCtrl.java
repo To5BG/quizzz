@@ -6,7 +6,6 @@ import client.utils.QuestionUtils;
 import client.utils.WebSocketsUtils;
 import commons.Joker;
 import commons.Player;
-import jakarta.ws.rs.BadRequestException;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
