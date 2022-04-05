@@ -15,7 +15,6 @@
  */
 package client.scenes;
 
-import commons.GameSession;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
