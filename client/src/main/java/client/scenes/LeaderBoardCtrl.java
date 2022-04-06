@@ -216,25 +216,25 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
      * @param leaderboard String identifier for leaderboard to toggle
      */
     public void showLeaderboard(String leaderboard) {
-        allPlayersSingleplayer.setOpacity(0);
-        allPlayersMultiplayer.setOpacity(0);
-        allPlayersSurvival.setOpacity(0);
-        allPlayersTimeAttack.setOpacity(0);
+        allPlayersSingleplayer.setVisible(false);
+        allPlayersMultiplayer.setVisible(false);
+        allPlayersSurvival.setVisible(false);
+        allPlayersTimeAttack.setVisible(false);
         switch (leaderboard) {
             case "single" -> {
-                allPlayersSingleplayer.setOpacity(1);
+                allPlayersSingleplayer.setVisible(true);
                 leaderboardLabel.setText("Leaderboard-Singleplayer");
             }
             case "multi" -> {
-                allPlayersMultiplayer.setOpacity(1);
+                allPlayersMultiplayer.setVisible(true);
                 leaderboardLabel.setText("Leaderboard-Multiplayer");
             }
             case "survival" -> {
-                allPlayersSurvival.setOpacity(1);
+                allPlayersSurvival.setVisible(true);
                 leaderboardLabel.setText("Leaderboard-Survival");
             }
             case "timeAttack" -> {
-                allPlayersTimeAttack.setOpacity(1);
+                allPlayersTimeAttack.setVisible(true);
                 leaderboardLabel.setText("Leaderboard-TimeAttack");
             }
         }

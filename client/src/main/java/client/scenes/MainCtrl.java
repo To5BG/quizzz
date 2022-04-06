@@ -68,7 +68,7 @@ public class MainCtrl {
         this.pairs = pairs;
 
         var splash = pairs.get(0);
-        this.splashCtrl = (SplashCtrl) pairs.get(0).getKey();
+        this.splashCtrl = (SplashCtrl) splash.getKey();
         this.splashScreen = new Scene(splash.getValue());
 
         var multi = pairs.get(1);

@@ -253,9 +253,6 @@ public class LeaderboardController {
                                                        @RequestBody int points) {
         if (playerId < 0 || !repo.existsById(playerId)) return ResponseEntity.badRequest().build();
         Player updatedPlayer = repo.findById(playerId).get();
-        System.out.println(points);
-        System.out.println(playerId);
-        System.out.println(updatedPlayer.getBestTimeAttackScore());
         if (points > updatedPlayer.getBestTimeAttackScore()) {
             updatedPlayer.setBestTimeAttackScore(points);
             updatedPlayer.setCurrentPoints(0);

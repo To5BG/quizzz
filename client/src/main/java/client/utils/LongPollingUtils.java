@@ -21,8 +21,6 @@ public class LongPollingUtils {
 
     public static String serverConnection = "http://localhost:8080/";
     static ExecutorService execLeaderboard, execSelectionRoom, execWaitingArea;
-    static int leaderboardSelect, selRoomSelect, waitingAreaSelect;
-
 
     /**
      * Register client listener to receive leaderboard updates
@@ -87,7 +85,6 @@ public class LongPollingUtils {
                 System.out.println("polling waiting area...");
                 if (res.getStatus() == 204) continue;
                 var update = res.readEntity(String.class);
-                System.out.println(update);
                 consumer.accept(update);
             }
         });
