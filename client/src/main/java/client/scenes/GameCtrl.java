@@ -320,7 +320,7 @@ public abstract class GameCtrl implements Initializable {
                         cancel();
                         loadAnswer();
                     } else {
-                        countdown.setText("The answer option will appear in " + counter + " seconds.");
+                        countdown.setText("The answer option will appear in " + counter + " sec");
                         counter--;
                     }
                 });

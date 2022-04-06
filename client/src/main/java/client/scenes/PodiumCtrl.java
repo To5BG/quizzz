@@ -3,11 +3,14 @@ package client.scenes;
 import client.utils.GameSessionUtils;
 import com.google.inject.Inject;
 import commons.Player;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class PodiumCtrl {
 
@@ -28,6 +31,8 @@ public class PodiumCtrl {
     private Label point1;
     @FXML
     private Label name1;
+    @FXML
+    private Label countdown;
 
     private List<Player> playerList;
 
@@ -47,6 +52,7 @@ public class PodiumCtrl {
 
         Collections.sort(playerList, (p1, p2) -> p2.getCurrentPoints() - p1.getCurrentPoints());
 
+        countdown();
         var player1 = playerList.get(0);
         name1.setText(player1.username);
         point1.setText(String.valueOf(player1.currentPoints));
@@ -79,5 +85,26 @@ public class PodiumCtrl {
      */
     public void setPlayerId(long playerId) {
         this.playerId = playerId;
+    }
+
+    /**
+     * the method to countdown when showing the podium screen
+     */
+    public void countdown() {
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            int counter = 10;
+
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    if (counter < 0) {
+                        cancel();
+                    } else {
+                        countdown.setText("The end game screen will appear in " + counter + " sec");
+                        counter--;
+                    }
+                });
+            }
+        }, 0, 1000);
     }
 }

@@ -6,7 +6,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane prefHeight="338.0" prefWidth="600.0" styleClass="background" stylesheets="@/CSS/PodiumScreen.css"
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.scenes.PodiumCtrl">
@@ -69,5 +68,6 @@
                 <Image url="@/Image/decoration19.png"/>
             </image>
         </ImageView>
+        <Label fx:id="countdown" layoutX="14.0" layoutY="14.0" prefHeight="17.0" prefWidth="239.0" textFill="WHITE"/>
     </children>
 </AnchorPane>
