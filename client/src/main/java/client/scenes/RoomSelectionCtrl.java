@@ -241,14 +241,18 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
             case "[add]" -> availableRooms.getItems().add(room);
             case "[remove]" -> {
                 for (GameSession gs : availableRooms.getItems()) {
-                    if (gs.id == room.id) availableRooms.getItems().remove(gs);
-                    break;
+                    if (gs.id == room.id) {
+                        availableRooms.getItems().remove(gs);
+                        break;
+                    }
                 }
             }
             case "[update]" -> {
                 for (GameSession gs : availableRooms.getItems()) {
-                    if (gs.id == room.id) gs = room;
-                    break;
+                    if (gs.id == room.id) {
+                        availableRooms.getItems().set(availableRooms.getItems().indexOf(gs), room);
+                        break;
+                    }
                 }
             }
         }

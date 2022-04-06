@@ -275,7 +275,7 @@ public class LeaderboardController {
     @GetMapping("/updates")
     public DeferredResult<ResponseEntity<List<Player>>> getLeaderboardUpdates() {
         var emptyContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        var res = new DeferredResult<ResponseEntity<List<Player>>>(3000L, emptyContent);
+        var res = new DeferredResult<ResponseEntity<List<Player>>>(2000L, emptyContent);
 
         var k = new Object();
         listeners.put(k, p -> {

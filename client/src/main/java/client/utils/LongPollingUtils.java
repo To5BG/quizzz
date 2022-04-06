@@ -64,8 +64,6 @@ public class LongPollingUtils {
                         .get(Response.class);
                 System.out.println("polling selection room...");
                 if (res.getStatus() == 204) continue;
-                // TODO Handle atomic updates more discretely
-                // this has to be addressed after Rithik's MR with the room selection screen
                 var update = res.readEntity(GameSession.class);
                 consumer.accept(Pair.of(res.getHeaders().get("X-operation").toString(), update));
             }

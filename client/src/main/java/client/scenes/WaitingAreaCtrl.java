@@ -43,6 +43,7 @@ public class WaitingAreaCtrl extends SceneCtrl implements Initializable {
     private final MainCtrl mainCtrl;
 
     private long playerId;
+    private Player transferPlayer;
     private long waitingId;
     private int playerCount;
 
@@ -79,8 +80,7 @@ public class WaitingAreaCtrl extends SceneCtrl implements Initializable {
      */
     public void shutdown() {
         if (readyButton.getText().equals("Not Ready")) gameSessionUtils.toggleReady(waitingId, false);
-        Player player = gameSessionUtils.removePlayer(waitingId, playerId);
-        gameSessionUtils.addPlayer(MainCtrl.SELECTION_ID, player);
+        transferPlayer = gameSessionUtils.removePlayer(waitingId, playerId);
         backButton.setDisable(true);
         Platform.runLater(() -> longPollUtils.haltUpdates("waitingArea"));
         backButton.setDisable(false);
@@ -92,6 +92,7 @@ public class WaitingAreaCtrl extends SceneCtrl implements Initializable {
     public void back() {
         long id = playerId;
         shutdown();
+        gameSessionUtils.addPlayer(MainCtrl.SELECTION_ID, transferPlayer);
         readyButton.setText("Ready");
         mainCtrl.showRoomSelection(id);
     }

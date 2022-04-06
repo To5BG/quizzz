@@ -88,7 +88,7 @@ public class SessionController {
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
-                    session.setSessionStatus(GameSession.SessionStatus.PLAY_AGAIN);
+                    updateStatus(session.id, GameSession.SessionStatus.PLAY_AGAIN);
                     updateSession(session);
                 });
                 t.start();
@@ -294,7 +294,7 @@ public class SessionController {
      */
     public void changeToMultiplayerSession(GameSession waitingArea) {
         waitingArea.setSessionType(GameSession.SessionType.MULTIPLAYER);
-        waitingArea.setSessionStatus(GameSession.SessionStatus.STARTED);
+        updateStatus(waitingArea.id, GameSession.SessionStatus.STARTED);
         updateQuestion(waitingArea);
         listenersWaitingArea.forEach((k, l) -> {
             if (k.getSecond().equals(waitingArea.id)) l.accept("started: " + waitingArea.playersReady);
@@ -348,10 +348,9 @@ public class SessionController {
             });
             if (session.playersReady.get() == 0) session.setSessionStatus(GameSession.SessionStatus.WAITING_AREA);
         }
-        if (session.playersReady.get() == 0 && session.sessionStatus != GameSession.SessionStatus.PLAY_AGAIN) {
-            session.setSessionStatus(GameSession.SessionStatus.ONGOING);
+        else if (session.playersReady.get() == 0 && session.sessionStatus != GameSession.SessionStatus.PLAY_AGAIN) {
+            updateStatus(sessionId, GameSession.SessionStatus.ONGOING);
         }
-
         updateSession(session);
         return ResponseEntity.ok(session);
     }
@@ -585,7 +584,7 @@ public class SessionController {
     @GetMapping("/updates/selectionroom")
     public DeferredResult<ResponseEntity<GameSession>> getSelectionRoomUpdates() {
         var emptyContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        var res = new DeferredResult<ResponseEntity<GameSession>>(2000L, emptyContent);
+        var res = new DeferredResult<ResponseEntity<GameSession>>(1000L, emptyContent);
 
         var k = new Object();
         listenersSelectionRoom.put(k, p -> {
@@ -605,7 +604,7 @@ public class SessionController {
     @GetMapping("/updates/waitingarea/{sessionId}")
     public DeferredResult<ResponseEntity<String>> getWaitingAreaUpdates(@PathVariable Long sessionId) {
         var emptyContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        var res = new DeferredResult<ResponseEntity<String>>(2000L, emptyContent);
+        var res = new DeferredResult<ResponseEntity<String>>(1000L, emptyContent);
 
         var k = Pair.of(new Object(), sessionId);
         listenersWaitingArea.put(k, p -> res.setResult(ResponseEntity.ok(p)));
