@@ -21,7 +21,7 @@ import javafx.util.Duration;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class GameCtrl implements Initializable {
+public abstract class GameCtrl extends SceneCtrl implements Initializable {
 
     protected final static int GAME_ROUND_TIME = 10;
     protected final static int MIDGAME_BREAK_TIME = 6;
@@ -374,7 +374,7 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Removes player from session, along with the singleplayer session. Also called if controller is closed forcibly
+     * {@inheritDoc}
      */
     public void shutdown() {
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
@@ -396,7 +396,7 @@ public abstract class GameCtrl implements Initializable {
     abstract public void showPodiumScreen(long sessionId) throws InterruptedException;
 
     /**
-     * Reverts the player to the splash screen and remove him from the current game session.
+     * {@inheritDoc}
      */
     public void back() {
         shutdown();

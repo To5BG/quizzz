@@ -2,9 +2,9 @@ package server.service;
 
 import commons.Activity;
 import commons.Question;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.util.Pair;
 import server.api.ActivityController;
 import server.api.TestActivityRepository;
 
@@ -32,21 +32,21 @@ public class QuestionGeneratorTest {
     public void testGenerateQuestionInternalRng() {
         double difficulty = 1;
         Pair<Question, List<Long>> res = QuestionGenerator.generateQuestion(difficulty, ctrl);
-        assertNotNull(res.getKey());
-        assertNotNull(res.getValue());
-        assertTrue(res.getValue().size() >= 1);
-        assertNotEquals(Question.QuestionType.UNKNOWN, res.getKey().type);
+        assertNotNull(res.getFirst());
+        assertNotNull(res.getSecond());
+        assertTrue(res.getSecond().size() >= 1);
+        assertNotEquals(Question.QuestionType.UNKNOWN, res.getFirst().type);
     }
 
     @Test
     public void testGenerateSurvivalQuestionInternalRng() {
         double difficulty = 1;
         Pair<Question, List<Long>> res = QuestionGenerator.generateSurvivalQuestion(difficulty, ctrl);
-        assertNotNull(res.getKey());
-        assertNotNull(res.getValue());
-        assertTrue(res.getValue().size() >= 1);
-        assertNotEquals(Question.QuestionType.UNKNOWN, res.getKey().type);
-        assertNotEquals(Question.QuestionType.RANGE_GUESS, res.getKey().type);
+        assertNotNull(res.getFirst());
+        assertNotNull(res.getSecond());
+        assertTrue(res.getSecond().size() >= 1);
+        assertNotEquals(Question.QuestionType.UNKNOWN, res.getFirst().type);
+        assertNotEquals(Question.QuestionType.RANGE_GUESS, res.getFirst().type);
     }
 
     @Test
@@ -55,11 +55,11 @@ public class QuestionGeneratorTest {
         Pair<Question, List<Long>> res =
                 QuestionGenerator.generateTypeQuestion(Question.QuestionType.COMPARISON, difficulty, ctrl);
         assertNotNull(res);
-        Question q = res.getKey();
+        Question q = res.getFirst();
         assertEquals("Which activity takes the most energy?", q.prompt);
         assertEquals(Question.QuestionType.COMPARISON, q.type);
         assertSame(4, q.answerOptions.size());
-        assertSame(1, res.getValue().size());
+        assertSame(1, res.getSecond().size());
     }
 
     @Test
@@ -68,11 +68,11 @@ public class QuestionGeneratorTest {
         Pair<Question, List<Long>> res =
                 QuestionGenerator.generateTypeQuestion(Question.QuestionType.MULTIPLE_CHOICE, difficulty, ctrl);
         assertNotNull(res);
-        Question q = res.getKey();
+        Question q = res.getFirst();
         assertTrue(q.prompt.startsWith("Guess how much energy the following activity takes\n"));
         assertEquals(Question.QuestionType.MULTIPLE_CHOICE, q.type);
         assertSame(4, q.answerOptions.size());
-        assertSame(1, res.getValue().size());
+        assertSame(1, res.getSecond().size());
     }
 
     @Test
@@ -81,12 +81,12 @@ public class QuestionGeneratorTest {
         Pair<Question, List<Long>> res =
                 QuestionGenerator.generateTypeQuestion(Question.QuestionType.EQUIVALENCE, difficulty, ctrl);
         assertNotNull(res);
-        Question q = res.getKey();
+        Question q = res.getFirst();
         assertTrue(
                 q.prompt.startsWith("What could you do instead of the following activity to use the same energy?\n"));
         assertEquals(Question.QuestionType.EQUIVALENCE, q.type);
         assertSame(3, q.answerOptions.size());
-        assertSame(1, res.getValue().size());
+        assertSame(1, res.getSecond().size());
     }
 
     @Test
@@ -95,10 +95,10 @@ public class QuestionGeneratorTest {
         Pair<Question, List<Long>> res =
                 QuestionGenerator.generateTypeQuestion(Question.QuestionType.RANGE_GUESS, difficulty, ctrl);
         assertNotNull(res);
-        Question q = res.getKey();
+        Question q = res.getFirst();
         assertTrue(q.prompt.startsWith("Guess how much Wh of energy the following activity takes\n"));
         assertEquals(Question.QuestionType.RANGE_GUESS, q.type);
         assertSame(0, q.answerOptions.size());
-        assertSame(1, res.getValue().size());
+        assertSame(1, res.getSecond().size());
     }
 }

@@ -16,9 +16,11 @@
 package client.scenes;
 
 import client.utils.GameSessionUtils;
+import client.utils.LongPollingUtils;
 import com.google.inject.Inject;
 import commons.GameSession;
 import commons.Player;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -32,54 +34,65 @@ import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
-public class WaitingAreaCtrl implements Initializable {
+public class WaitingAreaCtrl extends SceneCtrl implements Initializable {
 
     private final GameSessionUtils gameSessionUtils;
+    private final LongPollingUtils longPollUtils;
     private final MainCtrl mainCtrl;
 
     private long playerId;
+    private Player transferPlayer;
     private long waitingId;
+    private int playerCount;
 
     @FXML
-    private TableView<Player> currentPlayers;
+    private TableView<String> currentPlayers;
     @FXML
-    private TableColumn<Player, String> userName;
+    private TableColumn<String, String> userName;
     @FXML
     private Label playerText;
     @FXML
     private Button readyButton;
+    @FXML
+    private Button backButton;
 
 
     @Inject
-    public WaitingAreaCtrl(GameSessionUtils gameSessionUtils, MainCtrl mainCtrl) {
+    public WaitingAreaCtrl(GameSessionUtils gameSessionUtils, LongPollingUtils longPollUtils, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
+        this.longPollUtils = longPollUtils;
         this.mainCtrl = mainCtrl;
         // Set to defaults
         this.playerId = 0L;
+        this.playerCount = 0;
     }
 
     @Override
     public void initialize(URL loc, ResourceBundle res) {
-        userName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
+        userName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue()));
         readyButton.setVisible(false);
     }
 
     /**
-     * Removes player from session. Also called if controller is closed forcibly
+     * {@inheritDoc}
      */
     public void shutdown() {
         if (readyButton.getText().equals("Not Ready")) gameSessionUtils.toggleReady(waitingId, false);
-        Player player = gameSessionUtils.removePlayer(waitingId, playerId);
-        gameSessionUtils.addPlayer(MainCtrl.SELECTION_ID, player);
+        transferPlayer = gameSessionUtils.removePlayer(waitingId, playerId);
+        backButton.setDisable(true);
+        Platform.runLater(() -> longPollUtils.haltUpdates("waitingArea"));
+        backButton.setDisable(false);
     }
 
     /**
-     * Reverts the player to the splash screen and remove him from the current game session.
+     * {@inheritDoc}
      */
     public void back() {
         long id = playerId;
         shutdown();
+        gameSessionUtils.addPlayer(MainCtrl.SELECTION_ID, transferPlayer);
         readyButton.setText("Ready");
         mainCtrl.showRoomSelection(id);
     }
@@ -114,29 +127,51 @@ public class WaitingAreaCtrl implements Initializable {
 
     /**
      * Refreshes the multiplayer player board for the current session.
-     *
-     * @return True iff the refresh should continue
      */
-    public boolean refresh() {
-        GameSession waitingArea = gameSessionUtils.getSession(waitingId);
-        ObservableList<Player> data = FXCollections.observableList(waitingArea.players);
-        currentPlayers.setItems(data);
+    public void refresh(String update) {
+        if (update == null) {
+            GameSession waitingArea = gameSessionUtils.getSession(waitingId);
+            ObservableList<String> data = FXCollections.observableList(
+                    waitingArea.players.stream().map(p -> p.username).collect(Collectors.toList()));
+            currentPlayers.setItems(data);
 
-        int playersReady = waitingArea.playersReady.get();
-        int playersCount = waitingArea.players.size();
-
-        if (waitingArea.sessionStatus == GameSession.SessionStatus.STARTED) {
-            gameSessionUtils.toggleReady(waitingId, false);
-
-            readyButton.setText("Ready");
-            readyButton.setVisible(false);
-
-            mainCtrl.showMultiplayer(waitingId, playerId);
-            return false;
+            playerCount = waitingArea.players.size();
+            readyButton.setVisible(playerCount >= 2);
+            playerText.setText("Ready: " + waitingArea.playersReady.get() + "/" + playerCount);
+            return;
         }
-        readyButton.setVisible(playersCount >= 2);
-        playerText.setText("Ready: " + playersReady + "/" + playersCount);
-        return true;
+
+        String[] tokens = update.split(" ");
+        String operation = tokens[0];
+        String operand = tokens[1];
+
+        String currText = playerText.getText();
+        int joinedStartIndex = currText.indexOf("/");
+
+        switch (operation) {
+            case "removePlayer:" -> {
+                playerText.setText(currText.substring(0, joinedStartIndex + 1) + (--playerCount));
+                readyButton.setVisible(playerCount >= 2);
+                currentPlayers.getItems().remove(operand);
+            }
+            case "addPlayer:" -> {
+                playerText.setText(currText.substring(0, joinedStartIndex + 1) + (++playerCount));
+                readyButton.setVisible(playerCount >= 2);
+                currentPlayers.getItems().add(operand);
+            }
+            case "playerReady:" -> playerText.setText("Ready: " + operand + currText.substring(joinedStartIndex));
+            case "started:" -> {
+                playerText.setText("Ready: " + operand + "/" + operand);
+                readyButton.setText("Ready");
+                readyButton.setVisible(false);
+                //delay blocking haltUpdates() until screen is shown
+                Platform.runLater(() -> {
+                    longPollUtils.haltUpdates("waitingArea");
+                    gameSessionUtils.toggleReady(waitingId, false);
+                });
+                mainCtrl.showMultiplayer(waitingId, playerId);
+            }
+        }
     }
 
     /**
@@ -155,5 +190,12 @@ public class WaitingAreaCtrl implements Initializable {
      */
     public void setWaitingId(long waitingId) {
         this.waitingId = waitingId;
+    }
+
+    /**
+     * Registers clients for waiting area updates
+     */
+    public void registerForUpdates() {
+        longPollUtils.registerForWaitingAreaUpdates(p -> Platform.runLater(() -> refresh(p)), waitingId);
     }
 }

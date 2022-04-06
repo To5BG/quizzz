@@ -2,7 +2,7 @@ package server.service;
 
 import commons.Activity;
 import commons.Question;
-import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import server.api.ActivityController;
 

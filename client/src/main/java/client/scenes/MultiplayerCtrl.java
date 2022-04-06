@@ -123,13 +123,17 @@ public class MultiplayerCtrl extends GameCtrl {
 
             @Override
             public void run() {
-                List<Player> allRemoved = gameSessionUtils.getRemovedPlayers(sessionId);
-                List<Player> newRemoved = new ArrayList<Player>();
-                for (int i = lastDisconnectIndex + 1; i < allRemoved.size(); i++) {
-                    newRemoved.add(allRemoved.get(i));
+                try {
+                    List<Player> allRemoved = gameSessionUtils.getRemovedPlayers(sessionId);
+                    List<Player> newRemoved = new ArrayList<Player>();
+                    for (int i = lastDisconnectIndex + 1; i < allRemoved.size(); i++) {
+                        newRemoved.add(allRemoved.get(i));
+                    }
+                    Platform.runLater(() -> disconnectedText(newRemoved));
+                    lastDisconnectIndex = allRemoved.size() - 1;
+                } catch (Exception e) {
+                    cancel();
                 }
-                Platform.runLater(() -> disconnectedText(newRemoved));
-                lastDisconnectIndex = allRemoved.size() - 1;
             }
         }, 0, 2000);
     }

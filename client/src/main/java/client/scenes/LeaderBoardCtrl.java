@@ -16,11 +16,11 @@
 package client.scenes;
 
 import client.utils.LeaderboardUtils;
+import client.utils.LongPollingUtils;
 import com.google.inject.Inject;
 import commons.Player;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -34,52 +34,62 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import org.apache.commons.lang3.tuple.Pair;
 
-public class LeaderBoardCtrl implements Initializable {
+public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
 
     private final LeaderboardUtils leaderboardUtils;
+    private final LongPollingUtils longPollUtils;
     private final MainCtrl mainCtrl;
+    private List<Image> batteries;
+
+    // Separate statistics to different tables - reduce client processing overhead
     @FXML
-    protected ImageView battery0;
+    private TableView<Player> allPlayersSingleplayer;
     @FXML
-    protected ImageView battery1;
+    private TableColumn<Player, Integer> colBatterySingleplayer;
     @FXML
-    protected ImageView battery2;
+    private TableColumn<Player, String> colNameSingleplayer;
     @FXML
-    protected ImageView battery3;
+    private TableColumn<Player, String> colPointSingleplayer;
+
     @FXML
-    protected ImageView battery4;
+    private TableView<Player> allPlayersMultiplayer;
     @FXML
-    protected ImageView battery5;
+    private TableColumn<Player, Integer> colBatteryMultiplayer;
     @FXML
-    protected ImageView battery6;
+    private TableColumn<Player, String> colNameMultiplayer;
     @FXML
-    protected ImageView battery7;
+    private TableColumn<Player, String> colPointMultiplayer;
+
     @FXML
-    protected ImageView battery8;
+    private TableView<Player> allPlayersSurvival;
     @FXML
-    protected ImageView battery9;
-    private ObservableList<Player> data;
+    private TableColumn<Player, Integer> colBatterySurvival;
     @FXML
-    private TableView<Player> allPlayers;
+    private TableColumn<Player, String> colNameSurvival;
     @FXML
-    private TableColumn<Player, Integer> colBattery;
+    private TableColumn<Player, String> colPointSurvival;
+
     @FXML
-    private TableColumn<Player, String> colName;
+    private TableView<Player> allPlayersTimeAttack;
     @FXML
-    private TableColumn<Player, String> colPoint;
+    private TableColumn<Player, Integer> colBatteryTimeAttack;
     @FXML
-    private Button singleLeaderboard;
+    private TableColumn<Player, String> colNameTimeAttack;
     @FXML
-    private Button multiLeaderboard;
+    private TableColumn<Player, String> colPointTimeAttack;
+
     @FXML
-    private Button timeAttackButton;
+    private Button singleButton;
+    @FXML
+    private Button multiButton;
     @FXML
     private Button survivalButton;
     @FXML
+    private Button timeAttackButton;
+    @FXML
     private Label leaderboardLabel;
-    private List<Image> batteries;
-
 
     /**
      * constructor of the leaderboard
@@ -88,8 +98,10 @@ public class LeaderBoardCtrl implements Initializable {
      * @param mainCtrl         the mainCtrl of the leaderboard
      */
     @Inject
-    public LeaderBoardCtrl(LeaderboardUtils leaderboardUtils, MainCtrl mainCtrl) {
+    public LeaderBoardCtrl(LeaderboardUtils leaderboardUtils, LongPollingUtils longPollUtils,
+                           MainCtrl mainCtrl) {
         this.leaderboardUtils = leaderboardUtils;
+        this.longPollUtils = longPollUtils;
         this.mainCtrl = mainCtrl;
         ClassLoader cl = getClass().getClassLoader();
         batteries = new ArrayList<>();
@@ -110,9 +122,41 @@ public class LeaderBoardCtrl implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        colName.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
-        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
-        colBattery.setCellFactory(new Callback<>() {
+
+        colBatterySingleplayer.setCellFactory(getBatteryCellFactory());
+        colNameSingleplayer.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
+        colPointSingleplayer
+                .setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
+
+        colBatteryMultiplayer.setCellFactory(getBatteryCellFactory());
+        colNameMultiplayer.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
+        colPointMultiplayer
+                .setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestMultiScore)));
+
+        colBatterySurvival.setCellFactory(getBatteryCellFactory());
+        colNameSurvival.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
+        colPointSurvival
+                .setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSurvivalScore)));
+
+        colBatteryTimeAttack.setCellFactory(getBatteryCellFactory());
+        colNameTimeAttack.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().username));
+        colPointTimeAttack
+                .setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestTimeAttackScore)));
+
+        singleButton.setOnAction(e -> showLeaderboard("single"));
+        multiButton.setOnAction(e -> showLeaderboard("multi"));
+        survivalButton.setOnAction(e -> showLeaderboard("survival"));
+        timeAttackButton.setOnAction(e -> showLeaderboard("timeAttack"));
+
+        showLeaderboard("single");
+    }
+
+    /**
+     * Getter for a cell factory with battery images
+     * @return Callback object to assign as a cell factory for the battery column
+     */
+    public Callback<TableColumn<Player, Integer>, TableCell<Player, Integer>> getBatteryCellFactory() {
+        return new Callback<>() {
             @Override
             public TableCell<Player, Integer> call(TableColumn<Player, Integer> param) {
                 return new TableCell<>() {
@@ -132,15 +176,22 @@ public class LeaderBoardCtrl implements Initializable {
                     }
                 };
             }
-        });
+        };
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void shutdown() {
+        longPollUtils.haltUpdates("leaderboard");
     }
 
 
     /**
-     * Created for be 'Back' button which makes the player back to the splash screen
+     * {@inheritDoc}
      */
     public void back() {
+        shutdown();
         mainCtrl.showSplash();
     }
 
@@ -152,90 +203,96 @@ public class LeaderBoardCtrl implements Initializable {
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
             case ESCAPE -> back();
+            case DIGIT1 -> showLeaderboard("single");
+            case DIGIT2 -> showLeaderboard("multi");
+            case DIGIT3 -> showLeaderboard("survival");
+            case DIGIT4 -> showLeaderboard("timeAttack");
         }
     }
 
     /**
-     * refresh the screen to show the Single Player leaderboards
+     * Shows proper leaderboard based on provided identifier
+     *
+     * @param leaderboard String identifier for leaderboard to toggle
      */
-    public void refreshSingle() {
-        var players = leaderboardUtils.getPlayerSingleScore();
-        data = FXCollections.observableList(players);
-        allPlayers.setItems(data);
-        leaderboardLabel.setText("Leaderboard-Singleplayer");
+    public void showLeaderboard(String leaderboard) {
+        allPlayersSingleplayer.setVisible(false);
+        allPlayersMultiplayer.setVisible(false);
+        allPlayersSurvival.setVisible(false);
+        allPlayersTimeAttack.setVisible(false);
+        switch (leaderboard) {
+            case "single" -> {
+                allPlayersSingleplayer.setVisible(true);
+                leaderboardLabel.setText("Leaderboard-Singleplayer");
+            }
+            case "multi" -> {
+                allPlayersMultiplayer.setVisible(true);
+                leaderboardLabel.setText("Leaderboard-Multiplayer");
+            }
+            case "survival" -> {
+                allPlayersSurvival.setVisible(true);
+                leaderboardLabel.setText("Leaderboard-Survival");
+            }
+            case "timeAttack" -> {
+                allPlayersTimeAttack.setVisible(true);
+                leaderboardLabel.setText("Leaderboard-TimeAttack");
+            }
+        }
     }
 
     /**
-     * refresh the screen to show the Time Attack leaderboards
+     * Gets sorted player lists for initial display when entering leaderboard screen
      */
-    public void refreshTimeAttack() {
-        var players = leaderboardUtils.getPlayerTimeAttackScore();
-        data = FXCollections.observableList(players);
-        allPlayers.setItems(data);
-        leaderboardLabel.setText("Leaderboard-TimeAttack");
+    private void fetchInitialValues() {
+        var players = FXCollections.observableList(leaderboardUtils.getPlayerSingleScore());
+        allPlayersSingleplayer.setItems(players);
+        allPlayersSingleplayer.refresh();
+
+        players = FXCollections.observableList(leaderboardUtils.getPlayerMultiScore());
+        allPlayersMultiplayer.setItems(players);
+        allPlayersMultiplayer.refresh();
+
+        players = FXCollections.observableList(leaderboardUtils.getPlayerSurvivalScore());
+        allPlayersSurvival.setItems(players);
+        allPlayersSurvival.refresh();
+
+        players = FXCollections.observableList(leaderboardUtils.getPlayerTimeAttackScore());
+        allPlayersTimeAttack.setItems(players);
+        allPlayersTimeAttack.refresh();
     }
 
     /**
-     * refresh the screen to show the Survival leaderboards
+     * Refreshes leaderboard data
      */
-    public void refreshSurvival() {
-        var players = leaderboardUtils.getPlayerSurvivalScore();
-        data = FXCollections.observableList(players);
-        allPlayers.setItems(data);
-        leaderboardLabel.setText("Leaderboard-Survival");
-    }
-
-    /**
-     * refresh the screen to show the Multiplayer leaderboards
-     */
-    public void refreshMulti() {
-        var players = leaderboardUtils.getPlayerMultiScore();
-        data = FXCollections.observableList(players);
-        allPlayers.setItems(data);
-        leaderboardLabel.setText("Leaderboard-Multiplayer");
-    }
-
-    /**
-     * Show MultiPlayerLeaderBoard
-     */
-    public void showMultiLeaderboard() {
-        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestMultiScore)));
-        refreshMulti();
-        allPlayers.setItems(data);
-        allPlayers.refresh();
-        singleLeaderboard.setText("Singleplayer");
-    }
-
-    /**
-     * Show SinglePlayerLeaderBoard
-     */
-    public void showSingleLeaderBoard() {
-        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSingleScore)));
-        refreshSingle();
-        allPlayers.setItems(data);
-        allPlayers.refresh();
-        multiLeaderboard.setText("Multiplayer");
-    }
-
-    /**
-     * Show TimeAttackLeaderBoard
-     */
-    public void showTimeAttackLeaderBoard() {
-        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestTimeAttackScore)));
-        refreshTimeAttack();
-        allPlayers.setItems(data);
-        allPlayers.refresh();
-        timeAttackButton.setText("Time Attack");
+    public void refresh(Pair<String, List<Player>> update) {
+        if (update == null) {
+            fetchInitialValues();
+            return;
+        }
+        switch (update.getKey()) {
+            case "[single]" -> {
+                allPlayersSingleplayer.setItems(FXCollections.observableList(update.getValue()));
+                allPlayersSingleplayer.refresh();
+            }
+            case "[multi]" -> {
+                allPlayersMultiplayer.setItems(FXCollections.observableList(update.getValue()));
+                allPlayersMultiplayer.refresh();
+            }
+            case "[survival]" -> {
+                allPlayersSurvival.setItems(FXCollections.observableList(update.getValue()));
+                allPlayersSurvival.refresh();
+            }
+            case "[timeAttack]" -> {
+                allPlayersTimeAttack.setItems(FXCollections.observableList(update.getValue()));
+                allPlayersTimeAttack.refresh();
+            }
+        }
     }
 
     /**
      * Show SurvivalLeaderBoard
      */
-    public void showSurvivalLeaderBoard() {
-        colPoint.setCellValueFactory(q -> new SimpleStringProperty(String.valueOf(q.getValue().bestSurvivalScore)));
-        refreshSurvival();
-        allPlayers.setItems(data);
-        allPlayers.refresh();
-        survivalButton.setText("Survival");
+    public void registerForUpdates() {
+        longPollUtils.registerForLeaderboardUpdates(this::refresh);
     }
 }

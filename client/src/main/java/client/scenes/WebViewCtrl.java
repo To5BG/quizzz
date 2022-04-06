@@ -12,7 +12,7 @@ import javafx.scene.web.WebView;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class WebViewCtrl implements Initializable {
+public class WebViewCtrl extends SceneCtrl implements Initializable {
 
     private final MainCtrl mainCtrl;
 
@@ -57,9 +57,17 @@ public class WebViewCtrl implements Initializable {
     }
 
     /**
-     * Revert the user back to the splash screen.
+     * {@inheritDoc}
+     */
+    public void shutdown() {
+        // ENSURE STABLE SHUTDOWN
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public void back() {
+        shutdown();
         mainCtrl.showSplash();
     }
 

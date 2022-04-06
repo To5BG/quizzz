@@ -7,18 +7,52 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.text.Font?>
+
 <AnchorPane prefHeight="499.0" prefWidth="633.0" styleClass="background" stylesheets="@/CSS/Baseline.css"
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.scenes.LeaderBoardCtrl">
 
 
     <children>
-        <TableView id="allPoints" fx:id="allPlayers" layoutX="62.0" layoutY="148.0" prefHeight="271.0" prefWidth="397.0"
-                   styleClass="leaderboardColumn">
+        <TableView id="allPoints" fx:id="allPlayersSingleplayer" layoutX="62.0" layoutY="148.0" prefHeight="271.0"
+                   prefWidth="397.0" styleClass="leaderboardColumn">
             <columns>
-                <TableColumn fx:id="colBattery" prefWidth="199.0" text="Rank"/>
-                <TableColumn fx:id="colName" prefWidth="199.0" text="UserName"/>
-                <TableColumn fx:id="colPoint" prefWidth="196.0" text="Point"/>
+                <TableColumn fx:id="colBatterySingleplayer" prefWidth="199.0" text="Rank"/>
+                <TableColumn fx:id="colNameSingleplayer" prefWidth="199.0" text="UserName"/>
+                <TableColumn fx:id="colPointSingleplayer" prefWidth="196.0" text="Point"/>
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            </columnResizePolicy>
+        </TableView>
+        <TableView id="allPoints" fx:id="allPlayersMultiplayer" layoutX="62.0" layoutY="148.0" prefHeight="271.0"
+                   prefWidth="397.0" styleClass="leaderboardColumn">
+            <columns>
+                <TableColumn fx:id="colBatteryMultiplayer" prefWidth="199.0" text="Rank"/>
+                <TableColumn fx:id="colNameMultiplayer" prefWidth="199.0" text="UserName"/>
+                <TableColumn fx:id="colPointMultiplayer" prefWidth="196.0" text="Point"/>
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            </columnResizePolicy>
+        </TableView>
+        <TableView id="allPoints" fx:id="allPlayersSurvival" layoutX="62.0" layoutY="148.0" prefHeight="271.0"
+                   prefWidth="397.0" styleClass="leaderboardColumn">
+            <columns>
+                <TableColumn fx:id="colBatterySurvival" prefWidth="199.0" text="Rank"/>
+                <TableColumn fx:id="colNameSurvival" prefWidth="199.0" text="UserName"/>
+                <TableColumn fx:id="colPointSurvival" prefWidth="196.0" text="Point"/>
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            </columnResizePolicy>
+        </TableView>
+        <TableView id="allPoints" fx:id="allPlayersTimeAttack" layoutX="62.0" layoutY="148.0" prefHeight="271.0"
+                   prefWidth="397.0" styleClass="leaderboardColumn">
+            <columns>
+                <TableColumn fx:id="colBatteryTimeAttack" prefWidth="199.0" text="Rank"/>
+                <TableColumn fx:id="colNameTimeAttack" prefWidth="199.0" text="UserName"/>
+                <TableColumn fx:id="colPointTimeAttack" prefWidth="196.0" text="Point"/>
             </columns>
             <columnResizePolicy>
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
@@ -35,43 +69,31 @@
             <font>
                 <Font size="25.0"/>
             </font>
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
         </Button>
-        <Button fx:id="singleLeaderboard" layoutX="511.0" layoutY="142.0" mnemonicParsing="false"
-                onAction="#showSingleLeaderBoard" prefHeight="45.0" prefWidth="140.0" styleClass="button2"
+        <Button fx:id="singleButton" layoutX="511.0" layoutY="142.0" mnemonicParsing="false"
+                prefHeight="45.0" prefWidth="140.0" styleClass="button2"
                 stylesheets="@/CSS/Baseline.css" text="Singleplayer">
             <font>
                 <Font size="15.0"/>
             </font>
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
         </Button>
-        <Button fx:id="multiLeaderboard" layoutX="511.0" layoutY="203.0" mnemonicParsing="false"
-                onAction="#showMultiLeaderboard" prefHeight="45.0" prefWidth="140.0" styleClass="button2"
+        <Button fx:id="multiButton" layoutX="511.0" layoutY="203.0" mnemonicParsing="false"
+                prefHeight="45.0" prefWidth="140.0" styleClass="button2"
                 stylesheets="@/CSS/Baseline.css" text="Multiplayer">
             <font>
                 <Font size="21.0"/>
             </font>
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
         </Button>
-        <Button fx:id="timeAttackButton" layoutX="511.0" layoutY="261.0" mnemonicParsing="false"
-                onAction="#showTimeAttackLeaderBoard" prefHeight="45.0" prefWidth="140.0" styleClass="button2"
-                stylesheets="@/CSS/Baseline.css" text="Time Attack">
+        <Button fx:id="survivalButton" layoutX="511.0" layoutY="261.0" mnemonicParsing="false"
+                prefHeight="45.0" prefWidth="140.0" styleClass="button2"
+                stylesheets="@/CSS/Baseline.css" text="Survival">
             <font>
                 <Font size="15.0"/>
             </font>
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
         </Button>
-        <Button fx:id="survivalButton" layoutX="511.0" layoutY="324.0" mnemonicParsing="false"
-                onAction="#showSurvivalLeaderBoard" prefHeight="45.0" prefWidth="140.0" styleClass="button2"
-                stylesheets="@/CSS/Baseline.css" text="Survival">
+        <Button fx:id="timeAttackButton" layoutX="511.0" layoutY="324.0" mnemonicParsing="false"
+                prefHeight="45.0" prefWidth="140.0" styleClass="button2"
+                stylesheets="@/CSS/Baseline.css" text="Time Attack">
             <font>
                 <Font size="18.0"/>
             </font>

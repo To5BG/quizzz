@@ -6,6 +6,7 @@ import commons.Player;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.fxml.Initializable;
 import javafx.scene.input.KeyEvent;
 
 import javax.inject.Inject;
@@ -13,7 +14,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class GamemodeCtrl implements Initializable {
+public class GamemodeCtrl extends SceneCtrl implements Initializable {
 
     private final GameSessionUtils gameSessionUtils;
     private final MainCtrl mainCtrl;
