@@ -37,7 +37,7 @@ public class GameAnimation {
      * Make the battery style animation when hovering enabled for the list of buttons and animate the plugs
      *
      * @param buttonList - List of buttons
-     * @param plugs - List of plugs corresponding to the buttons
+     * @param plugs      - List of plugs corresponding to the buttons
      */
     public void startBatteryAnimation(List<Button> buttonList, List<ImageView> plugs) {
         for (int index = 0; index < 3; index++) {
@@ -62,6 +62,7 @@ public class GameAnimation {
 
     /**
      * Make a randomized emoji stream when emojis are used
+     *
      * @param emoji Emoji to be displayed
      */
     public void startEmojiAnimation(ImageView emoji, String username, Pane area) {
@@ -80,6 +81,7 @@ public class GameAnimation {
 
     /**
      * Returns a new FadeTransition for emojis
+     *
      * @param emoji Emoji to fade
      * @return FadeTransition object
      */
@@ -95,6 +97,7 @@ public class GameAnimation {
 
     /**
      * Returns a new TranslateTransition for emojis
+     *
      * @param emoji Emoji to translate
      * @return TranslateTransition object
      */
@@ -105,7 +108,7 @@ public class GameAnimation {
         translateTransition.setInterpolator(Interpolator.EASE_OUT);
         translateTransition.setFromX(0);
         translateTransition.setFromY(40);
-        translateTransition.setToY(80*(1-Math.random()));
+        translateTransition.setToY(80 * (1 - Math.random()));
         translateTransition.setToX(150);
         return translateTransition;
     }

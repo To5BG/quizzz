@@ -123,7 +123,8 @@ public class MultiplayerCtrl extends GameCtrl {
 
     /**
      * Initialize an ImageView node for an emoji
-     * @param e Emoji to use for an imageview
+     *
+     * @param e         Emoji to use for an imageview
      * @param dimension Size of imageview (even dimensions for width and height)
      * @return An ImageView node
      */
@@ -161,7 +162,6 @@ public class MultiplayerCtrl extends GameCtrl {
             }
         }, 0, 2000);
     }
-
 
 
     /**
@@ -314,36 +314,6 @@ public class MultiplayerCtrl extends GameCtrl {
         lastDisconnectIndex = -1;
         jokerTimer.cancel();
         lastJokerIndex = -1;
-    }
-
-    /**
-     * Checks whether there are enough players in the session after the clients had time to remove the players that
-     * quit.
-     */
-    public void startGame() {
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    if (gameSessionUtils.getPlayers(sessionId).size() >= 2 && isPlayingAgain()) {
-                        GameSession session = gameSessionUtils.toggleReady(sessionId, false);
-                        if (session.playersReady.get() == 0) {
-                            gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
-                        }
-                        reset();
-                        loadQuestion();
-                    } else {
-                        leaveGame();
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Unable to start new game!");
-                        alert.setHeaderText("There are too few people to play again:");
-                        alert.setContentText("Please join a fresh game to play with more people!");
-                        mainCtrl.addCSS(alert);
-                        alert.showAndWait();
-                    }
-                });
-            }
-        }, 1000);
     }
 
     /**
