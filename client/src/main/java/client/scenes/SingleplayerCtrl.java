@@ -70,6 +70,20 @@ public class SingleplayerCtrl extends GameCtrl {
     @Override
     public void showPodiumScreen(long sessionId) {
     }
+    
+    /**
+     * Sends player to splash screen, along with an alert that the game has ended, with their points total
+     */
+    @Override
+    public void handleGameEnd() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Game Over");
+        alert.setHeaderText("You have been redirected to the splash screen");
+        alert.setContentText("Your score was : " + points);
+        mainCtrl.addCSS(alert);
+        alert.show();
+        super.handleGameEnd();
+    }
 
     /**
      * Reverts the player to the splash screen and remove him from the current game session.

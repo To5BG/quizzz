@@ -114,6 +114,7 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
                         alert.setTitle("Invalid answer");
                         alert.setHeaderText("Invalid answer");
                         alert.setContentText("You should only enter an integer number");
+                        mainCtrl.addCSS(alert);
                         alert.show();
                         return;
                     } else {

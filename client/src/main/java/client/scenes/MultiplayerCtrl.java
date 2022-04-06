@@ -21,7 +21,6 @@ import commons.*;
 import jakarta.ws.rs.BadRequestException;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,6 +28,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.util.Callback;
 import org.springframework.messaging.simp.stomp.StompSession;
 
@@ -38,14 +38,6 @@ import java.util.*;
 
 public class MultiplayerCtrl extends GameCtrl {
 
-    private final ObservableList<Emoji> sessionEmojis;
-    private final List<Image> emojiImages;
-    @FXML
-    private TableView<Emoji> emojiList;
-    @FXML
-    private TableColumn<Emoji, String> emojiUsername;
-    @FXML
-    private TableColumn<Emoji, ImageView> emojiImage;
     @FXML
     private ImageView emojiFunny;
     @FXML
@@ -58,6 +50,8 @@ public class MultiplayerCtrl extends GameCtrl {
     private Label removedPlayers;
     @FXML
     private Label jokerUsage;
+    @FXML
+    private Pane emojiArea;
 
     private int lastDisconnectIndex;
 
@@ -67,13 +61,21 @@ public class MultiplayerCtrl extends GameCtrl {
     private Timer endGameTimer;
     private TimeUtils endGameCountdown;
     private StompSession.Subscription channel;
-
+    private boolean playingAgain;
+    private int waitingSkip = 0;
+    private final static long END_GAME_TIME = 60L;
+    private final ObservableList<Emoji> sessionEmojis;
+    private final List<Image> emojiImages;
+    private final GameAnimation gameAnimation;
     private List<Joker> usedJokers;
 
     @Inject
     public MultiplayerCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
-                           LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
+                           LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils,
+                           GameAnimation gameAnimation, MainCtrl mainCtrl) {
         super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
+        this.gameAnimation = gameAnimation;
+
         sessionEmojis = FXCollections.observableArrayList();
         emojiImages = new ArrayList<Image>();
         String[] emojiFileNames = {"funny", "sad", "angry"};
@@ -114,24 +116,29 @@ public class MultiplayerCtrl extends GameCtrl {
 
         backButton.setOpacity(1);
 
-        emojiUsername.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().username));
-        emojiImage.setCellValueFactory(e -> {
-            Image picture;
-            switch (e.getValue().emoji) {
-                case FUNNY -> picture = emojiImages.get(0);
-                case SAD -> picture = emojiImages.get(1);
-                default -> picture = emojiImages.get(2);
-            }
-
-            ImageView iv = new ImageView(picture);
-            iv.setFitHeight(30);
-            iv.setFitWidth(30);
-            return new SimpleObjectProperty<ImageView>(iv);
-        });
-
         emojiFunny.setImage(emojiImages.get(0));
         emojiSad.setImage(emojiImages.get(1));
         emojiAngry.setImage(emojiImages.get(2));
+    }
+
+    /**
+     * Initialize an ImageView node for an emoji
+     * @param e Emoji to use for an imageview
+     * @param dimension Size of imageview (even dimensions for width and height)
+     * @return An ImageView node
+     */
+    public ImageView emojiToImage(Emoji e, int dimension) {
+        Image picture;
+        switch (e.emoji) {
+            case FUNNY -> picture = emojiImages.get(0);
+            case SAD -> picture = emojiImages.get(1);
+            default -> picture = emojiImages.get(2);
+        }
+
+        ImageView iv = new ImageView(picture);
+        iv.setFitHeight(dimension);
+        iv.setFitWidth(dimension);
+        return iv;
     }
 
     /**
@@ -269,12 +276,9 @@ public class MultiplayerCtrl extends GameCtrl {
      * Register the client to receive emoji reactions from other players
      */
     public void registerForEmojiUpdates() {
-        sessionEmojis.clear();
-        emojiList.setItems(sessionEmojis);
-
         channel = this.webSocketsUtils.registerForEmojiUpdates(emoji -> {
-            sessionEmojis.add(emoji);
-            Platform.runLater(() -> emojiList.scrollTo(sessionEmojis.size() - 1));
+            Platform.runLater(() -> gameAnimation.startEmojiAnimation(
+                    emojiToImage(emoji, 60), emoji.username, emojiArea));
         }, this.sessionId);
     }
 
@@ -310,6 +314,54 @@ public class MultiplayerCtrl extends GameCtrl {
         lastDisconnectIndex = -1;
         jokerTimer.cancel();
         lastJokerIndex = -1;
+    }
+
+    /**
+     * Checks whether there are enough players in the session after the clients had time to remove the players that
+     * quit.
+     */
+    public void startGame() {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    if (gameSessionUtils.getPlayers(sessionId).size() >= 2 && isPlayingAgain()) {
+                        GameSession session = gameSessionUtils.toggleReady(sessionId, false);
+                        if (session.playersReady.get() == 0) {
+                            gameSessionUtils.updateStatus(session, GameSession.SessionStatus.ONGOING);
+                        }
+                        reset();
+                        loadQuestion();
+                    } else {
+                        leaveGame();
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Unable to start new game!");
+                        alert.setHeaderText("There are too few people to play again:");
+                        alert.setContentText("Please join a fresh game to play with more people!");
+                        mainCtrl.addCSS(alert);
+                        alert.showAndWait();
+                    }
+                });
+            }
+        }, 1000);
+    }
+
+    /**
+     * Getter for playingAgain field.
+     *
+     * @return whether the player wants to play again.
+     */
+    public boolean isPlayingAgain() {
+        return playingAgain;
+    }
+
+    /**
+     * Setter for playingAgain field
+     *
+     * @param playingAgain parameter that shows if a player wants to play again.
+     */
+    public void setPlayingAgain(boolean playingAgain) {
+        this.playingAgain = playingAgain;
     }
 
     /**
