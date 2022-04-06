@@ -25,7 +25,10 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -35,35 +38,45 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SplashCtrl {
+public class SplashCtrl implements Initializable {
 
     private final GameSessionUtils gameSessionUtils;
     private final LeaderboardUtils leaderboardUtils;
     private final QuestionUtils questionUtils;
     private final WebSocketsUtils webSocketsUtils;
     private final MainCtrl mainCtrl;
-
+    private final GameAnimation gameAnimation;
+    @FXML
+    protected Button singleplayerButton;
+    @FXML
+    protected Button multiplayerButton;
+    @FXML
+    protected Button leaderboardButton;
     private String url;
-
     @FXML
     private TextField usernameField;
-
     @FXML
     private Text duplUsername;
-
     @FXML
     private Text invalidUserName;
-
     @FXML
     private TextField connectionField;
-
     @FXML
     private Text failedConnectionAlert;
+
+    @FXML
+    private ImageView imagePlug1;
+    @FXML
+    private ImageView imagePlug2;
+    @FXML
+    private ImageView imagePlug3;
 
     @Inject
     public SplashCtrl(GameSessionUtils gameSessionUtils, LeaderboardUtils leaderboardUtils,
@@ -73,6 +86,16 @@ public class SplashCtrl {
         this.webSocketsUtils = webSocketsUtils;
         this.questionUtils = questionUtils;
         this.mainCtrl = mainCtrl;
+        this.gameAnimation = new GameAnimation();
+    }
+
+    /**
+     * Enable the animation for the gameButtons
+     */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        gameAnimation.startBatteryAnimation(List.of(singleplayerButton, multiplayerButton, leaderboardButton),
+                List.of(imagePlug1, imagePlug2, imagePlug3));
     }
 
     /**
@@ -279,4 +302,6 @@ public class SplashCtrl {
     public void showTutorial() {
         mainCtrl.showTutorial();
     }
+
+
 }

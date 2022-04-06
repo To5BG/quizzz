@@ -3,21 +3,42 @@ package client.scenes;
 import client.utils.GameSessionUtils;
 import commons.GameSession;
 import commons.Player;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 
 import javax.inject.Inject;
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
 
-public class GamemodeCtrl {
+public class GamemodeCtrl implements Initializable {
 
     private final GameSessionUtils gameSessionUtils;
     private final MainCtrl mainCtrl;
-
+    private final GameAnimation gameAnimation;
+    @FXML
+    protected Button defaultButton;
+    @FXML
+    protected Button survivalButton;
+    @FXML
+    protected Button timeAttackButton;
     private long playerId;
 
     @Inject
     public GamemodeCtrl(GameSessionUtils gameSessionUtils, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
         this.mainCtrl = mainCtrl;
+        gameAnimation = new GameAnimation();
+    }
+
+    /**
+     * Enable the animation for the gameButtons
+     */
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        gameAnimation.startBatteryAnimation(List.of(defaultButton, survivalButton, timeAttackButton));
     }
 
     /**
