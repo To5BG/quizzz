@@ -1,8 +1,10 @@
 package client.scenes;
 
+import commons.Emoji;
 import javafx.animation.*;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -111,6 +113,27 @@ public class GameAnimation {
         translateTransition.setToY(80 * (1 - Math.random()));
         translateTransition.setToX(150);
         return translateTransition;
+    }
+
+    /**
+     * Initialize an ImageView node for an emoji
+     *
+     * @param e         Emoji to use for an imageview
+     * @param dimension Size of imageview (even dimensions for width and height)
+     * @return An ImageView node
+     */
+    public ImageView emojiToImage(List<Image> emojiImages, Emoji e, int dimension) {
+        Image picture;
+        switch (e.emoji) {
+            case FUNNY -> picture = emojiImages.get(0);
+            case SAD -> picture = emojiImages.get(1);
+            default -> picture = emojiImages.get(2);
+        }
+
+        ImageView iv = new ImageView(picture);
+        iv.setFitHeight(dimension);
+        iv.setFitWidth(dimension);
+        return iv;
     }
 
     private Timeline plugInAnimation(ImageView plug) {

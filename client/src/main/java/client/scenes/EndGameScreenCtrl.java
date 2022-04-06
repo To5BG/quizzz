@@ -19,6 +19,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.util.Callback;
 import org.springframework.messaging.simp.stomp.StompSession;
 
@@ -31,9 +32,12 @@ import static client.scenes.GameCtrl.*;
 public class EndGameScreenCtrl implements Initializable {
 
     private final static long END_GAME_TIME = 60L;
+
     private final GameSessionUtils gameSessionUtils;
     private final WebSocketsUtils webSocketsUtils;
+    private final GameAnimation gameAnimation;
     private final MainCtrl mainCtrl;
+
     private final ObservableList<Emoji> sessionEmojis;
     private final List<Image> emojiImages;
     @FXML
@@ -66,6 +70,9 @@ public class EndGameScreenCtrl implements Initializable {
     private ImageView emojiSad;
     @FXML
     private ImageView emojiAngry;
+    @FXML
+    private Pane emojiArea;
+
     private int previousPlayerCount;
     protected Thread timerThread;
     private long sessionId;
@@ -78,8 +85,10 @@ public class EndGameScreenCtrl implements Initializable {
 
 
     @Inject
-    public EndGameScreenCtrl(GameSessionUtils gameSessionUtils, WebSocketsUtils webSocketsUtils, MainCtrl mainCtrl) {
+    public EndGameScreenCtrl(GameSessionUtils gameSessionUtils, GameAnimation gameAnimation,
+                             WebSocketsUtils webSocketsUtils, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
+        this.gameAnimation = gameAnimation;
         this.webSocketsUtils = webSocketsUtils;
         this.mainCtrl = mainCtrl;
         sessionEmojis = FXCollections.observableArrayList();
@@ -341,8 +350,8 @@ public class EndGameScreenCtrl implements Initializable {
         emojiList.setItems(sessionEmojis);
 
         channelEnd = this.webSocketsUtils.registerForEmojiUpdates(emoji -> {
-            sessionEmojis.add(emoji);
-            Platform.runLater(() -> emojiList.scrollTo(sessionEmojis.size() - 1));
+            Platform.runLater(() -> gameAnimation.startEmojiAnimation(
+                    gameAnimation.emojiToImage(emojiImages, emoji, 60), emoji.username, emojiArea));
         }, this.sessionId);
     }
 

@@ -22,8 +22,6 @@ import jakarta.ws.rs.BadRequestException;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -58,13 +56,8 @@ public class MultiplayerCtrl extends GameCtrl {
     private Timer disconnectTimer;
     private int lastJokerIndex;
     private Timer jokerTimer;
-    private Timer endGameTimer;
-    private TimeUtils endGameCountdown;
+
     private StompSession.Subscription channel;
-    private boolean playingAgain;
-    private int waitingSkip = 0;
-    private final static long END_GAME_TIME = 60L;
-    private final ObservableList<Emoji> sessionEmojis;
     private final List<Image> emojiImages;
     private final GameAnimation gameAnimation;
     private List<Joker> usedJokers;
@@ -76,7 +69,6 @@ public class MultiplayerCtrl extends GameCtrl {
         super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
         this.gameAnimation = gameAnimation;
 
-        sessionEmojis = FXCollections.observableArrayList();
         emojiImages = new ArrayList<Image>();
         String[] emojiFileNames = {"funny", "sad", "angry"};
         ClassLoader cl = getClass().getClassLoader();
@@ -119,27 +111,6 @@ public class MultiplayerCtrl extends GameCtrl {
         emojiFunny.setImage(emojiImages.get(0));
         emojiSad.setImage(emojiImages.get(1));
         emojiAngry.setImage(emojiImages.get(2));
-    }
-
-    /**
-     * Initialize an ImageView node for an emoji
-     *
-     * @param e         Emoji to use for an imageview
-     * @param dimension Size of imageview (even dimensions for width and height)
-     * @return An ImageView node
-     */
-    public ImageView emojiToImage(Emoji e, int dimension) {
-        Image picture;
-        switch (e.emoji) {
-            case FUNNY -> picture = emojiImages.get(0);
-            case SAD -> picture = emojiImages.get(1);
-            default -> picture = emojiImages.get(2);
-        }
-
-        ImageView iv = new ImageView(picture);
-        iv.setFitHeight(dimension);
-        iv.setFitWidth(dimension);
-        return iv;
     }
 
     /**
@@ -266,7 +237,6 @@ public class MultiplayerCtrl extends GameCtrl {
         channel.unsubscribe();
         super.shutdown();
         disconnectTimer.cancel();
-        if (endGameTimer != null) endGameTimer.cancel();
         lastDisconnectIndex = -1;
         jokerTimer.cancel();
         lastJokerIndex = -1;
@@ -278,7 +248,7 @@ public class MultiplayerCtrl extends GameCtrl {
     public void registerForEmojiUpdates() {
         channel = this.webSocketsUtils.registerForEmojiUpdates(emoji -> {
             Platform.runLater(() -> gameAnimation.startEmojiAnimation(
-                    emojiToImage(emoji, 60), emoji.username, emojiArea));
+                    gameAnimation.emojiToImage(emojiImages, emoji, 60), emoji.username, emojiArea));
         }, this.sessionId);
     }
 
@@ -314,24 +284,6 @@ public class MultiplayerCtrl extends GameCtrl {
         lastDisconnectIndex = -1;
         jokerTimer.cancel();
         lastJokerIndex = -1;
-    }
-
-    /**
-     * Getter for playingAgain field.
-     *
-     * @return whether the player wants to play again.
-     */
-    public boolean isPlayingAgain() {
-        return playingAgain;
-    }
-
-    /**
-     * Setter for playingAgain field
-     *
-     * @param playingAgain parameter that shows if a player wants to play again.
-     */
-    public void setPlayingAgain(boolean playingAgain) {
-        this.playingAgain = playingAgain;
     }
 
     /**

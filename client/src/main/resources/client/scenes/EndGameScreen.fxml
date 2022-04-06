@@ -8,45 +8,38 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" styleClass="background" stylesheets="@/CSS/EndGameScreen.css"
-            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="client.scenes.EndGameScreenCtrl">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" styleClass="background" stylesheets="@/CSS/EndGameScreen.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EndGameScreenCtrl">
     <children>
+      <Pane fx:id="emojiArea" layoutY="311.0" prefHeight="67.0" prefWidth="436.0" />
         <TableView fx:id="leaderboard" layoutX="7.0" layoutY="60.0" prefHeight="281.0" prefWidth="436.0">
             <columns>
-                <TableColumn fx:id="colRank" prefWidth="75.0" text="Rank"/>
-                <TableColumn fx:id="colUserName" prefWidth="285.0" text="Username"/>
-                <TableColumn fx:id="colPoints" prefWidth="75.0" text="Score"/>
+                <TableColumn fx:id="colRank" prefWidth="75.0" text="Rank" />
+                <TableColumn fx:id="colUserName" prefWidth="285.0" text="Username" />
+                <TableColumn fx:id="colPoints" prefWidth="75.0" text="Score" />
             </columns>
         </TableView>
-        <ProgressBar fx:id="progressBar" layoutX="32.0" layoutY="24.0" prefHeight="20.0" prefWidth="260.0"
-                     progress="0.0"/>
-        <Label fx:id="status" layoutX="335.0" layoutY="26.0" prefHeight="17.0" prefWidth="271.0"
-               text="End of Game! Play again or back to main."/>
-        <Button fx:id="playAgain" layoutX="485.0" layoutY="315.0" mnemonicParsing="false" onAction="#playAgain"
-                prefHeight="26.0" prefWidth="101.0" text="Play again">
+        <ProgressBar fx:id="progressBar" layoutX="32.0" layoutY="24.0" prefHeight="20.0" prefWidth="260.0" progress="0.0" />
+        <Label fx:id="status" layoutX="335.0" layoutY="26.0" prefHeight="17.0" prefWidth="271.0" text="End of Game! Play again or back to main." />
+        <Button fx:id="playAgain" layoutX="485.0" layoutY="315.0" mnemonicParsing="false" onAction="#playAgain" prefHeight="26.0" prefWidth="101.0" text="Play again">
             <cursor>
-                <Cursor fx:constant="HAND"/>
+                <Cursor fx:constant="HAND" />
             </cursor>
         </Button>
-        <Button fx:id="leave" layoutX="485.0" layoutY="348.0" mnemonicParsing="false" onAction="#leaveGame"
-                prefHeight="26.0" prefWidth="101.0" text="Leave">
+        <Button fx:id="leave" layoutX="485.0" layoutY="348.0" mnemonicParsing="false" onAction="#leaveGame" prefHeight="26.0" prefWidth="101.0" text="Leave">
             <cursor>
-                <Cursor fx:constant="HAND"/>
+                <Cursor fx:constant="HAND" />
             </cursor>
         </Button>
-        <Label fx:id="count" layoutX="371.0" layoutY="378.0" prefHeight="17.0" prefWidth="228.0" text="[Count]"/>
-        <ImageView fx:id="emojiFunny" fitHeight="60.0" fitWidth="60.0" layoutX="14.0" layoutY="348.0"
-                   onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true"/>
-        <ImageView fx:id="emojiSad" fitHeight="60.0" fitWidth="60.0" layoutX="74.0" layoutY="348.0"
-                   onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true"/>
-        <ImageView fx:id="emojiAngry" fitHeight="60.0" fitWidth="60.0" layoutX="134.0" layoutY="348.0"
-                   onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true"/>
+        <Label fx:id="count" layoutX="371.0" layoutY="378.0" prefHeight="17.0" prefWidth="228.0" text="[Count]" />
+        <ImageView fx:id="emojiFunny" fitHeight="60.0" fitWidth="60.0" layoutX="14.0" layoutY="348.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true" />
+        <ImageView fx:id="emojiSad" fitHeight="60.0" fitWidth="60.0" layoutX="74.0" layoutY="348.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true" />
+        <ImageView fx:id="emojiAngry" fitHeight="60.0" fitWidth="60.0" layoutX="134.0" layoutY="348.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true" />
         <TableView fx:id="emojiList" layoutX="447.0" layoutY="77.0" prefHeight="200.0" prefWidth="155.0">
             <columns>
-                <TableColumn fx:id="emojiUsername" prefWidth="75.0" text="Username"/>
-                <TableColumn fx:id="emojiImage" prefWidth="75.0" text="Emoji"/>
+                <TableColumn fx:id="emojiUsername" prefWidth="75.0" text="Username" />
+                <TableColumn fx:id="emojiImage" prefWidth="75.0" text="Emoji" />
             </columns>
         </TableView>
     </children>
