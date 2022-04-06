@@ -112,11 +112,6 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
             }
         });
 
-        playAgain.setOpacity(1);
-        count.setText("Waiting for game to start...");
-        count.setOpacity(1);
-        backButton.setOpacity(1);
-
         emojiFunny.setImage(emojiImages.get(0));
         emojiSad.setImage(emojiImages.get(1));
         emojiAngry.setImage(emojiImages.get(2));
@@ -190,11 +185,8 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
      */
     public void reset() {
         playAgain.setText("Play again");
-        playAgain.setOpacity(0);
-        backButton.setOpacity(0);
-        backButton.setDisable(true);
         count.setText("[Count]");
-        count.setText("Waiting for game to start...");
+        count.setText("End of game! Play again or go back to main.");
         setPlayingAgain(false);
         waitingSkip = 0;
         setPlayingAgain(false);
@@ -365,19 +357,11 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
                 int playerCount = gameSessionUtils.getSession(sessionId).players.size();
                 if (previousPlayerCount < playerCount) {
                     roundTimer.resetTimer();
-                    Platform.runLater(() -> displayLeaderboard());
+                    Platform.runLater(() -> renderLeaderboard());
                 }
                 previousPlayerCount = playerCount;
             }
         }, 0, 500);
-    }
-
-    /**
-     * Displays the current session's leaderboard and hides the question screen attributes
-     */
-    public void displayLeaderboard() {
-        renderLeaderboard();
-        leaderboard.setOpacity(1);
     }
 
     /**
@@ -387,7 +371,6 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
         var players = gameSessionUtils.getPlayers(sessionId);
         var data = FXCollections.observableList(players);
         leaderboard.setItems(data);
-        leaderboard.setOpacity(1);
     }
 
 }
