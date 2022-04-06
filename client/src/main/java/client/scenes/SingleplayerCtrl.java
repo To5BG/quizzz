@@ -105,6 +105,7 @@ public class SingleplayerCtrl extends GameCtrl {
     @Override
     public void handleGamePodium() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        mainCtrl.addCSS(alert);
         alert.setTitle("Game Over");
         alert.setHeaderText("You have been redirected to the splash screen");
         alert.setContentText("Your score was : " + points);
