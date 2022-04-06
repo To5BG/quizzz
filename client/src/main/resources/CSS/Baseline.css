@@ -61,6 +61,8 @@
 
 .radio-button:selected .radio {
     -fx-border-color: #00CCFF;
+    -fx-background-color: #00CCFF;
+    -fx-background-insets: 3, 3, 3, 3;
 }
 
 /*  Timer   */

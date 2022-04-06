@@ -66,28 +66,28 @@
             </font>
         </Button>
         <Button fx:id="singleButton" layoutX="511.0" layoutY="142.0" mnemonicParsing="false"
-                prefHeight="45.0" prefWidth="122.0" styleClass="button2"
+                prefHeight="45.0" prefWidth="140.0" styleClass="button2"
                 stylesheets="@/CSS/Baseline.css" text="Singleplayer">
             <font>
-                <Font size="18.0"/>
+                <Font size="15.0"/>
             </font>
         </Button>
         <Button fx:id="multiButton" layoutX="511.0" layoutY="203.0" mnemonicParsing="false"
-                prefHeight="45.0" prefWidth="122.0" styleClass="button2"
+                prefHeight="45.0" prefWidth="140.0" styleClass="button2"
                 stylesheets="@/CSS/Baseline.css" text="Multiplayer">
             <font>
                 <Font size="18.0"/>
             </font>
         </Button>
         <Button fx:id="survivalButton" layoutX="511.0" layoutY="261.0" mnemonicParsing="false"
-                prefHeight="45.0" prefWidth="122.0" styleClass="button2"
+                prefHeight="45.0" prefWidth="140.0" styleClass="button2"
                 stylesheets="@/CSS/Baseline.css" text="Survival">
             <font>
-                <Font size="18.0"/>
+                <Font size="15.0"/>
             </font>
         </Button>
         <Button fx:id="timeAttackButton" layoutX="511.0" layoutY="324.0" mnemonicParsing="false"
-                prefHeight="45.0" prefWidth="122.0" styleClass="button2"
+                prefHeight="45.0" prefWidth="140.0" styleClass="button2"
                 stylesheets="@/CSS/Baseline.css" text="Time Attack">
             <font>
                 <Font size="18.0"/>
