@@ -15,10 +15,7 @@
  */
 package client.scenes;
 
-import client.utils.GameSessionUtils;
-import client.utils.LeaderboardUtils;
-import client.utils.QuestionUtils;
-import client.utils.WebSocketsUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Player;
 import javafx.animation.KeyFrame;
@@ -45,12 +42,14 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SplashCtrl implements Initializable {
+public class SplashCtrl extends SceneCtrl implements Initializable{
 
     private final GameSessionUtils gameSessionUtils;
     private final LeaderboardUtils leaderboardUtils;
     private final QuestionUtils questionUtils;
+    private final LongPollingUtils longPollUtils;
     private final WebSocketsUtils webSocketsUtils;
+
     private final MainCtrl mainCtrl;
     private final GameAnimation gameAnimation;
     @FXML
@@ -80,11 +79,13 @@ public class SplashCtrl implements Initializable {
 
     @Inject
     public SplashCtrl(GameSessionUtils gameSessionUtils, LeaderboardUtils leaderboardUtils,
-                      QuestionUtils questionUtils, WebSocketsUtils webSocketsUtils, MainCtrl mainCtrl) {
+                      QuestionUtils questionUtils, LongPollingUtils longPollUtils,
+                      WebSocketsUtils webSocketsUtils, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
         this.leaderboardUtils = leaderboardUtils;
-        this.webSocketsUtils = webSocketsUtils;
         this.questionUtils = questionUtils;
+        this.longPollUtils = longPollUtils;
+        this.webSocketsUtils = webSocketsUtils;
         this.mainCtrl = mainCtrl;
         this.gameAnimation = new GameAnimation();
     }
@@ -127,6 +128,7 @@ public class SplashCtrl implements Initializable {
             gameSessionUtils.serverConnection = connURL;
             leaderboardUtils.serverConnection = connURL;
             questionUtils.serverConnection = connURL;
+            longPollUtils.serverConnection = connURL;
             webSocketsUtils.updateConnection(connURL);
             this.url = connURL;
             return true;
@@ -297,11 +299,25 @@ public class SplashCtrl implements Initializable {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void shutdown() {
+        // ENSURE STABLE SHUTDOWN
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void back() {
+        shutdown();
+    }
+
+    /**
      * Show the tutorial page
      */
     public void showTutorial() {
         mainCtrl.showTutorial();
     }
-
-
 }

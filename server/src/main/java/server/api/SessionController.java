@@ -4,10 +4,12 @@ import commons.GameSession;
 import commons.Joker;
 import commons.Player;
 import commons.Question;
-import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.data.util.Pair;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 import server.database.PlayerRepository;
 import server.service.QuestionGenerator;
 import server.service.SessionManager;
@@ -17,6 +19,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static server.Config.isNullOrEmpty;
@@ -29,13 +32,15 @@ public class SessionController {
     private final SessionManager sm;
     private final Random random;
     private final ActivityController activityCtrl;
+    private final LeaderboardController leaderboardCtrl;
 
     public SessionController(Random random, PlayerRepository repo, String controllerConfig, SessionManager sm,
-                             ActivityController activityCtrl) {
+                             ActivityController activityCtrl, LeaderboardController leaderboardCtrl) {
         this.random = random;
         this.repo = repo;
         this.sm = sm;
         this.activityCtrl = activityCtrl;
+        this.leaderboardCtrl = leaderboardCtrl;
         if (!controllerConfig.equals("test")) {
             sm.save(new GameSession(GameSession.SessionType.SELECTING));
         }
@@ -53,9 +58,9 @@ public class SessionController {
         Pair<Question, List<Long>> res = (session.sessionType == GameSession.SessionType.SURVIVAL) ?
                 QuestionGenerator.generateSurvivalQuestion(session.difficultyFactor, activityCtrl) :
                 QuestionGenerator.generateQuestion(session.difficultyFactor, activityCtrl);
-        session.currentQuestion = res.getKey();
+        session.currentQuestion = res.getFirst();
         session.expectedAnswers.clear();
-        session.expectedAnswers.addAll(res.getValue());
+        session.expectedAnswers.addAll(res.getSecond());
         updateSession(session);
     }
 
@@ -69,17 +74,13 @@ public class SessionController {
         switch (session.sessionType) {
             case SINGLEPLAYER, SURVIVAL, TIME_ATTACK -> {
                 Player p = session.getPlayers().get(0);
-                setHighScore(p, session.sessionType);
-                p.setCurrentPoints(0);
-                repo.save(p);
+                updateHighscore(p, session.sessionType);
                 removeSession(session.id);
             }
             default -> {
-                for (Player p : session.players) {
-                    p.setBestMultiScore(Math.max(p.bestMultiScore, p.currentPoints));
-                    p.setCurrentPoints(0);
-                    repo.save(p);
-                }
+                for (Player p : session.players) leaderboardCtrl.updateBestMultiScore(p.id, p.currentPoints);
+                leaderboardCtrl.commitMultiplayerUpdates();
+
                 session.setSessionStatus(GameSession.SessionStatus.PAUSED);
                 Thread t = new Thread(() -> {
                     try {
@@ -87,7 +88,7 @@ public class SessionController {
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
-                    session.setSessionStatus(GameSession.SessionStatus.PLAY_AGAIN);
+                    updateStatus(session.id, GameSession.SessionStatus.PLAY_AGAIN);
                     updateSession(session);
                 });
                 t.start();
@@ -102,11 +103,11 @@ public class SessionController {
      * @param p           The player.
      * @param sessionType The gamemode the player played.
      */
-    public void setHighScore(Player p, GameSession.SessionType sessionType) {
+    public void updateHighscore(Player p, GameSession.SessionType sessionType) {
         switch (sessionType) {
-            case SINGLEPLAYER -> p.setBestSingleScore(Math.max(p.bestSingleScore, p.currentPoints));
-            case SURVIVAL -> p.setBestSurvivalScore(Math.max(p.bestSurvivalScore, p.currentPoints));
-            case TIME_ATTACK -> p.setBestTimeAttackScore(Math.max(p.bestTimeAttackScore, p.currentPoints));
+            case SINGLEPLAYER -> leaderboardCtrl.updateBestSingleScore(p.id, p.currentPoints);
+            case SURVIVAL -> leaderboardCtrl.updateBestSurvivalScore(p.id, p.currentPoints);
+            case TIME_ATTACK -> leaderboardCtrl.updateBestTimeAttackScore(p.id, p.currentPoints);
         }
     }
 
@@ -241,6 +242,7 @@ public class SessionController {
     public ResponseEntity<GameSession> addWaitingArea(@RequestBody GameSession session) {
         repo.save(session.players.get(0));
         GameSession saved = sm.save(session);
+        listenersSelectionRoom.forEach((k, l) -> l.accept(Pair.of("add", saved)));
         return ResponseEntity.ok(saved);
     }
 
@@ -278,7 +280,11 @@ public class SessionController {
      */
     @DeleteMapping({"/{id}"})
     public ResponseEntity<GameSession> removeSession(@PathVariable("id") long id) {
-        return ResponseEntity.ok(sm.delete(id));
+        GameSession removedSession = sm.delete(id);
+        if (removedSession != null) {
+            listenersSelectionRoom.forEach((k, l) -> l.accept(Pair.of("remove", removedSession)));
+        }
+        return ResponseEntity.ok(removedSession);
     }
 
     /**
@@ -288,8 +294,11 @@ public class SessionController {
      */
     public void changeToMultiplayerSession(GameSession waitingArea) {
         waitingArea.setSessionType(GameSession.SessionType.MULTIPLAYER);
-        waitingArea.setSessionStatus(GameSession.SessionStatus.STARTED);
+        updateStatus(waitingArea.id, GameSession.SessionStatus.STARTED);
         updateQuestion(waitingArea);
+        listenersWaitingArea.forEach((k, l) -> {
+            if (k.getSecond().equals(waitingArea.id)) l.accept("started: " + waitingArea.playersReady);
+        });
     }
 
     /**
@@ -303,15 +312,22 @@ public class SessionController {
         if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = sm.getById(sessionId);
         session.setPlayerReady();
-        if (session.sessionType != GameSession.SessionType.WAITING_AREA &&
-                session.playersReady.get() == session.players.size()) {
+
+        if (session.sessionType == GameSession.SessionType.WAITING_AREA) {
+            if (session.playersReady.get() == session.players.size()) changeToMultiplayerSession(session);
+            else {
+                listenersWaitingArea.forEach((k, l) -> {
+                    if (k.getSecond().equals(session.id)) {
+                        l.accept("playerReady: " + session.playersReady);
+                    }
+                });
+            }
+
+        } else if (session.playersReady.get() == session.players.size()) {
             advanceRounds(session);
-        } else if (session.sessionType == GameSession.SessionType.WAITING_AREA &&
-                session.playersReady.get() == session.players.size()) {
-            changeToMultiplayerSession(session);
-        } else {
-            updateSession(session);
         }
+        else updateSession(session);
+
         return ResponseEntity.ok(session);
     }
 
@@ -326,16 +342,15 @@ public class SessionController {
         if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
         GameSession session = sm.getById(sessionId);
         session.unsetPlayerReady();
-        if (session.playersReady.get() == 0) {
-            if (session.sessionType == GameSession.SessionType.WAITING_AREA) {
-                session.setSessionStatus(GameSession.SessionStatus.WAITING_AREA);
-            } else {
-                if (session.sessionStatus != GameSession.SessionStatus.PLAY_AGAIN) {
-                    session.setSessionStatus(GameSession.SessionStatus.ONGOING);
-                }
-            }
+        if (session.sessionType == GameSession.SessionType.WAITING_AREA) {
+            listenersWaitingArea.forEach((k, l) -> {
+                if (k.getSecond().equals(session.id)) l.accept("playerReady: " + session.playersReady);
+            });
+            if (session.playersReady.get() == 0) session.setSessionStatus(GameSession.SessionStatus.WAITING_AREA);
         }
-
+        else if (session.playersReady.get() == 0 && session.sessionStatus != GameSession.SessionStatus.PLAY_AGAIN) {
+            updateStatus(sessionId, GameSession.SessionStatus.ONGOING);
+        }
         updateSession(session);
         return ResponseEntity.ok(session);
     }
@@ -361,6 +376,7 @@ public class SessionController {
             advanceRounds(session);
         }
         updateSession(session);
+        if (session.id != 1) listenersSelectionRoom.forEach((k, l) -> l.accept(Pair.of("update", session)));
         return ResponseEntity.ok(session);
     }
 
@@ -420,6 +436,12 @@ public class SessionController {
 
         session.addPlayer(player);
         repo.save(player);
+        if (session.sessionType.equals(GameSession.SessionType.WAITING_AREA)) {
+            listenersWaitingArea.forEach((k, l) -> {
+                if (k.getSecond().equals(session.id)) l.accept("addPlayer: " + player.username);
+            });
+        }
+        if (session.id != 1) listenersSelectionRoom.forEach((k, l) -> l.accept(Pair.of("update", session)));
         return ResponseEntity.ok(player);
     }
 
@@ -444,6 +466,12 @@ public class SessionController {
             removeSession(session.id);
         } else {
             updateSession(session);
+            if (session.sessionType.equals(GameSession.SessionType.WAITING_AREA)) {
+                listenersWaitingArea.forEach((k, l) -> {
+                    if (k.getSecond().equals(session.id)) l.accept("removePlayer: " + player.username);
+                });
+            }
+            if (session.id != 1) listenersSelectionRoom.forEach((k, l) -> l.accept(Pair.of("update", session)));
         }
         return ResponseEntity.ok(player);
     }
@@ -543,5 +571,44 @@ public class SessionController {
         if (player.isEmpty()) return ResponseEntity.badRequest().build();
         Player p = player.get();
         return ResponseEntity.ok(p.jokerStates);
+    }
+
+    Map<Object, Consumer<Pair<String, GameSession>>> listenersSelectionRoom = new HashMap<>();
+    Map<Pair<Object, Long>, Consumer<String>> listenersWaitingArea = new HashMap<>();
+
+    /**
+     * Register client listener for selection room updates
+     *
+     * @return DeferredResult that contains updates on selection room, if any
+     */
+    @GetMapping("/updates/selectionroom")
+    public DeferredResult<ResponseEntity<GameSession>> getSelectionRoomUpdates() {
+        var emptyContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        var res = new DeferredResult<ResponseEntity<GameSession>>(1000L, emptyContent);
+
+        var k = new Object();
+        listenersSelectionRoom.put(k, p -> {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-operation", p.getFirst());
+            res.setResult(new ResponseEntity<GameSession>(p.getSecond(), headers, HttpStatus.OK));
+        });
+        res.onCompletion(() -> listenersSelectionRoom.remove(k));
+        return res;
+    }
+
+    /**
+     * Register client listener for selection room updates
+     *
+     * @return DeferredResult that contains updates on selection room, if any
+     */
+    @GetMapping("/updates/waitingarea/{sessionId}")
+    public DeferredResult<ResponseEntity<String>> getWaitingAreaUpdates(@PathVariable Long sessionId) {
+        var emptyContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        var res = new DeferredResult<ResponseEntity<String>>(1000L, emptyContent);
+
+        var k = Pair.of(new Object(), sessionId);
+        listenersWaitingArea.put(k, p -> res.setResult(ResponseEntity.ok(p)));
+        res.onCompletion(() -> listenersWaitingArea.remove(k));
+        return res;
     }
 }

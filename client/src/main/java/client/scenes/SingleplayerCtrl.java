@@ -84,14 +84,6 @@ public class SingleplayerCtrl extends GameCtrl {
     }
 
     /**
-     * Reverts the player to the splash screen and remove him from the current game session.
-     */
-    @Override
-    public void back() {
-        super.back();
-    }
-
-    /**
      * If the joker is active make the time joker -0.5 so the booster will work at half the normal speed
      * for a singleplayer game
      *

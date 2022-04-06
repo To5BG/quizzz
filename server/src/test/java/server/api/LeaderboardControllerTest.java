@@ -117,7 +117,7 @@ class LeaderboardControllerTest {
         var savedPlayer1 = lbc.addPlayerForcibly(new Player("test1", 10)).getBody();
         var savedPlayer2 = lbc.addPlayerForcibly(new Player("test2", 20)).getBody();
         var savedPlayer3 = lbc.addPlayerForcibly(new Player("test3", 30)).getBody();
-        var list = lbc.getPlayerMultiScore();
+        var list = lbc.getPlayerMultiScores();
         var temp = list.getBody();
         System.out.println(temp.size());
         assertEquals(3, temp.size());

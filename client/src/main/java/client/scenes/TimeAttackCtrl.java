@@ -17,16 +17,13 @@ import java.util.TimerTask;
 
 public class TimeAttackCtrl extends SingleplayerCtrl {
 
-    private long initialTime;
+    private long initialTime = 60L;
     private TimeUtils roundTimer;
 
     @Inject
     public TimeAttackCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
                           LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
         super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
-
-
-        this.initialTime = 60L;
     }
 
     /**

@@ -17,6 +17,7 @@ package client;
 
 
 import client.scenes.*;
+import client.utils.LongPollingUtils;
 import client.utils.WebSocketsUtils;
 import com.google.inject.Binder;
 import com.google.inject.Module;
@@ -39,5 +40,8 @@ public class MyModule implements Module {
         binder.bind(SurvivalCtrl.class).in(Scopes.SINGLETON);
         binder.bind(TimeAttackCtrl.class).in(Scopes.SINGLETON);
         binder.bind(TutorialScreenCtrl.class).in(Scopes.SINGLETON);
+
+        binder.bind(LongPollingUtils.class).in(Scopes.SINGLETON);
+        binder.bind(WebSocketsUtils.class).in(Scopes.SINGLETON);
     }
 }
