@@ -211,7 +211,7 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
             case PLAY_AGAIN:
                 addPlayerToSession(session);
                 longPollUtils.haltUpdates("selectionRoom");
-                mainCtrl.showMultiplayer(session.id, playerId);
+                mainCtrl.showEndGameScreen(session.id, playerId);
                 break;
             default:
                 Alert alert = new Alert(Alert.AlertType.WARNING);

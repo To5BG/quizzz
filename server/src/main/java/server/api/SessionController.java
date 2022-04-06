@@ -119,7 +119,6 @@ public class SessionController {
     private void updatePlayerJokers(GameSession session) {
         Random rng = new Random();
         for (Player p : session.players) {
-            System.out.println(p);
             if (p.jokerStates.get("DoublePointsJoker") == Joker.JokerStatus.USED_HOT) {
                 p.currentPoints += p.previousEval.points;
             }
@@ -295,7 +294,6 @@ public class SessionController {
     public void changeToMultiplayerSession(GameSession waitingArea) {
         waitingArea.setSessionType(GameSession.SessionType.MULTIPLAYER);
         updateStatus(waitingArea.id, GameSession.SessionStatus.STARTED);
-        updateQuestion(waitingArea);
         listenersWaitingArea.forEach((k, l) -> {
             if (k.getSecond().equals(waitingArea.id)) l.accept("started: " + waitingArea.playersReady);
         });

@@ -52,7 +52,9 @@ public class Main extends Application {
                 FXML.load(TutorialScreenCtrl.class, "client", "scenes", "TutorialScreen.fxml"),
                 FXML.load(GamemodeCtrl.class, "client", "scenes", "GamemodeScreen.fxml"),
                 FXML.load(TimeAttackCtrl.class, "client", "scenes", "TimeAttackScreen.fxml"),
-                FXML.load(SurvivalCtrl.class, "client", "scenes", "SurvivalScreen.fxml")
+                FXML.load(SurvivalCtrl.class, "client", "scenes", "SurvivalScreen.fxml"),
+                FXML.load(PodiumCtrl.class, "client", "scenes", "PodiumScreen.fxml"),
+                FXML.load(EndGameScreenCtrl.class, "client", "scenes", "EndGameScreen.fxml")
         ));
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);

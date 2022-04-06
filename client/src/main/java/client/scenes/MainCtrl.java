@@ -15,7 +15,6 @@
  */
 package client.scenes;
 
-import commons.GameSession;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -50,6 +49,10 @@ public class MainCtrl {
     private Scene gamemodeScreen;
     private LeaderBoardCtrl leaderBoardCtrl;
     private Scene leaderBoardScreen;
+    private PodiumCtrl podiumCtrl;
+    private Scene podiumScreen;
+    private EndGameScreenCtrl endGameScreenCtrl;
+    private Scene endGameScreen;
     private WebViewCtrl webViewCtrl;
     private Scene webViewScreen;
     private TutorialScreenCtrl tutorialCtrl;
@@ -111,6 +114,14 @@ public class MainCtrl {
         this.survivalCtrl = (SurvivalCtrl) survival.getKey();
         this.survivalScreen = new Scene(survival.getValue());
 
+        var podium = pairs.get(11);
+        this.podiumCtrl = (PodiumCtrl) podium.getKey();
+        this.podiumScreen = new Scene(podium.getValue());
+
+        var endScreen = pairs.get(12);
+        this.endGameScreenCtrl = (EndGameScreenCtrl) endScreen.getKey();
+        this.endGameScreen = new Scene(endScreen.getValue());
+
 
         confirmClose();
         showSplash();
@@ -144,11 +155,6 @@ public class MainCtrl {
         multiplayerCtrl.fetchJokerStates();
         multiplayerCtrl.scanForDisconnect();
         multiplayerCtrl.scanForJokerUsage();
-        if (multiplayerCtrl.gameSessionUtils.getSession(sessionId).sessionStatus ==
-                GameSession.SessionStatus.PLAY_AGAIN) {
-            multiplayerCtrl.showEndScreen(false);
-            return;
-        }
         multiplayerCtrl.loadQuestion();
     }
 
@@ -298,5 +304,31 @@ public class MainCtrl {
         dialogPane.getStylesheets().add(
                 String.valueOf(getClass().getClassLoader().getResource(Path.of("", "CSS", "Alert.css").toString())));
 
+    }
+
+    /**
+     * Sets the current screen to the podium screen
+     *
+     * @param sessionId the id of the current game session
+     */
+    public void showPodiumScreen(long sessionId, long playerId) {
+        primaryStage.setTitle("Podium");
+        primaryStage.setScene(podiumScreen);
+        podiumCtrl.createPodium(sessionId);
+        podiumCtrl.setPlayerId(playerId);
+        podiumCtrl.setSessionId(sessionId);
+    }
+
+    /**
+     * Sets the current screen to the end of game screen
+     *
+     * @param sessionId The id of the current game session
+     */
+    public void showEndGameScreen(long sessionId, long playerId) {
+        primaryStage.setTitle("End of game");
+        primaryStage.setScene(endGameScreen);
+        endGameScreenCtrl.setPlayerId(playerId);
+        endGameScreenCtrl.setSessionId(sessionId);
+        endGameScreenCtrl.showEndScreen();
     }
 }

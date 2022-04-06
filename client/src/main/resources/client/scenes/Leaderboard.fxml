@@ -3,14 +3,15 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
-<?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="499.0" prefWidth="633.0" styleClass="background" stylesheets="@/CSS/Baseline.css"
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.scenes.LeaderBoardCtrl">
+
+
     <children>
-        <TableView id="allPoints" fx:id="allPlayersSingleplayer" layoutX="89.0" layoutY="99.0" prefHeight="310.0"
-                   prefWidth="412.0">
+        <TableView id="allPoints" fx:id="allPlayersSingleplayer" layoutX="62.0" layoutY="148.0" prefHeight="271.0"
+                   prefWidth="397.0" styleClass="leaderboardColumn">
             <columns>
                 <TableColumn fx:id="colBatterySingleplayer" prefWidth="199.0" text="Rank"/>
                 <TableColumn fx:id="colNameSingleplayer" prefWidth="199.0" text="UserName"/>
@@ -20,8 +21,8 @@
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
             </columnResizePolicy>
         </TableView>
-        <TableView id="allPoints" fx:id="allPlayersMultiplayer" layoutX="89.0" layoutY="99.0" prefHeight="310.0"
-                   prefWidth="412.0">
+        <TableView id="allPoints" fx:id="allPlayersMultiplayer" layoutX="62.0" layoutY="148.0" prefHeight="271.0"
+                   prefWidth="397.0" styleClass="leaderboardColumn">
             <columns>
                 <TableColumn fx:id="colBatteryMultiplayer" prefWidth="199.0" text="Rank"/>
                 <TableColumn fx:id="colNameMultiplayer" prefWidth="199.0" text="UserName"/>
@@ -31,8 +32,8 @@
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
             </columnResizePolicy>
         </TableView>
-        <TableView id="allPoints" fx:id="allPlayersSurvival" layoutX="89.0" layoutY="99.0" prefHeight="310.0"
-                   prefWidth="412.0">
+        <TableView id="allPoints" fx:id="allPlayersSurvival" layoutX="62.0" layoutY="148.0" prefHeight="271.0"
+                   prefWidth="397.0" styleClass="leaderboardColumn">
             <columns>
                 <TableColumn fx:id="colBatterySurvival" prefWidth="199.0" text="Rank"/>
                 <TableColumn fx:id="colNameSurvival" prefWidth="199.0" text="UserName"/>
@@ -42,8 +43,8 @@
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
             </columnResizePolicy>
         </TableView>
-        <TableView id="allPoints" fx:id="allPlayersTimeAttack" layoutX="89.0" layoutY="99.0" prefHeight="310.0"
-                   prefWidth="412.0">
+        <TableView id="allPoints" fx:id="allPlayersTimeAttack" layoutX="62.0" layoutY="148.0" prefHeight="271.0"
+                   prefWidth="397.0" styleClass="leaderboardColumn">
             <columns>
                 <TableColumn fx:id="colBatteryTimeAttack" prefWidth="199.0" text="Rank"/>
                 <TableColumn fx:id="colNameTimeAttack" prefWidth="199.0" text="UserName"/>
@@ -56,7 +57,7 @@
         <Label fx:id="leaderboardLabel" layoutX="89.0" layoutY="42.0" prefHeight="71.0" prefWidth="489.0"
                text="LeaderBoard" textFill="#36cde4">
             <font>
-                <Font size="36.0"/>
+                <Font size="49.0"/>
             </font>
         </Label>
         <Button layoutY="135.0" mnemonicParsing="false" onAction="#back" prefHeight="271.0" prefWidth="50.0"
@@ -76,7 +77,7 @@
                 prefHeight="45.0" prefWidth="140.0" styleClass="button2"
                 stylesheets="@/CSS/Baseline.css" text="Multiplayer">
             <font>
-                <Font size="18.0"/>
+                <Font size="21.0"/>
             </font>
         </Button>
         <Button fx:id="survivalButton" layoutX="511.0" layoutY="261.0" mnemonicParsing="false"

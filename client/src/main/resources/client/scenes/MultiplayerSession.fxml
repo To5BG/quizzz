@@ -15,7 +15,7 @@
     <children>
         <Label fx:id="questionPrompt" layoutX="210.0" layoutY="58.0" text="[Question]" textFill="WHITE" />
         <Label fx:id="countdown" layoutX="221.0" layoutY="107.0" text="Options:" textFill="WHITE" />
-        <Button fx:id="leaveButton" layoutX="727.0" layoutY="359.0" mnemonicParsing="false" onAction="#leaveGame" text="Leave" />
+        <Pane fx:id="emojiArea" layoutX="2.0" layoutY="249.0" prefHeight="76.0" prefWidth="321.0" />
         <TableView fx:id="leaderboard" layoutX="2.0" layoutY="75.0" opacity="0.0" prefHeight="198.0" prefWidth="644.0">
             <columns>
                 <TableColumn fx:id="colRank" prefWidth="35.0" text="rank" />
@@ -25,8 +25,8 @@
         </TableView>
         <StackPane fx:id="answerArea" alignment="BASELINE_LEFT" layoutX="221.0" layoutY="131.0" prefHeight="156.0" prefWidth="235.0" styleClass="stack-pane" stylesheets="@/CSS/Baseline.css" />
         <Button fx:id="submitButton" layoutX="560.0" layoutY="287.0" mnemonicParsing="false" onAction="#submitAnswerButton" text="Final Answer" />
-        <Label fx:id="pointsLabel" layoutX="698.0" layoutY="14.0" text="Points: 0" textFill="WHITE" />
         <Label fx:id="questionCount" layoutX="14.0" layoutY="14.0" text="Question: 1" textFill="WHITE" />
+        <Label fx:id="pointsLabel" layoutX="698.0" layoutY="14.0" text="Points: 0" textFill="WHITE" />
         <ProgressBar fx:id="timeProgress" layoutX="295.0" layoutY="25.0" prefHeight="20.0" prefWidth="321.0" progress="0.0" />
         <Button fx:id="removeOneButton" layoutX="221.0" layoutY="340.0" mnemonicParsing="false" onAction="#removeOneAnswer" prefHeight="26.0" prefWidth="103.0" text="Remove One Answer">
             <font>
@@ -37,19 +37,15 @@
         </Button>
         <Button fx:id="doublePointsButton" layoutX="530.0" layoutY="338.0" mnemonicParsing="false" onAction="#doublePoints" prefHeight="26.0" prefWidth="103.0" text="Double Points">
         </Button>
+        <Button fx:id="backButton" layoutX="727.0" layoutY="359.0" mnemonicParsing="false" onAction="#back" text="Go Back">
+        </Button>
         <ImageView fx:id="imagePanel" fitHeight="156.0" fitWidth="169.0" layoutX="479.0" layoutY="107.0" pickOnBounds="true" preserveRatio="true" />
         <ImageView fx:id="emojiFunny" fitHeight="60.0" fitWidth="60.0" layoutX="14.0" layoutY="323.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
         </ImageView>
-        <Button fx:id="playAgain" layoutX="434.0" layoutY="308.0" mnemonicParsing="false" onAction="#playAgain" prefHeight="26.0" prefWidth="115.0" text="Play again">
-        </Button>
-        <Label fx:id="status" layoutX="477.0" layoutY="373.0" text="[Status]" />
-        <Button fx:id="backButton" layoutX="727.0" layoutY="359.0" mnemonicParsing="false" onAction="#back" text="Go Back">
-        </Button>
         <ImageView fx:id="emojiSad" fitHeight="60.0" fitWidth="60.0" layoutX="82.0" layoutY="323.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
         </ImageView>
         <ImageView fx:id="emojiAngry" fitHeight="60.0" fitWidth="60.0" layoutX="148.0" layoutY="323.0" onMouseClicked="#emojiEventHandler" pickOnBounds="true" preserveRatio="true">
         </ImageView>
-        <Pane fx:id="emojiArea" layoutX="2.0" layoutY="249.0" prefHeight="76.0" prefWidth="321.0" />
         <Label fx:id="removedPlayers" layoutX="649.0" layoutY="306.0" opacity="0.0" text="Player : DISCONNECTED..." />
         <Label fx:id="jokerUsage" layoutX="359.0" layoutY="373.0" prefHeight="17.0" prefWidth="251.0" wrapText="true" />
         <Label fx:id="jokerRefreshLabel" layoutX="221.0" layoutY="373.0" prefHeight="17.0" prefWidth="303.0" />

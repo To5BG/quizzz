@@ -63,27 +63,6 @@ public class SingleplayerCtrl extends GameCtrl {
     }
 
     /**
-     * Sends player to splash screen, along with an alert that the game has ended, with their points total
-     */
-    @Override
-    public void handleGameEnd() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Game Over");
-        alert.setHeaderText("You have been redirected to the splash screen");
-        alert.setContentText("Your score was : " + points);
-        mainCtrl.addCSS(alert);
-        alert.show();
-        super.handleGameEnd();
-    }
-
-    /**
-     * Empty method because singleplayer mode does not have an end screen.
-     */
-    @Override
-    public void showEndScreen(boolean sentFromGame) {
-    }
-
-    /**
      * If the joker is active make the time joker -0.5 so the booster will work at half the normal speed
      * for a singleplayer game
      *
@@ -119,4 +98,19 @@ public class SingleplayerCtrl extends GameCtrl {
         if (jokerName.equals("DecreaseTimeJoker")) return "Increase time";
         return super.getJokerDisplayName(jokerName);
     }
+
+    /**
+     * Sends player to splash screen, along with an alert that the game has ended, with their points total
+     */
+    @Override
+    public void handleGamePodium() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        mainCtrl.addCSS(alert);
+        alert.setTitle("Game Over");
+        alert.setHeaderText("You have been redirected to the splash screen");
+        alert.setContentText("Your score was : " + points);
+        alert.show();
+        back();
+    }
+
 }

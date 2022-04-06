@@ -1,0 +1,17 @@
+* {
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-background-color: transparent;
+}
+.number3 {
+    -fx-border-color: #BF9000;
+    -fx-text-fill: #BF9000;
+}
+.number2 {
+    -fx-border-color: #A6A6A6;
+    -fx-text-fill: #A6A6A6;
+}
+.number1 {
+    -fx-border-color: #FFD700;
+    -fx-text-fill: #FFD700;
+}

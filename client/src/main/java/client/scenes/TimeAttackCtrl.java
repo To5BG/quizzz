@@ -149,7 +149,7 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
                     if (currentQuestion == null) return; // happens if shutdown is called before triggering
                     rounds++;
                     if (initialTime <= 0) {
-                        handleGameEnd();
+                        handleGamePodium();
                     } else {
                         handleNextRound();
                     }
