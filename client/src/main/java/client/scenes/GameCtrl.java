@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public abstract class GameCtrl extends SceneCtrl implements Initializable {
 
     protected final static int GAME_ROUND_TIME = 10;
+    protected final static int PODIUM_TIME = 10;
     protected final static int MIDGAME_BREAK_TIME = 6;
     protected final static int TIMER_UPDATE_INTERVAL_MS = 50;
     protected final static int GAME_ROUND_DELAY = 2;
@@ -386,14 +387,6 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
         }
         setSessionId(0);
     }
-
-    /**
-     * Abstract method that gets called to show the podium screen
-     *
-     * @param sessionId the id of the current session
-     * @throws InterruptedException the exception to be thrown when necessary
-     */
-    abstract public void showPodiumScreen(long sessionId) throws InterruptedException;
 
     /**
      * {@inheritDoc}

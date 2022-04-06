@@ -63,15 +63,6 @@ public class SingleplayerCtrl extends GameCtrl {
     }
 
     /**
-     * Empty method because singleplayer mode does not have a podium screen.
-     *
-     * @param sessionId
-     */
-    @Override
-    public void showPodiumScreen(long sessionId) {
-    }
-
-    /**
      * If the joker is active make the time joker -0.5 so the booster will work at half the normal speed
      * for a singleplayer game
      *

@@ -267,12 +267,14 @@ public class MultiplayerCtrl extends GameCtrl {
         super.reset();
     }
 
-    @Override
+    /**
+     * Shows podium screen for multiplayer sessions
+     */
     public void showPodiumScreen(long sessionId) throws InterruptedException {
         gameSessionUtils.toggleReady(sessionId, false);
         mainCtrl.showPodiumScreen(this.sessionId, playerId);
 
-        TimeUtils timer = new TimeUtils(10L, TIMER_UPDATE_INTERVAL_MS);
+        TimeUtils timer = new TimeUtils(PODIUM_TIME, TIMER_UPDATE_INTERVAL_MS);
         timer.setOnSucceeded((event) -> {
             Platform.runLater(() -> {
                 mainCtrl.showEndGameScreen(sessionId, playerId);
@@ -332,7 +334,10 @@ public class MultiplayerCtrl extends GameCtrl {
         jokerUsage.setOpacity(1.0);
     }
 
-    @Override
+
+    /**
+     * Shows game podium if enough players are in the session
+     */
     public void handleGamePodium() {
         try {
             if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showPodiumScreen(sessionId);

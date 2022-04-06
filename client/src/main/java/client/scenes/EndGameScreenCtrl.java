@@ -8,10 +8,8 @@ import commons.Player;
 import jakarta.ws.rs.BadRequestException;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -29,7 +27,7 @@ import java.util.*;
 
 import static client.scenes.GameCtrl.*;
 
-public class EndGameScreenCtrl implements Initializable {
+public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
 
     private final static long END_GAME_TIME = 60L;
 
@@ -38,12 +36,10 @@ public class EndGameScreenCtrl implements Initializable {
     private final GameAnimation gameAnimation;
     private final MainCtrl mainCtrl;
 
-    private final ObservableList<Emoji> sessionEmojis;
-    private final List<Image> emojiImages;
     @FXML
     protected Button playAgain;
     @FXML
-    protected Button leave;
+    protected Button backButton;
     @FXML
     protected ProgressBar progressBar;
     @FXML
@@ -58,12 +54,6 @@ public class EndGameScreenCtrl implements Initializable {
     protected TableColumn<Player, String> colUserName;
     @FXML
     protected TableColumn<Player, Integer> colPoints;
-    @FXML
-    private TableView<Emoji> emojiList;
-    @FXML
-    private TableColumn<Emoji, String> emojiUsername;
-    @FXML
-    private TableColumn<Emoji, ImageView> emojiImage;
     @FXML
     private ImageView emojiFunny;
     @FXML
@@ -82,6 +72,7 @@ public class EndGameScreenCtrl implements Initializable {
     private Timer endGameTimer;
     private TimeUtils roundTimer;
     private StompSession.Subscription channelEnd;
+    private final List<Image> emojiImages;
 
 
     @Inject
@@ -91,7 +82,6 @@ public class EndGameScreenCtrl implements Initializable {
         this.gameAnimation = gameAnimation;
         this.webSocketsUtils = webSocketsUtils;
         this.mainCtrl = mainCtrl;
-        sessionEmojis = FXCollections.observableArrayList();
         emojiImages = new ArrayList<Image>();
         String[] emojiFileNames = {"funny", "sad", "angry"};
         ClassLoader cl = getClass().getClassLoader();
@@ -125,22 +115,7 @@ public class EndGameScreenCtrl implements Initializable {
         playAgain.setOpacity(1);
         count.setText("Waiting for game to start...");
         count.setOpacity(1);
-        leave.setOpacity(1);
-
-        emojiUsername.setCellValueFactory(e -> new SimpleStringProperty(e.getValue().username));
-        emojiImage.setCellValueFactory(e -> {
-            Image picture;
-            switch (e.getValue().emoji) {
-                case FUNNY -> picture = emojiImages.get(0);
-                case SAD -> picture = emojiImages.get(1);
-                default -> picture = emojiImages.get(2);
-            }
-
-            ImageView iv = new ImageView(picture);
-            iv.setFitHeight(30);
-            iv.setFitWidth(30);
-            return new SimpleObjectProperty<ImageView>(iv);
-        });
+        backButton.setOpacity(1);
 
         emojiFunny.setImage(emojiImages.get(0));
         emojiSad.setImage(emojiImages.get(1));
@@ -184,7 +159,7 @@ public class EndGameScreenCtrl implements Initializable {
     }
 
     /**
-     * Removes a player from the session and sets unready of the player was ready
+     * {@inheritDoc}
      */
     public void shutdown() {
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
@@ -202,27 +177,27 @@ public class EndGameScreenCtrl implements Initializable {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public void back() {
+        shutdown();
+        reset();
+        mainCtrl.showSplash();
+    }
+
+    /**
      * Resets the end of game screen.
      */
     public void reset() {
         playAgain.setText("Play again");
         playAgain.setOpacity(0);
-        leave.setOpacity(0);
-        leave.setDisable(true);
+        backButton.setOpacity(0);
+        backButton.setDisable(true);
         count.setText("[Count]");
         count.setText("Waiting for game to start...");
         setPlayingAgain(false);
         waitingSkip = 0;
         setPlayingAgain(false);
-    }
-
-    /**
-     * Reverts the player to the splash screen.
-     */
-    public void leaveGame() {
-        shutdown();
-        reset();
-        mainCtrl.showSplash();
     }
 
     /**
@@ -265,7 +240,7 @@ public class EndGameScreenCtrl implements Initializable {
                 if (isPlayingAgain()) {
                     startGame();
                 } else {
-                    leaveGame();
+                    back();
                 }
             });
         });
@@ -294,7 +269,7 @@ public class EndGameScreenCtrl implements Initializable {
                         reset();
                         mainCtrl.showMultiplayer(sessionId, playerId);
                     } else {
-                        leaveGame();
+                        back();
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Unable to start new game!");
                         alert.setHeaderText("There are too few people to play again:");
@@ -346,9 +321,6 @@ public class EndGameScreenCtrl implements Initializable {
      * Register the client to receive emoji reactions from other players
      */
     public void registerForEmojiUpdates() {
-        sessionEmojis.clear();
-        emojiList.setItems(sessionEmojis);
-
         channelEnd = this.webSocketsUtils.registerForEmojiUpdates(emoji -> {
             Platform.runLater(() -> gameAnimation.startEmojiAnimation(
                     gameAnimation.emojiToImage(emojiImages, emoji, 60), emoji.username, emojiArea));

@@ -15,8 +15,6 @@
  */
 package client.scenes;
 
-import commons.GameSession;
-import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -318,6 +316,7 @@ public class MainCtrl {
         primaryStage.setScene(podiumScreen);
         podiumCtrl.createPodium(sessionId);
         podiumCtrl.setPlayerId(playerId);
+        podiumCtrl.setSessionId(sessionId);
     }
 
     /**
