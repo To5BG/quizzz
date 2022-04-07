@@ -1,49 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.Cursor?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
-<AnchorPane prefHeight="460.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane prefHeight="460.0" prefWidth="650.0" styleClass="background" stylesheets="@/CSS/Baseline.css"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.scenes.TutorialScreenCtrl">
     <children>
-        <Line fx:id="leftUp" endX="55" endY="5" layoutX="-5.0" layoutY="220.0" startX="30" startY="30"
+        <Line fx:id="leftUp" endX="55" endY="5" layoutX="-5.0" layoutY="220.0" startX="30" startY="30" stroke="#00ccff"
               strokeWidth="5.0"/>
         <Line fx:id="leftDown" endX="55" endY="55" layoutX="-5.0" layoutY="220.0" startX="30" startY="30"
-              strokeWidth="5.0"/>
+              stroke="#00ccff" strokeWidth="5.0"/>
         <Line fx:id="rightUp" endX="55" endY="5" layoutX="545.0" layoutY="220.0" startX="80" startY="30"
-              strokeWidth="5.0"/>
+              stroke="#00ccff" strokeWidth="5.0"/>
         <Line fx:id="rightDown" endX="55" endY="55" layoutX="545.0" layoutY="220.0" startX="80" startY="30"
-              strokeWidth="5.0"/>
+              stroke="#00ccff" strokeWidth="5.0"/>
         <Button fx:id="next" layoutX="580.0" layoutY="190.0" mnemonicParsing="false" onAction="#switchNext"
-                opacity="0.0" prefHeight="110.0" prefWidth="50.0" text="Next">
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
-        </Button>
+                opacity="0.0" prefHeight="110.0" prefWidth="50.0" text="Next"/>
         <Button fx:id="prev" layoutX="20.0" layoutY="190.0" mnemonicParsing="false" onAction="#switchPrev" opacity="0.0"
-                prefHeight="110.0" prefWidth="50.0" text="Prev">
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
-        </Button>
-        <Circle fx:id="dot0" layoutX="200.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK"
+                prefHeight="110.0" prefWidth="50.0" text="Prev"/>
+        <Circle fx:id="dot0" fill="#00ccff" layoutX="200.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK"
                 strokeType="INSIDE"/>
-        <Circle fx:id="dot1" layoutX="260.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK"
+        <Circle fx:id="dot1" fill="#00ccff" layoutX="260.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK"
                 strokeType="INSIDE"/>
-        <Circle fx:id="dot2" layoutX="320.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK"
+        <Circle fx:id="dot2" fill="#00ccff" layoutX="320.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK"
                 strokeType="INSIDE"/>
-        <Circle fx:id="dot3" layoutX="380.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK"
+        <Circle fx:id="dot3" fill="#00ccff" layoutX="380.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK"
                 strokeType="INSIDE"/>
-        <Circle fx:id="dot4" layoutX="440.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK"
+        <Circle fx:id="dot4" fill="#00ccff" layoutX="440.0" layoutY="420.0" opacity="0.25" radius="10.0" stroke="BLACK"
                 strokeType="INSIDE"/>
         <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#back" prefHeight="30.0"
-                prefWidth="42.0" text="Back">
-            <cursor>
-                <Cursor fx:constant="HAND"/>
-            </cursor>
-        </Button>
+                prefWidth="57.0" text="Back"/>
         <Pane fx:id="pane0" layoutX="60.0" prefHeight="402.0" prefWidth="530.0">
             <children>
                 <Label alignment="CENTER" layoutX="4.0" layoutY="14.0" prefHeight="58.0" prefWidth="530.0"

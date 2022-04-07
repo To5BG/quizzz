@@ -17,16 +17,13 @@ import java.util.TimerTask;
 
 public class TimeAttackCtrl extends SingleplayerCtrl {
 
-    private long initialTime;
+    private long initialTime = 60L;
     private TimeUtils roundTimer;
 
     @Inject
     public TimeAttackCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
                           LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
         super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
-
-
-        this.initialTime = 60L;
     }
 
     /**
@@ -114,6 +111,7 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
                         alert.setTitle("Invalid answer");
                         alert.setHeaderText("Invalid answer");
                         alert.setContentText("You should only enter an integer number");
+                        mainCtrl.addCSS(alert);
                         alert.show();
                         return;
                     } else {
@@ -151,7 +149,7 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
                     if (currentQuestion == null) return; // happens if shutdown is called before triggering
                     rounds++;
                     if (initialTime <= 0) {
-                        handleGameEnd();
+                        handleGamePodium();
                     } else {
                         handleNextRound();
                     }

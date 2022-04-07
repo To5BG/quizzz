@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.Cursor?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
+
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-            prefWidth="600.0" styleClass="background" stylesheets="@/CSS/WaitingArea.css"
+            prefWidth="600.0" styleClass="background" stylesheets="@/CSS/Baseline.css"
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.scenes.WaitingAreaCtrl">
-    <Button layoutX="41.0" layoutY="43.0" mnemonicParsing="false" onAction="#back" text="Back">
-        <cursor>
-            <Cursor fx:constant="HAND"/>
-        </cursor>
-    </Button>
+    <Button fx:id="backButton" layoutX="41.0" layoutY="43.0" mnemonicParsing="false" onAction="#back" text="Back"/>
     <TableView fx:id="currentPlayers" layoutX="41.0" layoutY="105.0" prefHeight="229.0" prefWidth="299.0">
         <columns>
             <TableColumn fx:id="userName" prefWidth="296.0" text="Players"/>
@@ -25,11 +21,7 @@
         </font>
     </Label>
     <Button fx:id="readyButton" layoutX="496.0" layoutY="35.0" mnemonicParsing="false" onAction="#toggleReady"
-            text="Ready">
-        <cursor>
-            <Cursor fx:constant="HAND"/>
-        </cursor>
-    </Button>
+            text="Ready"/>
     <Label fx:id="playerText" layoutX="438.0" layoutY="170.0" text="Ready: 0/0">
         <font>
             <Font size="20.0"/>

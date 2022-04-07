@@ -15,16 +15,16 @@
  */
 package server.api;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.HttpStatus.OK;
+
+import java.util.Random;
+
 import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.util.Random;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.http.HttpStatus.OK;
 
 public class SessionControllerTest {
 
@@ -50,7 +50,7 @@ public class SessionControllerTest {
 
         stubSessionManager = new StubSessionManager();
         sut = new SessionController(random, playerRepo, "test", stubSessionManager,
-                new ActivityController(new Random(), activityRepo));
+                new ActivityController(new Random(), activityRepo), new LeaderboardController(playerRepo));
         first = new GameSession(GameSession.SessionType.MULTIPLAYER);
         waiting = new GameSession(GameSession.SessionType.WAITING_AREA);
     }
@@ -130,11 +130,11 @@ public class SessionControllerTest {
 
         var newSession = sut.getAvailableSessions();
         // make sure fetch returns null if no sessions were added
-        assertEquals(sut.getAvailableSessions().getBody(), null);
+        assertEquals(null, sut.getAvailableSessions().getBody());
 
         //make sure it does not fetch non waiting rooms
         sut.addSession(first);
-        assertEquals(sut.getAvailableSessions().getBody(), null);
+        assertEquals(null, sut.getAvailableSessions().getBody());
 
         sut.addSession(waiting);
         var availableSession = sut.getAvailableSessions().getBody();

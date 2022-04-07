@@ -10,7 +10,7 @@ import javafx.scene.shape.Line;
 
 import java.util.List;
 
-public class TutorialScreenCtrl {
+public class TutorialScreenCtrl extends SceneCtrl{
     private final static double INVISIBLE = 0;
     private final static double DIM = 0.25;
     private final static double VISIBLE = 1;
@@ -69,9 +69,18 @@ public class TutorialScreenCtrl {
     }
 
     /**
-     * Reverts the player to the splash screen.
+     * {@inheritDoc}
      */
+    @Override
+    public void shutdown() {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void back() {
+        shutdown();
         mainCtrl.showSplash();
     }
 

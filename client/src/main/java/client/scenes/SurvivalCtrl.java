@@ -119,7 +119,7 @@ public class SurvivalCtrl extends SingleplayerCtrl {
                     if (currentQuestion == null) return; // happens if shutdown is called before triggering
                     rounds++;
                     if (gamelives == 0) {
-                        handleGameEnd();
+                        handleGamePodium();
                     } else {
                         handleNextRound();
                     }

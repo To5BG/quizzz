@@ -21,9 +21,10 @@ import javafx.util.Duration;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class GameCtrl implements Initializable {
+public abstract class GameCtrl extends SceneCtrl implements Initializable {
 
     protected final static int GAME_ROUND_TIME = 10;
+    protected final static int PODIUM_TIME = 10;
     protected final static int MIDGAME_BREAK_TIME = 6;
     protected final static int TIMER_UPDATE_INTERVAL_MS = 50;
     protected final static int GAME_ROUND_DELAY = 2;
@@ -147,6 +148,7 @@ public abstract class GameCtrl implements Initializable {
      */
     protected void renderGeneralInformation(Question q) {
         this.questionPrompt.setText(q.prompt);
+        this.questionPrompt.setStyle("-fx-text-alignment: left");
         if (q.type != Question.QuestionType.RANGE_GUESS && q.type != Question.QuestionType.EQUIVALENCE &&
                 q.type != Question.QuestionType.MULTIPLE_CHOICE) {
             return;
@@ -217,6 +219,7 @@ public abstract class GameCtrl implements Initializable {
             multiChoiceAnswers.add(choice);
             answerArea.getChildren().add(choice);
         }
+        answerArea.setStyle("-fx-text-alignment: left");
     }
 
     /**
@@ -320,7 +323,7 @@ public abstract class GameCtrl implements Initializable {
                         cancel();
                         loadAnswer();
                     } else {
-                        countdown.setText("The answer option will appear in " + counter + " seconds.");
+                        countdown.setText("The answer option will appear in " + counter + " sec");
                         counter--;
                     }
                 });
@@ -372,7 +375,7 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Removes player from session, along with the singleplayer session. Also called if controller is closed forcibly
+     * {@inheritDoc}
      */
     public void shutdown() {
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
@@ -386,12 +389,7 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Abstract method that gets called to show the end game screen for multiplayer sessions.
-     */
-    abstract public void showEndScreen();
-
-    /**
-     * Reverts the player to the splash screen and remove him from the current game session.
+     * {@inheritDoc}
      */
     public void back() {
         shutdown();
@@ -488,6 +486,8 @@ public abstract class GameCtrl implements Initializable {
                         alert.setHeaderText("Invalid answer");
                         alert.setContentText("You should only enter an integer number");
                         alert.show();
+                        mainCtrl.addCSS(alert);
+
                         return;
                     } else {
                         ans.addAnswer(0);
@@ -508,18 +508,9 @@ public abstract class GameCtrl implements Initializable {
     }
 
     /**
-     * Shows the end game screen once the multiplayer game ends. In case of singleplayer, sends the user back to splash
+     * the method to handle the podium part of a game
      */
-    protected void handleGameEnd() {
-        try {
-            if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showEndScreen();
-            else back();
-        } catch (BadRequestException ex) {
-            setPlayerId(0);
-            setSessionId(0);
-            back();
-        }
-    }
+    public abstract void handleGamePodium();
 
     /**
      * Proceeds the user onto the next round of the game
@@ -559,7 +550,7 @@ public abstract class GameCtrl implements Initializable {
                     if (currentQuestion == null) return; // happens if shutdown is called before triggering
                     rounds++;
                     if (rounds == GameSession.gameRounds) {
-                        handleGameEnd();
+                        handleGamePodium();
                     } else if (rounds == GameSession.gameRounds / 2 &&
                             gameSessionUtils.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
                         displayMidGameScreen();

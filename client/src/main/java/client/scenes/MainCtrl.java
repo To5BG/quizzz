@@ -15,16 +15,16 @@
  */
 package client.scenes;
 
-import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.List;
+import java.nio.file.Path;
 
 public class MainCtrl {
 
@@ -49,73 +49,79 @@ public class MainCtrl {
     private Scene gamemodeScreen;
     private LeaderBoardCtrl leaderBoardCtrl;
     private Scene leaderBoardScreen;
+    private PodiumCtrl podiumCtrl;
+    private Scene podiumScreen;
+    private EndGameScreenCtrl endGameScreenCtrl;
+    private Scene endGameScreen;
     private WebViewCtrl webViewCtrl;
     private Scene webViewScreen;
     private TutorialScreenCtrl tutorialCtrl;
     private Scene tutorialScreen;
 
+    private List<Pair<? extends SceneCtrl, Parent>> pairs;
+
     /**
      * Starter method for the main controller to establish connections between scenes and store their controllers
      *
-     * @param primaryStage store base stage of the application
-     * @param splash       Controller and Scene pair for the splash screen of the application
-     * @param multi        Controller and Scene pair for the multiplayer screen of the application
-     * @param rooms        Controller and Scene pair for the room selection screen of the application
-     * @param wait         Controller and Scene pair for the waiting area screen of the application
-     * @param mode         Controller and Scene pair for the gamemode selection screen of the application
-     * @param single       Controller and Scene pair for the default singleplayer gamescreen of the application
-     * @param timeAttack   Controller and Scene pair for the time attack gamescreen of the application
-     * @param survival     Controller and Scene pair for the survival gamescreen of the application
-     * @param leaderboard  Controller and Scene pair for the leaderboard screen of the application
-     * @param webView      Controller and Scene pair for the webview screen of the application
-     * @param tutorial     Controller and Scene pair for the tutorial screen of the application
+     * @param primaryStage Base stage of the application
+     * @param pairs        List of all controller-scene pairs
      */
-    public void initialize(Stage primaryStage, Pair<SplashCtrl, Parent> splash,
-                           Pair<MultiplayerCtrl, Parent> multi,
-                           Pair<RoomSelectionCtrl, Parent> rooms,
-                           Pair<WaitingAreaCtrl, Parent> wait,
-                           Pair<GamemodeCtrl, Parent> mode,
-                           Pair<SingleplayerCtrl, Parent> single,
-                           Pair<TimeAttackCtrl, Parent> timeAttack,
-                           Pair<SurvivalCtrl, Parent> survival,
-                           Pair<LeaderBoardCtrl, Parent> leaderboard,
-                           Pair<WebViewCtrl, Parent> webView,
-                           Pair<TutorialScreenCtrl, Parent> tutorial) {
+    public void initialize(Stage primaryStage, List<Pair<? extends SceneCtrl, Parent>> pairs) {
         this.primaryStage = primaryStage;
+        this.pairs = pairs;
 
-        this.splashCtrl = splash.getKey();
+        var splash = pairs.get(0);
+        this.splashCtrl = (SplashCtrl) splash.getKey();
         this.splashScreen = new Scene(splash.getValue());
 
-        this.multiplayerCtrl = multi.getKey();
+        var multi = pairs.get(1);
+        this.multiplayerCtrl = (MultiplayerCtrl) multi.getKey();
         this.multiPlayerScreen = new Scene(multi.getValue());
 
-        this.roomSelectionCtrl = rooms.getKey();
-        this.roomSelectionScreen = new Scene(rooms.getValue());
+        var roomsel = pairs.get(2);
+        this.roomSelectionCtrl = (RoomSelectionCtrl) roomsel.getKey();
+        this.roomSelectionScreen = new Scene(roomsel.getValue());
 
-        this.waitingAreaCtrl = wait.getKey();
-        this.waitingAreaScreen = new Scene(wait.getValue());
-
-        this.gamemodeCtrl = mode.getKey();
-        this.gamemodeScreen = new Scene(mode.getValue());
-
-        this.singlePlayerCtrl = single.getKey();
+        var single = pairs.get(3);
+        this.singlePlayerCtrl = (SingleplayerCtrl) single.getKey();
         this.singlePlayerScreen = new Scene(single.getValue());
 
-        this.timeAttackCtrl = timeAttack.getKey();
-        this.timeAttackScreen = new Scene(timeAttack.getValue());
+        var wait = pairs.get(4);
+        this.waitingAreaCtrl = (WaitingAreaCtrl) wait.getKey();
+        this.waitingAreaScreen = new Scene(wait.getValue());
 
-        this.survivalCtrl = survival.getKey();
-        this.survivalScreen = new Scene(survival.getValue());
-
-        this.leaderBoardCtrl = leaderboard.getKey();
+        var leaderboard = pairs.get(5);
+        this.leaderBoardCtrl = (LeaderBoardCtrl) leaderboard.getKey();
         this.leaderBoardScreen = new Scene(leaderboard.getValue());
 
-        this.webViewCtrl = webView.getKey();
+        var webView = pairs.get(6);
+        this.webViewCtrl = (WebViewCtrl) webView.getKey();
         this.webViewScreen = new Scene(webView.getValue());
 
-
-        this.tutorialCtrl = tutorial.getKey();
+        var tutorial = pairs.get(7);
+        this.tutorialCtrl = (TutorialScreenCtrl) tutorial.getKey();
         this.tutorialScreen = new Scene(tutorial.getValue());
+
+        var mode = pairs.get(8);
+        this.gamemodeCtrl = (GamemodeCtrl) mode.getKey();
+        this.gamemodeScreen = new Scene(mode.getValue());
+
+        var timeAttack = pairs.get(9);
+        this.timeAttackCtrl = (TimeAttackCtrl) timeAttack.getKey();
+        this.timeAttackScreen = new Scene(timeAttack.getValue());
+
+        var survival = pairs.get(10);
+        this.survivalCtrl = (SurvivalCtrl) survival.getKey();
+        this.survivalScreen = new Scene(survival.getValue());
+
+        var podium = pairs.get(11);
+        this.podiumCtrl = (PodiumCtrl) podium.getKey();
+        this.podiumScreen = new Scene(podium.getValue());
+
+        var endScreen = pairs.get(12);
+        this.endGameScreenCtrl = (EndGameScreenCtrl) endScreen.getKey();
+        this.endGameScreen = new Scene(endScreen.getValue());
+
 
         confirmClose();
         showSplash();
@@ -134,7 +140,7 @@ public class MainCtrl {
 
     /**
      * Sets the current screen to the multiplayer screen and adds the player to the game session DB. Loads the first
-     * question.
+     * question. If the session is in the Play Again status, simply adds the player to the end game screen
      *
      * @param sessionId Id of session to be joined
      * @param playerId  Id of player that is about to join
@@ -147,9 +153,9 @@ public class MainCtrl {
         multiplayerCtrl.setPlayerId(playerId);
         multiplayerCtrl.registerForEmojiUpdates();
         multiplayerCtrl.fetchJokerStates();
-        multiplayerCtrl.loadQuestion();
         multiplayerCtrl.scanForDisconnect();
         multiplayerCtrl.scanForJokerUsage();
+        multiplayerCtrl.loadQuestion();
     }
 
     /**
@@ -163,20 +169,8 @@ public class MainCtrl {
         primaryStage.setScene(roomSelectionScreen);
         roomSelectionScreen.setOnKeyPressed(e -> roomSelectionCtrl.keyPressed(e));
         roomSelectionCtrl.setPlayerId(playerId);
-        roomSelectionCtrl.setNotCancel(true);
-
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    try {
-                        if (!roomSelectionCtrl.refresh()) cancel();
-                    } catch (Exception e) {
-                        cancel();
-                    }
-                });
-            }
-        }, 0, 500);
+        roomSelectionCtrl.refresh(null);
+        roomSelectionCtrl.registerForUpdates();
     }
 
     /**
@@ -191,19 +185,8 @@ public class MainCtrl {
         waitingAreaScreen.setOnKeyPressed(e -> waitingAreaCtrl.keyPressed(e));
         waitingAreaCtrl.setPlayerId(playerId);
         waitingAreaCtrl.setWaitingId(waitingId);
-
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    try {
-                        if (!waitingAreaCtrl.refresh()) cancel();
-                    } catch (Exception e) {
-                        cancel();
-                    }
-                });
-            }
-        }, 0, 500);
+        waitingAreaCtrl.refresh(null);
+        waitingAreaCtrl.registerForUpdates();
     }
 
     /**
@@ -265,8 +248,9 @@ public class MainCtrl {
     public void showLeaderboard() {
         primaryStage.setTitle("LeaderBoard");
         primaryStage.setScene(leaderBoardScreen);
-        leaderBoardCtrl.refreshSingle();
         leaderBoardScreen.setOnKeyPressed(e -> leaderBoardCtrl.keyPressed(e));
+        leaderBoardCtrl.refresh(null);
+        leaderBoardCtrl.registerForUpdates();
 
     }
 
@@ -298,7 +282,53 @@ public class MainCtrl {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirm Close");
             alert.setHeaderText("Close the program?");
-            alert.showAndWait().filter(r -> r != ButtonType.OK).ifPresent(r -> evt.consume());
+            addCSS(alert);
+            alert.showAndWait().filter(r -> r != ButtonType.OK).ifPresent(r -> {evt.consume();});
+            if (evt.isConsumed()) return;
+            for (var pair : pairs) {
+                try {
+                    pair.getKey().shutdown();
+                } catch (Exception ignored) {
+                }
+            }
         });
+    }
+
+    /**
+     * Add Alert.css stylesheet to the alert
+     *
+     * @param alert - Alert to which to add css
+     */
+    public void addCSS(Alert alert) {
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(
+                String.valueOf(getClass().getClassLoader().getResource(Path.of("", "CSS", "Alert.css").toString())));
+
+    }
+
+    /**
+     * Sets the current screen to the podium screen
+     *
+     * @param sessionId the id of the current game session
+     */
+    public void showPodiumScreen(long sessionId, long playerId) {
+        primaryStage.setTitle("Podium");
+        primaryStage.setScene(podiumScreen);
+        podiumCtrl.createPodium(sessionId);
+        podiumCtrl.setPlayerId(playerId);
+        podiumCtrl.setSessionId(sessionId);
+    }
+
+    /**
+     * Sets the current screen to the end of game screen
+     *
+     * @param sessionId The id of the current game session
+     */
+    public void showEndGameScreen(long sessionId, long playerId) {
+        primaryStage.setTitle("End of game");
+        primaryStage.setScene(endGameScreen);
+        endGameScreenCtrl.setPlayerId(playerId);
+        endGameScreenCtrl.setSessionId(sessionId);
+        endGameScreenCtrl.showEndScreen();
     }
 }
