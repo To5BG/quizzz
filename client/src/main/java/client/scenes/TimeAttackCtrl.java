@@ -17,7 +17,7 @@ import java.util.TimerTask;
 
 public class TimeAttackCtrl extends SingleplayerCtrl {
 
-    private long initialTime = 60L;
+    private long initialTime;
     private TimeUtils roundTimer;
 
     @Inject
@@ -50,7 +50,6 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
      */
     @Override
     public void reset() {
-        this.initialTime = 60L;
         super.reset();
     }
 

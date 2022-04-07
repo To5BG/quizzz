@@ -35,15 +35,6 @@ public class SingleplayerCtrl extends GameCtrl {
     }
 
     /**
-     * Sets question count for current game session
-     * @param questions Question count to update the session to
-     */
-    public void setQuestionCount(double questions) {
-        gameSessionUtils.setQuestionCounter(this.sessionId, (int) questions);
-        if (questions != 20) gameSessionUtils.disableLeaderboard(sessionId);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override

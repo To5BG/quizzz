@@ -164,7 +164,7 @@ public class SessionController {
                 p.currentPoints = 0;
             }
             updateSession(session);
-        } else if (session.questionCounter == GameSession.gameRounds) {
+        } else if (session.questionCounter == session.gameRounds) {
             endSession(session);
         } else if (session.questionCounter == 0) {
             // Session first round

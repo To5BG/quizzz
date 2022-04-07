@@ -205,14 +205,14 @@ public class MainCtrl {
     /**
      * Sets the current screen to the single player screen.
      */
-    public void showDefaultSinglePlayer(long sessionId, long playerId, double questions) {
+    public void showDefaultSinglePlayer(long sessionId, long playerId, int questions) {
         primaryStage.setTitle("Single player game");
         primaryStage.setScene(singlePlayerScreen);
         singlePlayerScreen.setOnKeyPressed(e -> singlePlayerCtrl.keyPressed(e));
         singlePlayerCtrl.setSessionId(sessionId);
         singlePlayerCtrl.setPlayerId(playerId);
         singlePlayerCtrl.fetchJokerStates();
-        singlePlayerCtrl.setQuestionCount(questions);
+        singlePlayerCtrl.setGameRounds(questions);
         singlePlayerCtrl.loadQuestion();
         singlePlayerCtrl.refresh();
     }
@@ -226,8 +226,8 @@ public class MainCtrl {
         timeAttackScreen.setOnKeyPressed(e -> timeAttackCtrl.keyPressed(e));
         timeAttackCtrl.setSessionId(sessionId);
         timeAttackCtrl.setPlayerId(playerId);
-        timeAttackCtrl.startTimer();
         timeAttackCtrl.setTimer(timer);
+        timeAttackCtrl.startTimer();
         timeAttackCtrl.refresh();
     }
 

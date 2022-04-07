@@ -145,7 +145,10 @@ public class GamemodeCtrl extends SceneCtrl implements Initializable {
      */
     public void showDefault() {
         long sessionId = createId(GameSession.SessionType.SINGLEPLAYER);
-        mainCtrl.showDefaultSinglePlayer(sessionId, playerId, questionSlider.getValue());
+        int questions = (int) questionSlider.getValue();
+        gameSessionUtils.setGameRounds(sessionId, questions);
+        if (questions != 20) gameSessionUtils.disableLeaderboard(sessionId);
+        mainCtrl.showDefaultSinglePlayer(sessionId, playerId, questions);
     }
 
     /**

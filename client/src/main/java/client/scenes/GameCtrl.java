@@ -95,6 +95,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
     protected Question currentQuestion;
     protected int points = 0;
     protected int rounds = 0;
+    protected int gameRounds;
     protected Thread timerThread;
     protected Evaluation evaluation;
 
@@ -549,9 +550,9 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
                 Platform.runLater(() -> {
                     if (currentQuestion == null) return; // happens if shutdown is called before triggering
                     rounds++;
-                    if (rounds == GameSession.gameRounds) {
+                    if (rounds == gameRounds) {
                         handleGamePodium();
-                    } else if (rounds == GameSession.gameRounds / 2 &&
+                    } else if (rounds == gameRounds / 2 &&
                             gameSessionUtils.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
                         displayMidGameScreen();
                         countdown.setOpacity(0);
@@ -681,6 +682,13 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      */
     public double getTimeJokers() {
         return gameSessionUtils.getSession(sessionId).getTimeJokers();
+    }
+
+    /**
+     * Setter for the gameRounds
+     */
+    public void setGameRounds(int rounds) {
+        gameRounds = rounds;
     }
 
     /**
