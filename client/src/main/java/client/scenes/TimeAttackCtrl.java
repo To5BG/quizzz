@@ -55,6 +55,15 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
     }
 
     /**
+     * Sets time for current game session
+     * @param timer Time to set the game session with
+     */
+    public void setTimer(double timer) {
+        this.initialTime = Math.round(timer);
+        if (initialTime != 60) gameSessionUtils.disableLeaderboard(sessionId);
+    }
+
+    /**
      * Loads a question and starts reading time.
      */
     @Override
@@ -186,5 +195,4 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
 
         loadQuestion();
     }
-
 }

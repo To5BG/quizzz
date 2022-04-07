@@ -19,7 +19,7 @@ import java.util.TimerTask;
 
 public class SurvivalCtrl extends SingleplayerCtrl {
 
-    private int gamelives;
+    private long gameLives;
 
     @FXML
     private Label livesLabel;
@@ -28,7 +28,6 @@ public class SurvivalCtrl extends SingleplayerCtrl {
     public SurvivalCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
                         LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
         super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
-        this.gamelives = 3;
     }
 
     /**
@@ -44,7 +43,6 @@ public class SurvivalCtrl extends SingleplayerCtrl {
      * Resets all fields and the screen for a new game.
      */
     public void reset() {
-        this.gamelives = 3;
         super.reset();
     }
 
@@ -62,7 +60,7 @@ public class SurvivalCtrl extends SingleplayerCtrl {
      * Displays the number of lives the player still has
      */
     public void renderLivesCount() {
-        livesLabel.setText(String.format("Lives: %d", gamelives));
+        livesLabel.setText(String.format("Lives: %d", gameLives));
     }
 
     /**
@@ -71,6 +69,15 @@ public class SurvivalCtrl extends SingleplayerCtrl {
     public void loadQuestion() {
         renderLivesCount();
         super.loadQuestion();
+    }
+
+    /**
+     * Sets live count for current game session
+     * @param lives lives count to set the game session with
+     */
+    public void setLives(double lives) {
+        this.gameLives = Math.round(lives);
+        if (gameLives != 3) gameSessionUtils.disableLeaderboard(sessionId);
     }
 
     /**
@@ -92,9 +99,9 @@ public class SurvivalCtrl extends SingleplayerCtrl {
         this.evaluation = questionUtils.submitAnswer(sessionId, playerId, ans);
 
         if (evaluation.points == 0) {
-            gamelives--;
+            gameLives--;
         }
-        if (gamelives == 0) {
+        if (gameLives == 0) {
             gameSessionUtils.setQuestionCounter(sessionId, Integer.MAX_VALUE);
         }
         gameSessionUtils.toggleReady(sessionId, true);
@@ -118,7 +125,7 @@ public class SurvivalCtrl extends SingleplayerCtrl {
                 Platform.runLater(() -> {
                     if (currentQuestion == null) return; // happens if shutdown is called before triggering
                     rounds++;
-                    if (gamelives == 0) {
+                    if (gameLives == 0) {
                         handleGamePodium();
                     } else {
                         handleNextRound();

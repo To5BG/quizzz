@@ -11,7 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 public class GameSession {
-    public static int gameRounds = 2;
+    public static int gameRounds;
+    public boolean isLeaderboardDisabled;
 
     public long id;
 
@@ -29,7 +30,6 @@ public class GameSession {
     public int timeJokers;
 
     public SessionType sessionType;
-
 
     public enum SessionType {
         SELECTING,
@@ -75,6 +75,8 @@ public class GameSession {
         this.questionCounter = 0;
         this.difficultyFactor = 1;
         this.timeJokers = 0;
+        this.setGameRounds(20);
+        this.isLeaderboardDisabled = false;
 
         this.sessionStatus = SessionStatus.STARTED;
         if (sessionType == SessionType.SELECTING) this.sessionStatus = SessionStatus.SELECTING;
@@ -194,6 +196,20 @@ public class GameSession {
                 this.timeJokers == other.timeJokers &&
                 this.sessionType.equals(other.sessionType) &&
                 this.sessionStatus.equals(other.sessionStatus);
+    }
+
+    /**
+     * Setter for disableLeaderboard field. Disables leaderboards for the given session
+     */
+    public void disableLeaderboard() {
+        this.isLeaderboardDisabled = true;
+    }
+
+    /**
+     * Setter for disableLeaderboard field. Enables leaderboards for the given session
+     */
+    public void enableLeaderboard() {
+        this.isLeaderboardDisabled = false;
     }
 
     @Override
