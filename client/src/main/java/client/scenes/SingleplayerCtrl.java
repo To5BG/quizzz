@@ -112,5 +112,4 @@ public class SingleplayerCtrl extends GameCtrl {
         alert.show();
         back();
     }
-
 }

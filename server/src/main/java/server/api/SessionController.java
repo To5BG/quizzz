@@ -74,7 +74,7 @@ public class SessionController {
         switch (session.sessionType) {
             case SINGLEPLAYER, SURVIVAL, TIME_ATTACK -> {
                 Player p = session.getPlayers().get(0);
-                updateHighscore(p, session.sessionType);
+                if (!session.isLeaderboardDisabled) updateHighscore(p, session.sessionType);
                 removeSession(session.id);
             }
             default -> {
@@ -164,7 +164,7 @@ public class SessionController {
                 p.currentPoints = 0;
             }
             updateSession(session);
-        } else if (session.questionCounter == GameSession.gameRounds) {
+        } else if (session.questionCounter == session.gameRounds) {
             endSession(session);
         } else if (session.questionCounter == 0) {
             // Session first round
@@ -353,6 +353,19 @@ public class SessionController {
         return ResponseEntity.ok(session);
     }
 
+    /**
+     * Updates disableLeaderboard field of a game session (for game sessions with custom settings)
+     * @param sessionId Id of session to update
+     * @return The updated game session
+     */
+    @GetMapping("/{id}/disableLeaderboard")
+    public ResponseEntity<GameSession> disableLeaderboard(@PathVariable("id") Long sessionId) {
+        if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
+        GameSession session = sm.getById(sessionId);
+        session.disableLeaderboard();
+        updateSession(session);
+        return ResponseEntity.ok(session);
+    }
 
     /**
      * Updates status of game session

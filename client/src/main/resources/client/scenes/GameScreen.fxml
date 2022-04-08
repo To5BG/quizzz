@@ -30,7 +30,7 @@
         <Button fx:id="doublePointsButton" alignment="CENTER" layoutX="340.0" layoutY="317.0" mnemonicParsing="false"
                 onAction="#doublePoints" prefHeight="34.0" prefWidth="108.0" text="Double Points" textFill="WHITE"/>
         <Accordion layoutX="498.0" layoutY="79.0"/>
-        <TitledPane animated="true" layoutY="80.0" prefHeight="185.0" prefWidth="160.0" styleClass="TitledPane"
+        <TitledPane layoutY="80.0" prefHeight="185.0" prefWidth="160.0" styleClass="TitledPane"
                     stylesheets="@/CSS/Baseline.css" text="LeaderBoard" textFill="WHITE">
             <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="160.0">
