@@ -41,7 +41,7 @@ public class QuestionGeneratorTest {
     @Test
     public void testGenerateSurvivalQuestionInternalRng() {
         double difficulty = 1;
-        Pair<Question, List<Long>> res = QuestionGenerator.generateSurvivalQuestion(difficulty, ctrl);
+        Pair<Question, List<Long>> res = QuestionGenerator.generateGamemodeQuestion(difficulty, ctrl);
         assertNotNull(res.getFirst());
         assertNotNull(res.getSecond());
         assertTrue(res.getSecond().size() >= 1);

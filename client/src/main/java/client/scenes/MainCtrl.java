@@ -156,6 +156,7 @@ public class MainCtrl {
         multiplayerCtrl.fetchJokerStates();
         multiplayerCtrl.scanForDisconnect();
         multiplayerCtrl.scanForJokerUsage();
+        multiplayerCtrl.setGameRounds(GameCtrl.MULTIPLAYER_ROUNDS);
         multiplayerCtrl.loadQuestion();
     }
 
