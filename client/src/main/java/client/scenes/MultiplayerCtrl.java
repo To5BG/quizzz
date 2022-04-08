@@ -237,6 +237,7 @@ public class MultiplayerCtrl extends GameCtrl {
         if (submitButton.isDisabled()) {
             gameSessionUtils.toggleReady(sessionId, false);
         }
+        soundManager.halt();
         channel.unsubscribe();
         super.shutdown();
         disconnectTimer.cancel();
@@ -270,6 +271,7 @@ public class MultiplayerCtrl extends GameCtrl {
      * Shows podium screen for multiplayer sessions
      */
     public void showPodiumScreen(long sessionId) throws InterruptedException {
+        soundManager.halt();
         soundManager.playSound("EndGame");
         gameSessionUtils.toggleReady(sessionId, false);
         mainCtrl.showPodiumScreen(this.sessionId, playerId);

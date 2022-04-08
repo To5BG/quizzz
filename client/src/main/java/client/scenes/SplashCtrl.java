@@ -320,6 +320,7 @@ public class SplashCtrl extends SceneCtrl implements Initializable{
      */
     @Override
     public void back() {
+        soundManager.halt();
         soundManager.playSound("Button");
         shutdown();
     }
@@ -328,6 +329,7 @@ public class SplashCtrl extends SceneCtrl implements Initializable{
      * Show the tutorial page
      */
     public void showTutorial() {
+        soundManager.playSound("Button");
         mainCtrl.showTutorial();
     }
 

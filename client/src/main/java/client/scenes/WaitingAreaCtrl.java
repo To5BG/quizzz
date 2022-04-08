@@ -93,6 +93,7 @@ public class WaitingAreaCtrl extends SceneCtrl implements Initializable {
      * {@inheritDoc}
      */
     public void back() {
+        soundManager.halt();
         soundManager.playSound("Button");
         long id = playerId;
         shutdown();

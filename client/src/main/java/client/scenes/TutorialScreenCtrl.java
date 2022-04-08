@@ -82,6 +82,7 @@ public class TutorialScreenCtrl extends SceneCtrl{
      */
     @Override
     public void back() {
+        soundManager.halt();
         soundManager.playSound("Button");
         shutdown();
         mainCtrl.showSplash();

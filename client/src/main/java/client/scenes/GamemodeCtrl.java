@@ -124,6 +124,7 @@ public class GamemodeCtrl extends SceneCtrl implements Initializable {
      * Reverts the player to the splash screen and remove him from the current game session.
      */
     public void back() {
+        soundManager.halt();
         soundManager.playSound("Button");
         shutdown();
         mainCtrl.showSplash();

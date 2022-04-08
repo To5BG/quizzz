@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class GameCtrl extends SceneCtrl implements Initializable {
 
-    protected final static int GAME_ROUND_TIME = 10;
+    protected final static int GAME_ROUND_TIME = 9;
     protected final static int PODIUM_TIME = 10;
     protected final static int MIDGAME_BREAK_TIME = 6;
     protected final static int TIMER_UPDATE_INTERVAL_MS = 50;
@@ -364,6 +364,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      * Loads the answers of the current question and updates the timer after reading time is over
      */
     public void loadAnswer() {
+        soundManager.playSound("InGame" + new Random().nextInt(1,3));
         Question q = this.currentQuestion;
         if (q == null) return;
         renderAnswerFields(q);
@@ -402,6 +403,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      * {@inheritDoc}
      */
     public void back() {
+        soundManager.halt();
         soundManager.playSound("Button");
         shutdown();
         reset();
@@ -473,7 +475,6 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      * Submit an answer to the server
      */
     public void submitAnswer(boolean initiatedByTimer) {
-        soundManager.playSound("Button");
         Answer ans = new Answer(currentQuestion.type);
         ans.timeFactor = timeProgress.getProgress();
 
@@ -508,6 +509,16 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported question type when parsing answer");
+        }
+
+        if (!initiatedByTimer) soundManager.halt();
+        else {
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    soundManager.halt();
+                }
+            }, 3000);
         }
 
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();

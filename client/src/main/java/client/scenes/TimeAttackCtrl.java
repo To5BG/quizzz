@@ -133,6 +133,16 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
                 throw new UnsupportedOperationException("Unsupported question type when parsing answer");
         }
 
+        if (!initiatedByTimer) soundManager.halt();
+        else {
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    soundManager.halt();
+                }
+            }, 3000);
+        }
+
         disableButton(submitButton, true);
 
         this.evaluation = questionUtils.submitAnswer(sessionId, playerId, ans);
@@ -162,6 +172,7 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
                         handleGamePodium();
                     } else {
                         handleNextRound();
+                        soundManager.halt();
                     }
                 });
             }

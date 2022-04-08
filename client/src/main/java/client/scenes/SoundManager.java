@@ -34,7 +34,16 @@ public class SoundManager {
         String location = "/Sounds/" + (soundProfile == SoundProfile.NORMAL ? "normal" : "weird") + sound + ".mp3";
         Media hit = new Media(getClass().getResource(location).toString());
         MediaPlayer mediaPlayer = new MediaPlayer(hit);
-        if (sound.equals("Welcome")) mainPlayer = mediaPlayer;
+        if (sound.equals("Button")) mediaPlayer.setVolume(0.25);
+        //if (sound.equals("Welcome")) mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+        if (sound.equals("Welcome") || sound.equals("Waiting") || sound.contains("InGame")) mainPlayer = mediaPlayer;
         mediaPlayer.play();
+    }
+
+    /**
+     * Stop currently playing music
+     */
+    public void halt() {
+        if (mainPlayer != null) mainPlayer.stop();
     }
 }

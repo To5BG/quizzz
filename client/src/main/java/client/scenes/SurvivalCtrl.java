@@ -95,6 +95,16 @@ public class SurvivalCtrl extends SingleplayerCtrl {
             }
         }
 
+        if (!initiatedByTimer) soundManager.halt();
+        else {
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    soundManager.halt();
+                }
+            }, 3000);
+        }
+
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
         disableButton(submitButton, true);
 

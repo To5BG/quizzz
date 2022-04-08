@@ -51,5 +51,5 @@
     </ImageView>
     <Button layoutX="596.0" layoutY="525.0" mnemonicParsing="false" onAction="#showWebView" text="Edit activities" />
     <Button layoutX="641.0" layoutY="491.0" mnemonicParsing="false" onAction="#showTutorial" prefHeight="26.0" prefWidth="42.0" text="?" />
-    <Button fx:id="weirdButton" layoutX="2.0" layoutY="548.0" mnemonicParsing="false" onAction="#toggleWeirdSound" text="Weird" textFill="WHITE" />
+    <Button fx:id="weirdButton" layoutX="2.0" layoutY="548.0" mnemonicParsing="false" onAction="#toggleWeirdSound" opacity="0.0" text="Weird" textFill="WHITE" />
 </AnchorPane>

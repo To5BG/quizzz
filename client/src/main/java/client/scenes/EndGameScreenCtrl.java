@@ -177,6 +177,7 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
      * {@inheritDoc}
      */
     public void back() {
+        soundManager.halt();
         soundManager.playSound("Button");
         shutdown();
         reset();

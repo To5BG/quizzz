@@ -85,6 +85,7 @@ public class PodiumCtrl extends SceneCtrl {
      * {@inheritDoc}
      */
     public void back() {
+        soundManager.halt();
         soundManager.playSound("Button");
         shutdown();
     }
