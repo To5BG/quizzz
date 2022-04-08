@@ -245,15 +245,11 @@ public class ActivityController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         Activity activity = repo.findById(id).get();
-        if (activity != null) {
-            //Get the id and delete the activity
-            long activityId = activity.id;
-            deleteImage(activity.image_path);
-            repo.delete(activity);
+        //Get the id and delete the activity
+        deleteImage(activity.image_path);
+        repo.delete(activity);
 
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     /**

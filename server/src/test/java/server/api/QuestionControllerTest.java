@@ -69,6 +69,69 @@ public class QuestionControllerTest {
     }
 
     @Test
+    public void submitAnswerNoPlayerTest() {
+        GameSession s = sessionCtrl.getAllSessions().get(0);
+
+        ResponseEntity<Evaluation> resp = sut.submitAnswer(s.id,
+                42L, new Answer(List.of(0L), Question.QuestionType.MULTIPLE_CHOICE));
+
+        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
+    }
+
+    @Test
+    public void submitAnswerSpecialModesTest() {
+        GameSession s = sessionCtrl.addSession(new GameSession(GameSession.SessionType.SURVIVAL,
+                List.of(new Player("test", 0)))).getBody();
+
+        assertNotNull(s);
+        sut.submitAnswer(s.id, s.getPlayers().get(0).id, new Answer(s.expectedAnswers, s.currentQuestion.type));
+        Player p = sessionCtrl.getPlayers(s.id).getBody().get(0);
+        assertEquals(1, p.currentPoints);
+    }
+
+    @Test
+    public void submitAnswerMCTest() {
+        // Setup MC question
+        GameSession s = sessionCtrl.getAllSessions().get(0);
+        s.setCurrentQuestion(new Question("test", "test.png", Question.QuestionType.MULTIPLE_CHOICE));
+        s.expectedAnswers = List.of(1L);
+        sessionCtrl.updateSession(s);
+
+        // Submit answer
+        sut.submitAnswer(s.id, s.getPlayers().get(0).id, new Answer(s.expectedAnswers, s.currentQuestion.type));
+        Player p = sessionCtrl.getPlayers(s.id).getBody().get(0);
+        assertNotEquals(0, p.currentPoints);
+    }
+
+    @Test
+    public void submitAnswerEstimateTest() {
+        // Setup Estimation question
+        GameSession s = sessionCtrl.getAllSessions().get(0);
+        s.setCurrentQuestion(new Question("test", "test.png", Question.QuestionType.RANGE_GUESS));
+        s.expectedAnswers = List.of(1L);
+        sessionCtrl.updateSession(s);
+
+        // Submit answer
+        sut.submitAnswer(s.id, s.getPlayers().get(0).id, new Answer(s.expectedAnswers, s.currentQuestion.type));
+        Player p = sessionCtrl.getPlayers(s.id).getBody().get(0);
+        assertNotEquals(0, p.currentPoints);
+    }
+
+    @Test
+    public void submitAnswerEstimateDiffTest() {
+        // Setup Estimation question
+        GameSession s = sessionCtrl.getAllSessions().get(0);
+        s.setCurrentQuestion(new Question("test", "test.png", Question.QuestionType.RANGE_GUESS));
+        s.expectedAnswers = List.of(1L);
+        sessionCtrl.updateSession(s);
+
+        // Submit answer
+        sut.submitAnswer(s.id, s.getPlayers().get(0).id, new Answer(List.of(10L), s.currentQuestion.type));
+        Player p = sessionCtrl.getPlayers(s.id).getBody().get(0);
+        assertEquals(0, p.currentPoints);
+    }
+
+    @Test
     public void submitAnswerTest() {
         GameSession s = sessionCtrl.getAllSessions().get(0);
         List<Long> expectedAnswers = List.copyOf(s.expectedAnswers);
@@ -85,6 +148,21 @@ public class QuestionControllerTest {
     }
 
     @Test
+    public void submitAnswerInvalidAnswerTest() {
+        // Setup UNKNOWN question
+        GameSession s = sessionCtrl.getAllSessions().get(0);
+        s.setCurrentQuestion(new Question("test", "test.png", Question.QuestionType.UNKNOWN));
+        s.expectedAnswers = List.of(1L);
+        sessionCtrl.updateSession(s);
+
+        // Submit answer
+        assertThrows(UnsupportedOperationException.class, () -> {
+            sut.submitAnswer(s.id,
+                    s.getPlayers().get(0).id, new Answer(List.of(0L), Question.QuestionType.UNKNOWN));
+        });
+    }
+
+    @Test
     public void testGetAnswers() {
         GameSession s = sessionCtrl.getAllSessions().get(0);
         ResponseEntity<List<Long>> resp = sut.getCorrectAnswers(s.id);
@@ -92,5 +170,11 @@ public class QuestionControllerTest {
         List<Long> list = resp.getBody();
         List<Long> answers = sessionCtrl.getAllSessions().get(0).expectedAnswers;
         assertEquals(answers, list);
+    }
+
+    @Test
+    public void testGetAnswersInvalid() {
+        ResponseEntity<List<Long>> resp = sut.getCorrectAnswers(42L);
+        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
     }
 }
