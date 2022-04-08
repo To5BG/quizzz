@@ -11,20 +11,10 @@ stages:
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
-
-cache: &global
-  key: "CI_COMMIT_REF_SLUG"
-  paths:
-    - build
-    - .gradle
-  policy: pull
     
 build:
   stage: build
-  script: gradle --build-cache assemble
-  cache:
-    <<: *global
-    policy: pull-push
+  script: gradle assemble
   artifacts:
     paths:
       - client/build
@@ -34,14 +24,14 @@ build:
 style_check:
   stage: style
   script:
-    - gradle --build-cache checkstyleMain
-    - gradle --build-cache checkstyleTest
+    - gradle checkstyleMain
+    - gradle checkstyleTest
 
 test:
   stage: test
   script:
-    - gradle --build-cache test
-    - gradle --build-cache AggregateJacocoReport
+    - gradle test
+    - gradle AggregateJacocoReport
     # preserve coverage information in an easy-to-reach folder
     - mv build/reports/jacoco/aggregate/html ./coverage
     - mv build/reports/jacoco/aggregate/jacocoTestReport.xml ./coverage/report.xml
