@@ -124,8 +124,6 @@ public class MainCtrl {
 
 
         confirmClose();
-        SoundManager sm = new SoundManager();
-        sm.playSound("Welcome");
         showSplash();
         primaryStage.show();
 
