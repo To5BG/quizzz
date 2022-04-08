@@ -185,11 +185,9 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
      */
     public void reset() {
         playAgain.setText("Play again");
-        count.setText("[Count]");
-        count.setText("End of game! Play again or go back to main.");
+        status.setText("End of game! Play again or go back to main.");
         setPlayingAgain(false);
         waitingSkip = 0;
-        setPlayingAgain(false);
     }
 
     /**
