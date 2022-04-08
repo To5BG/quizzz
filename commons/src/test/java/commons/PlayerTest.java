@@ -36,6 +36,13 @@ public class PlayerTest {
     }
 
     @Test
+    public void testGetCurrentPoint() {
+        var p = new Player("abc", 0);
+        p.currentPoints = 8;
+        assertEquals(8, p.getCurrentPoints());
+    }
+
+    @Test
     public void testSetCurrentPoint() {
         var p = new Player("abc", 0);
         p.setCurrentPoints(8);
@@ -54,6 +61,13 @@ public class PlayerTest {
         var p = new Player("abc", 0);
         p.setBestSingleScore(8);
         assertEquals(8, p.bestSingleScore);
+    }
+
+    @Test
+    public void testGetBestMultiScore() {
+        var p = new Player("abc", 0);
+        p.bestMultiScore = 8;
+        assertEquals(8, p.getBestMultiScore());
     }
 
     @Test

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
 
@@ -173,14 +174,17 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
      */
     public void quickJoin() {
         soundManager.playSound("Button");
-        var listRooms = availableRooms.getItems();
-        if (listRooms == null || listRooms.isEmpty()) {
+        var joinableRooms = availableRooms.getItems()
+                .stream()
+                .filter(room -> (room.sessionStatus == GameSession.SessionStatus.PLAY_AGAIN) ||
+                        (room.sessionStatus == GameSession.SessionStatus.WAITING_AREA))
+                .collect(Collectors.toList());
+        if (joinableRooms.isEmpty()) {
             hostRoom();
             return;
         }
-
-        int randomId = new Random().nextInt(listRooms.size());
-        joinSession(listRooms.get(randomId));
+        int randomId = new Random().nextInt(joinableRooms.size());
+        joinSession(joinableRooms.get(randomId));
     }
 
     /**
