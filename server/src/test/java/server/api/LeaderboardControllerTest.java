@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -43,6 +44,94 @@ class LeaderboardControllerTest {
 
         ResponseEntity<Player> wrong = lbc.getPlayerById(42L);
         assertEquals(HttpStatus.BAD_REQUEST, wrong.getStatusCode());
+    }
+
+    @Test
+    public void testGetAllPlayers() {
+        List<Player> playerList = List.of(
+                new Player("David", 10),
+                new Player("BigR", 10)
+        );
+        playerList.forEach(p -> lbc.addPlayerForcibly(p));
+        List<Player> remoteList = lbc.getAllPlayers().getBody();
+        assertEquals(playerList, remoteList);
+    }
+
+    @Test
+    public void testGetPlayerByUsernameInvalid() {
+        Player result = lbc.getPlayerByUsername("David").getBody();
+        assertNull(result);
+    }
+
+    @Test
+    public void testGetPlayerByUsername() {
+        Player player = new Player("David", 10);
+        lbc.addPlayerForcibly(player);
+        Player result = lbc.getPlayerByUsername("David").getBody();
+        assertEquals(player, result);
+    }
+
+    @Test
+    public void updateBestSurvivalScore() {
+        Player player = new Player("David", 10);
+        lbc.addPlayerForcibly(player);
+
+        // Invalid playerId
+        ResponseEntity<Player> resp = lbc.updateBestSurvivalScore(42L, 42);
+        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
+
+        // Valid player with low score
+        lbc.updateBestSurvivalScore(1L, 5);
+        assertEquals(10, lbc.getPlayerById(1L).getBody().bestSurvivalScore);
+
+        // Valid player with higher score
+        lbc.updateBestSurvivalScore(1L, 15);
+        Player result = lbc.getPlayerById(1L).getBody();
+        assertNotNull(result);
+        assertEquals(15, result.bestSurvivalScore);
+        assertEquals(0, result.currentPoints);
+    }
+
+    @Test
+    public void updateBestTimeAttackScore() {
+        Player player = new Player("David", 10);
+        lbc.addPlayerForcibly(player);
+
+        // Invalid playerId
+        ResponseEntity<Player> resp = lbc.updateBestTimeAttackScore(42L, 42);
+        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
+
+        // Valid player with low score
+        lbc.updateBestTimeAttackScore(1L, 5);
+        assertEquals(10, lbc.getPlayerById(1L).getBody().bestTimeAttackScore);
+
+        // Valid player with higher score
+        lbc.updateBestTimeAttackScore(1L, 15);
+        Player result = lbc.getPlayerById(1L).getBody();
+        assertNotNull(result);
+        assertEquals(15, result.bestTimeAttackScore);
+        assertEquals(0, result.currentPoints);
+    }
+
+    @Test
+    public void testCommitMultiplayerUpdatesNoCommit() {
+        var resp = lbc.getLeaderboardUpdates();
+        resp.onCompletion(() -> assertFalse(resp.hasResult()));
+        lbc.commitMultiplayerUpdates();
+    }
+
+    @Test
+    public void testCommitMultiplayerUpdates() {
+        Player player = new Player("David", 10);
+        lbc.addPlayerForcibly(player);
+
+        lbc.updateBestMultiScore(1L, 100);
+        var expected = lbc.getPlayerMultiScores().getBody();
+        assertNotNull(expected);
+
+        var resp = lbc.getLeaderboardUpdates();
+        resp.onCompletion(() -> assertEquals(expected, resp.getResult()));
+        lbc.commitMultiplayerUpdates();
     }
 
     @Test

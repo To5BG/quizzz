@@ -51,12 +51,7 @@ public class QuestionController {
             case RANGE_GUESS:
                 long givenAnswer;
                 long actualAnswer = eval.correctAnswers.get(0);
-                try {
-                    givenAnswer = ans.answers.get(0);
-                } catch (NumberFormatException ex) {
-                    temppoints = 0;
-                    break;
-                }
+                givenAnswer = ans.answers.get(0);
                 // diff : magnitude of difference between the entered answer and the actual answer
                 double diff = Math.abs(givenAnswer - actualAnswer);
                 if (diff == 0) {

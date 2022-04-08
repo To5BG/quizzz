@@ -60,6 +60,15 @@ public class ActivityControllerTest {
     }
 
     @Test
+    public void getRandomActivityTest() {
+        var resp = sut.getRandomActivity();
+        assertEquals(NO_CONTENT, resp.getStatusCode());
+        Activity a = getActivity("test");
+        sut.addActivity(a);
+        assertEquals(a, sut.getRandomActivity().getBody());
+    }
+
+    @Test
     public void getOneActivityTest() {
         Activity activity = getActivity("test");
         sut.addActivity(activity);
@@ -112,8 +121,16 @@ public class ActivityControllerTest {
     @Test
     public void deleteInvalidActivityTest() {
         sut.addActivity(getActivity("test"));
-        var actual = sut.removeActivityById(2L);
+        var actual = sut.removeActivityById(42L);
         assertEquals(actual.getStatusCode(), NOT_FOUND);
+    }
+
+    @Test
+    public void removeAllActivitiesTest() {
+        sut.addActivity(getActivity("test"));
+        var resp = sut.removeAllActivities();
+        assertEquals(NO_CONTENT, resp.getStatusCode());
+        assertSame(0, sut.getAllActivities().size());
     }
 
     @Test
