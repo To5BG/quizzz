@@ -146,7 +146,7 @@ public class ActivityController {
     public void deleteAllImages() {
         try {
             FileUtils.cleanDirectory(new File(ASSET_DIR));
-        } catch (IOException ignored) {
+        } catch (IOException | IllegalArgumentException ignored) {
         }
     }
 
