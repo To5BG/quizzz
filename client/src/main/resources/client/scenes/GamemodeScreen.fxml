@@ -20,7 +20,7 @@
       <Slider fx:id="questionSlider" layoutX="452.0" layoutY="225.0" max="40.0" min="2.0" prefHeight="14.0" prefWidth="232.0" styleClass="slider" value="20.0" />
       <Slider fx:id="survivalSlider" layoutX="453.0" layoutY="307.0" max="5.0" min="1.0" prefHeight="14.0" prefWidth="232.0" styleClass="slider" value="3.0" />
       <Slider fx:id="timeAttackSlider" layoutX="453.0" layoutY="380.0" max="180.0" min="10.0" prefHeight="14.0" prefWidth="232.0" styleClass="slider" value="60.0" />
-      <Label fx:id="alertText" layoutX="14.0" layoutY="131.0" opacity="0.0" prefHeight="70.0" prefWidth="691.0" styleClass="alertText" textAlignment="CENTER" wrapText="true" />
+      <Label fx:id="alertText" layoutX="15.0" layoutY="109.0" opacity="0.0" prefHeight="109.0" prefWidth="691.0" styleClass="alertText" textAlignment="CENTER" wrapText="true" />
       <Label fx:id="questionText" layoutX="472.0" layoutY="251.0" styleClass="settings" text="Questions: 20">
          <font>
             <Font size="32.0" />
@@ -29,7 +29,7 @@
          <font>
             <Font size="32.0" />
          </font></Label>
-      <Label fx:id="timeAttackText" layoutX="448.0" layoutY="401.0" styleClass="settings" text="Time: 60 seconds">
+      <Label fx:id="timeAttackText" layoutX="441.0" layoutY="401.0" styleClass="settings" text="Time: 60 seconds">
          <font>
             <Font size="32.0" />
          </font></Label>
