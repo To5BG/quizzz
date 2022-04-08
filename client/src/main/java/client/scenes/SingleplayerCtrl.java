@@ -79,7 +79,7 @@ public class SingleplayerCtrl extends GameCtrl {
      * This is an equivalent method to decreaseTime for Multiplayer
      */
     public void increaseTime() {
-        soundManager.playSound("JokerSound");
+        soundManager.playSound("Joker");
         decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
         gameSessionUtils.updateTimeJokers(sessionId, 1);

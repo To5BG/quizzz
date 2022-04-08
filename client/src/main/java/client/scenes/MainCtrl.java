@@ -154,6 +154,7 @@ public class MainCtrl {
         multiplayerCtrl.setSessionId(sessionId);
         multiplayerCtrl.setPlayerId(playerId);
         multiplayerCtrl.registerForEmojiUpdates();
+        multiplayerCtrl.setInScene();
         multiplayerCtrl.fetchJokerStates();
         multiplayerCtrl.scanForDisconnect();
         multiplayerCtrl.scanForJokerUsage();
@@ -213,6 +214,7 @@ public class MainCtrl {
         singlePlayerScreen.setOnKeyPressed(e -> singlePlayerCtrl.keyPressed(e));
         singlePlayerCtrl.setSessionId(sessionId);
         singlePlayerCtrl.setPlayerId(playerId);
+        singlePlayerCtrl.setInScene();
         singlePlayerCtrl.fetchJokerStates();
         singlePlayerCtrl.setGameRounds(questions);
         singlePlayerCtrl.loadQuestion();
@@ -230,6 +232,7 @@ public class MainCtrl {
         timeAttackCtrl.setPlayerId(playerId);
         timeAttackCtrl.setTimer(timer);
         timeAttackCtrl.startTimer();
+        timeAttackCtrl.setInScene();
         timeAttackCtrl.refresh();
     }
 
@@ -243,6 +246,7 @@ public class MainCtrl {
         survivalCtrl.setSessionId(sessionId);
         survivalCtrl.setPlayerId(playerId);
         survivalCtrl.setLives(lives);
+        survivalCtrl.setInScene();
         survivalCtrl.loadQuestion();
         survivalCtrl.refresh();
     }

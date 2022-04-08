@@ -117,6 +117,7 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
                 } catch (NumberFormatException ex) {
                     System.out.println("Invalid answer yo");
                     if (!initiatedByTimer) {
+                        soundManager.playSound("Alert");
                         Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setTitle("Invalid answer");
                         alert.setHeaderText("Invalid answer");

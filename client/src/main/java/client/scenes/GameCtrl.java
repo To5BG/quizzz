@@ -108,6 +108,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
     protected boolean doublePointsActive;
     protected boolean decreaseTimeJoker;
     protected boolean removeOneJoker;
+    protected boolean inScene;
 
     public GameCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
                     LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils,
@@ -126,10 +127,18 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
         doublePointsActive = false;
         decreaseTimeJoker = true;
         removeOneJoker = true;
+        inScene = true;
 
         // Set to defaults
         this.sessionId = 0L;
         this.playerId = 0L;
+    }
+
+    /**
+     * Setter for inScene
+     */
+    public void setInScene() {
+        this.inScene = true;
     }
 
     /**
@@ -329,7 +338,8 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    if (counter < 0) {
+                    if (!inScene) cancel();
+                    else if (counter < 0){
                         cancel();
                         loadAnswer();
                     } else {
@@ -405,6 +415,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
     public void back() {
         soundManager.halt();
         soundManager.playSound("Button");
+        inScene = false;
         shutdown();
         reset();
         mainCtrl.showSplash();
@@ -494,6 +505,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
                 } catch (NumberFormatException ex) {
                     System.out.println("Invalid answer yo");
                     if (!initiatedByTimer) {
+                        soundManager.playSound("Alert");
                         Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setTitle("Invalid answer");
                         alert.setHeaderText("Invalid answer");
@@ -672,7 +684,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      * When this joker is used it removes one incorrect answer from the answers list for the player that used it
      */
     public void removeOneAnswer() {
-        soundManager.playSound("JokerSound");
+        soundManager.playSound("Joker");
         removeOneJoker = false;
         disableButton(removeOneButton, true);
 
@@ -728,7 +740,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      * This joker becomes Increase Time Joker in Singleplayer
      */
     public void decreaseTime() {
-        soundManager.playSound("JokerSound");
+        soundManager.playSound("Joker");
         decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
         gameSessionUtils.updateTimeJokers(sessionId, (int) getTimeJokers() + 1);
@@ -741,7 +753,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      * When this joker is used, it doubles the points gained for the question when it was used.
      */
     public void doublePoints() {
-        soundManager.playSound("JokerSound");
+        soundManager.playSound("Joker");
         doublePointsJoker = false;
         disableButton(doublePointsButton, true);
         switchStatusOfDoublePoints();

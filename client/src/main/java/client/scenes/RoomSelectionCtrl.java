@@ -111,6 +111,7 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
     public void joinSelectedRoom() {
         soundManager.playSound("Button");
         if (availableRooms.getSelectionModel().getSelectedItem() == null) {
+            soundManager.playSound("Alert");
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("No room selected");
             alert.setHeaderText("You have not selected a room");
@@ -130,6 +131,7 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
         soundManager.playSound("Button");
         String sessionIdString = gameID.getText();
         if (!isSessionIdValid(sessionIdString)) {
+            soundManager.playSound("Alert");
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Invalid ID");
             alert.setHeaderText("You have entered an invalid game session ID");
