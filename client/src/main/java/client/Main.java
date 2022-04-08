@@ -44,7 +44,7 @@ public class Main extends Application {
         List<Pair<? extends SceneCtrl, Parent>> pairs = new ArrayList<>(List.of(
                 FXML.load(SplashCtrl.class, "client", "scenes", "SplashScreen.fxml"),
                 FXML.load(MultiplayerCtrl.class, "client", "scenes", "MultiplayerSession.fxml"),
-                FXML.load(RoomSelectionCtrl.class, "client","scenes","RoomSelection.fxml"),
+                FXML.load(RoomSelectionCtrl.class, "client", "scenes", "RoomSelection.fxml"),
                 FXML.load(SingleplayerCtrl.class, "client", "scenes", "GameScreen.fxml"),
                 FXML.load(WaitingAreaCtrl.class, "client", "scenes", "WaitingAreaScreen.fxml"),
                 FXML.load(LeaderBoardCtrl.class, "client", "scenes", "Leaderboard.fxml"),

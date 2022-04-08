@@ -254,7 +254,7 @@ public class SessionController {
     public ResponseEntity<List<GameSession>> getAvailableSessions() {
         var sessions = sm.getValues().stream()
                 .filter(s -> (s.sessionType == GameSession.SessionType.WAITING_AREA ||
-                        s.sessionStatus == GameSession.SessionStatus.PLAY_AGAIN)).toList();
+                        s.sessionType == GameSession.SessionType.MULTIPLAYER)).toList();
         if (sessions.isEmpty()) return ResponseEntity.ok(null);
         else return ResponseEntity.ok(sessions);
     }

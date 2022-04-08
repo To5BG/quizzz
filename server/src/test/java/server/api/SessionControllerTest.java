@@ -40,6 +40,7 @@ public class SessionControllerTest {
     private SessionController sut;
     private GameSession first;
     private GameSession waiting;
+    private GameSession singleplayer;
 
     @BeforeEach
     public void setup() {
@@ -57,6 +58,7 @@ public class SessionControllerTest {
                 new ActivityController(new Random(), activityRepo), lbc);
         first = new GameSession(GameSession.SessionType.MULTIPLAYER);
         waiting = new GameSession(GameSession.SessionType.WAITING_AREA);
+        singleplayer = new GameSession(GameSession.SessionType.SINGLEPLAYER);
     }
 
     @Test
@@ -405,8 +407,8 @@ public class SessionControllerTest {
         // make sure fetch returns null if no sessions were added
         assertEquals(null, sut.getAvailableSessions().getBody());
 
-        //make sure it does not fetch non waiting rooms
-        sut.addSession(first);
+        //make sure it does not fetch singleplayer rooms
+        sut.addSession(singleplayer);
         assertEquals(null, sut.getAvailableSessions().getBody());
 
         sut.addSession(waiting);
