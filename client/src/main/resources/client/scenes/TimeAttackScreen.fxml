@@ -40,5 +40,6 @@
         <Label fx:id="countdown" layoutX="20.0" layoutY="79.0" text="Options:"/>
         <ImageView fx:id="imagePanel" fitHeight="156.0" fitWidth="200.0" layoutX="235.0" layoutY="122.0"
                    pickOnBounds="true" preserveRatio="true"/>
+       <Button fx:id="weirdButton" layoutX="5.0" layoutY="374.0" mnemonicParsing="false" onAction="#toggleWeirdSound" opacity="0.0" text="Weird" textFill="WHITE" />
     </children>
 </AnchorPane>

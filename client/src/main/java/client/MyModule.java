@@ -44,5 +44,8 @@ public class MyModule implements Module {
 
         binder.bind(LongPollingUtils.class).in(Scopes.SINGLETON);
         binder.bind(WebSocketsUtils.class).in(Scopes.SINGLETON);
+
+        binder.bind(GameAnimation.class).in(Scopes.SINGLETON);
+        binder.bind(SoundManager.class).in(Scopes.SINGLETON);
     }
 }
