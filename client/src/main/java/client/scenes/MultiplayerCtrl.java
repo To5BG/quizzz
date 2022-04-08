@@ -338,6 +338,7 @@ public class MultiplayerCtrl extends GameCtrl {
     /**
      * Shows game podium if enough players are in the session
      */
+    @Override
     public void handleGamePodium() {
         try {
             if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showPodiumScreen(sessionId);

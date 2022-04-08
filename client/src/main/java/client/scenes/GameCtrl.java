@@ -28,6 +28,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
     protected final static int MIDGAME_BREAK_TIME = 6;
     protected final static int TIMER_UPDATE_INTERVAL_MS = 50;
     protected final static int GAME_ROUND_DELAY = 2;
+    protected final static int MULTIPLAYER_ROUNDS = 20;
     protected final static int IN_GAME_LEADERBOARD_WIDTH = 193;
     protected final static int IN_GAME_COLUSERNAME_WIDTH = 92;
     protected final static int MID_GAME_LEADERBOARD_WIDTH = 649;
