@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 public class GameSession {
-    public static int gameRounds = 2;
 
     public long id;
 
@@ -25,11 +24,12 @@ public class GameSession {
 
     public AtomicInteger playersReady;
     public int questionCounter;
+    public int gameRounds;
     public int difficultyFactor;
     public int timeJokers;
+    public boolean isLeaderboardDisabled;
 
     public SessionType sessionType;
-
 
     public enum SessionType {
         SELECTING,
@@ -75,6 +75,8 @@ public class GameSession {
         this.questionCounter = 0;
         this.difficultyFactor = 1;
         this.timeJokers = 0;
+        this.gameRounds = 20;
+        this.isLeaderboardDisabled = false;
 
         this.sessionStatus = SessionStatus.STARTED;
         if (sessionType == SessionType.SELECTING) this.sessionStatus = SessionStatus.SELECTING;
@@ -121,27 +123,21 @@ public class GameSession {
         removedPlayers.add(player);
     }
 
-    /**
-     * Setter for the currentQuestion
-     */
     public void setCurrentQuestion(Question question) {
         this.currentQuestion = question;
     }
 
-    /**
-     * Setter for the SessionStatus
-     */
     public void setSessionStatus(SessionStatus sessionStatus) {
         this.sessionStatus = sessionStatus;
     }
 
-    /**
-     * Setter for the questionCounter.
-     */
     public void setQuestionCounter(int count) {
         this.questionCounter = count;
     }
 
+    public void setGameRounds(int gameRounds) {
+        this.gameRounds = gameRounds;
+    }
     /**
      * Get the number of time jokers used in this round
      *
@@ -158,13 +154,6 @@ public class GameSession {
      */
     public void setTimeJokers(int timeJokers) {
         this.timeJokers = timeJokers;
-    }
-
-    /**
-     * Setter for the gameRounds
-     */
-    public void setGameRounds(int rounds) {
-        gameRounds = rounds;
     }
 
     /**
@@ -194,6 +183,20 @@ public class GameSession {
                 this.timeJokers == other.timeJokers &&
                 this.sessionType.equals(other.sessionType) &&
                 this.sessionStatus.equals(other.sessionStatus);
+    }
+
+    /**
+     * Setter for disableLeaderboard field. Disables leaderboards for the given session
+     */
+    public void disableLeaderboard() {
+        this.isLeaderboardDisabled = true;
+    }
+
+    /**
+     * Setter for disableLeaderboard field. Enables leaderboards for the given session
+     */
+    public void enableLeaderboard() {
+        this.isLeaderboardDisabled = false;
     }
 
     @Override
