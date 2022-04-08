@@ -60,7 +60,7 @@ Before a user can play the game the activity database needs to be filled. If the
 1. Click on the *add activity* button.
 2. Click on the *add activities* (JSON) button.
 3. Fill in the corresponding text fields with the JSON format for an activity.
-4. Click on *send*.
+4. Click on *send*
     
 #### Adding multiple activities through JSON format
 1. Click on the *add activity* button.
