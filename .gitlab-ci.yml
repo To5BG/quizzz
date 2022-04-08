@@ -15,11 +15,6 @@ before_script:
 build:
   stage: build
   script: gradle assemble
-  artifacts:
-    paths:
-      - client/build
-      - server/build
-      - commons/build
 
 style_check:
   stage: style
