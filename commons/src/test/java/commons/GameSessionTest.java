@@ -59,6 +59,25 @@ public class GameSessionTest {
     }
 
     @Test
+    public void testSetSessionType() {
+        GameSession session = new GameSession();
+        session.setSessionType(GameSession.SessionType.MULTIPLAYER);
+        assertEquals(GameSession.SessionType.MULTIPLAYER, session.sessionType);
+    }
+
+    @Test
+    public void testEnableDisableLeaderboard() {
+        GameSession session = new GameSession(GameSession.SessionType.SINGLEPLAYER);
+        assertFalse(session.isLeaderboardDisabled);
+
+        session.disableLeaderboard();
+        assertTrue(session.isLeaderboardDisabled);
+
+        session.enableLeaderboard();
+        assertFalse(session.isLeaderboardDisabled);
+    }
+
+    @Test
     public void testUnsetReady() {
         s.unsetPlayerReady();
         assertSame(0, s.playersReady.get());
@@ -154,9 +173,17 @@ public class GameSessionTest {
                 Stream.of(new Player("blahhh", 0))
                         .collect(Collectors.toList()));
 
+        var s5 = new GameSession(GameSession.SessionType.MULTIPLAYER,
+                Stream.of(new Player("blahhh", 0))
+                        .collect(Collectors.toList()));
+
+        s4.setCurrentQuestion(new Question("test", "test.png", Question.QuestionType.COMPARISON));
+        s5.setCurrentQuestion(new Question("test", "test.png", Question.QuestionType.COMPARISON));
+
         assertEquals(s2, s2);
         assertEquals(s2, s3);
         assertNotEquals(s, s4);
+        assertEquals(s4, s5); // Specific test for current question set
     }
 
     @Test

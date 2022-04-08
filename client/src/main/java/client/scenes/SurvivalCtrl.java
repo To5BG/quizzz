@@ -26,8 +26,10 @@ public class SurvivalCtrl extends SingleplayerCtrl {
 
     @Inject
     public SurvivalCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
-                        LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
-        super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
+                        LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils,
+                        GameAnimation gameAnimation, SoundManager soundManager, MainCtrl mainCtrl) {
+        super(webSocketsUtils, gameSessionUtils, leaderboardUtils,
+                questionUtils, gameAnimation, soundManager, mainCtrl);
     }
 
     /**
@@ -91,6 +93,16 @@ public class SurvivalCtrl extends SingleplayerCtrl {
             if (multiChoiceAnswers.get(i).isSelected()) {
                 ans.addAnswer(i);
             }
+        }
+
+        if (!initiatedByTimer) soundManager.halt();
+        else {
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    soundManager.halt();
+                }
+            }, 3000);
         }
 
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();

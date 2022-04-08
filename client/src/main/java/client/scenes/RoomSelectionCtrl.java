@@ -18,11 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
 
     private final GameSessionUtils gameSessionUtils;
     private LongPollingUtils longPollUtils;
+    private SoundManager soundManager;
     private final MainCtrl mainCtrl;
 
     private long playerId;
@@ -35,9 +37,11 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
     private TextField gameID;
 
     @Inject
-    public RoomSelectionCtrl(GameSessionUtils gameSessionUtils, LongPollingUtils longPollUtils, MainCtrl mainCtrl) {
+    public RoomSelectionCtrl(GameSessionUtils gameSessionUtils, LongPollingUtils longPollUtils,
+                              SoundManager soundManager, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
         this.longPollUtils = longPollUtils;
+        this.soundManager = soundManager;
         this.mainCtrl = mainCtrl;
     }
 
@@ -69,6 +73,8 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
      * {@inheritDoc}
      */
     public void back() {
+        soundManager.halt();
+        soundManager.playSound("Button");
         shutdown();
         mainCtrl.showSplash();
     }
@@ -88,6 +94,7 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
      * Initialize setup for main controller's showWaitingArea() method. Creates a new session.
      */
     public void hostRoom() {
+        soundManager.playSound("Button");
         Player player = gameSessionUtils.removePlayer(MainCtrl.SELECTION_ID, playerId);
         GameSession session = new GameSession(GameSession.SessionType.WAITING_AREA);
         session.addPlayer(player);
@@ -95,13 +102,17 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
         long waitingId = session.id;
         longPollUtils.haltUpdates("selectionRoom");
         mainCtrl.showWaitingArea(playerId, waitingId);
+        soundManager.halt();
+        soundManager.playSound("Waiting");
     }
 
     /**
      * Player is added to the selected session.
      */
     public void joinSelectedRoom() {
+        soundManager.playSound("Button");
         if (availableRooms.getSelectionModel().getSelectedItem() == null) {
+            soundManager.playSound("Alert");
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("No room selected");
             alert.setHeaderText("You have not selected a room");
@@ -118,8 +129,10 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
      * Player is added to the session searched
      */
     public void joinSearchedRoom() {
+        soundManager.playSound("Button");
         String sessionIdString = gameID.getText();
         if (!isSessionIdValid(sessionIdString)) {
+            soundManager.playSound("Alert");
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Invalid ID");
             alert.setHeaderText("You have entered an invalid game session ID");
@@ -160,14 +173,18 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
      * or creates a new waiting area if there are none available.
      */
     public void quickJoin() {
-        var listRooms = availableRooms.getItems();
-        if (listRooms == null || listRooms.isEmpty()) {
+        soundManager.playSound("Button");
+        var joinableRooms = availableRooms.getItems()
+                .stream()
+                .filter(room -> (room.sessionStatus == GameSession.SessionStatus.PLAY_AGAIN) ||
+                        (room.sessionStatus == GameSession.SessionStatus.WAITING_AREA))
+                .collect(Collectors.toList());
+        if (joinableRooms.isEmpty()) {
             hostRoom();
             return;
         }
-
-        int randomId = new Random().nextInt(listRooms.size());
-        joinSession(listRooms.get(randomId));
+        int randomId = new Random().nextInt(joinableRooms.size());
+        joinSession(joinableRooms.get(randomId));
     }
 
     /**
@@ -206,6 +223,8 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
             case WAITING_AREA:
                 addPlayerToSession(session);
                 longPollUtils.haltUpdates("selectionRoom");
+                soundManager.halt();
+                soundManager.playSound("Waiting");
                 mainCtrl.showWaitingArea(playerId, session.id);
                 break;
             case PLAY_AGAIN:
