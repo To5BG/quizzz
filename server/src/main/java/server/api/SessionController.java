@@ -55,8 +55,9 @@ public class SessionController {
     public void updateQuestion(GameSession session) {
         session.difficultyFactor = session.questionCounter / 4 + 1;
         session.questionCounter++;
-        Pair<Question, List<Long>> res = (session.sessionType == GameSession.SessionType.SURVIVAL) ?
-                QuestionGenerator.generateSurvivalQuestion(session.difficultyFactor, activityCtrl) :
+        Pair<Question, List<Long>> res = (session.sessionType == GameSession.SessionType.SURVIVAL ||
+                session.sessionType == GameSession.SessionType.TIME_ATTACK ) ?
+                QuestionGenerator.generateGamemodeQuestion(session.difficultyFactor, activityCtrl) :
                 QuestionGenerator.generateQuestion(session.difficultyFactor, activityCtrl);
         session.currentQuestion = res.getFirst();
         session.expectedAnswers.clear();
