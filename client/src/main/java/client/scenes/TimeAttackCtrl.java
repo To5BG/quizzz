@@ -17,7 +17,7 @@ import java.util.TimerTask;
 
 public class TimeAttackCtrl extends SingleplayerCtrl {
 
-    private long initialTime = 60L;
+    private long initialTime;
     private TimeUtils roundTimer;
 
     @Inject
@@ -52,8 +52,16 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
      */
     @Override
     public void reset() {
-        this.initialTime = 60L;
         super.reset();
+    }
+
+    /**
+     * Sets time for current game session
+     * @param timer Time to set the game session with
+     */
+    public void setTimer(double timer) {
+        this.initialTime = Math.round(timer);
+        if (initialTime != 60) gameSessionUtils.disableLeaderboard(sessionId);
     }
 
     /**
@@ -188,5 +196,4 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
 
         loadQuestion();
     }
-
 }

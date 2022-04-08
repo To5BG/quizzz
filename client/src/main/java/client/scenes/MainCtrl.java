@@ -207,13 +207,14 @@ public class MainCtrl {
     /**
      * Sets the current screen to the single player screen.
      */
-    public void showDefaultSinglePlayer(long sessionId, long playerId) {
+    public void showDefaultSinglePlayer(long sessionId, long playerId, int questions) {
         primaryStage.setTitle("Single player game");
         primaryStage.setScene(singlePlayerScreen);
         singlePlayerScreen.setOnKeyPressed(e -> singlePlayerCtrl.keyPressed(e));
         singlePlayerCtrl.setSessionId(sessionId);
         singlePlayerCtrl.setPlayerId(playerId);
         singlePlayerCtrl.fetchJokerStates();
+        singlePlayerCtrl.setGameRounds(questions);
         singlePlayerCtrl.loadQuestion();
         singlePlayerCtrl.refresh();
     }
@@ -221,12 +222,13 @@ public class MainCtrl {
     /**
      * Sets the current screen to the time attack screen.
      */
-    public void showTimeAttack(long sessionId, long playerId) {
+    public void showTimeAttack(long sessionId, long playerId, double timer) {
         primaryStage.setTitle("Time Attack");
         primaryStage.setScene(timeAttackScreen);
         timeAttackScreen.setOnKeyPressed(e -> timeAttackCtrl.keyPressed(e));
         timeAttackCtrl.setSessionId(sessionId);
         timeAttackCtrl.setPlayerId(playerId);
+        timeAttackCtrl.setTimer(timer);
         timeAttackCtrl.startTimer();
         timeAttackCtrl.refresh();
     }
@@ -234,12 +236,13 @@ public class MainCtrl {
     /**
      * Sets the current screen to the survival screen.
      */
-    public void showSurvival(long sessionId, long playerId) {
+    public void showSurvival(long sessionId, long playerId, double lives) {
         primaryStage.setTitle("Survival Mode");
         primaryStage.setScene(survivalScreen);
         survivalScreen.setOnKeyPressed(e -> survivalCtrl.keyPressed(e));
         survivalCtrl.setSessionId(sessionId);
         survivalCtrl.setPlayerId(playerId);
+        survivalCtrl.setLives(lives);
         survivalCtrl.loadQuestion();
         survivalCtrl.refresh();
     }

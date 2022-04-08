@@ -6,7 +6,8 @@ import commons.Player;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.input.KeyEvent;
 
 import javax.inject.Inject;
@@ -26,6 +27,21 @@ public class GamemodeCtrl extends SceneCtrl implements Initializable {
     protected Button survivalButton;
     @FXML
     protected Button timeAttackButton;
+    @FXML
+    protected Label alertText;
+    @FXML
+    protected Slider questionSlider;
+    @FXML
+    protected Label questionText;
+    @FXML
+    protected Slider survivalSlider;
+    @FXML
+    protected Label survivalText;
+    @FXML
+    protected Slider timeAttackSlider;
+    @FXML
+    protected Label timeAttackText;
+
     private long playerId;
 
     @Inject
@@ -43,6 +59,38 @@ public class GamemodeCtrl extends SceneCtrl implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         gameAnimation.startBatteryAnimation(List.of(defaultButton, survivalButton, timeAttackButton));
+        alertText.setText("Note: Results from games with changed default settings are not reflected on leaderboards!");
+        questionSlider.valueProperty().addListener((a, b, newVal) -> {
+            questionSlider.setValue(newVal.intValue());
+            questionText.setText("Questions: " + newVal.intValue());
+            updateAlertText();
+        });
+
+        survivalSlider.valueProperty().addListener((a, b, newVal) -> {
+            survivalSlider.setValue(newVal.intValue());
+            survivalText.setText("Lives: " + newVal.intValue());
+            updateAlertText();
+        });
+
+        timeAttackSlider.valueProperty().addListener((a, b, newVal) -> {
+            timeAttackSlider.setValue(newVal.intValue());
+            timeAttackText.setText("Timer: " + newVal.intValue() + " seconds");
+            updateAlertText();
+        });
+    }
+
+    /**
+     * Updates alert text opacity based on slider values
+     */
+    public void updateAlertText() {
+        boolean isDefault = timeAttackSlider.getValue() == 60 && survivalSlider.getValue() == 3
+                && questionSlider.getValue() == 20;
+
+        if (alertText.getOpacity() == 1 && isDefault) {
+            alertText.setOpacity(0);
+        } else if (alertText.getOpacity() == 0 && !isDefault) {
+            alertText.setOpacity(1);
+        }
     }
 
     /**
@@ -102,7 +150,10 @@ public class GamemodeCtrl extends SceneCtrl implements Initializable {
     public void showDefault() {
         soundManager.playSound("Button");
         long sessionId = createId(GameSession.SessionType.SINGLEPLAYER);
-        mainCtrl.showDefaultSinglePlayer(sessionId, playerId);
+        int questions = (int) questionSlider.getValue();
+        gameSessionUtils.setGameRounds(sessionId, questions);
+        if (questions != 20) gameSessionUtils.disableLeaderboard(sessionId);
+        mainCtrl.showDefaultSinglePlayer(sessionId, playerId, questions);
     }
 
     /**
@@ -112,7 +163,7 @@ public class GamemodeCtrl extends SceneCtrl implements Initializable {
         soundManager.playSound("Button");
         long sessionId = createId(GameSession.SessionType.SURVIVAL);
         gameSessionUtils.setGameRounds(sessionId, Integer.MAX_VALUE);
-        mainCtrl.showSurvival(sessionId, playerId);
+        mainCtrl.showSurvival(sessionId, playerId, survivalSlider.getValue());
     }
 
     /**
@@ -122,7 +173,7 @@ public class GamemodeCtrl extends SceneCtrl implements Initializable {
         soundManager.playSound("Button");
         long sessionId = createId(GameSession.SessionType.TIME_ATTACK);
         gameSessionUtils.setGameRounds(sessionId, Integer.MAX_VALUE);
-        mainCtrl.showTimeAttack(sessionId, playerId);
+        mainCtrl.showTimeAttack(sessionId, playerId, timeAttackSlider.getValue());
     }
 
 }
