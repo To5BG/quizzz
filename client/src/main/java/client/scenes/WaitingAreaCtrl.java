@@ -175,6 +175,7 @@ public class WaitingAreaCtrl extends SceneCtrl implements Initializable {
                     longPollUtils.haltUpdates("waitingArea");
                     gameSessionUtils.toggleReady(waitingId, false);
                 });
+                soundManager.halt();
                 mainCtrl.showMultiplayer(waitingId, playerId);
             }
         }
