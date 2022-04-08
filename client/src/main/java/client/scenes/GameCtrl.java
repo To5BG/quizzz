@@ -85,6 +85,8 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
     protected GameSessionUtils gameSessionUtils;
     protected LeaderboardUtils leaderboardUtils;
     protected QuestionUtils questionUtils;
+    protected GameAnimation gameAnimation;
+    protected SoundManager soundManager;
 
     protected MainCtrl mainCtrl;
 
@@ -104,11 +106,14 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
     protected boolean removeOneJoker;
 
     public GameCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
-                    LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
+                    LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils,
+                    GameAnimation gameAnimation, SoundManager soundManager, MainCtrl mainCtrl) {
         this.webSocketsUtils = webSocketsUtils;
         this.gameSessionUtils = gameSessionUtils;
         this.leaderboardUtils = leaderboardUtils;
         this.questionUtils = questionUtils;
+        this.gameAnimation = gameAnimation;
+        this.soundManager = soundManager;
 
         this.mainCtrl = mainCtrl;
         this.multiChoiceAnswers = new ArrayList<RadioButton>();
@@ -634,6 +639,13 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
         if (button == null) return;
         button.setOpacity(disable ? 0.5 : 1);
         button.setDisable(disable);
+    }
+
+    /**
+     * Toggles sound profile for all scenes
+     */
+    public void toggleWeirdSound() {
+        soundManager.toggleProfile();
     }
 
     /**

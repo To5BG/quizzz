@@ -26,8 +26,10 @@ public class SurvivalCtrl extends SingleplayerCtrl {
 
     @Inject
     public SurvivalCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
-                        LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
-        super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
+                        LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils,
+                        GameAnimation gameAnimation, SoundManager soundmanager, MainCtrl mainCtrl) {
+        super(webSocketsUtils, gameSessionUtils, leaderboardUtils,
+                questionUtils, gameAnimation, soundmanager, mainCtrl);
         this.gamelives = 3;
     }
 

@@ -52,5 +52,7 @@
                    pickOnBounds="true" preserveRatio="true"/>
         <Label layoutX="286.0" layoutY="15.0" styleClass="text" text="TIME LEFT"/>
         <Label fx:id="jokerRefreshLabel" layoutX="29.0" layoutY="355.0"/>
+        <ToggleButton fx:id="weirdButton" layoutX="732.0" layoutY="265.0" mnemonicParsing="false"
+                      onAction="#toggleWeirdSound" text="Weird" textFill="WHITE"/>
     </children>
 </AnchorPane>

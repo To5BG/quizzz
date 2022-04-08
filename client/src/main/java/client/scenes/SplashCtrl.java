@@ -52,6 +52,8 @@ public class SplashCtrl extends SceneCtrl implements Initializable{
 
     private final MainCtrl mainCtrl;
     private final GameAnimation gameAnimation;
+    private final SoundManager soundManager;
+
     @FXML
     protected Button singleplayerButton;
     @FXML
@@ -80,14 +82,16 @@ public class SplashCtrl extends SceneCtrl implements Initializable{
     @Inject
     public SplashCtrl(GameSessionUtils gameSessionUtils, LeaderboardUtils leaderboardUtils,
                       QuestionUtils questionUtils, LongPollingUtils longPollUtils,
-                      WebSocketsUtils webSocketsUtils, MainCtrl mainCtrl) {
+                      WebSocketsUtils webSocketsUtils, SoundManager soundManager,
+                      GameAnimation gameAnimation, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
         this.leaderboardUtils = leaderboardUtils;
         this.questionUtils = questionUtils;
         this.longPollUtils = longPollUtils;
         this.webSocketsUtils = webSocketsUtils;
+        this.soundManager = soundManager;
         this.mainCtrl = mainCtrl;
-        this.gameAnimation = new GameAnimation();
+        this.gameAnimation = gameAnimation;
     }
 
     /**
@@ -319,5 +323,12 @@ public class SplashCtrl extends SceneCtrl implements Initializable{
      */
     public void showTutorial() {
         mainCtrl.showTutorial();
+    }
+
+    /**
+     * Toggles weird sfx profile
+     */
+    public void toggleWeirdSound() {
+        soundManager.toggleProfile();
     }
 }

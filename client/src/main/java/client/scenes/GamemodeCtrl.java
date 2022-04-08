@@ -28,10 +28,10 @@ public class GamemodeCtrl extends SceneCtrl implements Initializable {
     private long playerId;
 
     @Inject
-    public GamemodeCtrl(GameSessionUtils gameSessionUtils, MainCtrl mainCtrl) {
+    public GamemodeCtrl(GameSessionUtils gameSessionUtils, GameAnimation gameAnimation, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
         this.mainCtrl = mainCtrl;
-        gameAnimation = new GameAnimation();
+        this.gameAnimation = gameAnimation;
     }
 
     /**

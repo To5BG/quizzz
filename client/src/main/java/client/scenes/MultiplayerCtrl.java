@@ -59,15 +59,14 @@ public class MultiplayerCtrl extends GameCtrl {
 
     private StompSession.Subscription channel;
     private final List<Image> emojiImages;
-    private final GameAnimation gameAnimation;
     private List<Joker> usedJokers;
 
     @Inject
     public MultiplayerCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
                            LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils,
-                           GameAnimation gameAnimation, MainCtrl mainCtrl) {
-        super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
-        this.gameAnimation = gameAnimation;
+                           GameAnimation gameAnimation, SoundManager soundManager, MainCtrl mainCtrl) {
+        super(webSocketsUtils, gameSessionUtils, leaderboardUtils,
+                questionUtils, gameAnimation, soundManager, mainCtrl);
 
         emojiImages = new ArrayList<Image>();
         String[] emojiFileNames = {"funny", "sad", "angry"};

@@ -22,8 +22,10 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
 
     @Inject
     public TimeAttackCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
-                          LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
-        super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
+                          LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils,
+                          GameAnimation gameAnimation, SoundManager soundManager, MainCtrl mainCtrl) {
+        super(webSocketsUtils, gameSessionUtils, leaderboardUtils,
+                questionUtils, gameAnimation, soundManager, mainCtrl);
     }
 
     /**

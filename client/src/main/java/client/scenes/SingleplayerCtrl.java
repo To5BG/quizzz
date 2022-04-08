@@ -30,8 +30,10 @@ public class SingleplayerCtrl extends GameCtrl {
 
     @Inject
     public SingleplayerCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
-                            LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
-        super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
+                            LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils,
+                            GameAnimation gameAnimation, SoundManager soundManager, MainCtrl mainCtrl) {
+        super(webSocketsUtils, gameSessionUtils, leaderboardUtils,
+                questionUtils, gameAnimation, soundManager, mainCtrl);
     }
 
     /**
@@ -112,5 +114,4 @@ public class SingleplayerCtrl extends GameCtrl {
         alert.show();
         back();
     }
-
 }
