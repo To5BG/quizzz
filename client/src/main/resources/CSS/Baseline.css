@@ -15,6 +15,13 @@
     -fx-background-image: url("/Image/background.png");
 }
 
+/* Text */
+
+.alertText {
+    -fx-text-fill: #c90c0c;
+    -fx-font-size: 24px;
+}
+
 .title {
     -fx-font-family: 'Earth Orbiter Punch';
 }
@@ -26,6 +33,12 @@
     -fx-background-color: transparent;
     -fx-border-width: 2px;
 }
+
+.settings {
+
+}
+
+/* Buttons */
 
 .button {
     -fx-background-color: transparent;
@@ -41,6 +54,20 @@
     -fx-font-size: 15px;
     -fx-border-color: #84ba84;
     -fx-border-width: 5;
+}
+
+/* Sliders */
+
+/* Styling the slider track */
+.slider > .track {
+    -fx-background-color: #585850;
+}
+
+/* Styling the slider thumb */
+.slider > .thumb {
+    -fx-background-color: #00CCFF;
+    -fx-border-color: #00FFFF;
+    -fx-border-radius: 20px;
 }
 
 /*  Answer   */
@@ -77,7 +104,7 @@
     -fx-background-radius: 10;
 }
 
-/*  All tables   */
+/*  Tables  */
 .table {
     -fx-border-color: transparent;
 }

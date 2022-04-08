@@ -59,15 +59,14 @@ public class MultiplayerCtrl extends GameCtrl {
 
     private StompSession.Subscription channel;
     private final List<Image> emojiImages;
-    private final GameAnimation gameAnimation;
     private List<Joker> usedJokers;
 
     @Inject
     public MultiplayerCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
                            LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils,
-                           GameAnimation gameAnimation, MainCtrl mainCtrl) {
-        super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
-        this.gameAnimation = gameAnimation;
+                           GameAnimation gameAnimation, SoundManager soundManager, MainCtrl mainCtrl) {
+        super(webSocketsUtils, gameSessionUtils, leaderboardUtils,
+                questionUtils, gameAnimation, soundManager, mainCtrl);
 
         emojiImages = new ArrayList<Image>();
         String[] emojiFileNames = {"funny", "sad", "angry"};
@@ -238,6 +237,7 @@ public class MultiplayerCtrl extends GameCtrl {
         if (submitButton.isDisabled()) {
             gameSessionUtils.toggleReady(sessionId, false);
         }
+        soundManager.halt();
         channel.unsubscribe();
         super.shutdown();
         disconnectTimer.cancel();
@@ -271,6 +271,8 @@ public class MultiplayerCtrl extends GameCtrl {
      * Shows podium screen for multiplayer sessions
      */
     public void showPodiumScreen(long sessionId) throws InterruptedException {
+        soundManager.halt();
+        soundManager.playSound("EndGame");
         gameSessionUtils.toggleReady(sessionId, false);
         mainCtrl.showPodiumScreen(this.sessionId, playerId);
 
@@ -338,6 +340,7 @@ public class MultiplayerCtrl extends GameCtrl {
     /**
      * Shows game podium if enough players are in the session
      */
+    @Override
     public void handleGamePodium() {
         try {
             if (gameSessionUtils.getSession(sessionId).players.size() >= 2) showPodiumScreen(sessionId);

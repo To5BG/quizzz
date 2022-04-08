@@ -17,13 +17,15 @@ import java.util.TimerTask;
 
 public class TimeAttackCtrl extends SingleplayerCtrl {
 
-    private long initialTime = 60L;
+    private long initialTime;
     private TimeUtils roundTimer;
 
     @Inject
     public TimeAttackCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
-                          LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
-        super(webSocketsUtils, gameSessionUtils, leaderboardUtils, questionUtils, mainCtrl);
+                          LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils,
+                          GameAnimation gameAnimation, SoundManager soundManager, MainCtrl mainCtrl) {
+        super(webSocketsUtils, gameSessionUtils, leaderboardUtils,
+                questionUtils, gameAnimation, soundManager, mainCtrl);
     }
 
     /**
@@ -50,8 +52,16 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
      */
     @Override
     public void reset() {
-        this.initialTime = 60L;
         super.reset();
+    }
+
+    /**
+     * Sets time for current game session
+     * @param timer Time to set the game session with
+     */
+    public void setTimer(double timer) {
+        this.initialTime = Math.round(timer);
+        if (initialTime != 60) gameSessionUtils.disableLeaderboard(sessionId);
     }
 
     /**
@@ -107,6 +117,7 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
                 } catch (NumberFormatException ex) {
                     System.out.println("Invalid answer yo");
                     if (!initiatedByTimer) {
+                        soundManager.playSound("Alert");
                         Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setTitle("Invalid answer");
                         alert.setHeaderText("Invalid answer");
@@ -121,6 +132,16 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported question type when parsing answer");
+        }
+
+        if (!initiatedByTimer) soundManager.halt();
+        else {
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    soundManager.halt();
+                }
+            }, 3000);
         }
 
         disableButton(submitButton, true);
@@ -152,6 +173,7 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
                         handleGamePodium();
                     } else {
                         handleNextRound();
+                        soundManager.halt();
                     }
                 });
             }
@@ -186,5 +208,4 @@ public class TimeAttackCtrl extends SingleplayerCtrl {
 
         loadQuestion();
     }
-
 }

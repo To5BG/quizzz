@@ -23,11 +23,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class GameCtrl extends SceneCtrl implements Initializable {
 
-    protected final static int GAME_ROUND_TIME = 10;
+    protected final static int GAME_ROUND_TIME = 9;
     protected final static int PODIUM_TIME = 10;
     protected final static int MIDGAME_BREAK_TIME = 6;
     protected final static int TIMER_UPDATE_INTERVAL_MS = 50;
     protected final static int GAME_ROUND_DELAY = 2;
+    protected final static int MULTIPLAYER_ROUNDS = 20;
     protected final static int IN_GAME_LEADERBOARD_WIDTH = 193;
     protected final static int IN_GAME_COLUSERNAME_WIDTH = 92;
     protected final static int MID_GAME_LEADERBOARD_WIDTH = 649;
@@ -81,10 +82,15 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
     @FXML
     protected Label jokerRefreshLabel;
 
+    @FXML
+    protected Button weirdButton;
+
     protected WebSocketsUtils webSocketsUtils;
     protected GameSessionUtils gameSessionUtils;
     protected LeaderboardUtils leaderboardUtils;
     protected QuestionUtils questionUtils;
+    protected GameAnimation gameAnimation;
+    protected SoundManager soundManager;
 
     protected MainCtrl mainCtrl;
 
@@ -95,6 +101,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
     protected Question currentQuestion;
     protected int points = 0;
     protected int rounds = 0;
+    protected int gameRounds;
     protected Thread timerThread;
     protected Evaluation evaluation;
 
@@ -102,13 +109,17 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
     protected boolean doublePointsActive;
     protected boolean decreaseTimeJoker;
     protected boolean removeOneJoker;
+    protected boolean inScene;
 
     public GameCtrl(WebSocketsUtils webSocketsUtils, GameSessionUtils gameSessionUtils,
-                    LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils, MainCtrl mainCtrl) {
+                    LeaderboardUtils leaderboardUtils, QuestionUtils questionUtils,
+                    GameAnimation gameAnimation, SoundManager soundManager, MainCtrl mainCtrl) {
         this.webSocketsUtils = webSocketsUtils;
         this.gameSessionUtils = gameSessionUtils;
         this.leaderboardUtils = leaderboardUtils;
         this.questionUtils = questionUtils;
+        this.gameAnimation = gameAnimation;
+        this.soundManager = soundManager;
 
         this.mainCtrl = mainCtrl;
         this.multiChoiceAnswers = new ArrayList<RadioButton>();
@@ -117,10 +128,18 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
         doublePointsActive = false;
         decreaseTimeJoker = true;
         removeOneJoker = true;
+        inScene = true;
 
         // Set to defaults
         this.sessionId = 0L;
         this.playerId = 0L;
+    }
+
+    /**
+     * Setter for inScene
+     */
+    public void setInScene() {
+        this.inScene = true;
     }
 
     /**
@@ -147,6 +166,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      * @param q the question to be rendered
      */
     protected void renderGeneralInformation(Question q) {
+        weirdButton.setText(soundManager.soundProfile.toString());
         this.questionPrompt.setText(q.prompt);
         this.questionPrompt.setStyle("-fx-text-alignment: left");
         if (q.type != Question.QuestionType.RANGE_GUESS && q.type != Question.QuestionType.EQUIVALENCE &&
@@ -319,7 +339,8 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    if (counter < 0) {
+                    if (!inScene) cancel();
+                    else if (counter < 0){
                         cancel();
                         loadAnswer();
                     } else {
@@ -354,6 +375,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      * Loads the answers of the current question and updates the timer after reading time is over
      */
     public void loadAnswer() {
+        soundManager.playSound("InGame" + new Random().nextInt(1,3));
         Question q = this.currentQuestion;
         if (q == null) return;
         renderAnswerFields(q);
@@ -392,6 +414,9 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      * {@inheritDoc}
      */
     public void back() {
+        soundManager.halt();
+        soundManager.playSound("Button");
+        inScene = false;
         shutdown();
         reset();
         mainCtrl.showSplash();
@@ -481,12 +506,13 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
                 } catch (NumberFormatException ex) {
                     System.out.println("Invalid answer yo");
                     if (!initiatedByTimer) {
+                        soundManager.playSound("Alert");
                         Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setTitle("Invalid answer");
                         alert.setHeaderText("Invalid answer");
                         alert.setContentText("You should only enter an integer number");
-                        alert.show();
                         mainCtrl.addCSS(alert);
+                        alert.show();
 
                         return;
                     } else {
@@ -496,6 +522,16 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported question type when parsing answer");
+        }
+
+        if (!initiatedByTimer) soundManager.halt();
+        else {
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    soundManager.halt();
+                }
+            }, 3000);
         }
 
         if (this.timerThread != null && this.timerThread.isAlive()) this.timerThread.interrupt();
@@ -549,9 +585,9 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
                 Platform.runLater(() -> {
                     if (currentQuestion == null) return; // happens if shutdown is called before triggering
                     rounds++;
-                    if (rounds == GameSession.gameRounds) {
+                    if (rounds == gameRounds) {
                         handleGamePodium();
-                    } else if (rounds == GameSession.gameRounds / 2 &&
+                    } else if (rounds == gameRounds / 2 &&
                             gameSessionUtils.getSession(sessionId).sessionType == GameSession.SessionType.MULTIPLAYER) {
                         displayMidGameScreen();
                         countdown.setOpacity(0);
@@ -637,10 +673,19 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
     }
 
     /**
+     * Toggles sound profile for all scenes
+     */
+    public void toggleWeirdSound() {
+        soundManager.toggleProfile();
+        weirdButton.setText(soundManager.soundProfile.toString());
+    }
+
+    /**
      * Remove One Answer Joker
      * When this joker is used it removes one incorrect answer from the answers list for the player that used it
      */
     public void removeOneAnswer() {
+        soundManager.playSound("Joker");
         removeOneJoker = false;
         disableButton(removeOneButton, true);
 
@@ -684,11 +729,19 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
     }
 
     /**
+     * Setter for the gameRounds
+     */
+    public void setGameRounds(int rounds) {
+        gameRounds = rounds;
+    }
+
+    /**
      * Decrease Time Joker
      * When this joker is used, the timer speeds up
      * This joker becomes Increase Time Joker in Singleplayer
      */
     public void decreaseTime() {
+        soundManager.playSound("Joker");
         decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
         gameSessionUtils.updateTimeJokers(sessionId, (int) getTimeJokers() + 1);
@@ -701,6 +754,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      * When this joker is used, it doubles the points gained for the question when it was used.
      */
     public void doublePoints() {
+        soundManager.playSound("Joker");
         doublePointsJoker = false;
         disableButton(doublePointsButton, true);
         switchStatusOfDoublePoints();

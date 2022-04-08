@@ -2,6 +2,8 @@ package commons;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -18,6 +20,14 @@ public class AnswerTest {
         Answer ans = new Answer(Question.QuestionType.MULTIPLE_CHOICE);
         assertEquals(Question.QuestionType.MULTIPLE_CHOICE, ans.type);
         assertNotNull(ans.answers);
+    }
+
+    @Test
+    public void testFullConstructor() {
+        List<Long> answerOptions = List.of(1L, 2L, 3L, 4L);
+        Answer ans = new Answer(answerOptions, Question.QuestionType.MULTIPLE_CHOICE);
+        assertEquals(Question.QuestionType.MULTIPLE_CHOICE, ans.type);
+        assertEquals(answerOptions, ans.answers);
     }
 
     @Test

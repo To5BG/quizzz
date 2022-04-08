@@ -34,6 +34,7 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
     private final GameSessionUtils gameSessionUtils;
     private final WebSocketsUtils webSocketsUtils;
     private final GameAnimation gameAnimation;
+    private final SoundManager soundManager;
     private final MainCtrl mainCtrl;
 
     @FXML
@@ -77,9 +78,10 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
 
     @Inject
     public EndGameScreenCtrl(GameSessionUtils gameSessionUtils, GameAnimation gameAnimation,
-                             WebSocketsUtils webSocketsUtils, MainCtrl mainCtrl) {
+                             SoundManager soundManager, WebSocketsUtils webSocketsUtils, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
         this.gameAnimation = gameAnimation;
+        this.soundManager = soundManager;
         this.webSocketsUtils = webSocketsUtils;
         this.mainCtrl = mainCtrl;
         emojiImages = new ArrayList<Image>();
@@ -175,6 +177,8 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
      * {@inheritDoc}
      */
     public void back() {
+        soundManager.halt();
+        soundManager.playSound("Button");
         shutdown();
         reset();
         mainCtrl.showSplash();
@@ -185,11 +189,9 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
      */
     public void reset() {
         playAgain.setText("Play again");
-        count.setText("[Count]");
-        count.setText("End of game! Play again or go back to main.");
+        status.setText("End of game! Play again or go back to main.");
         setPlayingAgain(false);
         waitingSkip = 0;
-        setPlayingAgain(false);
     }
 
     /**
@@ -197,6 +199,7 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
      * the player wants to play again.
      */
     public void playAgain() {
+        soundManager.playSound("Button");
         switch (playAgain.getText()) {
             case "Play again" -> {
                 playAgain.setText("Don't play again");
@@ -218,6 +221,7 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
      */
     public void showEndScreen() {
         //gameSessionUtils.toggleReady(sessionId, false);
+        soundManager.playSound("Button");
         var players = gameSessionUtils.getPlayers(sessionId);
         var data = FXCollections.observableList(players);
         leaderboard.setItems(data);
@@ -262,10 +266,12 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
                         mainCtrl.showMultiplayer(sessionId, playerId);
                     } else {
                         back();
+                        soundManager.playSound("Alert");
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Unable to start new game!");
                         alert.setHeaderText("There are too few people to play again:");
                         alert.setContentText("Please join a fresh game to play with more people!");
+                        mainCtrl.addCSS(alert);
                         alert.showAndWait();
                     }
                 });

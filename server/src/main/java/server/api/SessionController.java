@@ -55,8 +55,9 @@ public class SessionController {
     public void updateQuestion(GameSession session) {
         session.difficultyFactor = session.questionCounter / 4 + 1;
         session.questionCounter++;
-        Pair<Question, List<Long>> res = (session.sessionType == GameSession.SessionType.SURVIVAL) ?
-                QuestionGenerator.generateSurvivalQuestion(session.difficultyFactor, activityCtrl) :
+        Pair<Question, List<Long>> res = (session.sessionType == GameSession.SessionType.SURVIVAL ||
+                session.sessionType == GameSession.SessionType.TIME_ATTACK ) ?
+                QuestionGenerator.generateGamemodeQuestion(session.difficultyFactor, activityCtrl) :
                 QuestionGenerator.generateQuestion(session.difficultyFactor, activityCtrl);
         session.currentQuestion = res.getFirst();
         session.expectedAnswers.clear();
@@ -74,7 +75,7 @@ public class SessionController {
         switch (session.sessionType) {
             case SINGLEPLAYER, SURVIVAL, TIME_ATTACK -> {
                 Player p = session.getPlayers().get(0);
-                updateHighscore(p, session.sessionType);
+                if (!session.isLeaderboardDisabled) updateHighscore(p, session.sessionType);
                 removeSession(session.id);
             }
             default -> {
@@ -164,7 +165,7 @@ public class SessionController {
                 p.currentPoints = 0;
             }
             updateSession(session);
-        } else if (session.questionCounter == GameSession.gameRounds) {
+        } else if (session.questionCounter == session.gameRounds) {
             endSession(session);
         } else if (session.questionCounter == 0) {
             // Session first round
@@ -254,7 +255,7 @@ public class SessionController {
     public ResponseEntity<List<GameSession>> getAvailableSessions() {
         var sessions = sm.getValues().stream()
                 .filter(s -> (s.sessionType == GameSession.SessionType.WAITING_AREA ||
-                        s.sessionStatus == GameSession.SessionStatus.PLAY_AGAIN)).toList();
+                        s.sessionType == GameSession.SessionType.MULTIPLAYER)).toList();
         if (sessions.isEmpty()) return ResponseEntity.ok(null);
         else return ResponseEntity.ok(sessions);
     }
@@ -353,6 +354,19 @@ public class SessionController {
         return ResponseEntity.ok(session);
     }
 
+    /**
+     * Updates disableLeaderboard field of a game session (for game sessions with custom settings)
+     * @param sessionId Id of session to update
+     * @return The updated game session
+     */
+    @GetMapping("/{id}/disableLeaderboard")
+    public ResponseEntity<GameSession> disableLeaderboard(@PathVariable("id") Long sessionId) {
+        if (!sm.isValid(sessionId)) return ResponseEntity.badRequest().build();
+        GameSession session = sm.getById(sessionId);
+        session.disableLeaderboard();
+        updateSession(session);
+        return ResponseEntity.ok(session);
+    }
 
     /**
      * Updates status of game session

@@ -298,4 +298,17 @@ public class GameSessionUtils {
                 .accept(APPLICATION_JSON)
                 .put(Entity.entity(rounds, APPLICATION_JSON), GameSession.class);
     }
+
+    /**
+     * Disables leaderboard for games with custom settings
+     * @param sessionId Id of session to disable the leaderboard for
+     * @return The updated session.
+     */
+    public GameSession disableLeaderboard(long sessionId) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(serverConnection).path("api/sessions/" + sessionId + "/disableLeaderboard")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(GameSession.class);
+    }
 }

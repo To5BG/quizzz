@@ -13,7 +13,7 @@ public class QuestionGenerator {
     private static final List<Question.QuestionType> QUESTION_TYPES = Arrays.stream(Question.QuestionType.values())
             .filter(qt -> qt != Question.QuestionType.UNKNOWN).toList();
 
-    private static final List<Question.QuestionType> SURVIVAL_QN_TYPES = QUESTION_TYPES.stream()
+    private static final List<Question.QuestionType> GAMEMODE_QN_TYPES = QUESTION_TYPES.stream()
             .filter(qt -> qt != Question.QuestionType.RANGE_GUESS).toList();
 
     /**
@@ -133,10 +133,10 @@ public class QuestionGenerator {
      * @param ctrl             activity controller
      * @return The question and the list of expected answers
      */
-    public static Pair<Question, List<Long>> generateSurvivalQuestion(double difficultyFactor,
+    public static Pair<Question, List<Long>> generateGamemodeQuestion(double difficultyFactor,
                                                                       ActivityController ctrl) {
         Random rng = new Random();
-        return generateTypeQuestion(SURVIVAL_QN_TYPES.get(rng.nextInt(SURVIVAL_QN_TYPES.size())),
+        return generateTypeQuestion(GAMEMODE_QN_TYPES.get(rng.nextInt(GAMEMODE_QN_TYPES.size())),
                 difficultyFactor, ctrl);
     }
 
