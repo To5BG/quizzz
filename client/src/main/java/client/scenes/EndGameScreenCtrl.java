@@ -273,6 +273,7 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
                         alert.setTitle("Unable to start new game!");
                         alert.setHeaderText("There are too few people to play again:");
                         alert.setContentText("Please join a fresh game to play with more people!");
+                        mainCtrl.addCSS(alert);
                         alert.showAndWait();
                     }
                 });
