@@ -40,6 +40,7 @@ public class WaitingAreaCtrl extends SceneCtrl implements Initializable {
 
     private final GameSessionUtils gameSessionUtils;
     private final LongPollingUtils longPollUtils;
+    private final SoundManager soundManager;
     private final MainCtrl mainCtrl;
 
     private long playerId;
@@ -60,9 +61,11 @@ public class WaitingAreaCtrl extends SceneCtrl implements Initializable {
 
 
     @Inject
-    public WaitingAreaCtrl(GameSessionUtils gameSessionUtils, LongPollingUtils longPollUtils, MainCtrl mainCtrl) {
+    public WaitingAreaCtrl(GameSessionUtils gameSessionUtils, LongPollingUtils longPollUtils,
+                           SoundManager soundManager, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
         this.longPollUtils = longPollUtils;
+        this.soundManager = soundManager;
         this.mainCtrl = mainCtrl;
         // Set to defaults
         this.playerId = 0L;
@@ -90,6 +93,7 @@ public class WaitingAreaCtrl extends SceneCtrl implements Initializable {
      * {@inheritDoc}
      */
     public void back() {
+        soundManager.playSound("Button");
         long id = playerId;
         shutdown();
         gameSessionUtils.addPlayer(MainCtrl.SELECTION_ID, transferPlayer);
@@ -101,6 +105,7 @@ public class WaitingAreaCtrl extends SceneCtrl implements Initializable {
      * Toggles between ready and not-ready state, modifying readyButton and the waiting area's playerReady count
      */
     public void toggleReady() {
+        soundManager.playSound("Button");
         switch (readyButton.getText()) {
             case "Ready" -> {
                 readyButton.setText("Not Ready");

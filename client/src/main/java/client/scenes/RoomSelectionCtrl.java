@@ -23,6 +23,7 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
 
     private final GameSessionUtils gameSessionUtils;
     private LongPollingUtils longPollUtils;
+    private SoundManager soundManager;
     private final MainCtrl mainCtrl;
 
     private long playerId;
@@ -35,9 +36,11 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
     private TextField gameID;
 
     @Inject
-    public RoomSelectionCtrl(GameSessionUtils gameSessionUtils, LongPollingUtils longPollUtils, MainCtrl mainCtrl) {
+    public RoomSelectionCtrl(GameSessionUtils gameSessionUtils, LongPollingUtils longPollUtils,
+                              SoundManager soundManager, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
         this.longPollUtils = longPollUtils;
+        this.soundManager = soundManager;
         this.mainCtrl = mainCtrl;
     }
 
@@ -69,6 +72,7 @@ public class RoomSelectionCtrl extends SceneCtrl implements Initializable {
      * {@inheritDoc}
      */
     public void back() {
+        soundManager.playSound("Button");
         shutdown();
         mainCtrl.showSplash();
     }

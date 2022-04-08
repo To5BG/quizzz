@@ -270,6 +270,7 @@ public class MultiplayerCtrl extends GameCtrl {
      * Shows podium screen for multiplayer sessions
      */
     public void showPodiumScreen(long sessionId) throws InterruptedException {
+        soundManager.playSound("EndGame");
         gameSessionUtils.toggleReady(sessionId, false);
         mainCtrl.showPodiumScreen(this.sessionId, playerId);
 

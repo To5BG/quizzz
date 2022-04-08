@@ -40,6 +40,7 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
 
     private final LeaderboardUtils leaderboardUtils;
     private final LongPollingUtils longPollUtils;
+    private final SoundManager soundManager;
     private final MainCtrl mainCtrl;
     private List<Image> batteries;
 
@@ -99,9 +100,10 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
      */
     @Inject
     public LeaderBoardCtrl(LeaderboardUtils leaderboardUtils, LongPollingUtils longPollUtils,
-                           MainCtrl mainCtrl) {
+                           SoundManager soundManager, MainCtrl mainCtrl) {
         this.leaderboardUtils = leaderboardUtils;
         this.longPollUtils = longPollUtils;
+        this.soundManager = soundManager;
         this.mainCtrl = mainCtrl;
         ClassLoader cl = getClass().getClassLoader();
         batteries = new ArrayList<>();
@@ -147,8 +149,6 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
         multiButton.setOnAction(e -> showLeaderboard("multi"));
         survivalButton.setOnAction(e -> showLeaderboard("survival"));
         timeAttackButton.setOnAction(e -> showLeaderboard("timeAttack"));
-
-        showLeaderboard("single");
     }
 
     /**
@@ -191,6 +191,7 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
      * {@inheritDoc}
      */
     public void back() {
+        soundManager.playSound("Button");
         shutdown();
         mainCtrl.showSplash();
     }
@@ -216,6 +217,7 @@ public class LeaderBoardCtrl extends SceneCtrl implements Initializable {
      * @param leaderboard String identifier for leaderboard to toggle
      */
     public void showLeaderboard(String leaderboard) {
+        soundManager.playSound("Button");
         allPlayersSingleplayer.setVisible(false);
         allPlayersMultiplayer.setVisible(false);
         allPlayersSurvival.setVisible(false);

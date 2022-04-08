@@ -81,6 +81,9 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
     @FXML
     protected Label jokerRefreshLabel;
 
+    @FXML
+    protected Button weirdButton;
+
     protected WebSocketsUtils webSocketsUtils;
     protected GameSessionUtils gameSessionUtils;
     protected LeaderboardUtils leaderboardUtils;
@@ -152,6 +155,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      * @param q the question to be rendered
      */
     protected void renderGeneralInformation(Question q) {
+        weirdButton.setText(soundManager.soundProfile.toString());
         this.questionPrompt.setText(q.prompt);
         this.questionPrompt.setStyle("-fx-text-alignment: left");
         if (q.type != Question.QuestionType.RANGE_GUESS && q.type != Question.QuestionType.EQUIVALENCE &&
@@ -397,6 +401,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      * {@inheritDoc}
      */
     public void back() {
+        soundManager.playSound("Button");
         shutdown();
         reset();
         mainCtrl.showSplash();
@@ -467,6 +472,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      * Submit an answer to the server
      */
     public void submitAnswer(boolean initiatedByTimer) {
+        soundManager.playSound("Button");
         Answer ans = new Answer(currentQuestion.type);
         ans.timeFactor = timeProgress.getProgress();
 
@@ -646,6 +652,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      */
     public void toggleWeirdSound() {
         soundManager.toggleProfile();
+        weirdButton.setText(soundManager.soundProfile.toString());
     }
 
     /**
@@ -653,6 +660,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      * When this joker is used it removes one incorrect answer from the answers list for the player that used it
      */
     public void removeOneAnswer() {
+        soundManager.playSound("JokerSound");
         removeOneJoker = false;
         disableButton(removeOneButton, true);
 
@@ -701,6 +709,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      * This joker becomes Increase Time Joker in Singleplayer
      */
     public void decreaseTime() {
+        soundManager.playSound("JokerSound");
         decreaseTimeJoker = false;
         disableButton(decreaseTimeButton, true);
         gameSessionUtils.updateTimeJokers(sessionId, (int) getTimeJokers() + 1);
@@ -713,6 +722,7 @@ public abstract class GameCtrl extends SceneCtrl implements Initializable {
      * When this joker is used, it doubles the points gained for the question when it was used.
      */
     public void doublePoints() {
+        soundManager.playSound("JokerSound");
         doublePointsJoker = false;
         disableButton(doublePointsButton, true);
         switchStatusOfDoublePoints();

@@ -34,6 +34,7 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
     private final GameSessionUtils gameSessionUtils;
     private final WebSocketsUtils webSocketsUtils;
     private final GameAnimation gameAnimation;
+    private final SoundManager soundManager;
     private final MainCtrl mainCtrl;
 
     @FXML
@@ -77,9 +78,10 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
 
     @Inject
     public EndGameScreenCtrl(GameSessionUtils gameSessionUtils, GameAnimation gameAnimation,
-                             WebSocketsUtils webSocketsUtils, MainCtrl mainCtrl) {
+                             SoundManager soundManager, WebSocketsUtils webSocketsUtils, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
         this.gameAnimation = gameAnimation;
+        this.soundManager = soundManager;
         this.webSocketsUtils = webSocketsUtils;
         this.mainCtrl = mainCtrl;
         emojiImages = new ArrayList<Image>();
@@ -175,6 +177,7 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
      * {@inheritDoc}
      */
     public void back() {
+        soundManager.playSound("Button");
         shutdown();
         reset();
         mainCtrl.showSplash();
@@ -197,6 +200,7 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
      * the player wants to play again.
      */
     public void playAgain() {
+        soundManager.playSound("Button");
         switch (playAgain.getText()) {
             case "Play again" -> {
                 playAgain.setText("Don't play again");
@@ -218,6 +222,7 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
      */
     public void showEndScreen() {
         //gameSessionUtils.toggleReady(sessionId, false);
+        soundManager.playSound("Button");
         var players = gameSessionUtils.getPlayers(sessionId);
         var data = FXCollections.observableList(players);
         leaderboard.setItems(data);

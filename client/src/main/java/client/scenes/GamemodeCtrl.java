@@ -18,6 +18,7 @@ public class GamemodeCtrl extends SceneCtrl implements Initializable {
 
     private final GameSessionUtils gameSessionUtils;
     private final MainCtrl mainCtrl;
+    private final SoundManager soundManager;
     private final GameAnimation gameAnimation;
     @FXML
     protected Button defaultButton;
@@ -28,9 +29,11 @@ public class GamemodeCtrl extends SceneCtrl implements Initializable {
     private long playerId;
 
     @Inject
-    public GamemodeCtrl(GameSessionUtils gameSessionUtils, GameAnimation gameAnimation, MainCtrl mainCtrl) {
+    public GamemodeCtrl(GameSessionUtils gameSessionUtils, GameAnimation gameAnimation,
+                         SoundManager soundManager, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
         this.mainCtrl = mainCtrl;
+        this.soundManager = soundManager;
         this.gameAnimation = gameAnimation;
     }
 
@@ -73,6 +76,7 @@ public class GamemodeCtrl extends SceneCtrl implements Initializable {
      * Reverts the player to the splash screen and remove him from the current game session.
      */
     public void back() {
+        soundManager.playSound("Button");
         shutdown();
         mainCtrl.showSplash();
     }
@@ -96,6 +100,7 @@ public class GamemodeCtrl extends SceneCtrl implements Initializable {
      * Starts the default singleplayer game.
      */
     public void showDefault() {
+        soundManager.playSound("Button");
         long sessionId = createId(GameSession.SessionType.SINGLEPLAYER);
         mainCtrl.showDefaultSinglePlayer(sessionId, playerId);
     }
@@ -104,6 +109,7 @@ public class GamemodeCtrl extends SceneCtrl implements Initializable {
      * Starts the survival singleplayer game.
      */
     public void showSurvival() {
+        soundManager.playSound("Button");
         long sessionId = createId(GameSession.SessionType.SURVIVAL);
         gameSessionUtils.setGameRounds(sessionId, Integer.MAX_VALUE);
         mainCtrl.showSurvival(sessionId, playerId);
@@ -113,6 +119,7 @@ public class GamemodeCtrl extends SceneCtrl implements Initializable {
      * Starts the time attack singleplayer game.
      */
     public void showTimeAttack() {
+        soundManager.playSound("Button");
         long sessionId = createId(GameSession.SessionType.TIME_ATTACK);
         gameSessionUtils.setGameRounds(sessionId, Integer.MAX_VALUE);
         mainCtrl.showTimeAttack(sessionId, playerId);

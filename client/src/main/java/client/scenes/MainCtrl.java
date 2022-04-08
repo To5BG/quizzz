@@ -124,6 +124,8 @@ public class MainCtrl {
 
 
         confirmClose();
+        SoundManager sm = new SoundManager();
+        sm.playSound("Welcome");
         showSplash();
         primaryStage.show();
 
@@ -246,6 +248,7 @@ public class MainCtrl {
      * Sets the current screen to the leaderboard screen.
      */
     public void showLeaderboard() {
+        leaderBoardCtrl.showLeaderboard("single");
         primaryStage.setTitle("LeaderBoard");
         primaryStage.setScene(leaderBoardScreen);
         leaderBoardScreen.setOnKeyPressed(e -> leaderBoardCtrl.keyPressed(e));

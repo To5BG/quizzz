@@ -53,10 +53,12 @@ public class TutorialScreenCtrl extends SceneCtrl{
     protected List<Circle> dots;
     private int currentNum;
 
+    private final SoundManager soundManager;
 
     @Inject
-    public TutorialScreenCtrl(MainCtrl mainCtrl) {
+    public TutorialScreenCtrl(MainCtrl mainCtrl, SoundManager soundManager) {
         this.mainCtrl = mainCtrl;
+        this.soundManager = soundManager;
     }
 
     /**
@@ -80,6 +82,7 @@ public class TutorialScreenCtrl extends SceneCtrl{
      */
     @Override
     public void back() {
+        soundManager.playSound("Button");
         shutdown();
         mainCtrl.showSplash();
     }

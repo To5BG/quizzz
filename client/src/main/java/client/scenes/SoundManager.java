@@ -4,12 +4,10 @@ package client.scenes;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
-import java.nio.file.Path;
-
 public class SoundManager {
 
     SoundProfile soundProfile;
-    MediaPlayer mPlayer;
+    MediaPlayer mainPlayer;
 
     public enum SoundProfile {
         NORMAL,
@@ -18,7 +16,7 @@ public class SoundManager {
 
     public SoundManager() {
         this.soundProfile = SoundProfile.NORMAL;
-        mPlayer = null;
+        mainPlayer = null;
     }
 
     /**
@@ -26,15 +24,17 @@ public class SoundManager {
      */
     public void toggleProfile() {
         soundProfile = (soundProfile == SoundProfile.NORMAL) ? SoundProfile.WEIRD : SoundProfile.NORMAL;
+
     }
 
     /**
      * Method used to play any sound available in the database
      */
     public void playSound(String sound) {
-        String location = "Sound/" + (soundProfile == SoundProfile.NORMAL ? "normal" : "weird") + sound + ".mp3";
-        Media hit = new Media(Path.of(location).toUri().toString());
+        String location = "/Sounds/" + (soundProfile == SoundProfile.NORMAL ? "normal" : "weird") + sound + ".mp3";
+        Media hit = new Media(getClass().getResource(location).toString());
         MediaPlayer mediaPlayer = new MediaPlayer(hit);
+        if (sound.equals("Welcome")) mainPlayer = mediaPlayer;
         mediaPlayer.play();
     }
 }

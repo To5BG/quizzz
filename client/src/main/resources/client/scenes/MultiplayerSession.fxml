@@ -64,7 +64,7 @@
         <Label fx:id="removedPlayers" layoutX="649.0" layoutY="306.0" opacity="0.0" text="Player : DISCONNECTED..."/>
         <Label fx:id="jokerUsage" layoutX="359.0" layoutY="373.0" prefHeight="17.0" prefWidth="251.0" wrapText="true"/>
         <Label fx:id="jokerRefreshLabel" layoutX="221.0" layoutY="373.0" prefHeight="17.0" prefWidth="303.0"/>
-        <ToggleButton fx:id="weirdButton" layoutX="732.0" layoutY="265.0" mnemonicParsing="false"
+        <Button fx:id="weirdButton" layoutX="732.0" layoutY="265.0" mnemonicParsing="false"
                       onAction="#toggleWeirdSound" text="Weird" textFill="WHITE"/>
     </children>
 </AnchorPane>

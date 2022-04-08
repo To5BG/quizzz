@@ -15,6 +15,7 @@ import java.util.TimerTask;
 public class PodiumCtrl extends SceneCtrl {
 
     private final GameSessionUtils gameSessionUtils;
+    private final SoundManager soundManager;
     private final MainCtrl mainCtrl;
 
     private long playerId;
@@ -38,8 +39,9 @@ public class PodiumCtrl extends SceneCtrl {
     private List<Player> playerList;
 
     @Inject
-    public PodiumCtrl(GameSessionUtils gameSessionUtils, MainCtrl mainCtrl) {
+    public PodiumCtrl(GameSessionUtils gameSessionUtils, SoundManager soundManager, MainCtrl mainCtrl) {
         this.gameSessionUtils = gameSessionUtils;
+        this.soundManager = soundManager;
         this.mainCtrl = mainCtrl;
     }
 
@@ -83,6 +85,7 @@ public class PodiumCtrl extends SceneCtrl {
      * {@inheritDoc}
      */
     public void back() {
+        soundManager.playSound("Button");
         shutdown();
     }
 

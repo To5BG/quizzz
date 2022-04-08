@@ -44,6 +44,8 @@ import java.util.regex.Pattern;
 
 public class SplashCtrl extends SceneCtrl implements Initializable{
 
+    private String url;
+
     private final GameSessionUtils gameSessionUtils;
     private final LeaderboardUtils leaderboardUtils;
     private final QuestionUtils questionUtils;
@@ -54,13 +56,13 @@ public class SplashCtrl extends SceneCtrl implements Initializable{
     private final GameAnimation gameAnimation;
     private final SoundManager soundManager;
 
+
     @FXML
     protected Button singleplayerButton;
     @FXML
     protected Button multiplayerButton;
     @FXML
     protected Button leaderboardButton;
-    private String url;
     @FXML
     private TextField usernameField;
     @FXML
@@ -71,13 +73,14 @@ public class SplashCtrl extends SceneCtrl implements Initializable{
     private TextField connectionField;
     @FXML
     private Text failedConnectionAlert;
-
     @FXML
     private ImageView imagePlug1;
     @FXML
     private ImageView imagePlug2;
     @FXML
     private ImageView imagePlug3;
+    @FXML
+    private Button weirdButton;
 
     @Inject
     public SplashCtrl(GameSessionUtils gameSessionUtils, LeaderboardUtils leaderboardUtils,
@@ -101,6 +104,7 @@ public class SplashCtrl extends SceneCtrl implements Initializable{
     public void initialize(URL location, ResourceBundle resources) {
         gameAnimation.startBatteryAnimation(List.of(singleplayerButton, multiplayerButton, leaderboardButton),
                 List.of(imagePlug1, imagePlug2, imagePlug3));
+        weirdButton.setText(soundManager.soundProfile.toString());
     }
 
     /**
@@ -109,6 +113,7 @@ public class SplashCtrl extends SceneCtrl implements Initializable{
      * @return True iff the connection is successful
      */
     public boolean establishConnection() {
+        soundManager.playSound("Button");
         String connURL = connectionField.getText().strip();
 
         if (connURL.isEmpty()) connURL = "http://localhost:8080/";
@@ -315,6 +320,7 @@ public class SplashCtrl extends SceneCtrl implements Initializable{
      */
     @Override
     public void back() {
+        soundManager.playSound("Button");
         shutdown();
     }
 
@@ -330,5 +336,6 @@ public class SplashCtrl extends SceneCtrl implements Initializable{
      */
     public void toggleWeirdSound() {
         soundManager.toggleProfile();
+        weirdButton.setText(soundManager.soundProfile.toString());
     }
 }

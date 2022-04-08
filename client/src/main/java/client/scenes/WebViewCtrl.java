@@ -15,6 +15,7 @@ import java.util.ResourceBundle;
 public class WebViewCtrl extends SceneCtrl implements Initializable {
 
     private final MainCtrl mainCtrl;
+    private final SoundManager soundManager;
 
     @FXML
     private WebView webView;
@@ -29,8 +30,9 @@ public class WebViewCtrl extends SceneCtrl implements Initializable {
     private String page;
 
     @Inject
-    public WebViewCtrl(MainCtrl mainCtrl) {
+    public WebViewCtrl(MainCtrl mainCtrl, SoundManager soundManager) {
         this.mainCtrl = mainCtrl;
+        this.soundManager = soundManager;
     }
 
     /**
@@ -67,6 +69,7 @@ public class WebViewCtrl extends SceneCtrl implements Initializable {
      * {@inheritDoc}
      */
     public void back() {
+        soundManager.playSound("Button");
         shutdown();
         mainCtrl.showSplash();
     }
