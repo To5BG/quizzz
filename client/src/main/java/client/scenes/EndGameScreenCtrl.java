@@ -262,11 +262,13 @@ public class EndGameScreenCtrl extends SceneCtrl implements Initializable {
                         mainCtrl.showMultiplayer(sessionId, playerId);
                     } else {
                         back();
+
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Unable to start new game!");
                         alert.setHeaderText("There are too few people to play again:");
                         alert.setContentText("Please join a fresh game to play with more people!");
                         alert.showAndWait();
+                        mainCtrl.addCSS(alert);
                     }
                 });
             }
